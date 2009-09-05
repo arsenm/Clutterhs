@@ -1,0 +1,8 @@
+# DO NOT DELETE: Beginning of Haskell dependencies
+dist/build/Graphics/UI/Clutter/Types.o : dist/build/Graphics/UI/Clutter/Types.hs
+dist/build/Graphics/UI/Clutter/Color.o : dist/build/Graphics/UI/Clutter/Color.hs
+dist/build/Graphics/UI/Clutter/Color.o : dist/build/Graphics/UI/Clutter/Types.hi
+dist/build/Graphics/UI/Clutter.o : Graphics/UI/Clutter.hs
+dist/build/Graphics/UI/Clutter.o : dist/build/Graphics/UI/Clutter/Color.hi
+dist/build/Graphics/UI/Clutter.o : dist/build/Graphics/UI/Clutter/Types.hi
+# DO NOT DELETE: End of Haskell dependencies

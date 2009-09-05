@@ -1,0 +1,2 @@
+C->Haskell Interface Version C->Haskell Compiler, version 0.16.0 Crystal Seed, 24 Jan 2009
+([((True,"ClutterColor"),("Ptr (ClutterColor)","Ptr (ClutterColor)"))],[("ClutterColor",Pointer {ptrTypeHO = ForeignPtr, isNewtypeHO = True})])

@@ -11,6 +11,6 @@ fib n = fib (n-1) + fib (n-2)
 
 main = do
   putStrLn "Wow...omg"
-  col <- colorNew
+  col <- colorNew 0 0 0 0
   putStrLn "Yay!"
 

@@ -21,10 +21,11 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
+{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
 
 
 
-{-# LINE 23 "./Graphics/UI/Clutter/Color.chs" #-}
+{-# LINE 24 "./Graphics/UI/Clutter/Color.chs" #-}
 
 module Graphics.UI.Clutter.Color (
                                   colorNew,
@@ -32,15 +33,34 @@ module Graphics.UI.Clutter.Color (
                                  ) where
 
 import Graphics.UI.Clutter.Types
-{-# LINE 30 "./Graphics/UI/Clutter/Color.chs" #-}
+{-# LINE 31 "./Graphics/UI/Clutter/Color.chs" #-}
 
+import Foreign.ForeignPtr (ForeignPtr, castForeignPtr, withForeignPtr, unsafeForeignPtrToPtr)
+import Foreign.C.Types (CULong, CUInt, CUChar)
+import Foreign.Ptr (Ptr)
+import Data.Word
+import System.Glib.GType (GType, typeInstanceIsA)
+import System.Glib.GObject
+
+type GUInt8 = (CUChar)
+{-# LINE 40 "./Graphics/UI/Clutter/Color.chs" #-}
 -- | Creates a new color
 --
-colorNew :: IO ClutterColor
-colorNew = undefined
---  {# call unsafe color_new #} --arguments?
+colorNew :: GUInt8 -> GUInt8 -> GUInt8 -> GUInt8 -> IO (Ptr ClutterColor)
+colorNew r b g a = clutter_color_new r b g a
+--{#fun unsafe color_new
+--      `(RString s)' =>
+--      {withRString* `s'      ,
+--       withRString* `s'    } -> `ClutterColor'#}
+--{#fun color_new { r b g a } -> `ClutterColor' ClutterColor #}
+
+--{#fun color_new as colorNew { `CUChar', `CUChar', `CUChar', `CUChar'} -> `ClutterColor' ClutterColor #}
+
 
 colorCopy :: ClutterColor -> IO ClutterColor
 colorCopy = undefined
 
 
+
+foreign import ccall unsafe "Graphics/UI/Clutter/Color.chs.h clutter_color_new"
+  clutter_color_new :: (CUChar -> (CUChar -> (CUChar -> (CUChar -> (IO (Ptr (ClutterColor)))))))

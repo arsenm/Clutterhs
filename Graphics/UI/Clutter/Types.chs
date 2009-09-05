@@ -9,14 +9,14 @@
 module Graphics.UI.Clutter.Types (
 --                                  module System.Glib.GObject,
                                   ClutterColor,
-                                  mkColor,
+--                                  mkColor,
                                   unColor
                                  ) where
 
 --import C2HS
 
 import Foreign.ForeignPtr (ForeignPtr, castForeignPtr, withForeignPtr, unsafeForeignPtrToPtr)
-import Foreign.C.Types (CULong, CUInt)
+import Foreign.C.Types (CUChar)
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
 
@@ -37,14 +37,14 @@ castTo gtype objTypeName obj =
 {#pointer *ClutterColor as ClutterColor foreign newtype #}
 
 unColor (ClutterColor o) = o
-mkColor = ClutterColor
+--mkColor = ClutterColor
 
 --class GObjectClass o => DrawableClass o
 --toDrawable :: DrawableClass o => o -> Drawable
 --toDrawable = unsafeCastGObject . toGObject
 
-instance GObjectClass ClutterColor where
-  toGObject = mkGObject . castForeignPtr . unColor
-  unsafeCastGObject = mkColor . castForeignPtr . unGObject
+--instance GObjectClass ClutterColor where  --cluttercolor is not a gobject
+--  toGObject = mkGObject . castForeignPtr . unColor
+--  unsafeCastGObject = mkColor . castForeignPtr . unGObject
 
 

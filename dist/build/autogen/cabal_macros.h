@@ -12,3 +12,9 @@
   (major1) == 0 && (major2) <  10 || \
   (major1) == 0 && (major2) == 10 && (minor) <= 1
 
+/* package gtk-0.10.1 */
+#define MIN_VERSION_gtk(major1,major2,minor) \
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  10 || \
+  (major1) == 0 && (major2) == 10 && (minor) <= 1
+

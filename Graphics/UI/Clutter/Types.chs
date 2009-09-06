@@ -7,9 +7,9 @@
 
 
 module Graphics.UI.Clutter.Types (
-                                  ClutterColor,
-                                  mkClutterColor,
-                                  unClutterColor,
+                                  Color,
+                                  mkColor,
+                                  unColor,
 --                                  colorRed
                                  ) where
 
@@ -30,20 +30,20 @@ castTo gtype objTypeName obj =
                   -> unsafeCastGObject gobj
       | otherwise -> error $ "Cannot cast object to " ++ objTypeName
 
---colorRed (ClutterColor c) = {# get ClutterColor->red #} c
+--colorRed (Color c) = {# get Color->red #} c
 
 
-{# pointer *ClutterColor as ClutterColor foreign newtype #}
+{# pointer *ClutterColor as Color foreign newtype #}
 
-instance Show ClutterColor where
-    show (ClutterColor c) = show c
+instance Show Color where
+    show (Color c) = show c
 
-unClutterColor (ClutterColor o) = o
+unColor (Color o) = o
 
---withClutterColor (ClutterColor x) = withForeignPtr x
+--withColor (Color x) = withForeignPtr x
 
-mkClutterColor :: Ptr ClutterColor -> IO ClutterColor
-mkClutterColor colorPtr = do
+mkColor :: Ptr Color -> IO Color
+mkColor colorPtr = do
   clutterForeignPtr <- newForeignPtr_ colorPtr
-  return (ClutterColor clutterForeignPtr)
+  return (Color clutterForeignPtr)
 

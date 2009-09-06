@@ -24,9 +24,9 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Color (
-                                  colorNew,
+                                  colorNew
 --                                  colorFromString,
-                                  colorCopy
+--                                  colorCopy
                                  ) where
 
 {#import Graphics.UI.Clutter.Types#}
@@ -39,26 +39,26 @@ import System.Glib.GObject
 type GUInt8 = {#type guint8#}
 -- | Creates a new color
 --
---colorNew :: GUInt8 -> GUInt8 -> GUInt8 -> GUInt8 -> IO (Ptr ClutterColor)
+--colorNew :: GUInt8 -> GUInt8 -> GUInt8 -> GUInt8 -> IO (Ptr Color)
 --colorNew r b g a = {# call unsafe color_new #} r b g a
 --{#fun unsafe color_new
---      {withCUChar* `s', withCUChar* `s', withCUChar* `s', withCUChar* `s'} -> `ClutterColor' ClutterColor #}
+--      {withCUChar* `s', withCUChar* `s', withCUChar* `s', withCUChar* `s'} -> `Color' Color #}
 
 {#fun unsafe color_new as ^
-      {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `ClutterColor' mkClutterColor* #}
+      {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `Color' mkColor* #}
 
 --{#fun unsafe clutter_color_from_string as ^
---  {unClutterColor `ClutterColor', `String'} -> `Bool' id* #}
+--  {unColor `Color', `String'} -> `Bool' id* #}
 
 --{#fun unsafe color_new
---      {withCUChar* `s', withCUChar* `s'} -> `ClutterColor' ClutterColor #}
---{#fun color_new { r b g a } -> `ClutterColor' ClutterColor #}
+--      {withCUChar* `s', withCUChar* `s'} -> `Color' Color #}
+--{#fun color_new { r b g a } -> `Color' Color #}
 
---{#fun color_new as colorNew { `CUChar', `CUChar', `CUChar', `CUChar'} -> `ClutterColor' ClutterColor #}
+--{#fun color_new as colorNew { `CUChar', `CUChar', `CUChar', `CUChar'} -> `Color' Color #}
 
 --addForeignPtrFinalizer ??
 
-colorCopy :: ClutterColor -> IO ClutterColor
-colorCopy = undefined
+--colorCopy :: Color -> IO Color
+--colorCopy = undefined
 
 

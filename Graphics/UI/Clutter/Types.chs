@@ -10,7 +10,7 @@ module Graphics.UI.Clutter.Types (
                                   Color,
                                   mkColor,
                                   unColor,
---                                  colorRed
+                                  colorRed
                                  ) where
 
 import C2HS
@@ -30,10 +30,12 @@ castTo gtype objTypeName obj =
                   -> unsafeCastGObject gobj
       | otherwise -> error $ "Cannot cast object to " ++ objTypeName
 
---colorRed (Color c) = {# get Color->red #} c
-
-
 {# pointer *ClutterColor as Color foreign newtype #}
+
+--what is this unsafe madness?
+--this is just a play with c2hs
+--colorRed (Color c) = {# get Color->alpha #} $ unsafeForeignPtrToPtr c
+colorRed (Color c) = withForeignPtr c {# get Color->alpha #}
 
 instance Show Color where
     show (Color c) = show c

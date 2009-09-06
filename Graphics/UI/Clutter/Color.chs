@@ -30,7 +30,6 @@ module Graphics.UI.Clutter.Color (
 
 {#import Graphics.UI.Clutter.Types#}
 
-import Foreign.ForeignPtr (ForeignPtr, castForeignPtr, withForeignPtr, unsafeForeignPtrToPtr)
 import Foreign.C.Types (CULong, CUInt, CUChar)
 import Foreign.Ptr (Ptr)
 import Data.Word
@@ -40,16 +39,21 @@ import System.Glib.GObject
 type GUInt8 = {#type guint8#}
 -- | Creates a new color
 --
-colorNew :: GUInt8 -> GUInt8 -> GUInt8 -> GUInt8 -> IO (Ptr ClutterColor)
-colorNew r b g a = {# call unsafe color_new #} r b g a
+--colorNew :: GUInt8 -> GUInt8 -> GUInt8 -> GUInt8 -> IO (Ptr ClutterColor)
+--colorNew r b g a = {# call unsafe color_new #} r b g a
 --{#fun unsafe color_new
---      `(RString s)' =>
---      {withRString* `s'      ,
---       withRString* `s'    } -> `ClutterColor'#}
+--      {withCUChar* `s', withCUChar* `s', withCUChar* `s', withCUChar* `s'} -> `ClutterColor' ClutterColor #}
+
+{#fun unsafe color_new as ^
+      {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `ClutterColor' mkClutterColor* #}
+
+--{#fun unsafe color_new
+--      {withCUChar* `s', withCUChar* `s'} -> `ClutterColor' ClutterColor #}
 --{#fun color_new { r b g a } -> `ClutterColor' ClutterColor #}
 
 --{#fun color_new as colorNew { `CUChar', `CUChar', `CUChar', `CUChar'} -> `ClutterColor' ClutterColor #}
 
+--addForeignPtrFinalizer ??
 
 colorCopy :: ClutterColor -> IO ClutterColor
 colorCopy = undefined

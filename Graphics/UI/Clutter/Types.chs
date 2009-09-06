@@ -7,15 +7,14 @@
 
 
 module Graphics.UI.Clutter.Types (
---                                  module System.Glib.GObject,
                                   ClutterColor,
---                                  mkColor,
-                                  unColor
+                                  mkClutterColor,
+                                  unClutterColor
                                  ) where
 
 --import C2HS
-
-import Foreign.ForeignPtr (ForeignPtr, castForeignPtr, withForeignPtr, unsafeForeignPtrToPtr)
+import Foreign.ForeignPtr (ForeignPtr, castForeignPtr, withForeignPtr, unsafeForeignPtrToPtr,newForeignPtr_)
+import Foreign.Ptr (Ptr)
 import Foreign.C.Types (CUChar)
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
@@ -34,17 +33,17 @@ castTo gtype objTypeName obj =
       | otherwise -> error $ "Cannot cast object to " ++ objTypeName
 
 
-{#pointer *ClutterColor as ClutterColor foreign newtype #}
+{# pointer *ClutterColor as ClutterColor foreign newtype #}
 
-unColor (ClutterColor o) = o
---mkColor = ClutterColor
+instance Show ClutterColor where
+    show (ClutterColor c) = show c
 
---class GObjectClass o => DrawableClass o
---toDrawable :: DrawableClass o => o -> Drawable
---toDrawable = unsafeCastGObject . toGObject
+unClutterColor (ClutterColor o) = o
 
---instance GObjectClass ClutterColor where  --cluttercolor is not a gobject
---  toGObject = mkGObject . castForeignPtr . unColor
---  unsafeCastGObject = mkColor . castForeignPtr . unGObject
+--withClutterColor (ClutterColor x) = withForeignPtr x
 
+mkClutterColor :: Ptr ClutterColor -> IO ClutterColor
+mkClutterColor colorPtr = do
+  clutterForeignPtr <- newForeignPtr_ colorPtr
+  return (ClutterColor clutterForeignPtr)
 

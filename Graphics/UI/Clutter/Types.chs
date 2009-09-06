@@ -9,13 +9,11 @@
 module Graphics.UI.Clutter.Types (
                                   ClutterColor,
                                   mkClutterColor,
-                                  unClutterColor
+                                  unClutterColor,
+--                                  colorRed
                                  ) where
 
---import C2HS
-import Foreign.ForeignPtr (ForeignPtr, castForeignPtr, withForeignPtr, unsafeForeignPtrToPtr,newForeignPtr_)
-import Foreign.Ptr (Ptr)
-import Foreign.C.Types (CUChar)
+import C2HS
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
 
@@ -31,6 +29,8 @@ castTo gtype objTypeName obj =
       | typeInstanceIsA ((unsafeForeignPtrToPtr.castForeignPtr) objFPtr) gtype
                   -> unsafeCastGObject gobj
       | otherwise -> error $ "Cannot cast object to " ++ objTypeName
+
+--colorRed (ClutterColor c) = {# get ClutterColor->red #} c
 
 
 {# pointer *ClutterColor as ClutterColor foreign newtype #}

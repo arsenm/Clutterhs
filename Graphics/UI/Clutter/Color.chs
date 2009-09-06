@@ -25,13 +25,13 @@
 
 module Graphics.UI.Clutter.Color (
                                   colorNew,
+--                                  colorFromString,
                                   colorCopy
                                  ) where
 
 {#import Graphics.UI.Clutter.Types#}
 
-import Foreign.C.Types (CULong, CUInt, CUChar)
-import Foreign.Ptr (Ptr)
+import C2HS
 import Data.Word
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
@@ -46,6 +46,9 @@ type GUInt8 = {#type guint8#}
 
 {#fun unsafe color_new as ^
       {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `ClutterColor' mkClutterColor* #}
+
+--{#fun unsafe clutter_color_from_string as ^
+--  {unClutterColor `ClutterColor', `String'} -> `Bool' id* #}
 
 --{#fun unsafe color_new
 --      {withCUChar* `s', withCUChar* `s'} -> `ClutterColor' ClutterColor #}

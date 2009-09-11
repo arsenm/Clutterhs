@@ -24,7 +24,8 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Color (
-                                  colorNew
+                                  colorNew,
+                                  colorFree,
 --                                  colorFromString,
 --                                  colorCopy
                                  ) where
@@ -39,13 +40,11 @@ import System.Glib.GObject
 type GUInt8 = {#type guint8#}
 -- | Creates a new color
 --
---colorNew :: GUInt8 -> GUInt8 -> GUInt8 -> GUInt8 -> IO (Ptr Color)
---colorNew r b g a = {# call unsafe color_new #} r b g a
---{#fun unsafe color_new
---      {withCUChar* `s', withCUChar* `s', withCUChar* `s', withCUChar* `s'} -> `Color' Color #}
-
 {#fun unsafe color_new as ^
       {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `Color' mkColor* #}
+
+{#fun unsafe color_free as ^
+  {unColor `Color'} -> `()' #}
 
 --{#fun unsafe clutter_color_from_string as ^
 --  {unColor `Color', `String'} -> `Bool' id* #}

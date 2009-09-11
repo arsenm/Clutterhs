@@ -25,6 +25,8 @@ Library
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
   Exposed-modules: Graphics.UI.Clutter.Color,
                    Graphics.UI.Clutter.Types,
+                   Graphics.UI.Clutter.Actor,
+                   Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter
   Exposed: True
 --  GHC-options: -Wall -O2

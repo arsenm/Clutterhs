@@ -1,3 +1,11 @@
 dist
 arst
+Graphics/UI/Clutter/Actor.chi
+Graphics/UI/Clutter/Actor.chs.h
+Graphics/UI/Clutter/Actor.hs
+Graphics/UI/Clutter/Color.hs
+Graphics/UI/Clutter/Stage.chi
+Graphics/UI/Clutter/Stage.chs.h
+Graphics/UI/Clutter/Stage.hs
+Graphics/UI/Clutter/Types.hs
 

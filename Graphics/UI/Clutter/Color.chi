@@ -1,2 +1,0 @@
-C->Haskell Interface Version C->Haskell Compiler, version 0.16.0 Crystal Seed, 24 Jan 2009
-([((True,"ClutterActor"),("Ptr (Actor)","Ptr (Actor)")),((True,"ClutterColor"),("Ptr (Color)","Ptr (Color)")),((True,"ClutterGroup"),("Ptr (Group)","Ptr (Group)")),((True,"ClutterStage"),("Ptr (Stage)","Ptr (Stage)"))],[("Stage",Pointer {ptrTypeHO = ForeignPtr, isNewtypeHO = True}),("Color",Pointer {ptrTypeHO = ForeignPtr, isNewtypeHO = True}),("Actor",Pointer {ptrTypeHO = ForeignPtr, isNewtypeHO = True}),("Group",Pointer {ptrTypeHO = ForeignPtr, isNewtypeHO = True})])

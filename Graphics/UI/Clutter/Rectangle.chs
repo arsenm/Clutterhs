@@ -26,7 +26,15 @@
 module Graphics.UI.Clutter.Rectangle (
                                       rectangleNew,
                                       rectangleNewWithColor,
-                                      rectangleGetColor
+                                    --rectangleGetColor,
+                                      rectangleSetColor,
+                                    --rectangleColor,
+
+                                      rectangleGetBorderWidth,
+                                      rectangleSetBorderWidth,
+                                      rectangleBorderWidth
+
+
 
                                      ) where
 
@@ -34,6 +42,8 @@ module Graphics.UI.Clutter.Rectangle (
 
 import C2HS
 import System.Glib.GObject
+import System.Glib.Attributes
+import System.Glib.Properties
 
 --instance Storable
 --conv::RectangleClass o => o -> Ptr Rectangle -> IO b
@@ -41,9 +51,20 @@ import System.Glib.GObject
 
 --TODO: Check marshallers and alloc stuff for the color out arg
 --{# fun unsafe rectangle_get_color as ^ {conv* `Rectangle', alloca- `Color' } -> `()' #}
-rectangleGetColor = undefined
+--rectangleGetColor = undefined
 
 {# fun unsafe rectangle_new as ^ {} -> `()' #}
 {# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `()' #}
 
+--{# fun unsafe rectangle_get_color as ^ {withRectangle* `Rectangle', alloca- `Color' } -> `()' #}
+{# fun unsafe rectangle_set_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
+--rectangleColor :: Attr Rectangle Color
+--rectangleColor = newAttr rectangleGetColor rectangleSetColor
+
+
+--FIXME: guint vs. int
+{# fun unsafe rectangle_get_border_width as ^ {withRectangle* `Rectangle'} -> `Int' #}
+{# fun unsafe rectangle_set_border_width as ^ {withRectangle* `Rectangle', `Int'} -> `()' #}
+rectangleBorderWidth :: Attr Rectangle Int
+rectangleBorderWidth = newAttr rectangleGetBorderWidth rectangleSetBorderWidth
 

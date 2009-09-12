@@ -64,6 +64,9 @@ castTo gtype objTypeName obj =
                   -> unsafeCastGObject gobj
       | otherwise -> error $ "Cannot cast object to " ++ objTypeName
 
+
+-- *************************************************************** Color
+
 {# pointer *ClutterColor as Color foreign newtype #}
 
 --what is this unsafe madness?

@@ -33,6 +33,9 @@ module Graphics.UI.Clutter.Types (
                                   unStage,
                                   withStage,
 
+                                  Container,
+                                  ContainerClass,
+
                                   Perspective,
                                   PickMode(..),
                                   Gravity(..),
@@ -203,12 +206,32 @@ mkGroup = Group
 unGroup (Group o) = o
 
 instance GroupClass Group
+instance ContainerClass Group
 instance ActorClass Group
 instance GObjectClass Group where
   toGObject = mkGObject . castForeignPtr . unGroup
   unsafeCastGObject = mkGroup . castForeignPtr . unGObject
 
 -- *************************************************************** Group
+
+-- *************************************************************** Container
+
+{# pointer *ClutterContainer as Container foreign newtype #}
+
+mkContainer = Container
+unContainer (Container o) = o
+
+class GObjectClass o => ContainerClass o
+toContainer :: ContainerClass o => o -> Container
+toContainer = unsafeCastGObject . toGObject
+
+instance ContainerClass Container
+instance GObjectClass Container where
+  toGObject = mkGObject . castForeignPtr . unContainer
+  unsafeCastGObject = mkContainer . castForeignPtr . unGObject
+
+-- ***************************************************************
+
 
 -- *************************************************************** Stage
 
@@ -233,6 +256,7 @@ manageStage (Stage stageForeignPtr) = do
 -}
 
 instance StageClass Stage
+instance ContainerClass Stage
 instance GroupClass Stage
 instance ActorClass Stage
 instance GObjectClass Stage where

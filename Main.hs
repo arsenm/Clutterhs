@@ -13,11 +13,12 @@ main = do
   print a
   putStrLn "Wow...omg"
 
-  c <- colorNew 123 0 0 0
+  c <- colorNew 123 0 0 123
   rec <- rectangleNewWithColor c
   stg <- stageNew
-  actorSetParent rec stg
-  actorSetPosition rec 100 100
+
+  actorSetPosition rec 20 20
+  actorSetSize rec 100 100
   (xpos, ypos) <- actorGetPosition rec
   print xpos
   print ypos
@@ -25,9 +26,12 @@ main = do
 --  d <- colorRed c
 --  print d
 --  putStrLn "Yay!"
+--  stageSetColor stg c
 
-  actorShow stg
   actorShow rec
+  actorShow stg
+
+  actorShowAll stg
 
   a <- actorGetZRotationGravity rec
   print a

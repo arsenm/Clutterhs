@@ -37,15 +37,8 @@ import System.Glib.UTFString
 import System.Environment (getProgName, getArgs)
 import Control.Monad (liftM, mapM, when)
 
---main :: IO ()
---main  = {#call main#}
-
 {#fun unsafe main as clutterMain {} -> `()' #}
 {#fun unsafe main_quit as clutterMainQuit {} -> `()' #}
-
---why do I need this?
---pants::CInt -> IO InitError
---pants = return . cToEnum . cIntConv
 
 --FIXME: use of id as marshaller seems horribly wrong
 {# fun unsafe clutter_init as secretClutterInit {id `Ptr CInt', id `Ptr (Ptr (CString))'} -> `InitError' cToEnum #}

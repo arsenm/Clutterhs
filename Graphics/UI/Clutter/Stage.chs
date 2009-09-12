@@ -30,7 +30,7 @@ module Graphics.UI.Clutter.Stage (
                                   -- * Methods,
                                   stageIsDefault,
 
-                                --stageSetColor,
+                                  stageSetColor,
                                 --stageGetColor,
                                 --stageColor,
 

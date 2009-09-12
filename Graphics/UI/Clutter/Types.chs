@@ -9,6 +9,7 @@ module Graphics.UI.Clutter.Types (
                                   Color,
                                   mkColor,
                                   unColor,
+                                  withColor,
                                   colorRed,
 
                                   Actor,
@@ -69,7 +70,7 @@ colorRed (Color c) = withForeignPtr c {# get Color->alpha #}
 instance Show Color where
     show (Color c) = show c
 
-unColor (Color o) = unsafeForeignPtrToPtr o
+unColor (Color o) = o
 
 --withColor (Color o) = withForeignPtr o
 
@@ -179,6 +180,17 @@ toStage = unsafeCastGObject . toGObject
 
 mkStage = Stage
 unStage (Stage o) = o
+
+{-
+mkStage :: Ptr Stage -> IO Stage
+mkStage stagePtr = do
+  stageForeignPtr <- newForeignPtr_ stagePtr
+  return (Stage stageForeignPtr)
+
+manageStage :: Stage -> IO ()
+manageStage (Stage stageForeignPtr) = do
+  addForeignPtrFinalizer stageDestroy stageForeignPtr
+-}
 
 instance StageClass Stage
 instance GroupClass Stage

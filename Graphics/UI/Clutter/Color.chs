@@ -44,7 +44,7 @@ type GUInt8 = {#type guint8#}
       {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `Color' mkColor* #}
 
 {#fun unsafe color_free as ^
-  {unColor `Color'} -> `()' #}
+  {withColor* `Color'} -> `()' #}
 
 --{#fun unsafe clutter_color_from_string as ^
 --  {unColor `Color', `String'} -> `Bool' id* #}

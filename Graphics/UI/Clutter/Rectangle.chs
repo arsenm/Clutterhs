@@ -24,6 +24,8 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Rectangle (
+                                      rectangleNew,
+                                      rectangleNewWithColor,
                                       rectangleGetColor
 
                                      ) where
@@ -40,5 +42,8 @@ import System.Glib.GObject
 --TODO: Check marshallers and alloc stuff for the color out arg
 --{# fun unsafe rectangle_get_color as ^ {conv* `Rectangle', alloca- `Color' } -> `()' #}
 rectangleGetColor = undefined
+
+{# fun unsafe rectangle_new as ^ {} -> `()' #}
+{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `()' #}
 
 

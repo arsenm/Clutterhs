@@ -26,6 +26,7 @@ Library
   Exposed-modules: Graphics.UI.Clutter.Color,
                    Graphics.UI.Clutter.Types,
                    Graphics.UI.Clutter.Actor,
+                   Graphics.UI.Clutter.Rectangle,
                    Graphics.UI.Clutter.General,
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter

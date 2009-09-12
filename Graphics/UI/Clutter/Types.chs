@@ -18,6 +18,13 @@ module Graphics.UI.Clutter.Types (
                                   unActor,
                                   toActor,
 
+                                  Rectangle,
+                                  RectangleClass,
+                                  toRectangle,
+                                  withRectangle,
+                                  mkRectangle,
+                                  unRectangle,
+
                                   Stage,
                                   StageClass,
                                   mkStage,
@@ -123,6 +130,26 @@ gTypeActor = {# call fun unsafe clutter_actor_get_type #}
 
 -- ***************************************************************
 
+-- *************************************************************** Rectangle
+
+{# pointer *ClutterRectangle as Rectangle foreign newtype #}
+
+mkRectangle = Rectangle
+unRectangle (Rectangle a) = a
+
+class GObjectClass o => RectangleClass o
+toRectangle::RectangleClass o => o -> Rectangle
+toRectangle = unsafeCastGObject . toGObject
+
+instance RectangleClass Rectangle
+instance ActorClass Rectangle
+instance GObjectClass Rectangle where
+  toGObject = mkGObject . castForeignPtr . unRectangle
+  unsafeCastGObject = mkRectangle . castForeignPtr . unGObject
+
+
+-- ***************************************************************
+
 -- *************************************************************** Group
 
 {#pointer *ClutterGroup as Group foreign newtype #}
@@ -163,7 +190,7 @@ instance GObjectClass Stage where
 -- ***************************************************************
 
 --taken / modified from gtk2hs...not sure why they have ObjectClass
---adn not GObject, also why do they use own newForeignPtr?....Figure it out later
+--and not GObject, also why do they use own newForeignPtr?....Figure it out later
 makeNewObject :: GObjectClass obj =>
   (ForeignPtr obj -> obj) -> IO (Ptr obj) -> IO obj
 makeNewObject constr generator = do

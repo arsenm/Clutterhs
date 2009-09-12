@@ -34,6 +34,10 @@ module Graphics.UI.Clutter.Types (
 
                                   Perspective,
                                   PickMode(..),
+                                  Gravity(..),
+                                  RequestMode(..),
+                                  ActorFlags(..),
+                                  AllocationFlags(..),
 
                                   makeNewObject,
                                   InitError(..)
@@ -50,6 +54,10 @@ import Foreign.ForeignPtr
 
 {# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterPickMode as PickMode {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterAllocationFlags as AllocationFlags {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterGravity as Gravity {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterActorFlags as ActorFlags {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterRequestMode as RequestMode {underscoreToCase} deriving (Show, Eq) #}
 
 -- ***************************************************************
 

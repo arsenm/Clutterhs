@@ -41,6 +41,7 @@ module Graphics.UI.Clutter.Rectangle (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
+import Control.Monad (liftM)
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
@@ -53,8 +54,22 @@ import System.Glib.Properties
 --{# fun unsafe rectangle_get_color as ^ {conv* `Rectangle', alloca- `Color' } -> `()' #}
 --rectangleGetColor = undefined
 
-{# fun unsafe rectangle_new as ^ {} -> `()' #}
-{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `()' #}
+--how to use this way?
+--{# fun unsafe rectangle_new as ^ {} -> `Rectangle' mkRectangle* #}
+
+rectangleNew:: IO Rectangle
+rectangleNew = makeNewObject mkRectangle $
+               liftM (castPtr :: Ptr Actor -> Ptr Rectangle) $
+               {# call unsafe rectangle_new #}
+
+--{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `()' #}
+
+rectangleNewWithColor:: Color -> IO Rectangle
+rectangleNewWithColor col = makeNewObject mkRectangle $
+                            liftM (castPtr :: Ptr Actor -> Ptr Rectangle) $
+                            withColor col $ \colptr ->
+                            {# call unsafe rectangle_new_with_color #} colptr
+
 
 --{# fun unsafe rectangle_get_color as ^ {withRectangle* `Rectangle', alloca- `Color' } -> `()' #}
 {# fun unsafe rectangle_set_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}

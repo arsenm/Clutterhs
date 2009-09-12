@@ -33,6 +33,7 @@ module Graphics.UI.Clutter.Types (
                                   withStage,
 
                                   Perspective,
+                                  PickMode(..),
 
                                   makeNewObject,
                                   InitError(..)
@@ -48,6 +49,7 @@ import Foreign.ForeignPtr
 -- *************************************************************** Misc
 
 {# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterPickMode as PickMode {underscoreToCase} deriving (Show, Eq) #}
 
 -- ***************************************************************
 
@@ -257,8 +259,6 @@ instance Storable Perspective where
 --withPerspective (PerspectivePtr fptr) = withForeignPtr fptr
 
 -- ***************************************************************
-
-
 
 --taken / modified from gtk2hs...not sure why they have ObjectClass
 --and not GObject, also why do they use own newForeignPtr?....Figure it out later

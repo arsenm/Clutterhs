@@ -106,6 +106,10 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 {# fun unsafe stage_show_cursor as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_hide_cursor as ^ { withStage* `Stage' } -> `()' #}
 
+--TODO: How to out marshal?
+--{# fun unsafe stage_get_actor_at_pos as ^
+--       { withStage* `Stage', cFromEnum `PickMode', `Int', `Int'} -> `Actor' mkActor* #}
+
 {# fun unsafe stage_ensure_current as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_ensure_viewport as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_ensure_redraw as ^ { withStage* `Stage' } -> `()' #}

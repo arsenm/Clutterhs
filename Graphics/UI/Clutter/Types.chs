@@ -88,6 +88,8 @@ mkColor colorPtr = do
   colorForeignPtr <- newForeignPtr colorFree colorPtr
   return (Color colorForeignPtr)
 
+{-
+--maybe do this like perspective.
 instance Storable Color where
   sizeOf _ = {# sizeof ClutterColor #}
   alignment _ = alignment (undefined :: CChar)  --TODO? GUInt8
@@ -98,13 +100,13 @@ instance Storable Color where
       alpha <- {# get ClutterColor->alpha #} p
       return $ Color (cIntConv red) (cIntConv blue) (cIntConv green) (cIntConv alpha)
 
-  poke p (Perspective fovy aspect z_near z_far) = do
-      {# set ClutterPerspective->fovy #} p (cFloatConv fovy)
-      {# set ClutterPerspective->aspect #} p (cFloatConv aspect)
-      {# set ClutterPerspective->z_near #} p (cFloatConv z_near)
-      {# set ClutterPerspective->z_far #} p (cFloatConv z_far)
+  poke p (Color r b g a) = do
+      {# set ClutterColor->r #} p (cIntConv fovy)   --FIXME: cIntConv is wrong.
+      {# set ClutterColor->b #} p (cIntConv aspect)
+      {# set ClutterColor->g #} p (cIntConv z_near)
+      {# set ClutterColor->a #} p (cIntConv z_far)
       return ()
-
+-}
 
 {-
 gtk skips this ginitiallyunowned stuff...seems useless anyway

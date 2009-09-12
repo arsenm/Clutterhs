@@ -1,5 +1,5 @@
 -- -*-haskell-*-
---  Clutter Color
+--  Clutter Stage
 --
 --  Author : Matthew Arsenault
 --
@@ -24,7 +24,57 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Stage (
-                                  stageNew
+                                  -- * Constructors
+                                  stageNew,
+
+                                  -- * Methods,
+                                  stageIsDefault,
+
+                                --stageSetColor,
+                                --stageGetColor,
+                                --stageColor,
+
+                                  stageSetFullscreen,
+                                  stageGetFullscreen,
+                                  stageFullscreen,
+
+                                  stageShowCursor,
+                                  stageHideCursor,
+
+                                --stageGetActorAtPos,
+
+                                  stageEnsureCurrent,
+                                  stageEnsureViewport,
+                                  stageEnsureRedraw,
+                                  stageQueueRedraw,
+
+                                --stageEvent,
+                                --stageSetKeyFocus,
+                                --stageGetKeyFocus,
+                                --stageKeyFocus,
+                                --stageReadPixels,
+
+                                  stageSetThrottleMotionEvents,
+                                  stageGetThrottleMotionEvents,
+                                  stageThrottleMotionEvents,
+
+                                --stageSetPerspective,
+                                --stageGetPerspective,
+                                --stagePerspective,
+
+                                  stageSetTitle,
+                                  stageGetTitle,
+                                  stageTitle,
+
+                                  stageSetUserResizable,
+                                  stageGetUserResizable,
+                                  stageUserResizable,
+
+                                  stageSetUseFog,
+                                  stageGetUseFog,
+                                  stageUseFog,
+
+
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -32,10 +82,57 @@ module Graphics.UI.Clutter.Stage (
 import Control.Monad (liftM)
 import C2HS
 import System.Glib.GObject
+import System.Glib.Attributes
+import System.Glib.Properties
 
 stageNew :: IO Stage
 stageNew =
     makeNewObject mkStage $
     liftM (castPtr :: Ptr Actor -> Ptr Stage) $
     {# call unsafe stage_new #}
+
+{# fun unsafe stage_is_default as ^ { withStage* `Stage' } -> `Bool' #}
+
+--I don't think I care about using StageClass since stage at the bottom.
+{# fun unsafe stage_set_fullscreen as ^ { withStage* `Stage', `Bool'} -> `()' #}
+{# fun unsafe stage_get_fullscreen as ^ { withStage* `Stage' } -> `Bool' #}
+stageFullscreen :: Attr Stage Bool
+stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
+
+--TODO: Property
+{# fun unsafe stage_show_cursor as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_hide_cursor as ^ { withStage* `Stage' } -> `()' #}
+
+{# fun unsafe stage_ensure_current as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_ensure_viewport as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_ensure_redraw as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_queue_redraw as ^ { withStage* `Stage' } -> `()' #}
+
+--more functions belong here
+
+{# fun unsafe stage_set_throttle_motion_events as ^ { withStage* `Stage', `Bool' } -> `()' #}
+{# fun unsafe stage_get_throttle_motion_events as ^ { withStage* `Stage' } -> `Bool' #}
+stageThrottleMotionEvents :: Attr Stage Bool
+stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottleMotionEvents
+
+
+--more here
+
+
+--TODO: Unicode???
+{# fun unsafe stage_set_title as ^ { withStage* `Stage', `String' } -> `()' #}
+{# fun unsafe stage_get_title as ^ { withStage* `Stage' } -> `String' #}
+stageTitle :: Attr Stage String
+stageTitle = newAttr stageGetTitle stageSetTitle
+
+{# fun unsafe stage_set_user_resizable as ^ { withStage* `Stage', `Bool' } -> `()' #}
+{# fun unsafe stage_get_user_resizable as ^ { withStage* `Stage' } -> `Bool' #}
+stageUserResizable :: Attr Stage Bool
+stageUserResizable = newAttr stageGetUserResizable stageSetUserResizable
+
+{# fun unsafe stage_set_use_fog as ^ { withStage* `Stage', `Bool' } -> `()' #}
+{# fun unsafe stage_get_use_fog as ^ { withStage* `Stage' } -> `Bool' #}
+stageUseFog :: Attr Stage Bool
+stageUseFog = newAttr stageGetUseFog stageSetUseFog
+
 

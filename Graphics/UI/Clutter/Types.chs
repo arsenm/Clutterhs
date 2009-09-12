@@ -30,6 +30,7 @@ module Graphics.UI.Clutter.Types (
                                   StageClass,
                                   mkStage,
                                   unStage,
+                                  withStage,
 
                                   makeNewObject,
                                   InitError(..)

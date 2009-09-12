@@ -1,5 +1,5 @@
 -- -*-haskell-*-
--- {-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -39,6 +39,7 @@ import C2HS
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
 import Control.Monad (when)
+import Foreign.ForeignPtr
 
 
 -- *************************************************************** Misc
@@ -68,25 +69,24 @@ castTo gtype objTypeName obj =
 colorRed (Color c) = withForeignPtr c {# get Color->alpha #}
 
 instance Show Color where
-    show (Color c) = show c
+  show (Color c) = show c
 
 unColor (Color o) = o
 
 --withColor (Color o) = withForeignPtr o
 
-{-
+
 manageColor :: Color -> IO ()
 manageColor (Color colorForeignPtr) = do
   addForeignPtrFinalizer colorDestroy colorForeignPtr
 
 foreign import ccall unsafe "&clutter_color_free"
   colorDestroy :: FinalizerPtr Color
--}
 
 mkColor :: Ptr Color -> IO Color
 mkColor colorPtr = do
-  clutterForeignPtr <- newForeignPtr_ colorPtr
-  return (Color clutterForeignPtr)
+  colorForeignPtr <- newForeignPtr colorDestroy colorPtr
+  return (Color colorForeignPtr)
 
 {-
 gtk skips this ginitiallyunowned stuff...seems useless anyway

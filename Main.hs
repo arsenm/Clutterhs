@@ -2,6 +2,7 @@
 module Main where
 
 import Graphics.UI.Clutter
+import System.Mem
 
 fib 0 = 1
 fib 1 = 1
@@ -19,6 +20,7 @@ main = do
 --  putStrLn "Yay!"
   stg <- stageNew
   actorShow stg
+  performGC
   putStrLn "Hello stage? I hope?"
   clutterMain
 

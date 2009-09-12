@@ -39,7 +39,16 @@ import Control.Monad (liftM, mapM, when)
 mainQuit :: IO ()
 mainQuit  = {#call main_quit#}
 
+
+--why do I need this?
+pants::CInt -> IO InitError
+pants = return . cToEnum . cIntConv
+
+--FIXME: use of id as marshaller seems horribly wrong
+{# fun unsafe clutter_init as secretClutterInit {id `Ptr CInt', id `Ptr (Ptr (CString))'} -> `InitError' pants* #}
+
 --just make it go for now. I think some issues with it
+--out args? do they matter? also how to use out marshallers correctly
 clutterInit :: IO InitError
 clutterInit = do
   prog <- getProgName
@@ -49,7 +58,9 @@ clutterInit = do
     withArrayLen addrs   $ \argc argv ->
     with argv $ \argvp ->
     with argc $ \argcp -> do
-                res <- {#call unsafe init#} (castPtr argcp) (castPtr argvp)
-                when (cToEnum res /= InitSuccess) $ error ("Cannot initialize Clutter." ++ show res)
-                return (cToEnum res)
+--              res <- {#call unsafe init#} (castPtr argcp) (castPtr argvp)
+                res <- secretClutterInit (castPtr argcp) (castPtr argvp)
+                when (res /= InitSuccess) $ error ("Cannot initialize Clutter." ++ show res)
+                return res
+
 

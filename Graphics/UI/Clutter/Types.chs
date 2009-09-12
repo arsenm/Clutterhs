@@ -73,19 +73,16 @@ instance Show Color where
 
 unColor (Color o) = o
 
---withColor (Color o) = withForeignPtr o
-
-
 manageColor :: Color -> IO ()
 manageColor (Color colorForeignPtr) = do
-  addForeignPtrFinalizer colorDestroy colorForeignPtr
+  addForeignPtrFinalizer colorFree colorForeignPtr
 
 foreign import ccall unsafe "&clutter_color_free"
-  colorDestroy :: FinalizerPtr Color
+  colorFree :: FinalizerPtr Color
 
 mkColor :: Ptr Color -> IO Color
 mkColor colorPtr = do
-  colorForeignPtr <- newForeignPtr colorDestroy colorPtr
+  colorForeignPtr <- newForeignPtr colorFree colorPtr
   return (Color colorForeignPtr)
 
 {-

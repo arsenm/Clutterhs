@@ -43,8 +43,7 @@ type GUInt8 = {#type guint8#}
 {#fun unsafe color_new as ^
       {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `Color' mkColor* #}
 
-{#fun unsafe color_free as ^
-  {withColor* `Color'} -> `()' #}
+{#fun unsafe color_free as ^ {withColor* `Color'} -> `()' #}
 
 --{#fun unsafe clutter_color_from_string as ^
 --  {unColor `Color', `String'} -> `Bool' id* #}

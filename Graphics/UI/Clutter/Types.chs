@@ -15,6 +15,7 @@ module Graphics.UI.Clutter.Types (
                                   Actor,
                                   ActorClass,
                                   withActor,
+                                  withActorClass,
                                   mkActor,
                                   unActor,
                                   toActor,
@@ -38,6 +39,7 @@ module Graphics.UI.Clutter.Types (
                                   RequestMode(..),
                                   ActorFlags(..),
                                   AllocationFlags(..),
+                                  RotateAxis(..),
 
                                   makeNewObject,
                                   InitError(..)
@@ -58,6 +60,7 @@ import Foreign.ForeignPtr
 {# enum ClutterGravity as Gravity {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterActorFlags as ActorFlags {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRequestMode as RequestMode {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterRotateAxis as RotateAxis {underscoreToCase} deriving (Show, Eq) #}
 
 -- ***************************************************************
 
@@ -143,6 +146,10 @@ unActor (Actor a) = a
 class GObjectClass o => ActorClass o
 toActor::ActorClass o => o -> Actor
 toActor = unsafeCastGObject . toGObject
+withActorClass::ActorClass o => o -> (Ptr Actor -> IO b) -> IO b
+withActorClass o = (withActor . toActor) o
+
+arst x = (withActor.toActor) x
 
 instance ActorClass Actor
 instance GObjectClass Actor where

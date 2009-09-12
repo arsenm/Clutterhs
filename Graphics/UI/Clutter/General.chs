@@ -44,11 +44,11 @@ import Control.Monad (liftM, mapM, when)
 {#fun unsafe main_quit as clutterMainQuit {} -> `()' #}
 
 --why do I need this?
-pants::CInt -> IO InitError
-pants = return . cToEnum . cIntConv
+--pants::CInt -> IO InitError
+--pants = return . cToEnum . cIntConv
 
 --FIXME: use of id as marshaller seems horribly wrong
-{# fun unsafe clutter_init as secretClutterInit {id `Ptr CInt', id `Ptr (Ptr (CString))'} -> `InitError' pants* #}
+{# fun unsafe clutter_init as secretClutterInit {id `Ptr CInt', id `Ptr (Ptr (CString))'} -> `InitError' cToEnum #}
 
 --just make it go for now. I think some issues with it
 --out args? do they matter? also how to use out marshallers correctly

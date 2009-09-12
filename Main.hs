@@ -29,6 +29,9 @@ main = do
   actorShow stg
   actorShow rec
 
+  a <- actorGetZRotationGravity rec
+  print a
+
 --  performGC
   putStrLn "A wild stage appeared!"
   clutterMain

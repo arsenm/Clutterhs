@@ -93,6 +93,9 @@ stageNew =
 
 {# fun unsafe stage_is_default as ^ { withStage* `Stage' } -> `Bool' #}
 
+{# fun unsafe stage_set_color as ^ { withStage* `Stage', withColor* `Color' } -> `()' #}
+{# fun unsafe stage_get_color as ^ { withStage* `Stage', alloca- `Color' peek*} -> `()' #}
+
 --I don't think I care about using StageClass since stage at the bottom.
 {# fun unsafe stage_set_fullscreen as ^ { withStage* `Stage', `Bool'} -> `()' #}
 {# fun unsafe stage_get_fullscreen as ^ { withStage* `Stage' } -> `Bool' #}
@@ -118,6 +121,15 @@ stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottl
 
 --more here
 
+--TODO: withPerspective = ???
+--{# fun stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
+--{# fun stage_set_perspective as ^ { withStage* `Stage', withPerspective* `Perspective'} -> `()' #}
+--stagePerspective :: Attr Stage Perspective
+--stagePerspective = newAttr stageGetPerspective stageSetPerspective
+
+
+--{#fun font_extents as fontExtents { unCairo `Cairo', alloca- `FontExtents' peek* } -> `()'#}
+--{#fun text_extents as textExtents { unCairo `Cairo', withUTFString* `String', alloca- `TextExtents' peek* } -> `()'#
 
 --TODO: Unicode???
 {# fun unsafe stage_set_title as ^ { withStage* `Stage', `String' } -> `()' #}
@@ -134,5 +146,6 @@ stageUserResizable = newAttr stageGetUserResizable stageSetUserResizable
 {# fun unsafe stage_get_use_fog as ^ { withStage* `Stage' } -> `Bool' #}
 stageUseFog :: Attr Stage Bool
 stageUseFog = newAttr stageGetUseFog stageSetUseFog
+
 
 

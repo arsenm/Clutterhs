@@ -32,6 +32,8 @@ module Graphics.UI.Clutter.Types (
                                   unStage,
                                   withStage,
 
+                                  Perspective,
+
                                   makeNewObject,
                                   InitError(..)
                                  ) where
@@ -47,7 +49,7 @@ import Foreign.ForeignPtr
 
 {# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
 
--- *************************************************************** Misc
+-- ***************************************************************
 
 -- from gtk2hs
 -- The usage of foreignPtrToPtr should be safe as the evaluation will only be
@@ -85,6 +87,24 @@ mkColor :: Ptr Color -> IO Color
 mkColor colorPtr = do
   colorForeignPtr <- newForeignPtr colorFree colorPtr
   return (Color colorForeignPtr)
+
+instance Storable Color where
+  sizeOf _ = {# sizeof ClutterColor #}
+  alignment _ = alignment (undefined :: CChar)  --TODO? GUInt8
+  peek p = do
+      red <- {# get ClutterColor->red #} p
+      blue <- {# get ClutterColor->blue #} p
+      green <- {# get ClutterColor->green #} p
+      alpha <- {# get ClutterColor->alpha #} p
+      return $ Color (cIntConv red) (cIntConv blue) (cIntConv green) (cIntConv alpha)
+
+  poke p (Perspective fovy aspect z_near z_far) = do
+      {# set ClutterPerspective->fovy #} p (cFloatConv fovy)
+      {# set ClutterPerspective->aspect #} p (cFloatConv aspect)
+      {# set ClutterPerspective->z_near #} p (cFloatConv z_near)
+      {# set ClutterPerspective->z_far #} p (cFloatConv z_far)
+      return ()
+
 
 {-
 gtk skips this ginitiallyunowned stuff...seems useless anyway
@@ -198,6 +218,42 @@ instance GObjectClass Stage where
   unsafeCastGObject = mkStage . castForeignPtr . unGObject
 
 -- ***************************************************************
+
+-- *************************************************************** Perspective
+
+--TODO: PerspectivePtr should be hidden?
+--FIXME: How to marshal this?
+{# pointer *ClutterPerspective as PerspectivePtr -> Perspective #}
+
+data Perspective = Perspective {
+      perspectiveFovy :: Float,
+      perspectiveAspect :: Float,
+      perspectiveZNear :: Float,
+      perspectiveZFar :: Float
+    }
+
+instance Storable Perspective where
+  sizeOf _ = {# sizeof ClutterPerspective #}
+  alignment _ = alignment (undefined :: CFloat)
+  peek p = do
+      fovy <- {# get ClutterPerspective->fovy #} p
+      aspect <- {# get ClutterPerspective->aspect #} p
+      z_near <- {# get ClutterPerspective->z_near #} p
+      z_far <- {# get ClutterPerspective->z_far #} p
+      return $ Perspective (cFloatConv fovy) (cFloatConv aspect) (cFloatConv z_near) (cFloatConv z_far)
+
+  poke p (Perspective fovy aspect z_near z_far) = do
+      {# set ClutterPerspective->fovy #} p (cFloatConv fovy)
+      {# set ClutterPerspective->aspect #} p (cFloatConv aspect)
+      {# set ClutterPerspective->z_near #} p (cFloatConv z_near)
+      {# set ClutterPerspective->z_far #} p (cFloatConv z_far)
+      return ()
+
+--withPerspective (PerspectivePtr fptr) = withForeignPtr fptr
+
+-- ***************************************************************
+
+
 
 --taken / modified from gtk2hs...not sure why they have ObjectClass
 --and not GObject, also why do they use own newForeignPtr?....Figure it out later

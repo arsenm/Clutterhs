@@ -24,7 +24,9 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.General (
-                                    clutterInit
+                                    clutterInit,
+                                    clutterMain,
+                                    clutterMainQuit,
                                    ) where
 
 {#import Graphics.UI.Clutter.Types#}
@@ -35,10 +37,11 @@ import System.Glib.UTFString
 import System.Environment (getProgName, getArgs)
 import Control.Monad (liftM, mapM, when)
 
+--main :: IO ()
+--main  = {#call main#}
 
-mainQuit :: IO ()
-mainQuit  = {#call main_quit#}
-
+{#fun unsafe main as clutterMain {} -> `()' #}
+{#fun unsafe main_quit as clutterMainQuit {} -> `()' #}
 
 --why do I need this?
 pants::CInt -> IO InitError

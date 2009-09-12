@@ -22,4 +22,5 @@ main = do
   stg <- stageNew
   actorShow stg
   putStrLn "Hello stage? I hope?"
+  clutterMain
 

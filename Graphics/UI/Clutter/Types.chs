@@ -12,20 +12,32 @@ module Graphics.UI.Clutter.Types (
                                   unColor,
                                   colorRed,
                                   Actor,
+                                  ActorClass,
+                                  withActor,
                                   mkActor,
                                   unActor,
+                                  toActor,
 
                                   Stage,
+                                  StageClass,
                                   mkStage,
                                   unStage,
 
-                                  makeNewObject
+                                  makeNewObject,
+                                  InitError(..)
                                  ) where
 
 import C2HS
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
 import Control.Monad (when)
+
+
+-- *************************************************************** Misc
+
+{# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
+
+-- *************************************************************** Misc
 
 -- from gtk2hs
 -- The usage of foreignPtrToPtr should be safe as the evaluation will only be
@@ -151,7 +163,7 @@ instance GObjectClass Stage where
 -- ***************************************************************
 
 --taken / modified from gtk2hs...not sure why they have ObjectClass
---adn not GObject....Figure it out later
+--adn not GObject, also why do they use own newForeignPtr?....Figure it out later
 makeNewObject :: GObjectClass obj =>
   (ForeignPtr obj -> obj) -> IO (Ptr obj) -> IO obj
 makeNewObject constr generator = do

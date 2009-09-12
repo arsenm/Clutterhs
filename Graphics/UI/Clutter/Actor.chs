@@ -24,13 +24,31 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Actor (
+                                  actorShow
                                  ) where
 
-{#import Graphics.UI.Clutter.Types#}
+{# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import System.Glib.GObject
 
-
 --this file sure is useful.
+
+--{#fun unsafe color_new as ^
+--      {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `Color' mkColor* #}
+
+--{# fun unsafe actor_show as ^
+-- `(ActorClass o)' => {unActor `o'} -> `()' #}
+
+--arst::ActorClass o => o -> Ptr Actor -> IO b
+arst x = (withActor.toActor) x
+
+{# fun unsafe actor_show as ^
+ `(ActorClass o)' => {arst* `o'} -> `()' #}
+
+{-
+actorShow :: ActorClass self => self -> IO ()
+actorShow self =
+  {# call unsafe actor_show #} (toActor self)
+-}
 

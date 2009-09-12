@@ -19,9 +19,15 @@
 
 module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Types,
-                            module Graphics.UI.Clutter.Color
+                            module Graphics.UI.Clutter.Actor,
+                            module Graphics.UI.Clutter.Stage,
+                            module Graphics.UI.Clutter.Color,
+                            module Graphics.UI.Clutter.General
                            ) where
 
 import Graphics.UI.Clutter.Types
 import Graphics.UI.Clutter.Color
+import Graphics.UI.Clutter.Actor
+import Graphics.UI.Clutter.Stage
+import Graphics.UI.Clutter.General
 

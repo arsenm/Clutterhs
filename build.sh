@@ -8,6 +8,9 @@ ${hscpp} --cppopts="-I/usr/include/clutter-1.0/" --cppopts="-I/usr/include/glib-
 
 ${hscpp} --cppopts="-I/usr/include/clutter-1.0/" --cppopts="-I/usr/include/glib-2.0" --cppopts="-I/usr/include/glib-2.0/glib" --cppopts="-I/usr/lib/glib-2.0/include" --cppopts="-I/usr/include/pango-1.0/" --cppopts="-I/usr/include/cairo" -i Graphics/UI/Clutter/Types Graphics/UI/Clutter/Stage.chs
 
+${hscpp} --cppopts="-I/usr/include/clutter-1.0/" --cppopts="-I/usr/include/glib-2.0" --cppopts="-I/usr/include/glib-2.0/glib" --cppopts="-I/usr/lib/glib-2.0/include" --cppopts="-I/usr/include/pango-1.0/" --cppopts="-I/usr/include/cairo" -i Graphics/UI/Clutter/Types Graphics/UI/Clutter/General.chs
+
+
 
 runghc Setup.hs configure
 runghc Setup.hs build

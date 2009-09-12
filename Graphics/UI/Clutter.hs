@@ -14,22 +14,22 @@
 --
 --  This library is distributed in the hope that it will be useful,
 --  but WITHOUT ANY WARRANTY; without even the implied warranty of
---  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 --  Lesser General Public License for more details.
 
 module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Types,
-                            module Graphics.UI.Clutter.Actor,
-                            module Graphics.UI.Clutter.Rectangle,
-                            module Graphics.UI.Clutter.Stage,
                             module Graphics.UI.Clutter.Color,
-                            module Graphics.UI.Clutter.General
+                            module Graphics.UI.Clutter.Actor,
+                            module Graphics.UI.Clutter.General,
+                            module Graphics.UI.Clutter.Rectangle,
+                            module Graphics.UI.Clutter.Stage
                            ) where
 
+import Graphics.UI.Clutter.Stage
 import Graphics.UI.Clutter.Types
 import Graphics.UI.Clutter.Color
 import Graphics.UI.Clutter.Actor
-import Graphics.UI.Clutter.Rectangle
-import Graphics.UI.Clutter.Stage
 import Graphics.UI.Clutter.General
+import Graphics.UI.Clutter.Rectangle
 

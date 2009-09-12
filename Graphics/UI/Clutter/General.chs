@@ -29,7 +29,7 @@ module Graphics.UI.Clutter.General (
                                     clutterMainQuit,
                                    ) where
 
-{#import Graphics.UI.Clutter.Types#}
+{# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import System.Glib.GObject

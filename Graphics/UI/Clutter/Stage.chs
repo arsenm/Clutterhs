@@ -27,7 +27,7 @@ module Graphics.UI.Clutter.Stage (
                                   stageNew
                                  ) where
 
-{#import Graphics.UI.Clutter.Types#}
+{# import Graphics.UI.Clutter.Types #}
 
 import Control.Monad (liftM)
 import C2HS

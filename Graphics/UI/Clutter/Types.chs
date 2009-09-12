@@ -5,12 +5,12 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
-
 module Graphics.UI.Clutter.Types (
                                   Color,
                                   mkColor,
                                   unColor,
                                   colorRed,
+
                                   Actor,
                                   ActorClass,
                                   withActor,

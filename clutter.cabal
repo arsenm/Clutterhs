@@ -23,16 +23,20 @@ Library
   Build-Tools: c2hs
   Includes: clutter/clutter.h
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
-  Exposed-modules: Graphics.UI.Clutter.Color,
-                   Graphics.UI.Clutter.Types,
+  Exposed-modules: Graphics.UI.Clutter.Types,
+                   Graphics.UI.Clutter.General,
+                   Graphics.UI.Clutter.Color,
                    Graphics.UI.Clutter.Actor,
                    Graphics.UI.Clutter.Rectangle,
-                   Graphics.UI.Clutter.General,
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter
+
   Exposed: True
 --  GHC-options: -Wall -O2
-  Hs-Source-Dirs:  .
+  Hs-Source-Dirs:  .,
+                   ./Graphics,
+                   ./Graphics/UI,
+                   ./Graphics/UI/Clutter
   Include-dirs: /usr/include/clutter-1.0/,
                 /usr/include/glib-2.0,
                 /usr/include/glib-2.0/glib,
@@ -46,12 +50,14 @@ Library
 
 Executable arst
   Main-Is:         Main.hs
+  Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   Hs-Source-Dirs:  .,
                    Graphics,
                    Graphics/UI,
-                   Graphics/UI/Clutter
-  Other-Modules:   Graphics.UI.Clutter
+                   Graphics/UI/Clutter,
+                   dist/build
+
   Build-Depends: base, glib
 
 

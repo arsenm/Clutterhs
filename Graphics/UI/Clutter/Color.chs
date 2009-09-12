@@ -30,7 +30,7 @@ module Graphics.UI.Clutter.Color (
 --                                  colorCopy
                                  ) where
 
-{#import Graphics.UI.Clutter.Types#}
+{# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import Data.Word

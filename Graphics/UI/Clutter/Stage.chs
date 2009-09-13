@@ -125,7 +125,8 @@ stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottl
 
 --TODO: withPerspective = ???
 {# fun unsafe stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
-{# fun unsafe stage_set_perspective as ^ { withStage* `Stage', id `PerspectivePtr'} -> `()' #}
+{# fun unsafe stage_set_perspective as ^ { withStage* `Stage', withPerspective* `Perspective'} -> `()' #}
+--{# fun unsafe stage_set_perspective as ^ { withStage* `Stage', mkPerspective* `Perspective'} -> `()' #}
 --stageSetPerspective::Stage -> Perspective -> IO ()
 --stageSetPerspective stg psp = let stg' = unStage stg
 --                              in with psp

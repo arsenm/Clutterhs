@@ -30,19 +30,31 @@ main = do
 --  putStrLn "Yay!"
 --  stageSetColor stg c
 
-  let pers = Perspective 45 2 1 1
+  orig <- stageGetPerspective stg
+  putStrLn $ "got orig: " ++ show orig
 
---  stageSetPerspective stg pers
+
+  let pers = Perspective 90 2 0.1 100
+
+  putStrLn $ "setting to: " ++ show pers
+
+  stageSetPerspective stg pers
+  performGC
 
   actorShow rec
   actorShow stg
+
+  out <- stageGetPerspective stg
+  putStrLn $ "got out: " ++ show out
 
   actorShowAll stg
 
   a <- actorGetZRotationGravity rec
   print a
 
---  performGC
+--  withPerspective pers
+
+
   putStrLn "A wild stage appeared!"
   clutterMain
 

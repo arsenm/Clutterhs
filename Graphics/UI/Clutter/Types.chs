@@ -41,7 +41,7 @@ module Graphics.UI.Clutter.Types (
 
                                   Perspective(Perspective),
                                   PerspectivePtr,
-                                --withPerspective,
+                                  withPerspective,
                                   PickMode(..),
                                   Gravity(..),
                                   RequestMode(..),
@@ -57,6 +57,7 @@ import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
 import Control.Monad (when)
 import Foreign.ForeignPtr
+import Control.Exception (bracket)
 
 --this doesn't seem to work since GObjectClass is not here...
 --I'm not sure if I can work around this. Oh well, I don't think it's that important
@@ -299,35 +300,14 @@ instance Storable Perspective where
       {# set ClutterPerspective->z_far #} p (cFloatConv z_far)
       return ()
 
---alloca :: Storable a => (Ptr a -> IO b) -> IO b
---poke :: Ptr a -> a -> IO ()
+--This seems not right. But it seems to work.
+mkPerspective :: Perspective -> IO PerspectivePtr
+mkPerspective pst = do pptr <- (malloc :: IO PerspectivePtr)
+                       poke pptr pst
+                       return pptr
 
---withPerspective (Ptr p) = alloca (\ptr -> poke ptr p)
---withPerspective (Perspective a b c d) = withForeignPtr fptr
-
---withPerspective :: Perspective -> S
---withPerspective = peek . alloca
---toPerspective (Ptr Perspective) -> Ptr
---withPerspective :: Perspective -> PerspectivePtr
---withPerspective = undefined
---withPerspective (PerspectivePtr fptr) = withForeignPtr fptr
---withPerspective:(Ptr Perspective) -> (Ptr Actor -> IO b) -> IO b
---withPerspective (Ptr o) = (withActor . toActor) o
-
+withPerspective :: Perspective -> (PerspectivePtr -> IO a) -> IO a
+withPerspective pst = bracket (mkPerspective pst) free
 
 -- ***************************************************************
-
-{-
---taken / modified from gtk2hs...not sure why they have ObjectClass
---and not GObject, also why do they use own newForeignPtr?....Figure it out later
-makeNewObject :: GObjectClass obj =>
-  (ForeignPtr obj -> obj) -> IO (Ptr obj) -> IO obj
-makeNewObject constr generator = do
-  objPtr <- generator
-  when (objPtr == nullPtr) (fail "makeNewObject: object is NULL")
-  objectRefSink objPtr
-  obj <- newForeignPtr objectUnref objPtr
-  return $! constr obj
--}
-
 

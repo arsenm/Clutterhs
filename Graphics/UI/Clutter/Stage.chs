@@ -58,8 +58,8 @@ module Graphics.UI.Clutter.Stage (
                                   stageGetThrottleMotionEvents,
                                   stageThrottleMotionEvents,
 
-                                --stageSetPerspective,
-                                --stageGetPerspective,
+                                  stageSetPerspective,
+                                  stageGetPerspective,
                                 --stagePerspective,
 
                                   stageSetTitle,
@@ -124,8 +124,13 @@ stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottl
 --more here
 
 --TODO: withPerspective = ???
-{# fun stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
---{# fun stage_set_perspective as ^ { withStage* `Stage', withPerspective `Perspective'} -> `()' #}
+{# fun unsafe stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
+{# fun unsafe stage_set_perspective as ^ { withStage* `Stage', id `PerspectivePtr'} -> `()' #}
+--stageSetPerspective::Stage -> Perspective -> IO ()
+--stageSetPerspective stg psp = let stg' = unStage stg
+--                              in with psp
+--foreign import ccall safe " cairo_set_font_matrix"
+--  setFontMatrix'_ :: ((Ptr Cairo) -> ((Ptr Matrix) -> (IO ())))
 --stagePerspective :: Attr Stage Perspective
 --stagePerspective = newAttr stageGetPerspective stageSetPerspective
 

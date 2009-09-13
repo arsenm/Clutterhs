@@ -19,7 +19,7 @@ main = do
 
   containerAddActor stg rec
 
-  actorSetPosition rec 20 20
+  actorSetPosition rec 50 50
   actorSetSize rec 100 100
   (xpos, ypos) <- actorGetPosition rec
   print xpos
@@ -29,6 +29,10 @@ main = do
 --  print d
 --  putStrLn "Yay!"
 --  stageSetColor stg c
+
+  let pers = Perspective 45 2 1 1
+
+--  stageSetPerspective stg pers
 
   actorShow rec
   actorShow stg

@@ -299,9 +299,21 @@ instance Storable Perspective where
       {# set ClutterPerspective->z_far #} p (cFloatConv z_far)
       return ()
 
+--alloca :: Storable a => (Ptr a -> IO b) -> IO b
+--poke :: Ptr a -> a -> IO ()
+
+--withPerspective (Ptr p) = alloca (\ptr -> poke ptr p)
+--withPerspective (Perspective a b c d) = withForeignPtr fptr
+
+--withPerspective :: Perspective -> S
+--withPerspective = peek . alloca
+--toPerspective (Ptr Perspective) -> Ptr
 --withPerspective :: Perspective -> PerspectivePtr
 --withPerspective = undefined
 --withPerspective (PerspectivePtr fptr) = withForeignPtr fptr
+--withPerspective:(Ptr Perspective) -> (Ptr Actor -> IO b) -> IO b
+--withPerspective (Ptr o) = (withActor . toActor) o
+
 
 -- ***************************************************************
 

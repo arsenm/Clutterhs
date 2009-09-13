@@ -74,7 +74,6 @@ module Graphics.UI.Clutter.Stage (
                                   stageGetUseFog,
                                   stageUseFog,
 
-
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -125,8 +124,8 @@ stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottl
 --more here
 
 --TODO: withPerspective = ???
---{# fun stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
---{# fun stage_set_perspective as ^ { withStage* `Stage', withPerspective* `Perspective'} -> `()' #}
+{# fun stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
+--{# fun stage_set_perspective as ^ { withStage* `Stage', withPerspective `Perspective'} -> `()' #}
 --stagePerspective :: Attr Stage Perspective
 --stagePerspective = newAttr stageGetPerspective stageSetPerspective
 

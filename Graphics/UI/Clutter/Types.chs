@@ -39,7 +39,9 @@ module Graphics.UI.Clutter.Types (
                                   withContainer,
                                   withContainerClass,
 
-                                  Perspective,
+                                  Perspective(Perspective),
+                                  PerspectivePtr,
+                                --withPerspective,
                                   PickMode(..),
                                   Gravity(..),
                                   RequestMode(..),
@@ -266,16 +268,15 @@ instance GObjectClass Stage where
 
 -- *************************************************************** Perspective
 
---TODO: PerspectivePtr should be hidden?
 --FIXME: How to marshal this?
-{# pointer *ClutterPerspective as PerspectivePtr -> Perspective #}
-
 data Perspective = Perspective {
-      perspectiveFovy :: Float,
-      perspectiveAspect :: Float,
-      perspectiveZNear :: Float,
-      perspectiveZFar :: Float
-    }
+      perspectiveFovy :: !Float,
+      perspectiveAspect :: !Float,
+      perspectiveZNear :: !Float,
+      perspectiveZFar :: !Float
+    } deriving (Show, Eq)
+
+{# pointer *ClutterPerspective as PerspectivePtr -> Perspective #}
 
 instance Storable Perspective where
   sizeOf _ = {# sizeof ClutterPerspective #}
@@ -294,6 +295,8 @@ instance Storable Perspective where
       {# set ClutterPerspective->z_far #} p (cFloatConv z_far)
       return ()
 
+--withPerspective :: Perspective -> PerspectivePtr
+--withPerspective = undefined
 --withPerspective (PerspectivePtr fptr) = withForeignPtr fptr
 
 -- ***************************************************************

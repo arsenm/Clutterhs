@@ -58,6 +58,10 @@ import System.Glib.GObject
 import Control.Monad (when)
 import Foreign.ForeignPtr
 
+--this doesn't seem to work since GObjectClass is not here...
+--I'm not sure if I can work around this. Oh well, I don't think it's that important
+--{# pointer *GObject newtype nocode #}
+--{# class GObjectClass GObject #}
 
 -- *************************************************************** Misc
 
@@ -141,7 +145,7 @@ unGInitiallyUnowned (GInitiallyUnowned o) = o
 -- *************************************************************** Actor
 
 {# pointer *ClutterActor as Actor foreign newtype #}
---{# class ActorClass Actor #}
+--{# class GObjectClass => ActorClass Actor #}
 
 mkActor = Actor
 unActor (Actor a) = a

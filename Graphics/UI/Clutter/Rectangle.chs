@@ -58,14 +58,14 @@ import System.Glib.Properties
 --{# fun unsafe rectangle_new as ^ {} -> `Rectangle' mkRectangle* #}
 
 rectangleNew:: IO Rectangle
-rectangleNew = makeNewObject mkRectangle $
+rectangleNew = makeNewGObject mkRectangle $
                liftM (castPtr :: Ptr Actor -> Ptr Rectangle) $
                {# call unsafe rectangle_new #}
 
 --{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `()' #}
 
 rectangleNewWithColor:: Color -> IO Rectangle
-rectangleNewWithColor col = makeNewObject mkRectangle $
+rectangleNewWithColor col = makeNewGObject mkRectangle $
                             liftM (castPtr :: Ptr Actor -> Ptr Rectangle) $
                             withColor col $ \colptr ->
                             {# call unsafe rectangle_new_with_color #} colptr

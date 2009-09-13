@@ -47,7 +47,6 @@ module Graphics.UI.Clutter.Types (
                                   AllocationFlags(..),
                                   RotateAxis(..),
 
-                                  makeNewObject,
                                   InitError(..)
                                  ) where
 
@@ -299,6 +298,7 @@ instance Storable Perspective where
 
 -- ***************************************************************
 
+{-
 --taken / modified from gtk2hs...not sure why they have ObjectClass
 --and not GObject, also why do they use own newForeignPtr?....Figure it out later
 makeNewObject :: GObjectClass obj =>
@@ -309,4 +309,6 @@ makeNewObject constr generator = do
   objectRefSink objPtr
   obj <- newForeignPtr objectUnref objPtr
   return $! constr obj
+-}
+
 

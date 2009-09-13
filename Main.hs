@@ -17,6 +17,8 @@ main = do
   rec <- rectangleNewWithColor c
   stg <- stageNew
 
+  containerAddActor stg rec
+
   actorSetPosition rec 20 20
   actorSetSize rec 100 100
   (xpos, ypos) <- actorGetPosition rec

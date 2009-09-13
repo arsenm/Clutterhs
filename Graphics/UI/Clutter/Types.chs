@@ -35,6 +35,10 @@ module Graphics.UI.Clutter.Types (
 
                                   Container,
                                   ContainerClass,
+                                  toContainer,
+                                  unContainer,
+                                  withContainer,
+                                  withContainerClass,
 
                                   Perspective,
                                   PickMode(..),
@@ -142,6 +146,7 @@ unGInitiallyUnowned (GInitiallyUnowned o) = o
 -- *************************************************************** Actor
 
 {# pointer *ClutterActor as Actor foreign newtype #}
+--{# class ActorClass Actor #}
 
 mkActor = Actor
 unActor (Actor a) = a
@@ -151,8 +156,6 @@ toActor::ActorClass o => o -> Actor
 toActor = unsafeCastGObject . toGObject
 withActorClass::ActorClass o => o -> (Ptr Actor -> IO b) -> IO b
 withActorClass o = (withActor . toActor) o
-
-arst x = (withActor.toActor) x
 
 instance ActorClass Actor
 instance GObjectClass Actor where
@@ -224,6 +227,9 @@ unContainer (Container o) = o
 class GObjectClass o => ContainerClass o
 toContainer :: ContainerClass o => o -> Container
 toContainer = unsafeCastGObject . toGObject
+
+withContainerClass::ContainerClass o => o -> (Ptr Container -> IO b) -> IO b
+withContainerClass o = (withContainer . toContainer) o
 
 instance ContainerClass Container
 instance GObjectClass Container where

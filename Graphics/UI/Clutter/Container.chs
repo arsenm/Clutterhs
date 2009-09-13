@@ -54,6 +54,7 @@ import System.Glib.GObject
 
 
 {# fun unsafe container_add_actor as ^
-       `(ContainerClass container, ActorClass actor)' => { `container', `actor' } -> `()' #}
+       `(ContainerClass container, ActorClass actor)' =>
+           { withContainerClass* `container', withActorClass* `actor' } -> `()' #}
 
 

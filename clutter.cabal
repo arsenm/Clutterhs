@@ -28,6 +28,7 @@ Library
                    Graphics.UI.Clutter.Color,
                    Graphics.UI.Clutter.Actor,
                    Graphics.UI.Clutter.Rectangle,
+                   Graphics.UI.Clutter.Container,
                    Graphics.UI.Clutter.Group,
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter

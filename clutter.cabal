@@ -1,7 +1,7 @@
 name: clutter
 version: 0.0.1
 license: LGPL
---license-file: COPYING.LIB
+license-file: COPYING
 maintainer: arsenm2@rpi.edu
 stability: lol
 homepage: http://example.com

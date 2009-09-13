@@ -53,9 +53,7 @@ module Graphics.UI.Clutter.Types (
                                  ) where
 
 import C2HS
-import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
-import Control.Monad (when)
 import Foreign.ForeignPtr
 import Control.Exception (bracket)
 
@@ -75,20 +73,6 @@ import Control.Exception (bracket)
 {# enum ClutterRotateAxis as RotateAxis {underscoreToCase} deriving (Show, Eq) #}
 
 -- ***************************************************************
-
--- from gtk2hs
--- The usage of foreignPtrToPtr should be safe as the evaluation will only be
--- forced if the object is used afterwards
---
-castTo :: (GObjectClass obj, GObjectClass obj') => GType -> String
-                                                -> (obj -> obj')
-castTo gtype objTypeName obj =
-  case toGObject obj of
-    gobj@(GObject objFPtr)
-      | typeInstanceIsA ((unsafeForeignPtrToPtr.castForeignPtr) objFPtr) gtype
-                  -> unsafeCastGObject gobj
-      | otherwise -> error $ "Cannot cast object to " ++ objTypeName
-
 
 -- *************************************************************** Color
 

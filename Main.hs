@@ -11,9 +11,9 @@ fib n = fib (n-1) + fib (n-2)
 main = do
   a <- clutterInit
   print a
-  putStrLn "Wow...omg"
 
   c <- colorNew 123 0 0 123
+  c2 <- colorNew 0 0 123 123
   rec <- rectangleNewWithColor c
   stg <- stageNew
 
@@ -24,11 +24,7 @@ main = do
   (xpos, ypos) <- actorGetPosition rec
   print xpos
   print ypos
---  print c
---  d <- colorRed c
---  print d
---  putStrLn "Yay!"
---  stageSetColor stg c
+  stageSetColor stg c2
 
   orig <- stageGetPerspective stg
   putStrLn $ "got orig: " ++ show orig
@@ -51,9 +47,6 @@ main = do
 
   a <- actorGetZRotationGravity rec
   print a
-
---  withPerspective pers
-
 
   putStrLn "A wild stage appeared!"
   clutterMain

@@ -123,21 +123,8 @@ stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottl
 
 --more here
 
---TODO: withPerspective = ???
 {# fun unsafe stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
 {# fun unsafe stage_set_perspective as ^ { withStage* `Stage', withPerspective* `Perspective'} -> `()' #}
---{# fun unsafe stage_set_perspective as ^ { withStage* `Stage', mkPerspective* `Perspective'} -> `()' #}
---stageSetPerspective::Stage -> Perspective -> IO ()
---stageSetPerspective stg psp = let stg' = unStage stg
---                              in with psp
---foreign import ccall safe " cairo_set_font_matrix"
---  setFontMatrix'_ :: ((Ptr Cairo) -> ((Ptr Matrix) -> (IO ())))
---stagePerspective :: Attr Stage Perspective
---stagePerspective = newAttr stageGetPerspective stageSetPerspective
-
-
---{#fun font_extents as fontExtents { unCairo `Cairo', alloca- `FontExtents' peek* } -> `()'#}
---{#fun text_extents as textExtents { unCairo `Cairo', withUTFString* `String', alloca- `TextExtents' peek* } -> `()'#
 
 --TODO: Unicode???
 {# fun unsafe stage_set_title as ^ { withStage* `Stage', `String' } -> `()' #}

@@ -162,7 +162,7 @@ instance GObjectClass Actor where
   toGObject = mkGObject . castForeignPtr . unActor
   unsafeCastGObject = mkActor . castForeignPtr . unGObject
 
-{- -- doesn't exist
+{- -- doesn't exist?
 castToActor :: GObjectClass obj => obj -> Actor
 castToActor = castTo gTypeActor "Actor"
 

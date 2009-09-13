@@ -9,7 +9,7 @@ category: Graphics
 Synopsis: Clutter bindings
 Description: Clutter bindings
 build-depends: base, glib
-Build-Type:      Simple
+Build-Type: Simple
 
 Cabal-Version: >= 1.2
 
@@ -34,7 +34,7 @@ Library
                    Graphics.UI.Clutter
 
   Exposed: True
---  GHC-options: -Wall -O2
+  GHC-options: -Wall
   Hs-Source-Dirs:  .,
                    ./Graphics,
                    ./Graphics/UI,
@@ -46,7 +46,7 @@ Library
                 /usr/include/pango-1.0/,
                 /usr/include/cairo
   if flag(debug)
-    CC-Options: "-DDEBUG"
+    CC-Options: "-DDEBUG -O0 -g"
     CPP-Options: -DDEBUG
 
 

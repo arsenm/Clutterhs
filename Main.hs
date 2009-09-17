@@ -12,19 +12,31 @@ main = do
   a <- clutterInit
   print a
 
-  c <- colorNew 123 0 0 123
+  c <- colorNew 255 0 0 200
   c2 <- colorNew 0 0 123 123
+  blue <- colorNew 0 0 255 200
   rec <- rectangleNewWithColor c
+  rec2 <- rectangleNewWithColor blue
   stg <- stageNew
+  txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
 
   containerAddActor stg rec
+  containerAddActor stg rec2
+  containerAddActor stg txt
 
   actorSetPosition rec 50 50
   actorSetSize rec 100 100
+
+  actorSetPosition rec2 100 100
+  actorSetSize rec2 100 100
+
   (xpos, ypos) <- actorGetPosition rec
   print xpos
   print ypos
-  stageSetColor stg c2
+--  stageSetColor stg c2
+
+  actorSetPosition txt 100 200
+  actorSetSize txt 100 30
 
   orig <- stageGetPerspective stg
   putStrLn $ "got orig: " ++ show orig
@@ -35,10 +47,11 @@ main = do
   putStrLn $ "setting to: " ++ show pers
 
   stageSetPerspective stg pers
-  performGC
+--  performGC
 
   actorShow rec
   actorShow stg
+  actorShow txt
 
   out <- stageGetPerspective stg
   putStrLn $ "got out: " ++ show out

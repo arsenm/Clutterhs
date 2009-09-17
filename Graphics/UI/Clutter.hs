@@ -25,6 +25,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Container,
                             module Graphics.UI.Clutter.General,
                             module Graphics.UI.Clutter.Rectangle,
+                            module Graphics.UI.Clutter.Text,
                             module Graphics.UI.Clutter.Stage
                            ) where
 
@@ -36,4 +37,5 @@ import Graphics.UI.Clutter.Color
 import Graphics.UI.Clutter.Actor
 import Graphics.UI.Clutter.General
 import Graphics.UI.Clutter.Rectangle
+import Graphics.UI.Clutter.Text
 

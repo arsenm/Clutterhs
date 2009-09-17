@@ -26,6 +26,13 @@ module Graphics.UI.Clutter.Types (
                                   mkRectangle,
                                   unRectangle,
 
+                                  Text,
+                                  TextClass,
+                                  toText,
+                                  withText,
+                                  mkText,
+                                  unText,
+
                                   Stage,
                                   StageClass,
                                   mkStage,
@@ -180,6 +187,26 @@ instance GObjectClass Rectangle where
 
 
 -- ***************************************************************
+
+-- *************************************************************** Text
+
+{# pointer *ClutterText as Text foreign newtype #}
+
+mkText = Text
+unText (Text a) = a
+
+class GObjectClass o => TextClass o
+toText::TextClass o => o -> Text
+toText = unsafeCastGObject . toGObject
+
+instance TextClass Text
+instance ActorClass Text
+instance GObjectClass Text where
+  toGObject = mkGObject . castForeignPtr . unText
+  unsafeCastGObject = mkText . castForeignPtr . unGObject
+
+-- ***************************************************************
+
 
 -- *************************************************************** Group
 

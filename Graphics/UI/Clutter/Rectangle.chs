@@ -70,11 +70,12 @@ rectangleNewWithColor col = makeNewGObject mkRectangle $
                             withColor col $ \colptr ->
                             {# call unsafe rectangle_new_with_color #} colptr
 
+--{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `Rectangle' mkRectangle* #}
 
---{# fun unsafe rectangle_get_color as ^ {withRectangle* `Rectangle', alloca- `Color' } -> `()' #}
+{# fun unsafe rectangle_get_color as ^ {withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
 {# fun unsafe rectangle_set_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
---rectangleColor :: Attr Rectangle Color
---rectangleColor = newAttr rectangleGetColor rectangleSetColor
+rectangleColor :: Attr Rectangle Color
+rectangleColor = newAttr rectangleGetColor rectangleSetColor
 
 
 --FIXME: guint vs. int

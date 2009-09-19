@@ -24,9 +24,9 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Color (
-                                  colorNew,
-                                  colorFree,
---                                  colorFromString,
+                                  colorFromString
+--                                  colorNew,
+--                                  colorFree,
 --                                  colorCopy
                                  ) where
 
@@ -37,16 +37,28 @@ import Data.Word
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
 
-type GUInt8 = {#type guint8#}
--- | Creates a new color
---
-{#fun unsafe color_new as ^
-      {id `GUInt8', id `GUInt8', id `GUInt8', id `GUInt8'} -> `Color' mkColor* #}
+--FIXME: Check this for ok unsafePerformIO. Ceiling cat is watching.
+colorFromString::String -> Maybe Color
+colorFromString name = unsafePerformIO $ withCString name $ \cstr ->
+                       alloca $ \colptr -> return $
+                       if cToBool ({# call pure unsafe color_from_string #} colptr cstr)
+                         then Just (unsafePerformIO (peek colptr))
+                         else Prelude.Nothing
 
-{#fun unsafe color_free as ^ {withColor* `Color'} -> `()' #}
-
---{#fun unsafe clutter_color_from_string as ^
---  {unColor `Color', `String'} -> `Bool' id* #}
+{-
+--colorFromString::String -> Maybe Color
+colorFromString name = do
+  strptr <- newCString name
+  colptr <- malloc :: IO (Ptr Color)
+  succ <- {# call unsafe color_from_string #} (castPtr colptr) strptr
+  let a = if cToBool succ
+            then Just (unsafePerformIO (peek colptr))
+            else Nothing
+--  seq a (return ())
+  free colptr
+  free strptr
+  return a
+-}
 
 --{#fun unsafe color_new
 --      {withCUChar* `s', withCUChar* `s'} -> `Color' Color #}

@@ -5,6 +5,7 @@ import Graphics.UI.Clutter hiding (show)
 import qualified Graphics.UI.Clutter as C
 import System.Glib.Signals (on, after)
 import System.Mem
+import Data.Maybe (fromMaybe)
 
 
 fib 0 = 1
@@ -15,9 +16,18 @@ main = do
   a <- clutterInit
   print a
 
+  let c = Color 255 0 0 210
+  let c2 = Color 0 0 123 123
+  let c3 = Color 0 123 0 255
+  let blue = Color 0 0 255 200
+  let cnamed = fromMaybe (error "color parsing failed") (colorFromString "green")
+  print cnamed
+
+  {-
   c <- colorNew 255 0 0 200
   c2 <- colorNew 0 0 123 123
   blue <- colorNew 0 0 255 200
+  -}
   rec <- rectangleNewWithColor c
   rec2 <- rectangleNewWithColor blue
   stg <- stageNew
@@ -38,7 +48,7 @@ main = do
   (xpos, ypos) <- actorGetPosition rec
   print xpos
   print ypos
---  stageSetColor stg c2
+  stageSetColor stg cnamed
 
   actorSetPosition txt 100 200
   actorSetSize txt 100 30

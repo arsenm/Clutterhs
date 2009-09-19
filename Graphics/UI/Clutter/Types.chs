@@ -6,9 +6,8 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Types (
-                                  Color,
-                                  mkColor,
-                                  unColor,
+                                  Color(Color),
+                                  ColorPtr,
                                   withColor,
 
                                   Actor,
@@ -78,6 +77,10 @@ import Control.Exception (bracket)
 --{# pointer *GObject newtype nocode #}
 --{# class GObjectClass GObject #}
 
+-- g-types not anywhere??
+type GUInt8 = {# type guint8 #}
+
+
 -- *************************************************************** Misc
 
 {# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
@@ -93,6 +96,7 @@ import Control.Exception (bracket)
 
 -- *************************************************************** Color
 
+{-
 {# pointer *ClutterColor as Color foreign newtype #}
 
 instance Show Color where
@@ -111,38 +115,43 @@ mkColor :: Ptr Color -> IO Color
 mkColor colorPtr = do
   colorForeignPtr <- newForeignPtr colorFree colorPtr
   return (Color colorForeignPtr)
+-}
 
-{-
---maybe do this like perspective.
+{# pointer *ClutterColor as ColorPtr -> Color #}
+
+data Color = Color { red :: GUInt8,
+                     green :: GUInt8,
+                     blue :: GUInt8,
+                     alpha :: GUInt8
+                   } deriving (Eq, Show)
+
 instance Storable Color where
   sizeOf _ = {# sizeof ClutterColor #}
-  alignment _ = alignment (undefined :: CChar)  --TODO? GUInt8
+  alignment _ = alignment (undefined :: GUInt8)
   peek p = do
       red <- {# get ClutterColor->red #} p
       blue <- {# get ClutterColor->blue #} p
       green <- {# get ClutterColor->green #} p
       alpha <- {# get ClutterColor->alpha #} p
-      return $ Color (cIntConv red) (cIntConv blue) (cIntConv green) (cIntConv alpha)
+      return $ Color (cIntConv red) (cIntConv green) (cIntConv blue) (cIntConv alpha)
+      --FIXME: cIntConv and GUInt8 = ???
 
-  poke p (Color r b g a) = do
-      {# set ClutterColor->r #} p (cIntConv fovy)   --FIXME: cIntConv is wrong.
-      {# set ClutterColor->b #} p (cIntConv aspect)
-      {# set ClutterColor->g #} p (cIntConv z_near)
-      {# set ClutterColor->a #} p (cIntConv z_far)
+  poke p (Color r g b a) = do
+      {# set ClutterColor->red #} p (cIntConv r)   --FIXME: cIntConv is wrong?
+      {# set ClutterColor->green #} p (cIntConv g)
+      {# set ClutterColor->blue #} p (cIntConv b)
+      {# set ClutterColor->alpha #} p (cIntConv a)
       return ()
--}
 
-{-
-gtk skips this ginitiallyunowned stuff...seems useless anyway
-{# pointer *GInitiallyUnowned as GInitiallyUnowned foreign newtype #}
+--This seems not right. But it seems to work.
+mkColor :: Color -> IO ColorPtr
+mkColor col = do cptr <- (malloc :: IO ColorPtr)
+                 poke cptr col
+                 return cptr
 
---first attempt at class such stuff.
+withColor :: Color -> (ColorPtr -> IO a) -> IO a
+withColor col = bracket (mkColor col) free
 
---class GInitiallyUnowned ???
-
-mkGInitiallyUnowned = GInitiallyUnowned
-unGInitiallyUnowned (GInitiallyUnowned o) = o
--}
 
 -- *************************************************************** Actor
 

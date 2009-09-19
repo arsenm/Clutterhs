@@ -146,13 +146,20 @@ module Graphics.UI.Clutter.Actor (
                                 --vertexCopy,
                                 --vertexFree,
                                 --vertexEqual
+
+                                --signals etc.
                                   onButtonPressEvent,
                                   onShow,
-                                  afterShow
+                                  afterShow,
+                                  show
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
+
+
+--FIXME: should I do something about clutter/prelude conflicts?
+import Prelude hiding (show)
 
 import C2HS
 import Foreign
@@ -354,4 +361,6 @@ onShow, afterShow :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onShow = connect_NONE__NONE "show" False
 afterShow = connect_NONE__NONE "show" True
 
+show :: ActorClass self => Signal self (IO ())
+show = Signal (connect_NONE__NONE "show")
 

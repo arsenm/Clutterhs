@@ -1,8 +1,11 @@
 
 module Main where
 
-import Graphics.UI.Clutter
+import Graphics.UI.Clutter hiding (show)
+import qualified Graphics.UI.Clutter as C
+import System.Glib.Signals (on, after)
 import System.Mem
+
 
 fib 0 = 1
 fib 1 = 1
@@ -49,7 +52,9 @@ main = do
   stageSetPerspective stg pers
 --  performGC
 
+--either of these work
   onShow stg (putStrLn "I'm shown!")
+--  on stg C.show (putStrLn "I'm shown!")
   onButtonPressEvent stg (\_ -> putStrLn "I'm clicked!")
 
   actorShow rec

@@ -127,7 +127,7 @@ module Graphics.UI.Clutter.Actor (
                                 --actorGetPangoContext,
                                 --actorCreatePangoContext,
                                 --actorCreatePangoLayout,
-                                  actorIsInClonePaint
+                                  actorIsInClonePaint,
 
                                 --actorBoxNew,
                                 --actorBoxCopy,
@@ -146,9 +146,13 @@ module Graphics.UI.Clutter.Actor (
                                 --vertexCopy,
                                 --vertexFree,
                                 --vertexEqual
+                                  onButtonPressEvent,
+                                  onShow,
+                                  afterShow
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import Foreign
@@ -156,6 +160,9 @@ import Foreign.Ptr
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
+import System.Glib.Signals
+
+--FIXME: A lot of these need to be marked as safe, not unsafe for callbacks to work
 
 --TODO: Accept a list of the flags and add them and stuff.
 {# fun unsafe actor_set_flags as ^
@@ -165,8 +172,8 @@ import System.Glib.Properties
 {# fun unsafe actor_get_flags as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `ActorFlags' cToEnum #}
 
-{# fun unsafe actor_show as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_show_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_show as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_show_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 {# fun unsafe actor_hide as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 {# fun unsafe actor_hide_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 {# fun unsafe actor_realize as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
@@ -177,13 +184,6 @@ import System.Glib.Properties
 
 {# fun unsafe actor_map as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 {# fun unsafe actor_unmap as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-
-
-{-
-actorShow :: ActorClass self => self -> IO ()
-actorShow self =
-  {# call unsafe actor_show #} (toActor self)
--}
 
 {# fun unsafe actor_set_parent as ^
    `(ActorClass child, ActorClass parent)' => { withActorClass* `child', withActorClass* `parent' } -> `()' #}
@@ -340,5 +340,18 @@ actorGid = readAttr actorGetGid
    `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 {# fun unsafe actor_remove_clip as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
+
+
+--signal
+
+--FIXME: Event is not an actor, but event doesn't exist right now.
+--FIXME: Make the Ptr part go away
+onButtonPressEvent:: ActorClass a => a -> (Ptr Event -> IO ()) -> IO (ConnectId a)
+onButtonPressEvent = connect_PTR__NONE "button-press-event" False
+--onButtonPressEvent = connect_NONE__NONE "button-press-event" False
+
+onShow, afterShow :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onShow = connect_NONE__NONE "show" False
+afterShow = connect_NONE__NONE "show" True
 
 

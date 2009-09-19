@@ -143,4 +143,3 @@ stageUseFog :: Attr Stage Bool
 stageUseFog = newAttr stageGetUseFog stageSetUseFog
 
 
-

@@ -37,8 +37,8 @@ import System.Glib.UTFString
 import System.Environment (getProgName, getArgs)
 import Control.Monad (liftM, mapM, when)
 
-{#fun unsafe main as clutterMain {} -> `()' #}
-{#fun unsafe main_quit as clutterMainQuit {} -> `()' #}
+{#fun main as clutterMain {} -> `()' #}
+{#fun main_quit as clutterMainQuit {} -> `()' #}
 
 --FIXME: use of id as marshaller seems horribly wrong
 {# fun unsafe clutter_init as secretClutterInit {id `Ptr CInt', id `Ptr (Ptr (CString))'} -> `InitError' cToEnum #}

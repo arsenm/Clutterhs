@@ -56,8 +56,17 @@ module Graphics.UI.Clutter.Types (
                                   AllocationFlags(..),
                                   RotateAxis(..),
 
-                                  InitError(..)
+                                  InitError(..),
+
+                                  Event,
+                                  mkEvent,  --I'm not sure this is useful
+                                  unEvent,
+
+                                  EventType
                                  ) where
+
+--FIXME: Conflict with EventType Nothing
+import Prelude hiding (Nothing)
 
 import C2HS
 import System.Glib.GObject
@@ -78,6 +87,7 @@ import Control.Exception (bracket)
 {# enum ClutterActorFlags as ActorFlags {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRequestMode as RequestMode {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRotateAxis as RotateAxis {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterEventType as EventType {underscoreToCase} deriving (Show, Eq) #}
 
 -- ***************************************************************
 
@@ -226,7 +236,7 @@ instance GObjectClass Group where
   toGObject = mkGObject . castForeignPtr . unGroup
   unsafeCastGObject = mkGroup . castForeignPtr . unGObject
 
--- *************************************************************** Group
+-- ***************************************************************
 
 -- *************************************************************** Container
 
@@ -319,6 +329,15 @@ mkPerspective pst = do pptr <- (malloc :: IO PerspectivePtr)
 
 withPerspective :: Perspective -> (PerspectivePtr -> IO a) -> IO a
 withPerspective pst = bracket (mkPerspective pst) free
+
+-- ***************************************************************
+
+-- *************************************************************** ClutterEvent
+
+{# pointer *ClutterEvent as Event foreign newtype #}
+
+mkEvent = Event
+unEvent (Event a) = a
 
 -- ***************************************************************
 

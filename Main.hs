@@ -49,9 +49,12 @@ main = do
   stageSetPerspective stg pers
 --  performGC
 
+  onShow stg (putStrLn "I'm shown!")
+  onButtonPressEvent stg (\_ -> putStrLn "I'm clicked!")
+
   actorShow rec
-  actorShow stg
   actorShow txt
+  actorShow stg
 
   out <- stageGetPerspective stg
   putStrLn $ "got out: " ++ show out

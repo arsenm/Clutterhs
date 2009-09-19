@@ -24,12 +24,14 @@ Library
   Includes: clutter/clutter.h
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
   Exposed-modules: Graphics.UI.Clutter.Types,
+                   Graphics.UI.Clutter.Signals,
                    Graphics.UI.Clutter.General,
                    Graphics.UI.Clutter.Color,
                    Graphics.UI.Clutter.Actor,
                    Graphics.UI.Clutter.Rectangle,
                    Graphics.UI.Clutter.Container,
                    Graphics.UI.Clutter.Group,
+                   Graphics.UI.Clutter.Event,
                    Graphics.UI.Clutter.Text,
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter

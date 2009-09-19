@@ -1,9 +1,9 @@
 -- -*-haskell-*-
---  Clutter Group
+--  ClutterEvent
 --
 --  Author : Matthew Arsenault
 --
---  Created: 12 Sep 2009
+--  Created: 19 Sep 2009
 --
 --  Copyright (C) 2009 Matthew Arsenault
 --
@@ -23,19 +23,34 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
-module Graphics.UI.Clutter.Group (
-                                  groupNew,
---                                  groupRemoveAll,
---                                  groupGetNChildren,
---                                  groupGetNthChild
-                                   ) where
+module Graphics.UI.Clutter.Event (
+                                 eventNew
+                                 ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
+
+--FIXME: Conflict with EventType Nothing
+import Prelude hiding (Nothing)
+
 import C2HS
 import System.Glib.GObject
+import Control.Monad (liftM)
 
---{# fun unsafe group_new {} -> `Group' #}
 
-groupNew = undefined
+eventNew::EventType -> IO Event
+eventNew et = undefined
+
+{-
+--FIXME: what to do about unions
+{# fun unsafe event_get_coords as ^
+       { withEvent `Event',
+         alloca- `Float' peekFloatConv*,
+         alloca- `Float' peekFloatConv*
+       } -> `()' #}
+-}
+
+--FIXME: Return guint32
+{# fun unsafe get_current_event_time as ^ {} -> `Int' #}
+
 

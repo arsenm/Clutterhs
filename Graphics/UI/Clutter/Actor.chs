@@ -114,9 +114,9 @@ module Graphics.UI.Clutter.Actor (
                                 --actorGetAnchorPointGravity,
                                 --actorMoveAnchorPoint,
                                 --actorMoveAnchorPointFromGravity,
-                                --actorSetReactive,
-                                --actorGetReactive,
-                                --actorReactive,
+                                  actorSetReactive,
+                                  actorGetReactive,
+                                  actorReactive,
                                 --actorSetShader,
                                 --actorGetShader,
                                 --actorShader,
@@ -272,6 +272,12 @@ actorDepth = newAttr actorGetDepth actorSetDepth
    `(ActorClass self)' => { withActorClass* `self'} -> `Bool' #}
 
 
+{# fun unsafe actor_set_reactive as ^
+   `(ActorClass self)' => { withActorClass* `self', `Bool' } -> `()' #}
+{# fun unsafe actor_get_reactive as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+actorReactive :: (ActorClass self) => Attr self Bool
+actorReactive = newAttr actorGetReactive actorSetReactive
 
 {# fun unsafe actor_set_position as ^
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}

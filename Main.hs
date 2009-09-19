@@ -23,6 +23,8 @@ main = do
   stg <- stageNew
   txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
 
+  on stg hide (clutterMainQuit)
+
   containerAddActor stg rec
   containerAddActor stg rec2
   containerAddActor stg txt
@@ -50,7 +52,7 @@ main = do
   putStrLn $ "setting to: " ++ show pers
 
   stageSetPerspective stg pers
---  performGC
+  performGC
 
 --either of these work
   onShow stg (putStrLn "I'm shown!")

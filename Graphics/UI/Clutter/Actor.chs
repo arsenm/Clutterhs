@@ -149,9 +149,35 @@ module Graphics.UI.Clutter.Actor (
 
                                 --signals etc.
                                   onButtonPressEvent,
+
                                   onShow,
                                   afterShow,
-                                  show
+                                  show,
+
+                                  onHide,
+                                  afterHide,
+                                  hide,
+
+                                  onRealize,
+                                  afterRealize,
+                                  realize,
+
+                                  onPaint,
+                                  afterPaint,
+                                  paint,
+
+                                  onKeyFocusIn,
+                                  afterKeyFocusIn,
+                                  keyFocusIn,
+
+                                  onKeyFocusOut,
+                                  afterKeyFocusOut,
+                                  keyFocusOut,
+
+                                  onDestroy,
+                                  afterDestroy,
+                                  destroy
+
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -181,13 +207,13 @@ import System.Glib.Signals
 
 {# fun actor_show as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 {# fun actor_show_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_hide as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_hide_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_realize as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_unrealize as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_paint as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_queue_redraw as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_queue_relayout as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_hide as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_hide_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_realize as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_unrealize as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_paint as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_queue_redraw as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_queue_relayout as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 
 {# fun unsafe actor_map as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 {# fun unsafe actor_unmap as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
@@ -349,13 +375,61 @@ actorGid = readAttr actorGetGid
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
 
---signal
+--signals
+
 
 --FIXME: Event is not an actor, but event doesn't exist right now.
 --FIXME: Make the Ptr part go away
 onButtonPressEvent:: ActorClass a => a -> (Ptr Event -> IO ()) -> IO (ConnectId a)
 onButtonPressEvent = connect_PTR__NONE "button-press-event" False
 --onButtonPressEvent = connect_NONE__NONE "button-press-event" False
+
+
+onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onDestroy = connect_NONE__NONE "destroy" False
+afterDestroy = connect_NONE__NONE "destroy" True
+
+destroy :: ActorClass self => Signal self (IO ())
+destroy = Signal (connect_NONE__NONE "destroy")
+
+onHide, afterHide :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onHide = connect_NONE__NONE "hide" False
+afterHide = connect_NONE__NONE "hide" True
+
+hide :: ActorClass self => Signal self (IO ())
+hide = Signal (connect_NONE__NONE "hide")
+
+
+onKeyFocusIn, afterKeyFocusIn :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onKeyFocusIn = connect_NONE__NONE "key_focus_in" False
+afterKeyFocusIn = connect_NONE__NONE "key_focus_in" True
+
+keyFocusIn :: ActorClass self => Signal self (IO ())
+keyFocusIn = Signal (connect_NONE__NONE "key_focus_in")
+
+
+onKeyFocusOut, afterKeyFocusOut :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onKeyFocusOut = connect_NONE__NONE "key_focus_out" False
+afterKeyFocusOut = connect_NONE__NONE "key_focus_out" True
+
+keyFocusOut :: ActorClass self => Signal self (IO ())
+keyFocusOut = Signal (connect_NONE__NONE "key_focus_out")
+
+
+onPaint, afterPaint :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onPaint = connect_NONE__NONE "paint" False
+afterPaint = connect_NONE__NONE "paint" True
+
+paint :: ActorClass self => Signal self (IO ())
+paint = Signal (connect_NONE__NONE "paint")
+
+
+onRealize, afterRealize :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onRealize = connect_NONE__NONE "realize" False
+afterRealize = connect_NONE__NONE "realize" True
+
+realize :: ActorClass self => Signal self (IO ())
+realize = Signal (connect_NONE__NONE "realize")
 
 onShow, afterShow :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onShow = connect_NONE__NONE "show" False

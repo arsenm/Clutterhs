@@ -53,10 +53,6 @@ module Graphics.UI.Clutter.Event (
 
                                  ) where
 
-
-
-
-
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
 
@@ -120,8 +116,8 @@ tryEvent :: EventM any () -> EventM any Bool
 tryEvent act = do
   ptr <- ask
   liftIO $ (runReaderT (act >> return True) ptr)
-    `catches` [ Handler (\ (PatternMatchFail _) -> return False)
-              , Handler (\ e -> if isUserError e && "Pattern" `isPrefixOf` ioeGetErrorString e
+    `catches` [ Handler (\ (PatternMatchFail _) -> return False),
+                Handler (\ e -> if isUserError e && "Pattern" `isPrefixOf` ioeGetErrorString e
                                 then return False
                                 else throw e) ]
 
@@ -135,7 +131,7 @@ instance HasCoordinates ECrossing
 --TODO: Use bitwise and get list of flags.
 eventFlags :: EventM t Word32
 eventFlags = ask >>= \ptr ->
-             liftIO $ {# get ClutterAnyEvent->flags #} ptr >>= return . fromIntegral
+             liftIO $ liftM fromIntegral({# get ClutterAnyEvent->flags #} ptr)
 
 {-
 eventStage :: EventM t Stage
@@ -181,7 +177,7 @@ eventCoordinates = do
 
 eventTime :: EventM t TimeStamp
 eventTime = ask >>= \ptr ->
-            liftIO $ {# get ClutterAnyEvent-> time #} ptr >>= return . fromIntegral
+            liftIO $ liftM fromIntegral ({# get ClutterAnyEvent-> time #} ptr)
 
 buttonPressEvent :: ActorClass self => Signal self (EventM EButton Bool)
 buttonPressEvent = Signal (eventM "button_press_event")

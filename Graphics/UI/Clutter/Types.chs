@@ -62,7 +62,10 @@ module Graphics.UI.Clutter.Types (
                                   mkEvent,  --I'm not sure this is useful
                                   unEvent,
 
-                                  EventType(..)
+                                  EventType(..),
+                                  EventFlags(..),
+                                  ModifierType(..)
+
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -70,6 +73,7 @@ import Prelude hiding (Nothing)
 
 import C2HS
 import System.Glib.GObject
+import System.Glib.Flags
 import Foreign.ForeignPtr
 import Control.Monad (liftM)
 import Control.Exception (bracket)
@@ -94,6 +98,16 @@ type GFloat = {# type gfloat #}
 {# enum ClutterRequestMode as RequestMode {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRotateAxis as RotateAxis {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterEventType as EventType {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterEventFlags as EventFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
+{# enum ClutterModifierType as ModifierType {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+--FIXME/TODO: ModifierType one at least fails everytime I try to use
+--it because toEnum can't match 3...but why is it trying? silly bits.
+--also using Bounded, I think goes through all 32 bits
+--but it uses 1..12, 26,27,28, and 30, and a crazy mask.
+--Figure it out later.
+instance Flags ModifierType
+instance Flags EventFlags
 
 -- ***************************************************************
 

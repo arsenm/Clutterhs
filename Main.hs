@@ -39,7 +39,12 @@ main = do
   on stg buttonPressEvent $
        tryEvent $ do
          t <- eventTime
+         coords <- eventCoordinates
+         --modifier doesn't work quite right yet
+--         mod <- eventModifierType
          liftIO $ putStrLn ("Time: " ++ show t)
+         liftIO $ putStrLn ("Coords: " ++ show coords)
+--         liftIO $ putStrLn ("Modifier: " ++ show mod)
 
 
   containerAddActor stg rec

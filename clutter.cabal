@@ -34,6 +34,7 @@ Library
                    Graphics.UI.Clutter.Event,
                    Graphics.UI.Clutter.Text,
                    Graphics.UI.Clutter.Stage,
+                   Graphics.UI.Clutter.Animation,
                    Graphics.UI.Clutter
 
   Exposed: True

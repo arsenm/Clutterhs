@@ -66,7 +66,13 @@ module Graphics.UI.Clutter.Types (
                                   EventFlags(..),
                                   ModifierType(..),
                                   StageState(..),
-                                  ScrollDirection(..)
+                                  ScrollDirection(..),
+
+                                  Animation,
+                                  AnimationClass,
+                                  mkAnimation,
+                                  withAnimation,
+                                  newAnimation
 
                                  ) where
 
@@ -225,7 +231,6 @@ instance GObjectClass Rectangle where
   toGObject = mkGObject . castForeignPtr . unRectangle
   unsafeCastGObject = mkRectangle . castForeignPtr . unGObject
 
-
 -- ***************************************************************
 
 -- *************************************************************** Text
@@ -374,6 +379,29 @@ withPerspective pst = bracket (mkPerspective pst) free
 
 mkEvent = Event
 unEvent (Event a) = a
+
+-- ***************************************************************
+
+-- *************************************************************** Animation
+
+{# pointer *ClutterAnimation as Animation foreign newtype #}
+
+class GObjectClass o => AnimationClass o
+toAnimation :: AnimationClass o => o -> Animation
+toAnimation = unsafeCastGObject . toGObject
+
+mkAnimation = Animation
+unAnimation (Animation o) = o
+
+--FIXME?? Is this OK, with casting? Not always true?
+--FIXME: Name and convention for this type deal.
+--newAnimation:: Ptr GObject -> IO Animation
+newAnimation a = makeNewGObject Animation $ return (castPtr a)
+
+instance AnimationClass Animation
+instance GObjectClass Animation where
+  toGObject = mkGObject . castForeignPtr . unAnimation
+  unsafeCastGObject = mkAnimation . castForeignPtr . unGObject
 
 -- ***************************************************************
 

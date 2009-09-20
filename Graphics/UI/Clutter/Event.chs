@@ -39,6 +39,9 @@ module Graphics.UI.Clutter.Event (
 
                                   eventCoordinates,
                                   eventTime,
+                                  eventFlags,
+                                  eventStage,
+                                  eventActor,
 
                                   eventNew,
 
@@ -128,14 +131,22 @@ instance HasCoordinates EScroll
 instance HasCoordinates EMotion
 instance HasCoordinates ECrossing
 
+--TODO: Use bitwise and get list of flags.
+eventFlags :: EventM t Word32
+eventFlags = ask >>= \ptr ->
+             liftIO $ {# get ClutterAnyEvent->flags #} ptr >>= return . fromIntegral
 
---FIXME: Check these
-class HasTime a
-instance HasTime EKey
-instance HasTime EButton
-instance HasTime EScroll
-instance HasTime EMotion
-instance HasTime ECrossing
+{-
+eventStage :: EventM t Stage
+eventStage = ask >>= \ptr ->
+             liftIO $ do
+               stgptr <- {# get ClutterAnyEvent->stage #} ptr
+               mkStage stgptr
+-}
+
+eventStage = undefined
+eventActor = undefined
+
 
 -- | Retrieve the @(x,y)@ coordinates of the mouse.
 eventCoordinates :: HasCoordinates t => EventM t (Float, Float)
@@ -167,26 +178,9 @@ eventCoordinates = do
       _ -> error ("eventCoordinates: none for event type " ++ show ty)
 
 
-eventTime :: HasTime t => EventM t TimeStamp
-eventTime = do
-  ptr <- ask
-  liftIO $
-    {# get ClutterAnyEvent-> time #} ptr >>= return . fromIntegral
-
-{-
-eventTime :: HasTime t => EventM t TimeStamp
-eventTime = do
-  ptr <- ask
-  liftIO $ do
-    ty <- {# get ClutterEvent->type #} ptr
-    case cToEnum ty of
-      ButtonPress -> {# get ClutterButtonEvent->time #} ptr >>= return . fromIntegral
-      Scroll -> {# get ClutterScrollEvent->time #} ptr >>= return . fromIntegral
-      Motion -> {# get ClutterMotionEvent->time #} ptr >>= return . fromIntegral
-      Enter -> {# get ClutterCrossingEvent->time #} ptr >>= return . fromIntegral
-      Leave -> {# get ClutterCrossingEvent->time #} ptr >>= return . fromIntegral
-      _ -> error ("eventTime: none for event type " ++ show ty)
--}
+eventTime :: EventM t TimeStamp
+eventTime = ask >>= \ptr ->
+            liftIO $ {# get ClutterAnyEvent-> time #} ptr >>= return . fromIntegral
 
 buttonPressEvent :: ActorClass self => Signal self (EventM EButton Bool)
 buttonPressEvent = Signal (eventM "button_press_event")

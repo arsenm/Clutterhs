@@ -115,6 +115,7 @@ eventM name after obj fun = connect_PTR__BOOL name after obj (runReaderT fun)
 -- | Execute an event handler and assume it handled the event unless it
 --   threw a pattern match exception.
 --TODO: Support Old GHC exceptions here?
+--Other exceptions? Why does gdk use pattern?
 tryEvent :: EventM any () -> EventM any Bool
 tryEvent act = do
   ptr <- ask

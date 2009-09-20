@@ -37,6 +37,7 @@ module Graphics.UI.Clutter.Types (
                                   mkStage,
                                   unStage,
                                   withStage,
+                                  newStage,
 
                                   Container,
                                   ContainerClass,
@@ -70,6 +71,7 @@ import Prelude hiding (Nothing)
 import C2HS
 import System.Glib.GObject
 import Foreign.ForeignPtr
+import Control.Monad (liftM)
 import Control.Exception (bracket)
 
 --this doesn't seem to work since GObjectClass is not here...
@@ -281,6 +283,11 @@ toStage = unsafeCastGObject . toGObject
 mkStage = Stage
 unStage (Stage o) = o
 
+--FIXME?? Is this OK, with casting? Not always true?
+--FIXME: Name and convention for this type deal.
+newStage:: Ptr Actor -> IO Stage
+newStage a = makeNewGObject Stage $ return (castPtr a)
+
 {-
 mkStage :: Ptr Stage -> IO Stage
 mkStage stagePtr = do
@@ -292,6 +299,7 @@ manageStage (Stage stageForeignPtr) = do
   addForeignPtrFinalizer stageDestroy stageForeignPtr
 -}
 
+--FIXME: I'm missing something about unStage and mkStage
 instance StageClass Stage
 instance ContainerClass Stage
 instance GroupClass Stage

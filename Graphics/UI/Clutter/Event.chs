@@ -24,33 +24,187 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Event (
-                                 eventNew
+                                  EventM,
+
+                                  EAny,
+                                  EButton,
+                                  EKey,
+                                  EMotion,
+                                  EScroll,
+                                  EStageState,
+                                  ECrossing,
+
+                                  eventM,
+                                  tryEvent,
+
+                                  eventCoordinates,
+                                  eventTime,
+
+                                  eventNew,
+
+                                  scrollEvent,
+                                  motionNotifyEvent,
+
+                                  buttonPressEvent,
+                                  buttonReleaseEvent
+
                                  ) where
 
-{# import Graphics.UI.Clutter.Types #}
 
+
+
+
+{# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 --FIXME: Conflict with EventType Nothing
-import Prelude hiding (Nothing)
+import Prelude hiding (Nothing, catch)
 
 import C2HS
 import System.Glib.GObject
+import System.Glib.Signals
 import Control.Monad (liftM)
+import Control.Monad.Trans (liftIO)
+import Control.Monad.Reader (ReaderT, ask, runReaderT)
+import Data.List (isPrefixOf)
+import Control.Exception (Handler(..),
+                          PatternMatchFail(..),
+                          catches,
+                          throw)
+import System.IO.Error (isUserError, ioeGetErrorString)
+
+--FIXME: Move this. guint32
+type TimeStamp = Word32
+
+--Taken almost straight from Gtk. Should I try something else?
+
+-- | A monad providing access to data in an event.
+--
+type EventM t a = ReaderT (Ptr t) IO a
+
+-- | A tag for events that do not carry any event-specific information.
+data EAny = EAny
+
+-- | A tag for /Button/ events.
+data EButton = EButton
+
+-- | A tag for /key/ events.
+data EKey = EKey
+
+-- | A tag for /Motion/ events.
+data EMotion = EMotion
+
+-- | A tag for /Scroll/ events.
+data EScroll = EScroll
+
+-- | A tag for /StageState/ events.
+data EStageState = EStageState
+
+-- | A tag for /Crossing/ events.
+data ECrossing = ECrossing
+
+--Clutter seems to not have the event mask stuff
+eventM :: ActorClass a => SignalName ->
+  ConnectAfter -> a -> (EventM t Bool) -> IO (ConnectId a)
+eventM name after obj fun = connect_PTR__BOOL name after obj (runReaderT fun)
+
+
+-- | Execute an event handler and assume it handled the event unless it
+--   threw a pattern match exception.
+--TODO: Support Old GHC exceptions here?
+tryEvent :: EventM any () -> EventM any Bool
+tryEvent act = do
+  ptr <- ask
+  liftIO $ (runReaderT (act >> return True) ptr)
+    `catches` [ Handler (\ (PatternMatchFail _) -> return False)
+              , Handler (\ e -> if isUserError e && "Pattern" `isPrefixOf` ioeGetErrorString e
+                                then return False
+                                else throw e) ]
+
+
+class HasCoordinates a
+instance HasCoordinates EButton
+instance HasCoordinates EScroll
+instance HasCoordinates EMotion
+instance HasCoordinates ECrossing
+
+
+--FIXME: Check these
+class HasTime a
+instance HasTime EKey
+instance HasTime EButton
+instance HasTime EScroll
+instance HasTime EMotion
+instance HasTime ECrossing
+
+-- | Retrieve the @(x,y)@ coordinates of the mouse.
+eventCoordinates :: HasCoordinates t => EventM t (Float, Float)
+eventCoordinates = do
+  ptr <- ask
+  liftIO $ do
+    ty <- {# get ClutterEvent->type #} ptr
+    case cToEnum ty of
+      ButtonPress -> do
+                     x <- {# get ClutterButtonEvent->x #} ptr
+                     y <- {# get ClutterButtonEvent->y #} ptr
+                     return (realToFrac x, realToFrac y)
+      Scroll -> do
+              x <- {# get ClutterScrollEvent->x #} ptr
+              y <- {# get ClutterScrollEvent->y #} ptr
+              return (realToFrac x, realToFrac y)
+      Motion -> do
+        x <- {# get ClutterMotionEvent->x #} ptr
+        y <- {# get ClutterMotionEvent->y #} ptr
+        return (realToFrac x, realToFrac y)
+      Enter -> do
+              x <- {# get ClutterCrossingEvent->x #} ptr
+              y <- {# get ClutterCrossingEvent->y #} ptr
+              return (realToFrac x, realToFrac y)
+      Leave -> do
+              x <- {# get ClutterCrossingEvent->x #} ptr
+              y <- {# get ClutterCrossingEvent->y #} ptr
+              return (realToFrac x, realToFrac y)
+      _ -> error ("eventCoordinates: none for event type " ++ show ty)
+
+
+eventTime :: HasTime t => EventM t TimeStamp
+eventTime = do
+  ptr <- ask
+  liftIO $
+    {# get ClutterAnyEvent-> time #} ptr >>= return . fromIntegral
+
+{-
+eventTime :: HasTime t => EventM t TimeStamp
+eventTime = do
+  ptr <- ask
+  liftIO $ do
+    ty <- {# get ClutterEvent->type #} ptr
+    case cToEnum ty of
+      ButtonPress -> {# get ClutterButtonEvent->time #} ptr >>= return . fromIntegral
+      Scroll -> {# get ClutterScrollEvent->time #} ptr >>= return . fromIntegral
+      Motion -> {# get ClutterMotionEvent->time #} ptr >>= return . fromIntegral
+      Enter -> {# get ClutterCrossingEvent->time #} ptr >>= return . fromIntegral
+      Leave -> {# get ClutterCrossingEvent->time #} ptr >>= return . fromIntegral
+      _ -> error ("eventTime: none for event type " ++ show ty)
+-}
+
+buttonPressEvent :: ActorClass self => Signal self (EventM EButton Bool)
+buttonPressEvent = Signal (eventM "button_press_event")
+
+buttonReleaseEvent :: ActorClass self => Signal self (EventM EButton Bool)
+buttonReleaseEvent = Signal (eventM "button_release_event")
+
+scrollEvent :: ActorClass self => Signal self (EventM EScroll Bool)
+scrollEvent = Signal (eventM "scroll_event")
+
+motionNotifyEvent :: ActorClass self => Signal self (EventM EMotion Bool)
+motionNotifyEvent = Signal (eventM "motion_notify_event")
+
+--FIXME: Return guint32
+{# fun unsafe get_current_event_time as ^ {} -> `Int' #}
 
 
 eventNew::EventType -> IO Event
 eventNew et = undefined
-
-{-
---FIXME: what to do about unions
-{# fun unsafe event_get_coords as ^
-       { withEvent `Event',
-         alloca- `Float' peekFloatConv*,
-         alloca- `Float' peekFloatConv*
-       } -> `()' #}
--}
-
---FIXME: Return guint32
-{# fun unsafe get_current_event_time as ^ {} -> `Int' #}
 
 

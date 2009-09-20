@@ -148,7 +148,6 @@ module Graphics.UI.Clutter.Actor (
                                 --vertexEqual
 
                                 --signals etc.
-                                  onButtonPressEvent,
 
                                   onShow,
                                   afterShow,
@@ -379,17 +378,6 @@ actorGid = readAttr actorGetGid
    `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 {# fun unsafe actor_remove_clip as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
-
-
---signals
-
-
---FIXME: Event is not an actor, but event doesn't exist right now.
---FIXME: Make the Ptr part go away
-onButtonPressEvent:: ActorClass a => a -> (Ptr Event -> IO ()) -> IO (ConnectId a)
-onButtonPressEvent = connect_PTR__NONE "button-press-event" False
---onButtonPressEvent = connect_NONE__NONE "button-press-event" False
-
 
 onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onDestroy = connect_NONE__NONE "destroy" False

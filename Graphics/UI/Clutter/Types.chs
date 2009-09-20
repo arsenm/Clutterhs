@@ -61,7 +61,7 @@ module Graphics.UI.Clutter.Types (
                                   mkEvent,  --I'm not sure this is useful
                                   unEvent,
 
-                                  EventType
+                                  EventType(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -79,6 +79,7 @@ import Control.Exception (bracket)
 
 -- g-types not anywhere??
 type GUInt8 = {# type guint8 #}
+type GFloat = {# type gfloat #}
 
 
 -- *************************************************************** Misc

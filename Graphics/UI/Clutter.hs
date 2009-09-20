@@ -26,11 +26,13 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.General,
                             module Graphics.UI.Clutter.Rectangle,
                             module Graphics.UI.Clutter.Text,
+                            module Graphics.UI.Clutter.Event,
                             module Graphics.UI.Clutter.Stage
                            ) where
 
 import Graphics.UI.Clutter.Group
 import Graphics.UI.Clutter.Container
+import Graphics.UI.Clutter.Event
 import Graphics.UI.Clutter.Stage
 import Graphics.UI.Clutter.Types
 import Graphics.UI.Clutter.Color

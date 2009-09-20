@@ -5,6 +5,7 @@ import Graphics.UI.Clutter hiding (show)
 import qualified Graphics.UI.Clutter as C
 import System.Glib.Signals (on, after)
 import System.Mem
+import Control.Monad.Trans (liftIO)
 import Data.Maybe (fromMaybe)
 
 
@@ -34,6 +35,12 @@ main = do
   txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
 
   on stg hide (clutterMainQuit)
+
+  on stg buttonPressEvent $
+       tryEvent $ do
+         t <- eventTime
+         liftIO $ putStrLn ("Time: " ++ show t)
+
 
   containerAddActor stg rec
   containerAddActor stg rec2
@@ -67,7 +74,7 @@ main = do
 --either of these work
   onShow stg (putStrLn "I'm shown!")
 --  on stg C.show (putStrLn "I'm shown!")
-  onButtonPressEvent stg (\_ -> putStrLn "I'm clicked!")
+--  onButtonPressEvent stg (\_ -> putStrLn "I'm clicked!")
 
   actorShow rec
   actorShow txt

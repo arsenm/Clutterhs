@@ -43,6 +43,7 @@ module Graphics.UI.Clutter.Event (
                                   eventFlags,
                                   eventStage,
                                   eventSource,
+                                  eventButton,
 
                                   eventNew,
 
@@ -210,6 +211,15 @@ eventModifierType = do
       Scroll -> liftM (toFlags.cIntConv) ({# get ClutterScrollEvent->modifier_state #} ptr)
       _ -> error ("eventModifierType: none for event type " ++ show ty)
 
+
+--TODO: Word32, guint32 i'm sure doesn't matter but whatever
+eventButton :: EventM EButton Word32
+eventButton = ask >>= \ptr ->
+              liftIO $ liftM cIntConv ({# get ClutterButtonEvent->button #} ptr)
+
+eventScrollDirection :: EventM EScroll ScrollDirection
+eventScrollDirection = ask >>= \ptr ->
+              liftIO $ liftM cToEnum ({# get ClutterScrollEvent->direction #} ptr)
 
 {-
 --I don't understand why GDK is doing modif .&. mask stuff

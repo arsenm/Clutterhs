@@ -40,10 +40,12 @@ main = do
        tryEvent $ do
          t <- eventTime
          coords <- eventCoordinates
+         button <- eventButton
          --modifier doesn't work quite right yet
 --         mod <- eventModifierType
          liftIO $ putStrLn ("Time: " ++ show t)
          liftIO $ putStrLn ("Coords: " ++ show coords)
+         liftIO $ putStrLn ("Button: " ++ show button)
 --         liftIO $ putStrLn ("Modifier: " ++ show mod)
 
 

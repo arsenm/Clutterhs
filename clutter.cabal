@@ -35,6 +35,7 @@ Library
                    Graphics.UI.Clutter.Text,
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter.Animation,
+                   Graphics.UI.Clutter.Timeline,
                    Graphics.UI.Clutter
 
   Exposed: True

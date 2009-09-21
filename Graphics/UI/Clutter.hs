@@ -28,7 +28,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Text,
                             module Graphics.UI.Clutter.Event,
                             module Graphics.UI.Clutter.Stage,
-                            module Graphics.UI.Clutter.Animation
+                            module Graphics.UI.Clutter.Animation,
+                            module Graphics.UI.Clutter.Timeline
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -42,4 +43,5 @@ import Graphics.UI.Clutter.General
 import Graphics.UI.Clutter.Rectangle
 import Graphics.UI.Clutter.Text
 import Graphics.UI.Clutter.Animation
+import Graphics.UI.Clutter.Timeline
 

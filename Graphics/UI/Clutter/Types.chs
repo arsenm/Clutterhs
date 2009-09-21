@@ -72,7 +72,13 @@ module Graphics.UI.Clutter.Types (
                                   AnimationClass,
                                   mkAnimation,
                                   withAnimation,
-                                  newAnimation
+                                  newAnimation,
+
+                                  Timeline,
+                                  TimelineClass,
+                                  mkTimeline,
+                                  withTimeline,
+                                  newTimeline
 
                                  ) where
 
@@ -402,6 +408,29 @@ instance AnimationClass Animation
 instance GObjectClass Animation where
   toGObject = mkGObject . castForeignPtr . unAnimation
   unsafeCastGObject = mkAnimation . castForeignPtr . unGObject
+
+-- ***************************************************************
+
+-- *************************************************************** Timeline
+
+{# pointer *ClutterTimeline as Timeline foreign newtype #}
+
+class GObjectClass o => TimelineClass o
+toTimeline :: TimelineClass o => o -> Timeline
+toTimeline = unsafeCastGObject . toGObject
+
+mkTimeline = Timeline
+unTimeline (Timeline o) = o
+
+--FIXME?? Is this OK, with casting? Not always true?
+--FIXME: Name and convention for this type deal.
+--newAnimation:: Ptr GObject -> IO Animation
+newTimeline a = makeNewGObject Timeline $ return (castPtr a)
+
+instance TimelineClass Timeline
+instance GObjectClass Timeline where
+  toGObject = mkGObject . castForeignPtr . unTimeline
+  unsafeCastGObject = mkTimeline . castForeignPtr . unGObject
 
 -- ***************************************************************
 

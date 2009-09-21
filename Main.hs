@@ -53,6 +53,8 @@ main = do
   containerAddActor stg rec2
   containerAddActor stg txt
 
+  actorSetZRotationFromGravity rec2 45 GravityCenter
+
   actorSetPosition rec 50 50
   actorSetSize rec 100 100
 
@@ -66,6 +68,7 @@ main = do
 
   actorSetPosition txt 100 200
   actorSetSize txt 100 30
+  actorSetZRotationFromGravity txt 30 GravityCenter
 
   orig <- stageGetPerspective stg
   putStrLn $ "got orig: " ++ show orig

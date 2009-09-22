@@ -37,9 +37,9 @@ module Graphics.UI.Clutter.Animation (
                                       animationGetLoop,
                                       animationLoop,
 
-                                    --animationSetTimeline,
-                                    --animationGetTimeline,
-                                    --animationTimeline,
+                                      animationSetTimeline,
+                                      animationGetTimeline,
+                                      animationTimeline,
 
                                     --animationSetAlpha,
                                     --animationGetAlpha,
@@ -59,7 +59,7 @@ module Graphics.UI.Clutter.Animation (
                                     --actorAnimatev,
                                     --actorAnimatevwithTimelinev,
                                     --actorAnimatevWithAlphav,
-                                    --actorGetAnimation
+                                      actorGetAnimation
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -72,17 +72,45 @@ import System.Glib.Properties
 
 {# fun unsafe animation_new as ^ {} -> `Animation' newAnimation* #}
 
+{-
+{# fun unsafe animation_set_object as ^
+     `(GObjectClass o)' => { withAnimation* `Animation', withGObject* `o' } -> `()' #}
+{# fun unsafe animation_get_object as ^
+     `(GObjectClass o)' => { withAnimation* `Animation' } -> `o' makeNewGObject* #}
+animationObject :: (GObjectClass o) => Attr Animation o
+animationObject = newAttr animationGetObject animationSetObject
+-}
+
 {# fun unsafe animation_set_duration as ^ { withAnimation* `Animation', `Int' } -> `()' #}
 --FIXME: Set an gint, get a guint? what? why?
 {# fun unsafe animation_get_duration as ^ { withAnimation* `Animation' } -> `Int' #}
 animationDuration :: Attr Animation Int
 animationDuration = newAttr animationGetDuration animationSetDuration
 
+{# fun unsafe animation_set_timeline as ^
+       { withAnimation* `Animation', withTimeline* `Timeline' } -> `()' #}
+{# fun unsafe animation_get_timeline as ^
+       { withAnimation* `Animation' } -> `Timeline' newTimeline* #}
+animationTimeline :: Attr Animation Timeline
+animationTimeline = newAttr animationGetTimeline animationSetTimeline
+
+{-
+{# fun unsafe animation_set_alpha as ^
+       { withAnimation* `Animation', withAlpha* `Alpha' } -> `()' #}
+{# fun unsafe animation_get_alpha as ^
+       { withAnimation* `Animation' } -> `Alpha' newAlpha* #}
+animationAlpha :: Attr Animation Alpha
+animationAlpha = newAttr animationGetAlpha animationSetAlpha
+-}
 
 {# fun unsafe animation_set_loop as ^ { withAnimation* `Animation', `Bool' } -> `()' #}
 {# fun unsafe animation_get_loop as ^ { withAnimation* `Animation' } -> `Bool' #}
 animationLoop :: Attr Animation Bool
 animationLoop = newAttr animationGetLoop animationSetLoop
 
+
 {# fun animation_completed as ^ { withAnimation* `Animation' } -> `()' #}
+
+{# fun actor_get_animation as ^
+       `ActorClass a' =>{ withActorClass* `a' } -> `Animation' newAnimation* #}
 

@@ -29,7 +29,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Event,
                             module Graphics.UI.Clutter.Stage,
                             module Graphics.UI.Clutter.Animation,
-                            module Graphics.UI.Clutter.Timeline
+                            module Graphics.UI.Clutter.Timeline,
+                            module Graphics.UI.Clutter.Alpha
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -44,4 +45,5 @@ import Graphics.UI.Clutter.Rectangle
 import Graphics.UI.Clutter.Text
 import Graphics.UI.Clutter.Animation
 import Graphics.UI.Clutter.Timeline
+import Graphics.UI.Clutter.Alpha
 

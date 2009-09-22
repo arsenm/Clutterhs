@@ -41,9 +41,9 @@ module Graphics.UI.Clutter.Animation (
                                       animationGetTimeline,
                                       animationTimeline,
 
-                                    --animationSetAlpha,
-                                    --animationGetAlpha,
-                                    --animationAlpha,
+                                      animationSetAlpha,
+                                      animationGetAlpha,
+                                      animationAlpha,
 
                                       animationCompleted,
                                     --animationBind,
@@ -94,14 +94,13 @@ animationDuration = newAttr animationGetDuration animationSetDuration
 animationTimeline :: Attr Animation Timeline
 animationTimeline = newAttr animationGetTimeline animationSetTimeline
 
-{-
+
 {# fun unsafe animation_set_alpha as ^
        { withAnimation* `Animation', withAlpha* `Alpha' } -> `()' #}
 {# fun unsafe animation_get_alpha as ^
        { withAnimation* `Animation' } -> `Alpha' newAlpha* #}
 animationAlpha :: Attr Animation Alpha
 animationAlpha = newAttr animationGetAlpha animationSetAlpha
--}
 
 {# fun unsafe animation_set_loop as ^ { withAnimation* `Animation', `Bool' } -> `()' #}
 {# fun unsafe animation_get_loop as ^ { withAnimation* `Animation' } -> `Bool' #}

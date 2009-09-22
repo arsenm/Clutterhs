@@ -80,6 +80,12 @@ module Graphics.UI.Clutter.Types (
                                   withTimeline,
                                   newTimeline,
 
+                                  Alpha,
+                                  AlphaClass,
+                                  mkAlpha,
+                                  withAlpha,
+                                  newAlpha,
+
                                   TimelineDirection(..),
 
                                   Interval,
@@ -440,6 +446,29 @@ instance TimelineClass Timeline
 instance GObjectClass Timeline where
   toGObject = mkGObject . castForeignPtr . unTimeline
   unsafeCastGObject = mkTimeline . castForeignPtr . unGObject
+
+-- ***************************************************************
+
+-- *************************************************************** Alpha
+
+{# pointer *ClutterAlpha as Alpha foreign newtype #}
+
+class GObjectClass o => AlphaClass o
+toAlpha :: AlphaClass o => o -> Alpha
+toAlpha = unsafeCastGObject . toGObject
+
+mkAlpha = Alpha
+unAlpha (Alpha o) = o
+
+--FIXME?? Is this OK, with casting? Not always true?
+--FIXME: Name and convention for this type deal.
+--newAnimation:: Ptr GObject -> IO Animation
+newAlpha a = makeNewGObject Alpha $ return (castPtr a)
+
+instance AlphaClass Alpha
+instance GObjectClass Alpha where
+  toGObject = mkGObject . castForeignPtr . unAlpha
+  unsafeCastGObject = mkAlpha . castForeignPtr . unGObject
 
 -- ***************************************************************
 

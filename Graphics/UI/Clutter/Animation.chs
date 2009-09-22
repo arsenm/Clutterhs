@@ -73,8 +73,9 @@ import System.Glib.Properties
 {# fun unsafe animation_new as ^ {} -> `Animation' newAnimation* #}
 
 {-
+--FIXME/TODO/CHECKME: withGObject stuff
 {# fun unsafe animation_set_object as ^
-     `(GObjectClass o)' => { withAnimation* `Animation', withGObject* `o' } -> `()' #}
+     `(GObjectClass o)' => { withAnimation* `Animation', withGObjectClass* `o' } -> `()' #}
 {# fun unsafe animation_get_object as ^
      `(GObjectClass o)' => { withAnimation* `Animation' } -> `o' makeNewGObject* #}
 animationObject :: (GObjectClass o) => Attr Animation o

@@ -6,6 +6,9 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Types (
+                                  withGObject,
+                                  withGObjectClass,
+
                                   Color(Color),
                                   ColorPtr,
                                   withColor,
@@ -141,6 +144,12 @@ type GFloat = {# type gfloat #}
 --Figure it out later.
 instance Flags ModifierType
 instance Flags EventFlags
+
+--maybe a not right hackishness?
+withGObjectClass::GObjectClass o => o -> (Ptr GObject -> IO b) -> IO b
+withGObjectClass o = (withGObject . toGObject) o
+
+withGObject (GObject fptr) = withForeignPtr fptr
 
 -- ***************************************************************
 

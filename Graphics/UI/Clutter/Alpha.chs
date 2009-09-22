@@ -52,9 +52,6 @@ import System.Glib.Properties
 alphaTimeline :: Attr Alpha Timeline
 alphaTimeline = newAttr alphaGetTimeline alphaSetTimeline
 
-
-
---TODO: gulong / type Mode
 {# fun unsafe alpha_set_mode as ^
        { withAlpha* `Alpha', cFromEnum `AnimationMode' } -> `()' #}
 {# fun unsafe alpha_get_mode as ^

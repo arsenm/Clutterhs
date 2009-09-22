@@ -56,9 +56,9 @@ alphaTimeline = newAttr alphaGetTimeline alphaSetTimeline
 
 --TODO: gulong / type Mode
 {# fun unsafe alpha_set_mode as ^
-       { withAlpha* `Alpha', `Int' } -> `()' #}
+       { withAlpha* `Alpha', cFromEnum `AnimationMode' } -> `()' #}
 {# fun unsafe alpha_get_mode as ^
-       { withAlpha* `Alpha' } -> `Int' #}
-alphaMode :: Attr Alpha Int
+       { withAlpha* `Alpha' } -> `AnimationMode' cToEnum #}
+alphaMode :: Attr Alpha AnimationMode
 alphaMode = newAttr alphaGetMode alphaSetMode
 

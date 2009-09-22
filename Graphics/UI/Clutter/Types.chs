@@ -87,6 +87,7 @@ module Graphics.UI.Clutter.Types (
                                   newAlpha,
 
                                   TimelineDirection(..),
+                                  AnimationMode(..),
 
                                   Interval,
                                   IntervalClass,
@@ -131,6 +132,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterStageState as StageState {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterScrollDirection as ScrollDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterTimelineDirection as TimelineDirection {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
 --it because toEnum can't match 3...but why is it trying? silly bits.

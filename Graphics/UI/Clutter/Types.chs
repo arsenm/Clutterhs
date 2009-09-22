@@ -80,7 +80,13 @@ module Graphics.UI.Clutter.Types (
                                   withTimeline,
                                   newTimeline,
 
-                                  TimelineDirection(..)
+                                  TimelineDirection(..),
+
+                                  Interval,
+                                  IntervalClass,
+                                  mkInterval,
+                                  withInterval,
+                                  newInterval
 
                                  ) where
 
@@ -434,6 +440,29 @@ instance TimelineClass Timeline
 instance GObjectClass Timeline where
   toGObject = mkGObject . castForeignPtr . unTimeline
   unsafeCastGObject = mkTimeline . castForeignPtr . unGObject
+
+-- ***************************************************************
+
+-- *************************************************************** Interval
+
+{# pointer *ClutterInterval as Interval foreign newtype #}
+
+class GObjectClass o => IntervalClass o
+toInterval :: IntervalClass o => o -> Interval
+toInterval = unsafeCastGObject . toGObject
+
+mkInterval = Interval
+unInterval (Interval o) = o
+
+--FIXME?? Is this OK, with casting? Not always true?
+--FIXME: Name and convention for this type deal.
+--newAnimation:: Ptr GObject -> IO Animation
+newInterval a = makeNewGObject Interval $ return (castPtr a)
+
+instance IntervalClass Interval
+instance GObjectClass Interval where
+  toGObject = mkGObject . castForeignPtr . unInterval
+  unsafeCastGObject = mkInterval . castForeignPtr . unGObject
 
 -- ***************************************************************
 

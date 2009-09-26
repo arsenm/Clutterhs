@@ -86,3 +86,10 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 
 {# fun animation_completed as ^ { withAnimation* `Animation' } -> `()' #}
 
+
+{-
+animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [Property]
+animate actor mode tml props = do
+-}
+
+

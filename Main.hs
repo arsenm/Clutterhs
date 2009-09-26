@@ -8,11 +8,6 @@ import System.Mem
 import Control.Monad.Trans (liftIO)
 import Data.Maybe (fromMaybe)
 
-
-fib 0 = 1
-fib 1 = 1
-fib n = fib (n-1) + fib (n-2)
-
 main = do
   a <- clutterInit
   print a
@@ -33,6 +28,9 @@ main = do
   rec2 <- rectangleNewWithColor blue
   stg <- stageNew
   txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
+
+  animateTest rec 9 (43::Int) (57::Int) ("arst"::String) (123.45::Double)
+  animateTest rec 2
 
   on stg hide (clutterMainQuit)
 

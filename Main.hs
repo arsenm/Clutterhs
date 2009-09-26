@@ -32,11 +32,8 @@ main = do
   tml <- timelineNew 9000
   alpha <- alphaNewFull tml Linear
 
-  animateTest rec alpha ("forty three", 43::Int)
-                        ("fifty seven", 57::Int)
-                        ("mr. string", "arst"::String)
-                        ("floating point number porn", 123.45::Double)
---  animateTest rec 2
+  animateTest rec Linear 3000 ("x", 400::Float)
+                              ("y", 500::Float)
 
   on stg hide (clutterMainQuit)
 

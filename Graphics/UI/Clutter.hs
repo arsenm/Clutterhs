@@ -31,6 +31,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Animation,
                             module Graphics.UI.Clutter.Timeline,
                             module Graphics.UI.Clutter.GValue,
+                            module Graphics.UI.Clutter.AnimateArgs,
                             module Graphics.UI.Clutter.Alpha
                            ) where
 
@@ -47,5 +48,6 @@ import Graphics.UI.Clutter.Text
 import Graphics.UI.Clutter.Animation
 import Graphics.UI.Clutter.Timeline
 import Graphics.UI.Clutter.GValue
+import Graphics.UI.Clutter.AnimateArgs
 import Graphics.UI.Clutter.Alpha
 

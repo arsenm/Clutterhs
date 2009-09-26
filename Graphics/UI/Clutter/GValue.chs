@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleInstances #-}
 -- -*-haskell-*-
 --  GValue
 --
@@ -36,6 +37,8 @@ import C2HS
 import System.Glib.GObject
 import System.Glib.GType
 import System.Glib.GValue
+
+import Control.Arrow (second)
 
 import qualified System.Glib.GTypeConstants as GType
 
@@ -133,7 +136,7 @@ animate :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
 animate actor alpha = spr actor alpha []
 
 class AnimateType t where
-    spr :: (ActorClass actor) => actor -> Alpha -> [UAnimate] -> t
+    spr :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
 
 {- Multiple return types isn't useful. We only want IO Animation
 instance (Integral n) => AnimateType [n] where
@@ -144,23 +147,28 @@ instance (Integral n) => AnimateType [n] where
 instance AnimateType (IO a) where
     spr actor alpha args =
         uanimate actor alpha args >> return undefined
-    --	putStrLn (show (reverse args))
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     spr actor alpha args = \ a -> spr actor alpha (toUAnimate a : args)
 
 
+--this should always be a pair of a name and something which can be a gvalue
+-- (String, Something that can be a GValue)
+--how to enforce this nicely? Is this good enough?
 class AnimateArg a where
-    toUAnimate :: a -> UAnimate
+    toUAnimate :: a -> (String, UAnimate)
 
-instance (IsChar c) => AnimateArg [c] where
-    toUAnimate = UString . map toChar
+--Making these pairs instances of the arg class
+--requires FlexibleInstances extension
+--Is there any good way around this?
+instance (IsChar c) => AnimateArg (String, [c]) where
+    toUAnimate = second (UString . map toChar)
 
-instance AnimateArg Int where
-    toUAnimate = uInteger
+instance AnimateArg (String, Int) where
+    toUAnimate = second uInteger
 
-instance AnimateArg Double where
-    toUAnimate = UDouble
+instance AnimateArg (String, Double) where
+    toUAnimate = second UDouble
 
 uInteger :: (Integral a, Bounded a) => a -> UAnimate
 uInteger x = UInteger (fromIntegral x)
@@ -184,7 +192,10 @@ data UAnimate = UChar Char
               deriving (Show, Eq)
 
 --FIXME: This error somehow isn't happening
-uanimate :: (ActorClass actor) => actor -> Alpha -> [UAnimate] -> IO ()
+uanimate :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO ()
 unimate _ _ [] = error "Need arguments to animate?"
 uanimate actor alpha us = putStrLn (show us)
+
+-- one option is to map through the list binding each property individually
+-- alternatively, pack into array of gvalue and use actor_animatev function
 

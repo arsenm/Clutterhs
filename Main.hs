@@ -29,8 +29,11 @@ main = do
   stg <- stageNew
   txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
 
-  animateTest rec 9 (43::Int) (57::Int) ("arst"::String) (123.45::Double)
-  animateTest rec 2
+  animateTest rec 9 ("forty three", 43::Int)
+                    ("fifty seven", 57::Int)
+                    ("mr. string", "arst"::String)
+                    ("floating point number porn", 123.45::Double)
+--  animateTest rec 2
 
   on stg hide (clutterMainQuit)
 

@@ -71,6 +71,8 @@ module Graphics.UI.Clutter.Types (
                                   Animation,
                                   AnimationClass,
                                   mkAnimation,
+                                  unAnimation,
+                                  toAnimation,
                                   withAnimation,
                                   newAnimation,
 

@@ -37,56 +37,63 @@ import C2HS
 import System.Glib.GObject
 import System.Glib.GType
 import System.Glib.GValue
-
+import System.Glib.GValueTypes
 import Control.Arrow (second)
 
 import qualified System.Glib.GTypeConstants as GType
 
 import Control.Monad (liftM)
 
+
+
+{-
+
+withGValue2 :: (GValueClass a) => a -> (Ptr GValue -> IO b) -> IO b
+withGValue2 val body =
+  -- c2hs is broken in that it can't handle arrays of compound arrays in the
+  -- sizeof hook
+  allocaBytes ({# sizeof GType #}+ 2* {# sizeof guint64 #}) $ \gvPtr -> do
+  -- The g_type field of the value must be zero or g_value_init will fail.
+  {# set GValue->g_type #} gvPtr (0 :: GType)
+  result <- body (GValue gvPtr)
+  {#call unsafe value_unset#} (GValue gvPtr)
+  return result
+-}
+
+--withGValue3 (GValue fptr) = withForeignPtr fptr
+
 --this seems like it should have been done already.  The motivation is
 --you don't need to do an explicit conversion / creation of a GValue
 --when you try to use clutter_animatev and co
 class GValueClass a where
-  toGValue :: a -> IO GValue
+--  toGValue :: a -> IO GValue
+--  withGValue :: a -> (GValue -> IO b) -> IO b
   withGValue :: a -> (GValue -> IO b) -> IO b
---  withManyGValues :: [a] -> ([GValue] -> IO b) -> IO b
---toGValue :: (GValueClass self) => self -> GValue
 
+--by UAnimate, I mean GValue that animatev accepts. Fix that later.
+--Not sure this is how I want to do this.
 
---this is an unholy idea.
---really I only want the convenience of withArrayLen
-instance Storable GValue where
-  --according to allocaGValue in gtk2hs, this is the size they use
-  sizeOf _ = {# sizeof GValue #}
-  alignment _ = alignment (undefined :: GType)
+data UAnimate = UChar Char
+              | UString String
+              | UInteger Int
+              | UFloat Float
+              | UDouble Double
+              deriving (Show, Eq)
 
---withGValues gvs body = withArrayLen $ \n ptr ->
-
-
---FIXME: Int vs. GUInt again.
---FIXME: This is an issue...Using a list for this,
---every member of the list must be of the same type.
---I don't think this can be fixed with classes.
---Hmmmmmmmmmmmmmmm...may still need stupid conversion.
-{-
-withValArrays :: (GValueClass a) => [(String,a)]
-              -> (Int -> Ptr String -> Ptr a -> IO b)
-              -> IO b
--}
---do it with gtype first. maybe a better solution later
-{-
-withValArrays :: [(String, GValue)]
-              -> (Int -> Ptr String -> Ptr GValue -> IO b)
-              -> IO b
-withValArrays vals f  =
-  allocaArray len $ \ptr -> do
-
-      res <- f len ptr
-      return res
-  where
-    len = length vals
--}
+--there's probably a nicer/shorter way to do this
+instance GValueClass UAnimate where
+  withGValue (UInteger a) body = allocaGValue $ \gv ->
+                                 valueInit gv GType.int >>
+                                 valueSetInt gv a >>
+                                 body gv
+  withGValue (UDouble a) body = allocaGValue $ \gv ->
+                                valueInit gv GType.double >>
+                                valueSetDouble gv a >>
+                                body gv
+  withGValue (UString a) body = allocaGValue $ \gv ->
+                                valueInit gv GType.string >>
+                                valueSetString gv a >>
+                                body gv
 
 --since want ahead of time toGvalue'ing
 --try this finalizer stuff
@@ -125,14 +132,14 @@ instance GValueClass String where
 --think. maybe.  it works in any case for printf. Then somehow pack
 --into arrays, get n and use animatev
 
-animateTest :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
+animateTest :: (AnimateType r) => Animation -> Alpha -> r
 animateTest = animate
 
-animate :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
+animate :: (AnimateType r) => Animation -> Alpha -> r
 animate actor alpha = spr actor alpha []
 
 class AnimateType t where
-    spr :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
+    spr :: Animation -> Alpha -> [(String, UAnimate)] -> t
 
 {- Multiple return types isn't useful. We only want IO Animation
 instance (Integral n) => AnimateType [n] where
@@ -177,21 +184,40 @@ instance IsChar Char where
     toChar c = c
     fromChar c = c
 
---by UAnimate, I mean GValue that animatev accepts. Fix that later.
---Not sure this is how I want to do this.
-
-data UAnimate = UChar Char
-              | UString String
-              | UInteger Int
-              | UFloat Float
-              | UDouble Double
-              deriving (Show, Eq)
 
 --FIXME: This error somehow isn't happening
-uanimate :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO ()
+uanimate :: Animation -> Alpha -> [(String, UAnimate)] -> IO ()
 unimate _ _ [] = error "Need arguments to animate?"
-uanimate actor alpha us = putStrLn (show us)
+uanimate anim alpha us = putStrLn (show us)
+{-
+uanimate anim alpha us = mapM_ bindOne us
+    where bindOne (a,b) = do
+    with
+    animationBind anim a (uAnimateToGValue)
+-}
 
 -- one option is to map through the list binding each property individually
 -- alternatively, pack into array of gvalue and use actor_animatev function
 
+--This shouldn't be this messy. Why do I need the casting? And use fun
+--I'm still missing something about the wrapping stuff
+--Peter says that won't work
+animationBind:: Animation -> String -> Int -> IO Animation
+animationBind self name val = do
+  b <- allocaGValue $ \gVal ->
+       withCString name $ \str ->
+       withAnimation self $ \anptr ->
+       valueInit gVal GType.int >>
+       valueSetInt gVal val >>
+      {# call animation_bind #} anptr str (unGValue gVal)
+  newAnimation b
+
+--I bet this won't work.
+unGValue :: GValue -> Ptr ()
+unGValue (GValue a) = castPtr a
+
+
+{-
+{# pointer *GValue newtype #}
+newtype GValue = GValue (Ptr (GValue))
+-}

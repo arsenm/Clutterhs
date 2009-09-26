@@ -63,12 +63,15 @@ module Graphics.UI.Clutter.Animation (
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
+import System.Glib.GValue
+
 
 {# fun unsafe animation_new as ^ {} -> `Animation' newAnimation* #}
 
@@ -92,4 +95,6 @@ animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [Property]
 animate actor mode tml props = do
 -}
 
+--{# fun animation_bind as ^
+--       {withAnimation* `Animation', `String', withGValue* `GValue'} -> `Animation' newStage #}
 

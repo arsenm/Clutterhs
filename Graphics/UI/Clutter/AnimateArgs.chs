@@ -26,8 +26,8 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.AnimateArgs (
-                                        uanimate,
-                                        animateTest
+                                        animate,
+                                        uanimate
                                        ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -112,9 +112,6 @@ instance GValueClass String where
 --into arrays, get n and use animatev
 
 --TODO: Type for Duration, type Duration = UInt or whatever
-
-animateTest :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int -> r
-animateTest = animate
 
 animate :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int -> r
 animate actor mode duration = spr actor mode duration []

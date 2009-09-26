@@ -32,8 +32,11 @@ main = do
   tml <- timelineNew 9000
   alpha <- alphaNewFull tml Linear
 
-  animateTest rec Linear 3000 ("x", 400::Float)
-                              ("y", 500::Float)
+  anim <- animate rec Linear 3000 ("x", 400::Float)
+                                  ("y", 500::Float)
+
+  animtml <- animationGetTimeline anim
+  timelineStart animtml
 
   on stg hide (clutterMainQuit)
 

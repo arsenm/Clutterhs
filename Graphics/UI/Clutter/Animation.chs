@@ -41,9 +41,9 @@ module Graphics.UI.Clutter.Animation (
                                       animationGetLoop,
                                       animationLoop,
 
-                                    --animationSetTimeline,
-                                    --animationGetTimeline,
-                                    --animationTimeline,
+                                      animationSetTimeline,
+                                      animationGetTimeline,
+                                      animationTimeline,
 
                                     --animationSetAlpha,
                                     --animationGetAlpha,
@@ -147,4 +147,10 @@ unGValue (GValue a) = castPtr a
 {# pointer *GValue newtype #}
 newtype GValue = GValue (Ptr (GValue))
 -}
+
+{# fun unsafe animation_set_timeline as ^
+       { withAnimation* `Animation', withTimeline* `Timeline' } -> `()' #}
+{# fun unsafe animation_get_timeline as ^ { withAnimation* `Animation' } -> `Timeline' newTimeline* #}
+animationTimeline :: Attr Animation Timeline
+animationTimeline = newAttr animationGetTimeline animationSetTimeline
 

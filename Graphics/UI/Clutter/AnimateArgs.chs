@@ -125,8 +125,8 @@ instance (Integral n) => AnimateType [n] where
 --    spr actor alpha args = map fromChar (uprintf fmts (reverse args))
 -}
 -- this is how Text.printf does variable number of arguments
-instance AnimateType (IO a) where
-    spr actor mode duration args = uanimate actor mode duration args >> return undefined
+instance AnimateType (IO Animation) where
+    spr actor mode duration args = uanimate actor mode duration args
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     spr actor mode duration args = \ a -> spr actor mode duration (toUAnimate a : args)

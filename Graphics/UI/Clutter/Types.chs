@@ -78,7 +78,16 @@ module Graphics.UI.Clutter.Types (
                                   TimelineClass,
                                   mkTimeline,
                                   withTimeline,
-                                  newTimeline
+                                  newTimeline,
+
+                                  Alpha,
+                                  AlphaClass,
+                                  mkAlpha,
+                                  withAlpha,
+                                  newAlpha,
+
+                                  AnimationMode(..)
+
 
                                  ) where
 
@@ -116,6 +125,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterModifierType as ModifierType {underscoreToCase} deriving (Show, Eq, Bounded) #}
 {# enum ClutterStageState as StageState {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterScrollDirection as ScrollDirection {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
 --it because toEnum can't match 3...but why is it trying? silly bits.
@@ -431,6 +441,28 @@ instance TimelineClass Timeline
 instance GObjectClass Timeline where
   toGObject = mkGObject . castForeignPtr . unTimeline
   unsafeCastGObject = mkTimeline . castForeignPtr . unGObject
+
+-- ***************************************************************
+
+-- *************************************************************** Alpha
+
+{# pointer *ClutterAlpha as Alpha foreign newtype #}
+
+class GObjectClass o => AlphaClass o
+toAlpha :: AlphaClass o => o -> Alpha
+toAlpha = unsafeCastGObject . toGObject
+
+mkAlpha = Alpha
+unAlpha (Alpha o) = o
+
+--FIXME: Same as the others
+--newAlpha:: Ptr GObject -> IO Α
+newAlpha a = makeNewGObject Alpha $ return (castPtr a)
+
+instance AlphaClass Alpha
+instance GObjectClass Alpha where
+  toGObject = mkGObject . castForeignPtr . unAlpha
+  unsafeCastGObject = mkAlpha . castForeignPtr . unGObject
 
 -- ***************************************************************
 

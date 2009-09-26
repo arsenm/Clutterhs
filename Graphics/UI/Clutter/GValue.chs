@@ -44,10 +44,6 @@ import qualified System.Glib.GTypeConstants as GType
 
 import Control.Monad (liftM)
 
-
---quick thing to get compiling.
-type Alpha = Int
-
 --this seems like it should have been done already.  The motivation is
 --you don't need to do an explicit conversion / creation of a GValue
 --when you try to use clutter_animatev and co

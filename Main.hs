@@ -29,10 +29,13 @@ main = do
   stg <- stageNew
   txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
 
-  animateTest rec 9 ("forty three", 43::Int)
-                    ("fifty seven", 57::Int)
-                    ("mr. string", "arst"::String)
-                    ("floating point number porn", 123.45::Double)
+  tml <- timelineNew 9000
+  alpha <- alphaNewFull tml Linear
+
+  animateTest rec alpha ("forty three", 43::Int)
+                        ("fifty seven", 57::Int)
+                        ("mr. string", "arst"::String)
+                        ("floating point number porn", 123.45::Double)
 --  animateTest rec 2
 
   on stg hide (clutterMainQuit)

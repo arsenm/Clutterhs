@@ -36,6 +36,7 @@ Library
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter.Animation,
                    Graphics.UI.Clutter.Timeline,
+                   Graphics.UI.Clutter.Alpha,
                    Graphics.UI.Clutter
   Other-modules:   Graphics.UI.Clutter.GValue
 

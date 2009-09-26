@@ -6,6 +6,9 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Types (
+--                                  withGObject,
+--                                  withGObjectClass,
+
                                   Color(Color),
                                   ColorPtr,
                                   withColor,
@@ -88,8 +91,15 @@ module Graphics.UI.Clutter.Types (
                                   withAlpha,
                                   newAlpha,
 
-                                  AnimationMode(..)
+                                  AnimationMode(..),
 
+                                  TimelineDirection(..),
+
+                                  Interval,
+                                  IntervalClass,
+                                  mkInterval,
+                                  withInterval,
+                                  newInterval
 
                                  ) where
 
@@ -127,6 +137,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterModifierType as ModifierType {underscoreToCase} deriving (Show, Eq, Bounded) #}
 {# enum ClutterStageState as StageState {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterScrollDirection as ScrollDirection {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterTimelineDirection as TimelineDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
@@ -136,6 +147,12 @@ type GFloat = {# type gfloat #}
 --Figure it out later.
 instance Flags ModifierType
 instance Flags EventFlags
+
+--maybe a not right hackishness?
+--withGObjectClass::GObjectClass o => o -> (Ptr GObject -> IO b) -> IO b
+--withGObjectClass o = (withGObject . toGObject) o
+--This really should work. It was working. Something bad is happening.
+--withGObject (GObject fptr) = withForeignPtr fptr
 
 -- ***************************************************************
 
@@ -459,12 +476,38 @@ unAlpha (Alpha o) = o
 
 --FIXME: Same as the others
 --newAlpha:: Ptr GObject -> IO Α
+--FIXME?? Is this OK, with casting? Not always true?
+--FIXME: Name and convention for this type deal.
+--newAnimation:: Ptr GObject -> IO Animation
 newAlpha a = makeNewGObject Alpha $ return (castPtr a)
 
 instance AlphaClass Alpha
 instance GObjectClass Alpha where
   toGObject = mkGObject . castForeignPtr . unAlpha
   unsafeCastGObject = mkAlpha . castForeignPtr . unGObject
+
+-- ***************************************************************
+
+-- *************************************************************** Interval
+
+{# pointer *ClutterInterval as Interval foreign newtype #}
+
+class GObjectClass o => IntervalClass o
+toInterval :: IntervalClass o => o -> Interval
+toInterval = unsafeCastGObject . toGObject
+
+mkInterval = Interval
+unInterval (Interval o) = o
+
+--FIXME?? Is this OK, with casting? Not always true?
+--FIXME: Name and convention for this type deal.
+--newAnimation:: Ptr GObject -> IO Animation
+newInterval a = makeNewGObject Interval $ return (castPtr a)
+
+instance IntervalClass Interval
+instance GObjectClass Interval where
+  toGObject = mkGObject . castForeignPtr . unInterval
+  unsafeCastGObject = mkInterval . castForeignPtr . unGObject
 
 -- ***************************************************************
 

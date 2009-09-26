@@ -3,7 +3,7 @@
 --
 --  Author : Matthew Arsenault
 --
---  Created: 26 Sep 2009
+--  Created: 22 Sep 2009
 --
 --  Copyright (C) 2009 Matthew Arsenault
 --
@@ -27,6 +27,10 @@ module Graphics.UI.Clutter.Alpha (
                                   alphaNew,
                                   alphaNewFull,
 
+                                  alphaSetTimeline,
+                                  alphaGetTimeline,
+                                  alphaTimeline,
+
                                   alphaSetMode,
                                   alphaGetMode,
                                   alphaMode
@@ -36,15 +40,27 @@ module Graphics.UI.Clutter.Alpha (
 
 import C2HS
 import System.Glib.GObject
+import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.Properties
 
+{# fun unsafe alpha_new as ^ { } -> `Alpha' newAlpha* #}
 
-{# fun unsafe alpha_new as ^ {} -> `Alpha' newAlpha* #}
 {# fun unsafe alpha_new_full as ^
        { withTimeline* `Timeline', cFromEnum `AnimationMode' } -> `Alpha' newAlpha* #}
 
-{# fun unsafe alpha_set_mode as ^ { withAlpha* `Alpha', cFromEnum `AnimationMode' } -> `()' #}
-{# fun unsafe alpha_get_mode as ^ { withAlpha* `Alpha' } -> `AnimationMode' cToEnum #}
+{# fun unsafe alpha_set_timeline as ^
+       { withAlpha* `Alpha', withTimeline* `Timeline' } -> `()' #}
+{# fun unsafe alpha_get_timeline as ^
+       { withAlpha* `Alpha' } -> `Timeline' newTimeline* #}
+alphaTimeline :: Attr Alpha Timeline
+alphaTimeline = newAttr alphaGetTimeline alphaSetTimeline
+
+{# fun unsafe alpha_set_mode as ^
+       { withAlpha* `Alpha', cFromEnum `AnimationMode' } -> `()' #}
+{# fun unsafe alpha_get_mode as ^
+       { withAlpha* `Alpha' } -> `AnimationMode' cToEnum #}
+
 alphaMode :: Attr Alpha AnimationMode
 alphaMode = newAttr alphaGetMode alphaSetMode
 

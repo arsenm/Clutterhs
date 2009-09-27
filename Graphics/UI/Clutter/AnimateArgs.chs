@@ -49,11 +49,12 @@ import qualified System.Glib.GTypeConstants as GType
 
 import Control.Monad (liftM, foldM)
 
-
+--FIXME: Types as usual
 --by UAnimate, I mean GValue that animatev accepts. Fix that later.
 --Not sure this is how I want to do this.
 data UAnimate = UChar Char
               | UString String
+              | UUChar Word8
               | UInteger Int
               | UFloat Float
               | UDouble Double
@@ -153,6 +154,9 @@ instance AnimateArg (String, Float) where
 instance AnimateArg (String, Double) where
     toUAnimate = second UDouble
 
+instance AnimateArg (String, Word8) where
+    toUAnimate = second UUChar
+
 uInteger :: (Integral a, Bounded a) => a -> UAnimate
 uInteger x = UInteger (fromIntegral x)
 
@@ -192,5 +196,11 @@ uanimate actor mode duration us = do
           bindOne anim (name, UDouble val) = allocaGValue $ \gVal ->
                                              valueInit gVal GType.double >>
                                              valueSetDouble gVal val >>
+                                             animationBind anim name gVal
+--FIXME/TODO/WTF: valueSetChar/valueSetUChar is commented out in gtk2hs...
+--See if it works with int
+          bindOne anim (name, UUChar val) = allocaGValue $ \gVal ->
+                                             valueInit gVal GType.int >>
+                                             valueSetInt gVal (fromIntegral val) >>
                                              animationBind anim name gVal
 

@@ -32,6 +32,7 @@ main = do
   tml <- timelineNew 9000
   alpha <- alphaNewFull tml Linear
 
+ --FIXME: almost always end up needing to specify type for this
   anim <- animate rec Linear 3000 ("x", 400::Float)
                                   ("y", 500::Float)
 

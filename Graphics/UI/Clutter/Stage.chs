@@ -31,8 +31,8 @@ module Graphics.UI.Clutter.Stage (
                                   stageIsDefault,
 
                                   stageSetColor,
-                                --stageGetColor,
-                                --stageColor,
+                                  stageGetColor,
+                                  stageColor,
 
                                   stageSetFullscreen,
                                   stageGetFullscreen,
@@ -96,7 +96,10 @@ stageNew = makeNewGObject mkStage $
 {# fun unsafe stage_is_default as ^ { withStage* `Stage' } -> `Bool' #}
 
 {# fun unsafe stage_set_color as ^ { withStage* `Stage', withColor* `Color' } -> `()' #}
---{# fun unsafe stage_get_color as ^ { withStage* `Stage', alloca- `Color' peek*} -> `()' #}
+{# fun unsafe stage_get_color as ^ { withStage* `Stage', alloca- `Color' peek*} -> `()' #}
+stageColor :: Attr Stage Color
+stageColor = newAttr stageGetColor stageSetColor
+
 
 --I don't think I care about using StageClass since stage at the bottom.
 {# fun unsafe stage_set_fullscreen as ^ { withStage* `Stage', `Bool'} -> `()' #}

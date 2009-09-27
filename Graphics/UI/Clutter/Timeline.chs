@@ -58,16 +58,22 @@ module Graphics.UI.Clutter.Timeline (
                                       timelineHasMarker,
                                     --timelineListMarkers,
                                       timelineRemoveMarker,
-                                      timelineAdvanceToMarker
+                                      timelineAdvanceToMarker,
+
+                                      onCompleted,
+                                      afterCompleted,
+                                      completed
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
+import System.Glib.Signals
 
 --FIXME: GUInt
 {# fun unsafe timeline_new as ^ { `Int' } -> `Timeline' newTimeline* #}
@@ -122,4 +128,12 @@ timelineDirection = newAttr timelineGetDirection timelineSetDirection
 
 {# fun unsafe timeline_remove_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}
 {# fun unsafe timeline_advance_to_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}
+
+
+onCompleted, afterCompleted :: Timeline -> IO () -> IO (ConnectId Timeline)
+onCompleted = connect_NONE__NONE "completed" False
+afterCompleted = connect_NONE__NONE "completed" True
+
+completed :: Signal Timeline (IO ())
+completed = Signal (connect_NONE__NONE "completed")
 

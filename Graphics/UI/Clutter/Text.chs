@@ -26,13 +26,17 @@
 module Graphics.UI.Clutter.Text (
                                  textNew,
 --                                 textNewFull,
-                                 textNewWithText
+                                 textNewWithText,
+                                 textGetColor,
+                                 textSetColor,
+                                 textColor
                                 ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import System.Glib.GObject
+import System.Glib.Attributes
 import Control.Monad (liftM)
 
 textNew :: IO Text
@@ -54,4 +58,8 @@ textNewWithText font txt = makeNewGObject mkText $
                                {# call unsafe text_new_with_text #} fntptr txtptr
 
 
+{# fun unsafe text_get_color as ^ {withText* `Text', alloca- `Color' peek* } -> `()' #}
+{# fun unsafe text_set_color as ^ {withText* `Text', withColor* `Color'} -> `()' #}
+textColor :: Attr Text Color
+textColor = newAttr textGetColor textSetColor
 

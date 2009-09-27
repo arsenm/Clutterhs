@@ -108,12 +108,13 @@ module Graphics.UI.Clutter.Actor (
                                 --actorGetPaintVisibility,
                                 --actorGetAbsAllocationVertices,
                                 --actorGetTransformationMatrix
-                                --actorSetAnchorPoint,
-                                --actorGetAnchorPoint,
-                                --actorSetAnchorPointFromGravity,
-                                --actorGetAnchorPointGravity,
-                                --actorMoveAnchorPoint,
-                                --actorMoveAnchorPointFromGravity,
+                                  actorSetAnchorPoint,
+                                  actorGetAnchorPoint,
+                                  actorSetAnchorPointFromGravity,
+                                  actorGetAnchorPointGravity,
+                                  actorAnchorPointGravity,
+                                  actorMoveAnchorPoint,
+                                  actorMoveAnchorPointFromGravity,
                                   actorSetReactive,
                                   actorGetReactive,
                                   actorReactive,
@@ -378,6 +379,28 @@ actorGid = readAttr actorGetGid
    `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 {# fun unsafe actor_remove_clip as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
+
+
+--TODO: (Float,Float) pair for point attribute
+{# fun unsafe actor_set_anchor_point as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+{# fun unsafe actor_get_anchor_point as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*} -> `()' #}
+
+{# fun unsafe actor_set_anchor_point_from_gravity as ^
+   `(ActorClass self)' => { withActorClass* `self', cFromEnum `Gravity' } -> `()' #}
+{# fun unsafe actor_get_anchor_point_gravity as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Gravity' cToEnum #}
+
+actorAnchorPointGravity :: (ActorClass self) => Attr self Gravity
+actorAnchorPointGravity = newAttr actorGetAnchorPointGravity actorSetAnchorPointFromGravity
+
+{# fun unsafe actor_move_anchor_point as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+{# fun unsafe actor_move_anchor_point_from_gravity as ^
+   `(ActorClass self)' => { withActorClass* `self', cFromEnum `Gravity' } -> `()' #}
 
 onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onDestroy = connect_NONE__NONE "destroy" False

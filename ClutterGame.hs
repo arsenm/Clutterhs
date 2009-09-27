@@ -24,12 +24,10 @@ white = Color 255 255 255 255
 
 createRectangles::Stage ->
                   Float ->
-                  Float ->
-                  (Maybe Animation, [Timeline], Float) ->
+                  (Maybe Animation, [Rectangle], Float) ->
                   Color ->
-                  IO (Maybe Animation, [Timeline], Float)
-createRectangles stage w h (_, fts, i) col = do
-  let size = h / fromIntegral (length colors)
+                  IO (Maybe Animation, [Rectangle], Float)
+createRectangles stage size (_, recs, i) col = do
   rec <- rectangleNewWithColor col
   containerAddActor stage rec
   set rec [ actorHeight := size,
@@ -39,18 +37,20 @@ createRectangles stage w h (_, fts, i) col = do
 
   width <- get stage actorWidth
   anim <- animate rec Linear 5000 ("x", width/2) ("rotation-angle-z", 500::Double)
-  tml <- get anim animationTimeline
-  timelineStart tml
+-- this should be unnecessary
+  get anim animationTimeline >>= timelineStart
+  return (Just anim, rec:recs, i+1)
 
-  --TODO:Signal connect the final thing...but that would be on each, not on final one
+scatterRectangle :: Float -> Float -> Rectangle -> IO ()
+scatterRectangle h w rec = do
   rnd1 <- randomIO
   rnd2 <- randomIO
-  finAnim <- animate rec EaseOutBounce 3000 ("x", rnd1 * w)
-                                            ("y", rnd2 * h / 2 + h / 2)
-                                          --("rotation-angle-z",) to what it was? what?
-                                          --("opacity", 0::Word8)
-  finTml <- get finAnim animationTimeline
-  return (Just anim, finTml:fts, i+1)
+  anim <- animate rec EaseOutBounce 3000 ("x", rnd1 * w)
+                                         ("y", rnd2 * h / 2 + h / 2)
+                                       --("rotation-angle-z",) to what it was? what?
+                                       --("opacity", 0::Word8)
+  get anim animationTimeline >>= timelineStart
+  --TODO:Signal connect the final thing...but that would be on each, not on final one
 
 
 completedAnimation stage = do
@@ -64,8 +64,9 @@ completedAnimation stage = do
             actorY := (-h)  -- off stage
            ]
   containerAddActor stage text
-  actorShow text
   anim <- animate text EaseOutBounce 3000 ("y", stageheight / 2)
+
+--TODO: Should be unnecessary
   get anim animationTimeline >>= timelineStart
 
 main = do
@@ -79,14 +80,13 @@ main = do
 
   height <- get stage actorHeight
   width <- get stage actorWidth
+  let size = height / fromIntegral (length colors)
 
   --TODO: Can do animations with signals in name
-
-  (Just finAnim, finTmls, _) <- foldM (createRectangles stage width height) (Nothing, [], 0) colors
+  (Just finAnim, recs, _) <- foldM (createRectangles stage size) (Nothing, [], 0) colors
   tml <- get finAnim animationTimeline
 
-
-  on tml completed (mapM_ timelineStart finTmls)
+  on tml completed (completedAnimation stage >> mapM_ (scatterRectangle height width) recs)
 
   actorShowAll stage
   clutterMain

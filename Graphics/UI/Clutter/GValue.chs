@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
 -- -*-haskell-*-
 --  GValue
 --
@@ -18,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances, FlexibleInstances #-}
 
 #include <clutter/clutter.h>
 #include <glib.h>
@@ -49,21 +48,6 @@ import qualified System.Glib.GTypeConstants as GType
 import Control.Monad (liftM)
 
 
-{-
-
-withGValue2 :: (GValueClass a) => a -> (Ptr GValue -> IO b) -> IO b
-withGValue2 val body =
-  -- c2hs is broken in that it can't handle arrays of compound arrays in the
-  -- sizeof hook
-  allocaBytes ({# sizeof GType #}+ 2* {# sizeof guint64 #}) $ \gvPtr -> do
-  -- The g_type field of the value must be zero or g_value_init will fail.
-  {# set GValue->g_type #} gvPtr (0 :: GType)
-  result <- body (GValue gvPtr)
-  {#call unsafe value_unset#} (GValue gvPtr)
-  return result
--}
-
---withGValue3 (GValue fptr) = withForeignPtr fptr
 
 --this seems like it should have been done already.  The motivation is
 --you don't need to do an explicit conversion / creation of a GValue

@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
 -- -*-haskell-*-
 --  GValue
 --
@@ -18,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances, FlexibleInstances #-}
 
 #include <clutter/clutter.h>
 #include <glib.h>
@@ -76,36 +75,22 @@ instance GValueClass UAnimate where
                                 valueSetString gv a >>
                                 body gv
 
---since want ahead of time toGvalue'ing
---try this finalizer stuff
-{-
-foreign import ccall "glib.h &g_value_unset"
-   valueUnset :: FunPtr (Ptr a -> IO ())
+{# pointer *GValue as UanimatePtr -> UAnimate #}
+--FIXME: Rename this and fix the need for cast. i.e. get rid of uanimate type sort of.
+instance Storable UAnimate where
+    sizeOf _ = {# sizeof GValue #}
+    alignment _ = alignment (undefined :: GType)
+    peek _ = error "peek undefined for GValue"
 
-instance GValueClass Int where
-  withGValue val body = allocaGValue $ \gv ->
-                         valueInit gv GType.int >>
-                         body gv
-  toGValue val = do
-  --so sayeth the gtk2hs
-      gvPtr <- mallocBytes ({# sizeof GType #} + 2*{# sizeof guint64 #})
-      {# set GValue->g_type #} gvPtr (0 :: GType)
-      fptr <- newForeignPtr finalizerFree gvPtr
-      addForeignPtrFinalizer valueUnset fptr
-      return fptr
-
-instance GValueClass Bool where
-  withGValue val body = allocaGValue $ \gv ->
-                        valueInit gv GType.bool >>
-                        body gv
-
-instance GValueClass String where
-  withGValue val body = allocaGValue $ \gv ->
-                        valueInit gv GType.string >>
-                        body gv
-
--}
-
+    poke p ut = let gv = GValue (castPtr p) --FIXME: This castPtr = badnews bears
+                in do
+                {# set GValue->g_type #} p (0 :: GType)
+                case ut of
+                     (UInteger val) -> valueInit gv GType.int >> valueSetInt gv val
+                     (UDouble val) -> valueInit gv GType.double >> valueSetDouble gv val
+                     (UFloat val) -> valueInit gv GType.float >> valueSetFloat gv val
+                     (UString val) -> valueInit gv GType.string >> valueSetString gv val
+                     _ -> error $ "Type needs to be done for poke " ++ show ut
 
 --I think now that the best solution is variable number of arguments,
 --where each extra argument is a pair.  not sure how to do this, or if
@@ -128,7 +113,10 @@ instance (Integral n) => AnimateType [n] where
 -}
 -- this is how Text.printf does variable number of arguments
 instance AnimateType (IO Animation) where
-    spr actor mode duration args = uanimate2 actor mode duration args
+    spr actor mode duration args = uanimate actor mode duration args
+
+instance AnimateType (IO ()) where
+    spr actor mode duration args = uanimate actor mode duration args >> return ()
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     spr actor mode duration args = \ a -> spr actor mode duration (toUAnimate a : args)
@@ -173,6 +161,7 @@ instance IsChar Char where
 -- one option is to map through the list binding each property individually
 -- alternatively, pack into array of gvalue and use actor_animatev function
 --Also can probably shorten / simplify the UAnimate type garbage
+{-
 uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate?"
 uanimate actor mode duration us = do
@@ -203,40 +192,28 @@ uanimate actor mode duration us = do
                                              valueInit gVal GType.int >>
                                              valueSetInt gVal (fromIntegral val) >>
                                              animationBind anim name gVal
+
+-}
 --It will be miraculous if this actually works
-uanimate2 :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> IO Animation
-uanimate2 _ _ _ [] = error "Need arguments to animate?"
-uanimate2 actor mode duration us =
+uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> IO Animation
+uanimate _ _ _ [] = error "Need arguments to animate"
+uanimate actor mode duration us =
     let (names, uvals) = unzip us
         size = {# sizeof GValue #}
-        l = length us
-        n = l * size
         --FIXME: unsafe?
         animatev = {# call unsafe actor_animatev #}
     in do
     cstrs <- mapM newCString names
     res <- withArrayLen cstrs $ \len strptr ->
            withActorClass actor $ \actptr ->
-           allocaBytes n $ \gvPtr ->
-            let unsetOne m u = {#call unsafe g_value_unset#} (plusPtr gvPtr (m*n)) >> return (m+1)
-                setOne m uval = {# set GValue->g_type #} i (0 :: GType) >>
-                                plugValue (GValue i) uval >>
-                                return (m+1)
-                                    where
-                                      i = plusPtr gvPtr (m*n)
-                plugValue gVal (UInteger val) = valueInit gVal GType.int >> valueSetInt gVal val
-                plugValue gVal (UFloat val) = valueInit gVal GType.float >> valueSetFloat gVal val
-                plugValue gVal (UDouble val) = valueInit gVal GType.double >> valueSetDouble gVal val
-                plugValue gVal (UString val) = valueInit gVal GType.string >> valueSetString gVal val
-                plugValue _ uval = error $ "Type needs to be done for uanimate" ++ show uval
+           withArray uvals $ \gvPtr ->
+            let unsetOne i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
             in do
-              foldM_ setOne 0 uvals
               result <- animatev actptr (cFromEnum mode) (cIntConv duration) (cIntConv len) strptr gvPtr
-              foldM_ unsetOne 0 uvals
+              foldM_ unsetOne gvPtr uvals
               return result
               --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
     mapM free cstrs
     newres <- newAnimation res
     return newres
-
 

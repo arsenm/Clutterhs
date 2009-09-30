@@ -45,12 +45,14 @@ scatterRectangle :: Float -> Float -> Rectangle -> IO ()
 scatterRectangle h w rec = do
   rnd1 <- randomIO
   rnd2 <- randomIO
+  --rotation_angle change makes it stop spinning. don't know why it's still
+  --spinning here, it really should have stopped when the timeline did.
+  (ang,_,_,_) <- actorGetRotation rec ZAxis
   animate rec EaseOutBounce 3000 ("x", rnd1 * w)
                                  ("y", rnd2 * h / 2 + h / 2)
-                               --("rotation-angle-z",) to what it was? what?
+                                 ("rotation-angle-z", ang)
                                --("opacity", 0::Word8)
 --  get anim animationTimeline >>= timelineStart
-  --TODO:Signal connect the final thing...but that would be on each, not on final one
 
 --FIXME: Why did this need a type signature?
 completedAnimation :: Stage -> IO Animation

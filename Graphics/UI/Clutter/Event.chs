@@ -41,8 +41,8 @@ module Graphics.UI.Clutter.Event (
                                   eventTime,
                                   eventModifierType,
                                   eventFlags,
-                                  eventStage,
-                                  eventSource,
+                                --eventStage,
+                                --eventSource,
                                   eventButton,
 
                                   eventNew,
@@ -143,15 +143,18 @@ eventFlags :: EventM t [EventFlags]
 eventFlags = ask >>= \ptr ->
              liftIO $ liftM (toFlags.cIntConv) ({# get ClutterAnyEvent->flags #} ptr)
 
+{-
 eventStage :: EventM t Stage
 eventStage = ask >>= \ptr ->
              liftIO $ makeNewGObject mkStage $
                {# get ClutterAnyEvent->stage #} ptr
 
+
 eventSource :: EventM t Actor
 eventSource = ask >>= \ptr ->
              liftIO $ makeNewGObject mkActor $
                {# get ClutterAnyEvent->source #} ptr
+-}
 
 -- | Retrieve the @(x,y)@ coordinates of the mouse.
 eventCoordinates :: HasCoordinates t => EventM t (Float, Float)

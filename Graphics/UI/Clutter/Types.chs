@@ -17,30 +17,26 @@ module Graphics.UI.Clutter.Types (
                                   ActorClass,
                                   withActor,
                                   withActorClass,
-                                  mkActor,
-                                  unActor,
                                   toActor,
 
                                   Rectangle,
                                   RectangleClass,
                                   toRectangle,
                                   withRectangle,
-                                  mkRectangle,
-                                  unRectangle,
+                                  newRectangle,
+--                                  constructRectangle,
 
                                   Text,
                                   TextClass,
                                   toText,
                                   withText,
-                                  mkText,
-                                  unText,
+                                  newText,
 
                                   Stage,
                                   StageClass,
-                                  mkStage,
-                                  unStage,
                                   withStage,
                                   newStage,
+                               --   constructStage,
 
                                   Container,
                                   ContainerClass,
@@ -62,8 +58,6 @@ module Graphics.UI.Clutter.Types (
                                   InitError(..),
 
                                   Event,
-                                  mkEvent,  --I'm not sure this is useful
-                                  unEvent,
 
                                   EventType(..),
                                   EventFlags(..),
@@ -73,21 +67,17 @@ module Graphics.UI.Clutter.Types (
 
                                   Animation,
                                   AnimationClass,
-                                  mkAnimation,
-                                  unAnimation,
                                   toAnimation,
                                   withAnimation,
                                   newAnimation,
 
                                   Timeline,
                                   TimelineClass,
-                                  mkTimeline,
                                   withTimeline,
                                   newTimeline,
 
                                   Alpha,
                                   AlphaClass,
-                                  mkAlpha,
                                   withAlpha,
                                   newAlpha,
 
@@ -97,7 +87,6 @@ module Graphics.UI.Clutter.Types (
 
                                   Interval,
                                   IntervalClass,
-                                  mkInterval,
                                   withInterval,
                                   newInterval
 
@@ -220,9 +209,6 @@ withColor col = bracket (mkColor col) free
 {# pointer *ClutterActor as Actor foreign newtype #}
 --{# class GObjectClass => ActorClass Actor #}
 
-mkActor = Actor
-unActor (Actor a) = a
-
 class GObjectClass o => ActorClass o
 toActor::ActorClass o => o -> Actor
 toActor = unsafeCastGObject . toGObject
@@ -231,21 +217,8 @@ withActorClass o = (withActor . toActor) o
 
 instance ActorClass Actor
 instance GObjectClass Actor where
-  toGObject = mkGObject . castForeignPtr . unActor
-  unsafeCastGObject = mkActor . castForeignPtr . unGObject
-
-{- -- doesn't exist?
-castToActor :: GObjectClass obj => obj -> Actor
-castToActor = castTo gTypeActor "Actor"
-
-gTypeActor = {# call fun unsafe clutter_actor_get_type #}
--}
-
---class GObjectClass o => ObjectClass o
---toObject :: ObjectClass o => o -> Object
---toObject = unsafeCastGObject . toGObject
-
---class GInitiallyUnownedClass o => ActorClass o
+  toGObject (Actor a) = mkGObject (castForeignPtr a)
+  unsafeCastGObject (GObject o) = Actor (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -253,18 +226,19 @@ gTypeActor = {# call fun unsafe clutter_actor_get_type #}
 
 {# pointer *ClutterRectangle as Rectangle foreign newtype #}
 
-mkRectangle = Rectangle
-unRectangle (Rectangle a) = a
-
 class GObjectClass o => RectangleClass o
 toRectangle::RectangleClass o => o -> Rectangle
 toRectangle = unsafeCastGObject . toGObject
 
+newRectangle :: Ptr Actor -> IO Rectangle
+newRectangle a = makeNewGObject Rectangle $ return (castPtr a)
+--constructRectangle a = constructNewGObject Rectangle $ return (castPtr a)
+
 instance RectangleClass Rectangle
 instance ActorClass Rectangle
 instance GObjectClass Rectangle where
-  toGObject = mkGObject . castForeignPtr . unRectangle
-  unsafeCastGObject = mkRectangle . castForeignPtr . unGObject
+  toGObject (Rectangle r) = mkGObject (castForeignPtr r)
+  unsafeCastGObject (GObject o) = Rectangle (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -272,21 +246,20 @@ instance GObjectClass Rectangle where
 
 {# pointer *ClutterText as Text foreign newtype #}
 
-mkText = Text
-unText (Text a) = a
-
 class GObjectClass o => TextClass o
 toText::TextClass o => o -> Text
 toText = unsafeCastGObject . toGObject
 
+newText :: Ptr Actor -> IO Text
+newText a = makeNewGObject Text $ return (castPtr a)
+
 instance TextClass Text
 instance ActorClass Text
 instance GObjectClass Text where
-  toGObject = mkGObject . castForeignPtr . unText
-  unsafeCastGObject = mkText . castForeignPtr . unGObject
+  toGObject (Text a) = mkGObject (castForeignPtr a)
+  unsafeCastGObject (GObject o) = Text (castForeignPtr o)
 
 -- ***************************************************************
-
 
 -- *************************************************************** Group
 
@@ -296,15 +269,12 @@ class ActorClass o => GroupClass o
 toGroup :: GroupClass o => o -> Group
 toGroup = unsafeCastGObject . toGObject
 
-mkGroup = Group
-unGroup (Group o) = o
-
 instance GroupClass Group
 instance ContainerClass Group
 instance ActorClass Group
 instance GObjectClass Group where
-  toGObject = mkGObject . castForeignPtr . unGroup
-  unsafeCastGObject = mkGroup . castForeignPtr . unGObject
+  toGObject (Group g) = mkGObject (castForeignPtr g)
+  unsafeCastGObject (GObject o) = Group (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -324,8 +294,8 @@ withContainerClass o = (withContainer . toContainer) o
 
 instance ContainerClass Container
 instance GObjectClass Container where
-  toGObject = mkGObject . castForeignPtr . unContainer
-  unsafeCastGObject = mkContainer . castForeignPtr . unGObject
+  toGObject (Container c) = mkGObject (castForeignPtr c)
+  unsafeCastGObject (GObject o) = Container (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -338,33 +308,20 @@ class GroupClass o => StageClass o
 toStage :: StageClass o => o -> Stage
 toStage = unsafeCastGObject . toGObject
 
-mkStage = Stage
-unStage (Stage o) = o
-
 --FIXME?? Is this OK, with casting? Not always true?
 --FIXME: Name and convention for this type deal.
 newStage:: Ptr Actor -> IO Stage
 newStage a = makeNewGObject Stage $ return (castPtr a)
+--constructStage:: Ptr Actor -> IO Stage
+--constructStage a = constructNewGObject Stage $ return (castPtr a)
 
-{-
-mkStage :: Ptr Stage -> IO Stage
-mkStage stagePtr = do
-  stageForeignPtr <- newForeignPtr_ stagePtr
-  return (Stage stageForeignPtr)
-
-manageStage :: Stage -> IO ()
-manageStage (Stage stageForeignPtr) = do
-  addForeignPtrFinalizer stageDestroy stageForeignPtr
--}
-
---FIXME: I'm missing something about unStage and mkStage
 instance StageClass Stage
 instance ContainerClass Stage
 instance GroupClass Stage
 instance ActorClass Stage
 instance GObjectClass Stage where
-  toGObject = mkGObject . castForeignPtr . unStage
-  unsafeCastGObject = mkStage . castForeignPtr . unGObject
+  toGObject (Stage s) = mkGObject (castForeignPtr s)
+  unsafeCastGObject (GObject o) = Stage (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -412,9 +369,6 @@ withPerspective pst = bracket (mkPerspective pst) free
 
 {# pointer *ClutterEvent as Event foreign newtype #}
 
-mkEvent = Event
-unEvent (Event a) = a
-
 -- ***************************************************************
 
 -- *************************************************************** Animation
@@ -425,18 +379,15 @@ class GObjectClass o => AnimationClass o
 toAnimation :: AnimationClass o => o -> Animation
 toAnimation = unsafeCastGObject . toGObject
 
-mkAnimation = Animation
-unAnimation (Animation o) = o
-
 --FIXME?? Is this OK, with casting? Not always true?
 --FIXME: Name and convention for this type deal.
---newAnimation:: Ptr GObject -> IO Animation
+newAnimation:: Ptr Animation -> IO Animation
 newAnimation a = makeNewGObject Animation $ return (castPtr a)
 
 instance AnimationClass Animation
 instance GObjectClass Animation where
-  toGObject = mkGObject . castForeignPtr . unAnimation
-  unsafeCastGObject = mkAnimation . castForeignPtr . unGObject
+  toGObject (Animation a) = mkGObject (castForeignPtr a)
+  unsafeCastGObject (GObject o) = Animation (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -448,18 +399,13 @@ class GObjectClass o => TimelineClass o
 toTimeline :: TimelineClass o => o -> Timeline
 toTimeline = unsafeCastGObject . toGObject
 
-mkTimeline = Timeline
-unTimeline (Timeline o) = o
-
---FIXME?? Is this OK, with casting? Not always true?
---FIXME: Name and convention for this type deal.
---newAnimation:: Ptr GObject -> IO Animation
-newTimeline a = makeNewGObject Timeline $ return (castPtr a)
+newTimeline:: Ptr Timeline -> IO Timeline
+newTimeline a = makeNewGObject Timeline $ return a
 
 instance TimelineClass Timeline
 instance GObjectClass Timeline where
-  toGObject = mkGObject . castForeignPtr . unTimeline
-  unsafeCastGObject = mkTimeline . castForeignPtr . unGObject
+  toGObject (Timeline t) = mkGObject (castForeignPtr t)
+  unsafeCastGObject (GObject o) = Timeline (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -471,20 +417,13 @@ class GObjectClass o => AlphaClass o
 toAlpha :: AlphaClass o => o -> Alpha
 toAlpha = unsafeCastGObject . toGObject
 
-mkAlpha = Alpha
-unAlpha (Alpha o) = o
-
---FIXME: Same as the others
---newAlpha:: Ptr GObject -> IO Α
---FIXME?? Is this OK, with casting? Not always true?
---FIXME: Name and convention for this type deal.
---newAnimation:: Ptr GObject -> IO Animation
-newAlpha a = makeNewGObject Alpha $ return (castPtr a)
+newAlpha:: Ptr Alpha -> IO Alpha
+newAlpha a = makeNewGObject Alpha $ return a
 
 instance AlphaClass Alpha
 instance GObjectClass Alpha where
-  toGObject = mkGObject . castForeignPtr . unAlpha
-  unsafeCastGObject = mkAlpha . castForeignPtr . unGObject
+  toGObject (Alpha a) = mkGObject (castForeignPtr a)
+  unsafeCastGObject (GObject o) = Alpha (castForeignPtr o)
 
 -- ***************************************************************
 
@@ -496,18 +435,12 @@ class GObjectClass o => IntervalClass o
 toInterval :: IntervalClass o => o -> Interval
 toInterval = unsafeCastGObject . toGObject
 
-mkInterval = Interval
-unInterval (Interval o) = o
-
---FIXME?? Is this OK, with casting? Not always true?
---FIXME: Name and convention for this type deal.
---newAnimation:: Ptr GObject -> IO Animation
 newInterval a = makeNewGObject Interval $ return (castPtr a)
 
 instance IntervalClass Interval
 instance GObjectClass Interval where
-  toGObject = mkGObject . castForeignPtr . unInterval
-  unsafeCastGObject = mkInterval . castForeignPtr . unGObject
+  toGObject (Interval i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Interval (castForeignPtr o)
 
 -- ***************************************************************
 

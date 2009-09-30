@@ -80,7 +80,6 @@ main = do
 
   on stage hide clutterMainQuit
 
-
   height <- get stage actorHeight
   width <- get stage actorWidth
   let size = height / fromIntegral (length colors)

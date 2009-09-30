@@ -29,6 +29,8 @@ main = do
   stg <- stageNew
   txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
 
+  performGC
+
   tml <- timelineNew 9000
   alpha <- alphaNewFull tml Linear
 
@@ -102,6 +104,7 @@ main = do
 
   a <- actorGetZRotationGravity rec
   print a
+  performGC
 
   putStrLn "A wild stage appeared!"
   clutterMain

@@ -39,24 +39,8 @@ import System.Glib.GObject
 import System.Glib.Attributes
 import Control.Monad (liftM)
 
-textNew :: IO Text
-textNew = makeNewGObject mkText $
-           liftM (castPtr :: Ptr Actor -> Ptr Text)
-           {# call unsafe text_new #}
-
-{-
-why doesn't this work?
-{#fun unsafe text_new_with_text as ^
-      { `String',`String' } -> `Text' mkText* #}
--}
-
-textNewWithText:: String -> String -> IO Text
-textNewWithText font txt = makeNewGObject mkText $
-                           liftM (castPtr :: Ptr Actor -> Ptr Text) $
-                           withCString font $ \fntptr ->
-                           withCString txt $ \txtptr ->
-                               {# call unsafe text_new_with_text #} fntptr txtptr
-
+{# fun unsafe text_new as ^ {} -> `Text' newText* #}
+{#fun unsafe text_new_with_text as ^ { `String', `String' } -> `Text' newText* #}
 
 {# fun unsafe text_get_color as ^ {withText* `Text', alloca- `Color' peek* } -> `()' #}
 {# fun unsafe text_set_color as ^ {withText* `Text', withColor* `Color'} -> `()' #}

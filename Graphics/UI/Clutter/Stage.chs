@@ -84,13 +84,6 @@ import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
 
-{-
-stageNew :: IO Stage
-stageNew = makeNewGObject mkStage $
-           liftM (castPtr :: Ptr Actor -> Ptr Stage)
-           {# call unsafe stage_new #}
--}
-
 {# fun unsafe stage_new as ^ {} -> `Stage' newStage* #}
 
 {# fun unsafe stage_is_default as ^ { withStage* `Stage' } -> `Bool' #}

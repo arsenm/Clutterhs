@@ -26,15 +26,13 @@
 module Graphics.UI.Clutter.Rectangle (
                                       rectangleNew,
                                       rectangleNewWithColor,
-                                    --rectangleGetColor,
+                                      rectangleGetColor,
                                       rectangleSetColor,
-                                    --rectangleColor,
+                                      rectangleColor,
 
                                       rectangleGetBorderWidth,
                                       rectangleSetBorderWidth,
                                       rectangleBorderWidth
-
-
 
                                      ) where
 
@@ -46,37 +44,13 @@ import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
 
---instance Storable
---conv::RectangleClass o => o -> Ptr Rectangle -> IO b
---conv x = (withRectangle . toRectangle) x
-
---TODO: Check marshallers and alloc stuff for the color out arg
---{# fun unsafe rectangle_get_color as ^ {conv* `Rectangle', alloca- `Color' } -> `()' #}
---rectangleGetColor = undefined
-
---how to use this way?
---{# fun unsafe rectangle_new as ^ {} -> `Rectangle' mkRectangle* #}
-
-rectangleNew:: IO Rectangle
-rectangleNew = makeNewGObject mkRectangle $
-               liftM (castPtr :: Ptr Actor -> Ptr Rectangle) $
-               {# call unsafe rectangle_new #}
-
---{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `()' #}
-
-rectangleNewWithColor:: Color -> IO Rectangle
-rectangleNewWithColor col = makeNewGObject mkRectangle $
-                            liftM (castPtr :: Ptr Actor -> Ptr Rectangle) $
-                            withColor col $ \colptr ->
-                            {# call unsafe rectangle_new_with_color #} colptr
-
---{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `Rectangle' mkRectangle* #}
+{# fun unsafe rectangle_new as ^ {} -> `Rectangle' newRectangle* #}
+{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `Rectangle' newRectangle* #}
 
 {# fun unsafe rectangle_get_color as ^ {withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
 {# fun unsafe rectangle_set_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
 rectangleColor :: Attr Rectangle Color
 rectangleColor = newAttr rectangleGetColor rectangleSetColor
-
 
 --FIXME: guint vs. int
 {# fun unsafe rectangle_get_border_width as ^ {withRectangle* `Rectangle'} -> `Int' #}

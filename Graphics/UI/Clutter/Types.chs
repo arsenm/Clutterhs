@@ -36,7 +36,7 @@ module Graphics.UI.Clutter.Types (
                                   StageClass,
                                   withStage,
                                   newStage,
-                               --   constructStage,
+                                --constructStage,
 
                                   Container,
                                   ContainerClass,
@@ -95,12 +95,36 @@ module Graphics.UI.Clutter.Types (
 --FIXME: Conflict with EventType Nothing
 import Prelude hiding (Nothing)
 
-import C2HS
+import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
 import System.Glib.Flags
-import Foreign.ForeignPtr
-import Control.Monad (liftM)
+import Foreign.ForeignPtr hiding (newForeignPtr)
+import System.Glib.FFI
+import Control.Monad (liftM, when)
 import Control.Exception (bracket)
+
+--GTK uses the floating reference stuff
+--this function is from gtk2hs, where they use the
+--"ObjectClass" which isn't necessary, so I change to GObjectClass
+--also why the flipped newForeignPtr there?
+--from foreign.concurrent or something, and also flipped in System.Glib.FFI
+--I don't understand why
+--I also don't see the difference between this function, and
+--constructNewGObject
+--Actually yes I do. This one removes the floating reference, which
+--we don't want. Get rid of the floating reference to get a normal reference
+--clutter actors and gtk widgets have floating references
+--TODO: Actors as objectclass in gtk so we don't have this function duplicated here
+--but that's sort of confusing
+makeNewObject :: GObjectClass obj =>
+  (ForeignPtr obj -> obj) -> IO (Ptr obj) -> IO obj
+makeNewObject constr generator = do
+  objPtr <- generator
+  when (objPtr == nullPtr) (fail "makeNewObject: object is NULL")
+  objectRefSink objPtr
+  obj <- System.Glib.FFI.newForeignPtr objPtr objectUnref
+  return $! constr obj
+
 
 --this doesn't seem to work since GObjectClass is not here...
 --I'm not sure if I can work around this. Oh well, I don't think it's that important
@@ -146,27 +170,6 @@ instance Flags EventFlags
 -- ***************************************************************
 
 -- *************************************************************** Color
-
-{-
-{# pointer *ClutterColor as Color foreign newtype #}
-
-instance Show Color where
-  show (Color c) = show c
-
-unColor (Color o) = o
-
-manageColor :: Color -> IO ()
-manageColor (Color colorForeignPtr) = do
-  addForeignPtrFinalizer colorFree colorForeignPtr
-
-foreign import ccall unsafe "&clutter_color_free"
-  colorFree :: FinalizerPtr Color
-
-mkColor :: Ptr Color -> IO Color
-mkColor colorPtr = do
-  colorForeignPtr <- newForeignPtr colorFree colorPtr
-  return (Color colorForeignPtr)
--}
 
 {# pointer *ClutterColor as ColorPtr -> Color #}
 
@@ -231,7 +234,7 @@ toRectangle::RectangleClass o => o -> Rectangle
 toRectangle = unsafeCastGObject . toGObject
 
 newRectangle :: Ptr Actor -> IO Rectangle
-newRectangle a = makeNewGObject Rectangle $ return (castPtr a)
+newRectangle a = makeNewObject Rectangle $ return (castPtr a)
 --constructRectangle a = constructNewGObject Rectangle $ return (castPtr a)
 
 instance RectangleClass Rectangle
@@ -251,7 +254,7 @@ toText::TextClass o => o -> Text
 toText = unsafeCastGObject . toGObject
 
 newText :: Ptr Actor -> IO Text
-newText a = makeNewGObject Text $ return (castPtr a)
+newText a = makeNewObject Text $ return (castPtr a)
 
 instance TextClass Text
 instance ActorClass Text
@@ -310,10 +313,9 @@ toStage = unsafeCastGObject . toGObject
 
 --FIXME?? Is this OK, with casting? Not always true?
 --FIXME: Name and convention for this type deal.
-newStage:: Ptr Actor -> IO Stage
-newStage a = makeNewGObject Stage $ return (castPtr a)
---constructStage:: Ptr Actor -> IO Stage
---constructStage a = constructNewGObject Stage $ return (castPtr a)
+--newStage, constructStage:: Ptr Actor -> IO Stage
+newStage :: Ptr Actor -> IO Stage
+newStage a = makeNewObject Stage $ return (castPtr a)
 
 instance StageClass Stage
 instance ContainerClass Stage
@@ -392,6 +394,9 @@ instance GObjectClass Animation where
 -- ***************************************************************
 
 -- *************************************************************** Timeline
+
+--FIXME: DO animations and timelines etc. have floating references or not?
+--They don't derive from actor, so I'm going to go with no
 
 {# pointer *ClutterTimeline as Timeline foreign newtype #}
 

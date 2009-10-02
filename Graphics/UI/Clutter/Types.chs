@@ -93,7 +93,12 @@ module Graphics.UI.Clutter.Types (
 
                                   Fog(..),
                                   FogPtr,
-                                  withFog
+                                  withFog,
+
+                                  CairoTexture,
+                                  CairoTextureClass,
+                                  withCairoTexture,
+                                  newCairoTexture
 
                                  ) where
 
@@ -485,6 +490,23 @@ mkFog col = do cptr <- (malloc :: IO FogPtr)
 
 withFog :: Fog -> (FogPtr -> IO a) -> IO a
 withFog col = bracket (mkFog col) free
+
+-- ***************************************************************
+
+-- *************************************************************** CairoTexture
+
+{# pointer *ClutterCairoTexture as CairoTexture foreign newtype #}
+
+class GObjectClass o => CairoTextureClass o
+toCairoTexture :: CairoTextureClass o => o -> CairoTexture
+toCairoTexture = unsafeCastGObject . toGObject
+
+newCairoTexture a = makeNewGObject CairoTexture $ return (castPtr a)
+
+instance CairoTextureClass CairoTexture
+instance GObjectClass CairoTexture where
+  toGObject (CairoTexture i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = CairoTexture (castForeignPtr o)
 
 -- ***************************************************************
 

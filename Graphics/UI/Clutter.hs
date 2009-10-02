@@ -32,7 +32,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Timeline,
                             module Graphics.UI.Clutter.GValue,
                             module Graphics.UI.Clutter.AnimateArgs,
-                            module Graphics.UI.Clutter.Alpha
+                            module Graphics.UI.Clutter.Alpha,
+                            module Graphics.UI.Clutter.CairoTexture
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -50,4 +51,4 @@ import Graphics.UI.Clutter.Timeline
 import Graphics.UI.Clutter.GValue
 import Graphics.UI.Clutter.AnimateArgs
 import Graphics.UI.Clutter.Alpha
-
+import Graphics.UI.Clutter.CairoTexture

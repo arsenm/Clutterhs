@@ -106,7 +106,12 @@ module Graphics.UI.Clutter.Types (
 
                                   ChildMeta,
                                   ChildMetaClass,
-                                  newChildMeta
+                                  newChildMeta,
+
+                                  CloneClass,
+                                  Clone,
+                                  withClone,
+                                  newClone
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -549,6 +554,23 @@ instance ChildMetaClass ChildMeta
 instance GObjectClass ChildMeta where
   toGObject (ChildMeta i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ChildMeta (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Clone
+
+{# pointer *ClutterClone as Clone foreign newtype #}
+
+class GObjectClass o => CloneClass o
+toClone :: CloneClass o => o -> Clone
+toClone = unsafeCastGObject . toGObject
+
+newClone a = makeNewObject Clone $ return (castPtr a)
+
+instance CloneClass Clone
+instance GObjectClass Clone where
+  toGObject (Clone i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Clone (castForeignPtr o)
 
 -- ***************************************************************
 

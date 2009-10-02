@@ -1,5 +1,5 @@
 -- -*-haskell-*-
---  Clutter ChildMeta
+--  Clutter Clone
 --
 --  Author : Matthew Arsenault
 --
@@ -23,12 +23,12 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
-module Graphics.UI.Clutter.ChildMeta (
-                                    --childMetaGetContainer,
-                                    --childMetaContainer,
-                                    --childMetaGetActor,
-                                    --childMetaActor
-                                     ) where
+module Graphics.UI.Clutter.Clone (
+                                --cloneNew,
+                                --cloneSetSource,
+                                --cloneGetSource,
+                                --cloneSource
+                                 ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
@@ -36,14 +36,13 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
+--FIXME: Same problem...What out?
 {-
-{# fun unsafe child_meta_get_container as ^ { withChildMeta* `ChildMeta' } -> newContainer* `Container' #}
-childMetaContainer :: (ActorClass self) => ReadAttr self Container
-childMetaContainer = readAttr childMetaGetContainer
+{# fun unsafe clone_new as ^ `(ActorClass a)' => { withActorClass* `a' } -> `a' newActor* #}
 
-{# fun unsafe child_meta_get_actor as ^ { withChildMeta* `ChildMeta' } -> newContainer* `Container' #}
-childMetaActor :: (ActorClass self) => ReadAttr self Actor
-childMetaActor = readAttr childMetaGetActor
+{# fun unsafe clone_get_source as ^ { withClone* `Clone' } -> `Actor' newActor* #}
+{# fun unsafe clone_set_source as ^ `(ActorClass a)' => { withClone* `Clone', withActorClass* `a' } -> `()' #}
+cloneSource :: (ActorClass self) => ReadAttr self Container
+cloneSource = newAttr cloneGetSource cloneSetSource
 -}
-
 

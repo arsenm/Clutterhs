@@ -43,6 +43,7 @@ Library
                    Graphics.UI.Clutter.Alpha,
                    Graphics.UI.Clutter.Media,
                    Graphics.UI.Clutter.ChildMeta,
+                   Graphics.UI.Clutter.Clone,
                    Graphics.UI.Clutter
 
   Exposed: True

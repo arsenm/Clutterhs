@@ -135,7 +135,12 @@ module Graphics.UI.Clutter.Types (
                                   BehaviourClass,
                                   Behaviour,
                                   withBehaviour,
-                                  newBehaviour
+                                  newBehaviour,
+
+                                  PathClass,
+                                  Path,
+                                  withPath,
+                                  newPath
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -612,6 +617,23 @@ instance BehaviourClass Behaviour
 instance GObjectClass Behaviour where
   toGObject (Behaviour i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Behaviour (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Path
+
+{# pointer *ClutterPath as Path foreign newtype #}
+
+class GObjectClass o => PathClass o
+toPath :: PathClass o => o -> Clone
+toPath = unsafeCastGObject . toGObject
+
+newPath a = makeNewObject Path $ return (castPtr a)
+
+instance PathClass Path
+instance GObjectClass Path where
+  toGObject (Path i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Path (castForeignPtr o)
 
 -- ***************************************************************
 

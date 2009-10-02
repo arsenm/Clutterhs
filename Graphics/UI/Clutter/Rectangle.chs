@@ -26,23 +26,25 @@
 module Graphics.UI.Clutter.Rectangle (
                                       rectangleNew,
                                       rectangleNewWithColor,
+
                                       rectangleGetColor,
                                       rectangleSetColor,
                                       rectangleColor,
 
+                                      rectangleGetBorderColor,
+                                      rectangleSetBorderColor,
+                                      rectangleBorderColor,
+
                                       rectangleGetBorderWidth,
                                       rectangleSetBorderWidth,
                                       rectangleBorderWidth
-
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import Control.Monad (liftM)
-import System.Glib.GObject
 import System.Glib.Attributes
-import System.Glib.Properties
 
 {# fun unsafe rectangle_new as ^ {} -> `Rectangle' newRectangle* #}
 {# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `Rectangle' newRectangle* #}
@@ -51,6 +53,11 @@ import System.Glib.Properties
 {# fun unsafe rectangle_set_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
 rectangleColor :: Attr Rectangle Color
 rectangleColor = newAttr rectangleGetColor rectangleSetColor
+
+{# fun unsafe rectangle_get_border_color as ^ {withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
+{# fun unsafe rectangle_set_border_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
+rectangleBorderColor :: Attr Rectangle Color
+rectangleBorderColor = newAttr rectangleGetBorderColor rectangleSetBorderColor
 
 --FIXME: guint vs. int
 {# fun unsafe rectangle_get_border_width as ^ {withRectangle* `Rectangle'} -> `Int' #}

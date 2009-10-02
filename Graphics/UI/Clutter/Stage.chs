@@ -60,7 +60,7 @@ module Graphics.UI.Clutter.Stage (
 
                                   stageSetPerspective,
                                   stageGetPerspective,
-                                --stagePerspective,
+                                  stagePerspective,
 
                                   stageSetTitle,
                                   stageGetTitle,
@@ -104,16 +104,23 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 {# fun unsafe stage_show_cursor as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_hide_cursor as ^ { withStage* `Stage' } -> `()' #}
 
---TODO: How to out marshal?
+--TODO: How to out marshal? A actor class type?
 --{# fun unsafe stage_get_actor_at_pos as ^
---       { withStage* `Stage', cFromEnum `PickMode', `Int', `Int'} -> `Actor' mkActor* #}
+--       `(ActorClass actor)' => { withStage* `Stage', cFromEnum `PickMode', `Int', `Int'} -> `actor' newActor* #}
 
 {# fun unsafe stage_ensure_current as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_ensure_viewport as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_ensure_redraw as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_queue_redraw as ^ { withStage* `Stage' } -> `()' #}
 
---more functions belong here
+--{# fun unsafe stage_event as ^ { withStage* `Stage', withEvent* `Event' } -> `Bool' #}
+{# fun unsafe stage_set_key_focus as ^ `(ActorClass actor)' => { withStage* `Stage', withActorClass* `actor' } -> `()' #}
+
+--How to outmarshal class ^
+--{# fun unsafe stage_get_key_focus as ^ { `(ActorClass actor)' => withStage* `Stage' } -> `Actor' #}
+
+--TODO: all those types, namely guchar* out
+--{# fun unsafe stage_read_pixels as ^ { withStage* `Stage', `Int', `Int', `Int', `Int' } -> `GUChar' #}
 
 {# fun unsafe stage_set_throttle_motion_events as ^ { withStage* `Stage', `Bool' } -> `()' #}
 {# fun unsafe stage_get_throttle_motion_events as ^ { withStage* `Stage' } -> `Bool' #}
@@ -121,10 +128,11 @@ stageThrottleMotionEvents :: Attr Stage Bool
 stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottleMotionEvents
 
 
---more here
-
 {# fun unsafe stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
 {# fun unsafe stage_set_perspective as ^ { withStage* `Stage', withPerspective* `Perspective'} -> `()' #}
+stagePerspective :: Attr Stage Perspective
+stagePerspective = newAttr stageGetPerspective stageSetPerspective
+
 
 --TODO: Unicode???
 {# fun unsafe stage_set_title as ^ { withStage* `Stage', `String' } -> `()' #}
@@ -142,4 +150,8 @@ stageUserResizable = newAttr stageGetUserResizable stageSetUserResizable
 stageUseFog :: Attr Stage Bool
 stageUseFog = newAttr stageGetUseFog stageSetUseFog
 
+{# fun unsafe stage_set_fog as ^ { withStage* `Stage', withFog* `Fog' } -> `()' #}
+{# fun unsafe stage_get_fog as ^ { withStage* `Stage', alloca- `Fog' peek* } -> `()' #}
+stageFog :: Attr Stage Fog
+stageFog = newAttr stageGetFog stageSetFog
 

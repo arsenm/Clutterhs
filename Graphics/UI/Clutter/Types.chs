@@ -18,6 +18,7 @@ module Graphics.UI.Clutter.Types (
                                   withActor,
                                   withActorClass,
                                   toActor,
+                                  --newActor,   --FIXME: This seems unfortunate.
 
                                   Rectangle,
                                   RectangleClass,
@@ -88,7 +89,11 @@ module Graphics.UI.Clutter.Types (
                                   Interval,
                                   IntervalClass,
                                   withInterval,
-                                  newInterval
+                                  newInterval,
+
+                                  Fog(..),
+                                  FogPtr,
+                                  withFog
 
                                  ) where
 
@@ -217,6 +222,9 @@ toActor::ActorClass o => o -> Actor
 toActor = unsafeCastGObject . toGObject
 withActorClass::ActorClass o => o -> (Ptr Actor -> IO b) -> IO b
 withActorClass o = (withActor . toActor) o
+
+--newActor :: (ActorClass actor) =>  Ptr actor -> IO Actor
+--newActor a = makeNewObject Actor $ return (castPtr a)
 
 instance ActorClass Actor
 instance GObjectClass Actor where
@@ -446,6 +454,37 @@ instance IntervalClass Interval
 instance GObjectClass Interval where
   toGObject (Interval i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Interval (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Fog
+
+{# pointer *ClutterFog as FogPtr -> Fog #}
+
+data Fog = Fog { z_near :: Float,
+                 z_far :: Float
+               } deriving (Eq, Show)
+
+instance Storable Fog where
+  sizeOf _ = {# sizeof ClutterFog #}
+  alignment _ = alignment (undefined :: Float)
+  peek p = do
+      znear <- {# get ClutterFog->z_near #} p
+      zfar <- {# get ClutterFog->z_far #} p
+      return $ Fog (cFloatConv znear) (cFloatConv zfar)
+  poke p (Fog zn zf) = do
+      {# set ClutterFog->z_near #} p (cFloatConv zn)
+      {# set ClutterFog->z_far #} p (cFloatConv zf)
+      return ()
+
+--This seems not right. But it seems to work.
+mkFog :: Fog -> IO FogPtr
+mkFog col = do cptr <- (malloc :: IO FogPtr)
+               poke cptr col
+               return cptr
+
+withFog :: Fog -> (FogPtr -> IO a) -> IO a
+withFog col = bracket (mkFog col) free
 
 -- ***************************************************************
 

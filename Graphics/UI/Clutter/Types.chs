@@ -102,8 +102,11 @@ module Graphics.UI.Clutter.Types (
 
                                   Media,
                                   MediaClass,
-                                  withMedia
+                                  withMedia,
 
+                                  ChildMeta,
+                                  ChildMetaClass,
+                                  newChildMeta
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -529,6 +532,23 @@ instance MediaClass Media
 instance GObjectClass Media where
   toGObject (Media i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Media (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** ChildMeta
+
+{# pointer *ClutterChildMeta as ChildMeta foreign newtype #}
+
+class GObjectClass o => ChildMetaClass o
+toChildMeta :: ChildMetaClass o => o -> Media
+toChildMeta = unsafeCastGObject . toGObject
+
+newChildMeta a = makeNewGObject ChildMeta $ return (castPtr a)
+
+instance ChildMetaClass ChildMeta
+instance GObjectClass ChildMeta where
+  toGObject (ChildMeta i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = ChildMeta (castForeignPtr o)
 
 -- ***************************************************************
 

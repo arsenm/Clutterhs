@@ -1,5 +1,5 @@
 -- -*-haskell-*-
---  Clutter Rectangle
+--  Clutter Cairo Texture
 --
 --  Author : Matthew Arsenault
 --

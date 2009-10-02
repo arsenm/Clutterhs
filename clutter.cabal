@@ -45,6 +45,7 @@ Library
                    Graphics.UI.Clutter.ChildMeta,
                    Graphics.UI.Clutter.Clone,
                    Graphics.UI.Clutter.Behaviour,
+                   Graphics.UI.Clutter.Interval,
                    Graphics.UI.Clutter
 
   Exposed: True

@@ -18,7 +18,7 @@ module Graphics.UI.Clutter.Types (
                                   withActor,
                                   withActorClass,
                                   toActor,
-                                  --newActor,   --FIXME: This seems unfortunate.
+                                  newActor,
 
                                   Rectangle,
                                   RectangleClass,
@@ -111,7 +111,12 @@ module Graphics.UI.Clutter.Types (
                                   CloneClass,
                                   Clone,
                                   withClone,
-                                  newClone
+                                  newClone,
+
+                                  BehaviourClass,
+                                  Behaviour,
+                                  withBehaviour,
+                                  newBehaviour
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -240,8 +245,8 @@ toActor = unsafeCastGObject . toGObject
 withActorClass::ActorClass o => o -> (Ptr Actor -> IO b) -> IO b
 withActorClass o = (withActor . toActor) o
 
---newActor :: (ActorClass actor) =>  Ptr actor -> IO Actor
---newActor a = makeNewObject Actor $ return (castPtr a)
+newActor :: (ActorClass actor) =>  Ptr actor -> IO Actor
+newActor a = makeNewObject Actor $ return (castPtr a)
 
 instance ActorClass Actor
 instance GObjectClass Actor where
@@ -571,6 +576,23 @@ instance CloneClass Clone
 instance GObjectClass Clone where
   toGObject (Clone i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Clone (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Behaviour
+
+{# pointer *ClutterBehaviour as Behaviour foreign newtype #}
+
+class GObjectClass o => BehaviourClass o
+toBehaviour :: BehaviourClass o => o -> Clone
+toBehaviour = unsafeCastGObject . toGObject
+
+newBehaviour a = makeNewObject Behaviour $ return (castPtr a)
+
+instance BehaviourClass Behaviour
+instance GObjectClass Behaviour where
+  toGObject (Behaviour i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Behaviour (castForeignPtr o)
 
 -- ***************************************************************
 

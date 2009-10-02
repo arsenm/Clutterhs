@@ -36,7 +36,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.CairoTexture,
                             module Graphics.UI.Clutter.Media,
                             module Graphics.UI.Clutter.ChildMeta,
-                            module Graphics.UI.Clutter.Clone
+                            module Graphics.UI.Clutter.Clone,
+                            module Graphics.UI.Clutter.Behaviour
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -58,4 +59,5 @@ import Graphics.UI.Clutter.CairoTexture
 import Graphics.UI.Clutter.Media
 import Graphics.UI.Clutter.ChildMeta
 import Graphics.UI.Clutter.Clone
+import Graphics.UI.Clutter.Behaviour
 

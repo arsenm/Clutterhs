@@ -41,6 +41,7 @@ Library
                    Graphics.UI.Clutter.Timeline,
                    Graphics.UI.Clutter.CairoTexture,
                    Graphics.UI.Clutter.Alpha,
+                   Graphics.UI.Clutter.Media,
                    Graphics.UI.Clutter
 
   Exposed: True

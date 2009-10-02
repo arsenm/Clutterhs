@@ -98,7 +98,11 @@ module Graphics.UI.Clutter.Types (
                                   CairoTexture,
                                   CairoTextureClass,
                                   withCairoTexture,
-                                  newCairoTexture
+                                  newCairoTexture,
+
+                                  Media,
+                                  MediaClass,
+                                  withMedia
 
                                  ) where
 
@@ -507,6 +511,24 @@ instance CairoTextureClass CairoTexture
 instance GObjectClass CairoTexture where
   toGObject (CairoTexture i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = CairoTexture (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Media
+
+--FIXME: Doesn't derive from GObject just GInterface??
+{# pointer *ClutterMedia as Media foreign newtype #}
+
+class GObjectClass o => MediaClass o
+toMedia :: MediaClass o => o -> Media
+toMedia = unsafeCastGObject . toGObject
+
+newMedia a = makeNewGObject Media $ return (castPtr a)
+
+instance MediaClass Media
+instance GObjectClass Media where
+  toGObject (Media i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Media (castForeignPtr o)
 
 -- ***************************************************************
 

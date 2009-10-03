@@ -37,8 +37,6 @@ createRectangles stage size (_, recs, i) col = do
 
   width <- get stage actorWidth
   anim <- animate rec Linear 5000 ("x", width/2) ("rotation-angle-z", 500::Double)
--- this should be unnecessary
---  get anim animationTimeline >>= timelineStart
   return (Just anim, rec:recs, i+1)
 
 scatterRectangle :: Float -> Float -> Rectangle -> IO ()
@@ -52,7 +50,6 @@ scatterRectangle h w rec = do
                                  ("y", rnd2 * h / 2 + h / 2)
                                  ("rotation-angle-z", ang)
                                --("opacity", 0::Word8)
---  get anim animationTimeline >>= timelineStart
 
 --FIXME: Why did this need a type signature?
 completedAnimation :: Stage -> IO Animation
@@ -68,9 +65,6 @@ completedAnimation stage = do
            ]
   containerAddActor stage text
   animate text EaseOutBounce 3000 ("y", stageheight / 2)
-
---TODO: Should be unnecessary
---  get anim animationTimeline >>= timelineStart
 
 main = do
   clutterInit

@@ -3,10 +3,19 @@ module Main where
 
 import Graphics.UI.Clutter hiding (show)
 import qualified Graphics.UI.Clutter as C
+import System.Glib.Attributes
 import System.Glib.Signals (on, after)
 import System.Mem
 import Control.Monad.Trans (liftIO)
 import Data.Maybe (fromMaybe)
+import Foreign.Ptr
+
+import C2HS
+import Random
+
+--cetiAlpha5 :: Alpha -> IO Double
+cetiAlpha5 :: Ptr Alpha -> IO Double
+cetiAlpha5 a = randomIO >>= return    --this results in hilarity.
 
 main = do
   a <- clutterInit
@@ -107,5 +116,22 @@ main = do
   performGC
 
   putStrLn "A wild stage appeared!"
+
+
+  --Try out alphas
+  khan <- textNewWithText "sans" "KHAAAAAAAAAAAAAAAAN"
+  containerAddActor stg khan
+  actorSetPosition khan 10 20
+  actorShow khan
+
+  af <- mkAlphaFunc cetiAlpha5
+  tl <- timelineNew 9001
+  alphaParticle <- alphaNewWithFunc tl af
+
+  --wtf is this needing :: IO (type)
+  khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 200::Float)) :: IO Animation
+  timelineStart tl
+
+
   clutterMain
 

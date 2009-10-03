@@ -26,7 +26,7 @@
 module Graphics.UI.Clutter.Alpha (
                                   alphaNew,
                                   alphaNewFull,
-                                --alphaNewWithFunc,
+                                  alphaNewWithFunc,
 
                                   alphaSetTimeline,
                                   alphaGetTimeline,
@@ -58,7 +58,13 @@ import System.Glib.Properties
        { withTimeline* `Timeline', cFromEnum `AnimationMode' } -> `Alpha' newAlpha* #}
 
 --{# fun unsafe alpha_new_with_func as ^
---       { withTimeline* `Timeline', `AlphaFunc', userdata, `GDestroyNotify'} -> `Alpha' newAlpha* #}
+--       { withTimeline* `Timeline', `AlphaFunc', `null', `arst'} -> `Alpha' newAlpha* #}
+--should be AlphaFunc. This is horribly wrong.
+--alphaNewWithFunc :: Timeline -> FunPtr (Ptr Alpha -> Ptr () -> IO CDouble) -> IO Alpha
+alphaNewWithFunc :: Timeline -> AlphaFunc -> IO Alpha
+alphaNewWithFunc tl af = withTimeline tl $ \tlptr -> do
+                         {# call unsafe alpha_new_with_func #} tlptr af nullPtr (castPtrToFunPtr nullPtr) >>= newAlpha
+
 
 {# fun unsafe alpha_set_timeline as ^
        { withAlpha* `Alpha', withTimeline* `Timeline' } -> `()' #}

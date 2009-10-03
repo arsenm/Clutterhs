@@ -26,7 +26,9 @@
 
 module Graphics.UI.Clutter.AnimateArgs (
                                         animate,
-                                        uanimate
+                                        animateWithAlpha,
+                                        uanimate,
+                                        uanimatewithalpha
                                        ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -82,18 +84,25 @@ instance Storable UAnimate where
 animate :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int -> r
 animate actor mode duration = runAnim actor mode duration []
 
+animateWithAlpha :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
+animateWithAlpha actor alpha = runAnimHack actor alpha []
+
 class AnimateType t where
     runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> t
+    runAnimHack :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
 
 -- Multiple return types isn't useful. We only want IO Animation
 instance AnimateType (IO Animation) where
     runAnim actor mode duration args = uanimate actor mode duration args
+    runAnimHack actor alpha args = uanimatewithalpha actor alpha args
 
 instance AnimateType (IO ()) where
     runAnim actor mode duration args = uanimate actor mode duration args >> return ()
+    runAnimHack actor alpha args = uanimatewithalpha actor alpha args >> return ()
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
-    runAnim actor mode duration args = \ a -> runAnim actor mode duration (toUAnimate a : args)
+    runAnim actor mode duration args = \a -> runAnim actor mode duration (toUAnimate a : args)
+    runAnimHack actor alpha args = \a -> runAnimHack actor alpha (toUAnimate a : args)
 
 
 --this should always be a pair of a name and something which can be a gvalue
@@ -143,6 +152,31 @@ uanimate actor mode duration us =
             let unsetOne i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
             in do
               result <- animatev actptr (cFromEnum mode) (cIntConv duration) (cIntConv len) strptr gvPtr
+              foldM_ unsetOne gvPtr uvals
+              return result
+              --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
+    mapM free cstrs
+    newres <- newAnimation res  --FIXME: Do I need to do this here? reffing?
+    return newres
+
+--FIXME: Duplication here
+
+uanimatewithalpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO Animation
+uanimatewithalpha _ _ [] = error "Need arguments to animate with alpha"
+uanimatewithalpha actor alpha us =
+    let (names, uvals) = unzip us
+        size = {# sizeof GValue #}
+        --FIXME: unsafe?
+        animatev = {# call unsafe actor_animate_with_alphav #}
+    in do
+    cstrs <- mapM newCString names
+    res <- withArrayLen cstrs $ \len strptr ->
+           withActorClass actor $ \actptr ->
+           withAlpha alpha $ \alphptr ->
+           withArray uvals $ \gvPtr ->
+            let unsetOne i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
+            in do
+              result <- animatev actptr alphptr (cIntConv len) strptr gvPtr
               foldM_ unsetOne gvPtr uvals
               return result
               --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere

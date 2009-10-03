@@ -136,6 +136,10 @@ module Graphics.UI.Clutter.Types (
                                   Behaviour,
                                   withBehaviour,
                                   newBehaviour,
+                                  BehaviourScaleClass,
+                                  BehaviourScale,
+                                  withBehaviourScale,
+                                  newBehaviourScale,
 
                                   PathClass,
                                   Path,
@@ -619,6 +623,25 @@ instance GObjectClass Behaviour where
   unsafeCastGObject (GObject o) = Behaviour (castForeignPtr o)
 
 -- ***************************************************************
+
+-- *************************************************************** BehaviourScale
+
+{# pointer *ClutterBehaviourScale as BehaviourScale foreign newtype #}
+
+class GObjectClass o => BehaviourScaleClass o
+toBehaviourScale :: BehaviourScaleClass o => o -> Clone
+toBehaviourScale = unsafeCastGObject . toGObject
+
+newBehaviourScale a = makeNewObject BehaviourScale $ return (castPtr a)
+
+instance BehaviourScaleClass BehaviourScale
+instance BehaviourClass BehaviourScale
+instance GObjectClass BehaviourScale where
+  toGObject (BehaviourScale i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BehaviourScale (castForeignPtr o)
+
+-- ***************************************************************
+
 
 -- *************************************************************** Path
 

@@ -38,6 +38,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.ChildMeta,
                             module Graphics.UI.Clutter.Clone,
                             module Graphics.UI.Clutter.Behaviour,
+                            module Graphics.UI.Clutter.BehaviourScale,
                             module Graphics.UI.Clutter.Interval,
                             module Graphics.UI.Clutter.Path
                            ) where
@@ -62,6 +63,7 @@ import Graphics.UI.Clutter.Media
 import Graphics.UI.Clutter.ChildMeta
 import Graphics.UI.Clutter.Clone
 import Graphics.UI.Clutter.Behaviour
+import Graphics.UI.Clutter.BehaviourScale
 import Graphics.UI.Clutter.Interval
 import Graphics.UI.Clutter.Path
 

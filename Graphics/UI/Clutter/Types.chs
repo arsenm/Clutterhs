@@ -44,7 +44,6 @@ module Graphics.UI.Clutter.Types (
                                   toRectangle,
                                   withRectangle,
                                   newRectangle,
---                                  constructRectangle,
 
                                   Text,
                                   TextClass,
@@ -56,7 +55,6 @@ module Graphics.UI.Clutter.Types (
                                   StageClass,
                                   withStage,
                                   newStage,
-                                --constructStage,
 
                                   Container,
                                   ContainerClass,
@@ -269,11 +267,11 @@ withColor col = bracket (mkColor col) free
 -- *************************************************************** Actor
 
 {# pointer *ClutterActor as Actor foreign newtype #}
---{# class GObjectClass => ActorClass Actor #}
 
 class GObjectClass o => ActorClass o
 toActor::ActorClass o => o -> Actor
 toActor = unsafeCastGObject . toGObject
+
 withActorClass::ActorClass o => o -> (Ptr Actor -> IO b) -> IO b
 withActorClass o = (withActor . toActor) o
 
@@ -297,7 +295,6 @@ toRectangle = unsafeCastGObject . toGObject
 
 newRectangle :: Ptr Actor -> IO Rectangle
 newRectangle a = makeNewObject Rectangle $ return (castPtr a)
---constructRectangle a = constructNewGObject Rectangle $ return (castPtr a)
 
 instance RectangleClass Rectangle
 instance ActorClass Rectangle
@@ -337,7 +334,6 @@ toGroup = unsafeCastGObject . toGObject
 newGroup :: Ptr Actor -> IO Group
 newGroup a = makeNewObject Group $ return (castPtr a)
 
-
 instance GroupClass Group
 instance ContainerClass Group
 instance ActorClass Group
@@ -374,9 +370,6 @@ class GroupClass o => StageClass o
 toStage :: StageClass o => o -> Stage
 toStage = unsafeCastGObject . toGObject
 
---FIXME?? Is this OK, with casting? Not always true?
---FIXME: Name and convention for this type deal.
---newStage, constructStage:: Ptr Actor -> IO Stage
 newStage :: Ptr Actor -> IO Stage
 newStage a = makeNewObject Stage $ return (castPtr a)
 
@@ -392,7 +385,6 @@ instance GObjectClass Stage where
 
 -- *************************************************************** Perspective
 
---FIXME: How to marshal this?
 data Perspective = Perspective {
       perspectiveFovy :: !Float,
       perspectiveAspect :: !Float,
@@ -444,8 +436,6 @@ class GObjectClass o => AnimationClass o
 toAnimation :: AnimationClass o => o -> Animation
 toAnimation = unsafeCastGObject . toGObject
 
---FIXME?? Is this OK, with casting? Not always true?
---FIXME: Name and convention for this type deal.
 newAnimation:: Ptr Animation -> IO Animation
 newAnimation a = makeNewGObject Animation $ return (castPtr a)
 

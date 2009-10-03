@@ -26,6 +26,7 @@
 module Graphics.UI.Clutter.Alpha (
                                   alphaNew,
                                   alphaNewFull,
+                                --alphaNewWithFunc,
 
                                   alphaSetTimeline,
                                   alphaGetTimeline,
@@ -33,7 +34,14 @@ module Graphics.UI.Clutter.Alpha (
 
                                   alphaSetMode,
                                   alphaGetMode,
-                                  alphaMode
+                                  alphaMode,
+
+                                  alphaGetAlpha,
+                                  alphaAlpha
+
+                                --alphaSetClosure,
+                                --alphaRegisterClosure,
+                                --alphaRegisterFunc
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -48,6 +56,9 @@ import System.Glib.Properties
 
 {# fun unsafe alpha_new_full as ^
        { withTimeline* `Timeline', cFromEnum `AnimationMode' } -> `Alpha' newAlpha* #}
+
+--{# fun unsafe alpha_new_with_func as ^
+--       { withTimeline* `Timeline', `AlphaFunc', userdata, `GDestroyNotify'} -> `Alpha' newAlpha* #}
 
 {# fun unsafe alpha_set_timeline as ^
        { withAlpha* `Alpha', withTimeline* `Timeline' } -> `()' #}
@@ -64,3 +75,12 @@ alphaTimeline = newAttr alphaGetTimeline alphaSetTimeline
 alphaMode :: Attr Alpha AnimationMode
 alphaMode = newAttr alphaGetMode alphaSetMode
 
+{# fun unsafe alpha_get_alpha as ^ { withAlpha* `Alpha' } -> `Double' #}
+alphaAlpha :: ReadAttr Alpha Double
+alphaAlpha = readAttr alphaGetAlpha
+
+--{# fun unsafe alpha_set_func as ^
+--       { withAlpha* `Alpha', `AlphaFunc', `Userdata', `GDestroyNotify' } -> `Double' #}
+--{# fun unsafe alpha_set_closure as ^ { withAlpha* `Alpha', `GClosure' } -> `()' #}
+--{# fun unsafe alpha_register_closure as ^ { `GClosure' } -> `GULong' #}
+--{# fun unsafe alpha_register_func as ^ { `AlphaFunc', userdata } -> `GULong' #}

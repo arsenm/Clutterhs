@@ -25,6 +25,7 @@
 
 module Graphics.UI.Clutter.Stage (
                                   -- * Constructors
+                                  stageGetDefault,
                                   stageNew,
 
                                   -- * Methods,
@@ -50,7 +51,7 @@ module Graphics.UI.Clutter.Stage (
 
                                 --stageEvent,
                                 --stageSetKeyFocus,
-                                --stageGetKeyFocus,
+                                  stageGetKeyFocus,
                                 --stageKeyFocus,
                                 --stageReadPixels,
 
@@ -84,8 +85,8 @@ import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
 
+{# fun unsafe stage_get_default as ^ {} -> `Stage' newStage* #}
 {# fun unsafe stage_new as ^ {} -> `Stage' newStage* #}
-
 {# fun unsafe stage_is_default as ^ { withStage* `Stage' } -> `Bool' #}
 
 {# fun unsafe stage_set_color as ^ { withStage* `Stage', withColor* `Color' } -> `()' #}
@@ -100,13 +101,12 @@ stageColor = newAttr stageGetColor stageSetColor
 stageFullscreen :: Attr Stage Bool
 stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 
---TODO: Property
+--TODO: Property??
 {# fun unsafe stage_show_cursor as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_hide_cursor as ^ { withStage* `Stage' } -> `()' #}
 
---TODO: How to out marshal? A actor class type?
---{# fun unsafe stage_get_actor_at_pos as ^
---       `(ActorClass actor)' => { withStage* `Stage', cFromEnum `PickMode', `Int', `Int'} -> `actor' newActor* #}
+{# fun unsafe stage_get_actor_at_pos as ^
+       { withStage* `Stage', cFromEnum `PickMode', `Int', `Int'} -> `Actor' newActor* #}
 
 {# fun unsafe stage_ensure_current as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_ensure_viewport as ^ { withStage* `Stage' } -> `()' #}
@@ -116,8 +116,7 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 --{# fun unsafe stage_event as ^ { withStage* `Stage', withEvent* `Event' } -> `Bool' #}
 {# fun unsafe stage_set_key_focus as ^ `(ActorClass actor)' => { withStage* `Stage', withActorClass* `actor' } -> `()' #}
 
---How to outmarshal class ^
---{# fun unsafe stage_get_key_focus as ^ { `(ActorClass actor)' => withStage* `Stage' } -> `Actor' #}
+{# fun unsafe stage_get_key_focus as ^ { withStage* `Stage' } -> `Actor' newActor* #}
 
 --TODO: all those types, namely guchar* out
 --{# fun unsafe stage_read_pixels as ^ { withStage* `Stage', `Int', `Int', `Int', `Int' } -> `GUChar' #}

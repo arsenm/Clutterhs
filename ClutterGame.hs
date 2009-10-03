@@ -75,7 +75,7 @@ completedAnimation stage = do
 main = do
   clutterInit
 
-  stage <- stageNew
+  stage <- stageGetDefault
   set stage [stageColor := Color 0 0 0 255]
 
   on stage hide clutterMainQuit

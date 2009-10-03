@@ -13,9 +13,12 @@ import Foreign.Ptr
 import C2HS
 import Random
 
---cetiAlpha5 :: Alpha -> IO Double
-cetiAlpha5 :: Ptr Alpha -> IO Double
-cetiAlpha5 a = randomIO >>= return    --this results in hilarity.
+cetiAlpha5 :: Alpha -> IO Double
+cetiAlpha5 a = do
+  tml <- alphaGetTimeline a
+  prog <- timelineGetProgress tml
+  rnd <- randomIO   --this results in hilarity.
+  return (rnd * 5 * prog)
 
 main = do
   a <- clutterInit
@@ -117,15 +120,14 @@ main = do
 
   putStrLn "A wild stage appeared!"
 
-
   --Try out alphas
-  khan <- textNewWithText "sans" "KHAAAAAAAAAAAAAAAAN"
+  khan <- textNewWithText "sans" "KHAAAAAAAAAAAAAAAAN!!!!"
   containerAddActor stg khan
   actorSetPosition khan 10 20
   actorShow khan
 
-  af <- mkAlphaFunc cetiAlpha5
   tl <- timelineNew 9001
+  af <- newAlphaFunc cetiAlpha5
   alphaParticle <- alphaNewWithFunc tl af
 
   --wtf is this needing :: IO (type)

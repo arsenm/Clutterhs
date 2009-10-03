@@ -149,7 +149,7 @@ module Graphics.UI.Clutter.Types (
                                   withGroup,
 
                                   AlphaFunc,
-                                  mkAlphaFunc
+                                  newAlphaFunc
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -490,24 +490,17 @@ instance GObjectClass Alpha where
 
 -- *************************************************************** AlphaFunc
 
--- we ignore the user data like everywhere else.
--- Ptr a should always be null.
---type CAlphaFunc = Alpha -> Ptr a -> Double
---type AlphaFunc = Alpha -> Double
-
---type CAlphaFunc = FunPtr (Ptr Alpha -> Ptr () -> IO Double)
---type AlphaFunc = Alpha -> IO Double
-
+type HSAlphaFunc = Alpha -> IO Double
 type AlphaFunc = FunPtr (Ptr Alpha -> Ptr () -> IO CDouble)
---type AlphaFunc = Alpha -> IO Double
 
--- ???
----foreign import ccall "wrapper" mkAlphaFunc :: IO () -> IO (FunPtr(Ptr Alpha -> Ptr () -> IO Double))
---FIXME: this interface of using a Ptr Alpha is unfortunate. fix it.
+newAlphaFunc :: (Alpha -> IO Double) -> IO AlphaFunc
+newAlphaFunc userfunc = mkAlphaFunc (newAlphaFunc' userfunc)
+    where
+      newAlphaFunc' :: (Alpha -> IO Double) -> Ptr Alpha -> IO Double
+      newAlphaFunc' userfunc aptr = newAlpha aptr >>= userfunc
 
 foreign import ccall "wrapper"
         mkAlphaFunc ::  (Ptr Alpha -> IO Double) -> IO AlphaFunc
---        mkAlphaFunc ::  (Ptr Alpha -> IO Double) -> IO CAlphaFunc
 
 -- ***************************************************************
 

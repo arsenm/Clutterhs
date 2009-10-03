@@ -61,7 +61,6 @@ module Graphics.UI.Clutter.Types (
                                   Container,
                                   ContainerClass,
                                   toContainer,
-                                  unContainer,
                                   withContainer,
                                   withContainerClass,
 
@@ -144,7 +143,12 @@ module Graphics.UI.Clutter.Types (
                                   PathClass,
                                   Path,
                                   withPath,
-                                  newPath
+                                  newPath,
+
+                                  Group,
+                                  GroupClass,
+                                  newGroup,
+                                  withGroup
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -330,6 +334,10 @@ class ActorClass o => GroupClass o
 toGroup :: GroupClass o => o -> Group
 toGroup = unsafeCastGObject . toGObject
 
+newGroup :: Ptr Actor -> IO Group
+newGroup a = makeNewObject Group $ return (castPtr a)
+
+
 instance GroupClass Group
 instance ContainerClass Group
 instance ActorClass Group
@@ -342,9 +350,6 @@ instance GObjectClass Group where
 -- *************************************************************** Container
 
 {# pointer *ClutterContainer as Container foreign newtype #}
-
-mkContainer = Container
-unContainer (Container o) = o
 
 class GObjectClass o => ContainerClass o
 toContainer :: ContainerClass o => o -> Container

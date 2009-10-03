@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 
@@ -25,17 +25,19 @@
 
 module Graphics.UI.Clutter.Group (
                                   groupNew,
---                                  groupRemoveAll,
---                                  groupGetNChildren,
---                                  groupGetNthChild
-                                   ) where
+                                  groupRemoveAll,
+                                  groupGetNChildren,
+                                  groupGetNthChild
+                                 ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import System.Glib.GObject
 
---{# fun unsafe group_new {} -> `Group' #}
+{# fun unsafe group_new as ^ {} -> `Group' newGroup* #}
+{# fun unsafe group_remove_all as ^ { withGroup* `Group' } -> `()' #}
+{# fun unsafe group_get_n_children as ^ { withGroup* `Group' } -> `Int' #}
+{# fun unsafe group_get_nth_child as ^ { withGroup* `Group', `Int' } -> `Actor' newActor* #}
 
-groupNew = undefined
 

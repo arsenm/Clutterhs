@@ -32,9 +32,9 @@ module Graphics.UI.Clutter.Behaviour (
                                     --behaviourGetActors, --Set actors??
                                     --behaviourGetNActors,
                                       behaviourGetNthActor,
-                                    --behaviourGetAlpha,
-                                    --behaviourSetAlpha,
-                                    --behaviourAlpha
+                                      behaviourGetAlpha,
+                                      behaviourSetAlpha,
+                                      behaviourAlpha
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -44,25 +44,28 @@ import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_apply as ^
-       `(ActorClass a)' => { withBehaviour* `Behaviour', withActorClass* `a' } -> `()' #}
+       `(BehaviourClass b, ActorClass a)' => { withBehaviourClass* `b', withActorClass* `a' } -> `()' #}
 
 {# fun unsafe behaviour_remove as ^
-       `(ActorClass a)' => { withBehaviour* `Behaviour', withActorClass* `a' } -> `()' #}
+       `(BehaviourClass b, ActorClass a)' => { withBehaviourClass* `b', withActorClass* `a' } -> `()' #}
 
-{# fun unsafe behaviour_remove_all as ^ { withBehaviour* `Behaviour' } -> `()' #}
+{# fun unsafe behaviour_remove_all as ^ `(BehaviourClass b)' => { withBehaviourClass* `b' } -> `()' #}
 
 {# fun unsafe behaviour_is_applied as ^
-       `(ActorClass a)' => { withBehaviour* `Behaviour', withActorClass* `a' } -> `Bool' #}
+       `(BehaviourClass b, ActorClass a)' => { withBehaviourClass* `b', withActorClass* `a' } -> `Bool' #}
 
+--there's no point in binding this. mapM_
 --{# fun unsafe behaviour_actors_foreach as ^
 --       { withBehaviour* `Behaviour', `BehaviourForeachFunc', UserDataToIgnoreSomehow } -> `()' #}
 
-{# fun unsafe behaviour_get_nth_actor as ^ { withBehaviour* `Behaviour', `Int' } -> `Actor' newActor* #}
+{# fun unsafe behaviour_get_nth_actor as ^
+       `(BehaviourClass b)' => { withBehaviourClass* `b', `Int' } -> `Actor' newActor* #}
 
-{-
-{# fun unsafe behaviour_get_alpha as ^ { withBehaviour* `Behaviour' } -> `Alpha' newAlpha* #}
-{# fun unsafe behaviour_set_alpha as ^ { withBehaviour* `Behaviour', withAlpha* `Alpha' } -> `()' #}
-behaviourAlpha :: Attr Behaviour Alpha
+{# fun unsafe behaviour_get_alpha as ^
+       `(BehaviourClass b)' => { withBehaviourClass* `b' } -> `Alpha' newAlpha* #}
+{# fun unsafe behaviour_set_alpha as ^
+       `(BehaviourClass b)' => { withBehaviourClass* `b', withAlpha* `Alpha' } -> `()' #}
+behaviourAlpha :: (BehaviourClass b) => Attr b Alpha
 behaviourAlpha = newAttr behaviourGetAlpha behaviourSetAlpha
--}
+
 

@@ -812,6 +812,7 @@ toTexture = unsafeCastGObject . toGObject
 newTexture a = makeNewObject Texture $ return (castPtr a)
 
 instance TextureClass Texture
+instance ActorClass Texture
 instance GObjectClass Texture where
   toGObject (Texture i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Texture (castForeignPtr o)

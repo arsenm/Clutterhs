@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -25,7 +25,7 @@
 
 module Graphics.UI.Clutter.Texture (
                                     textureNew,
-                                  --textureNewFromFile,
+                                    textureNewFromFile,
                                     textureNewFromActor,
 
                                     textureSetKeepAspectRatio,
@@ -36,11 +36,31 @@ module Graphics.UI.Clutter.Texture (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
+import Control.Monad (liftM, unless, when)
 import System.Glib.Attributes
+import System.Glib.GError
+import System.IO (hPutStrLn, stderr)
+
+
+--allocaGErrorAddr act = alloca $ \gep -> do
+--                       sptr <- newStablePtr gep
 
 {# fun unsafe texture_new as ^ {} -> `Texture' newTexture* #}
---{# fun unsafe texture_new_from_file as ^ { `String', `[GError]'} -> `Texture' newTexture* #}
+
+--{# fun unsafe texture_new_from_file as ^ { `String', alloca- `GError' peek* } -> `Texture' newTexture* #}
+
+textureNewFromFile :: String -> IO Texture
+textureNewFromFile filename = withCString filename $ \cstr -> do
+                              txt <- propagateGError $ \gerrorPtr ->
+                                                          {# call unsafe texture_new_from_file #} cstr (castPtr gerrorPtr)
+                              newTexture txt
+{-
+                             --FIXME: Make this a better message. use with checkGError
+                              (\err@(GError domain code msg) -> hPutStrLn stderr
+                               ("textureNewFromFile: Error: " ++ show domain ++ " " ++ show code ++ " " ++ show msg)
+                              >> return Prelude.Nothing)
+ -}
+                              --somehowthe thing isn't happening
 
 {# fun unsafe texture_new_from_actor as ^ `(ActorClass a)' => { withActorClass* `a'} -> `Texture' newTexture* #}
 

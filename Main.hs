@@ -20,6 +20,13 @@ cetiAlpha5 a = do
   rnd <- randomIO   --this results in hilarity.
   return (rnd * 5 * prog)
 
+
+kirkAlpha :: Alpha -> IO Double
+kirkAlpha a = do
+  tml <- alphaGetTimeline a
+  prog <- timelineGetProgress tml
+  return (10 * prog)
+
 main = do
   a <- clutterInit
   print a
@@ -138,6 +145,25 @@ main = do
   behav <- behaviourRotateNew alphaParticle XAxis RotateCw 0 360
   behaviourRotateSetCenter behav 0 50 15
   behaviourApply behav rec2
+
+  texture <- textureNewFromFile "khaaaaaaan.jpg"
+  set texture [textureKeepAspectRatio := True]
+  containerAddActor stg texture
+  actorSetPosition texture 200 200
+
+  actorSetSize texture 200 135
+  actorShow texture
+
+  kirkAF <- newAlphaFunc kirkAlpha
+  ka <- alphaNewWithFunc tl kirkAF
+
+  --CHECKME: Doesn't work with RotateCcw but does with RotateCw??
+  kirkBehav1 <- behaviourRotateNew ka ZAxis RotateCw 0 360
+  behaviourRotateSetCenter kirkBehav1 100 100 100
+  kirkBehav2 <- behaviourScaleNew ka 0.1 0.1 1 1
+
+  behaviourApply kirkBehav1 texture
+  behaviourApply kirkBehav2 texture
 
   clutterMain
 

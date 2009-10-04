@@ -27,6 +27,7 @@
 module Graphics.UI.Clutter.Types (
 --                                  withGObject,
 --                                  withGObjectClass,
+                                  newActorList,
 
                                   Color(Color),
                                   ColorPtr,
@@ -134,6 +135,9 @@ module Graphics.UI.Clutter.Types (
                                   withBehaviour,
                                   withBehaviourClass,
                                   newBehaviour,
+                                  BehaviourForeachFunc,
+                                  HSBehaviourForeachFunc,
+                                  newBehaviourForeachFunc,
                                   BehaviourScaleClass,
                                   BehaviourScale,
                                   withBehaviourScale,
@@ -177,6 +181,7 @@ import Prelude hiding (Nothing)
 
 import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
+import System.Glib.GList
 import System.Glib.Flags
 import Foreign.ForeignPtr hiding (newForeignPtr)
 import System.Glib.FFI
@@ -215,6 +220,10 @@ makeNewObject constr generator = do
 type GUInt8 = {# type guint8 #}
 type GFloat = {# type gfloat #}
 
+--TODO: this should also go somewhere else??
+--CHECKME: Does this actually work?
+newActorList :: GSList -> IO [Actor]
+newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
 
 -- *************************************************************** Misc
 
@@ -659,6 +668,23 @@ instance BehaviourClass Behaviour
 instance GObjectClass Behaviour where
   toGObject (Behaviour i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Behaviour (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** BehaviourForeachFunc
+type HSBehaviourForeachFunc = Behaviour -> Actor -> IO ()
+type BehaviourForeachFunc = FunPtr (Ptr Behaviour -> Ptr Actor -> Ptr () -> IO ())
+
+newBehaviourForeachFunc :: (Behaviour -> Actor -> IO ()) -> IO BehaviourForeachFunc
+newBehaviourForeachFunc userfunc = mkBehaviourForeachFunc (newBehaviourForeachFunc' userfunc)
+    where
+      newBehaviourForeachFunc' :: (Behaviour -> Actor -> IO ()) -> Ptr Behaviour -> Ptr Actor -> IO ()
+      newBehaviourForeachFunc' userfunc bptr aptr = newActor aptr >>= \actor ->
+                                                    newBehaviour bptr >>= \behave ->
+                                                    userfunc behave actor
+
+foreign import ccall "wrapper"
+    mkBehaviourForeachFunc :: (Ptr Behaviour -> Ptr Actor -> IO ()) -> IO BehaviourForeachFunc
 
 -- ***************************************************************
 

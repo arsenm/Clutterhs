@@ -28,9 +28,10 @@ module Graphics.UI.Clutter.Behaviour (
                                       behaviourRemove,
                                       behaviourRemoveAll,
                                       behaviourIsApplied,
-                                    --behaviourActorsForeach, --Just use mapM?
-                                    --behaviourGetActors, --Set actors??
-                                    --behaviourGetNActors,
+                                      behaviourActorsForeach,
+                                      behaviourGetActors, --Set actors??
+                                      behaviourActors,
+                                      behaviourGetNActors,
                                       behaviourGetNthActor,
                                       behaviourGetAlpha,
                                       behaviourSetAlpha,
@@ -54,12 +55,23 @@ import System.Glib.Attributes
 {# fun unsafe behaviour_is_applied as ^
        `(BehaviourClass b, ActorClass a)' => { withBehaviourClass* `b', withActorClass* `a' } -> `Bool' #}
 
---there's no point in binding this. mapM_
---{# fun unsafe behaviour_actors_foreach as ^
---       { withBehaviour* `Behaviour', `BehaviourForeachFunc', UserDataToIgnoreSomehow } -> `()' #}
+behaviourActorsForeach :: (BehaviourClass b) => b -> BehaviourForeachFunc -> IO ()
+behaviourActorsForeach b func = withBehaviourClass b $ \bptr ->
+                                {# call unsafe behaviour_actors_foreach #} bptr func nullPtr
+                                --CHECKME: unsafe?
+
+--TODO: We could make a rw attribute even though clutter doesn't do that.
+{# fun unsafe behaviour_get_actors as ^
+       `(BehaviourClass b)' => { withBehaviourClass* `b' } -> `[Actor]' newActorList* #}
+behaviourActors :: (BehaviourClass b) => ReadAttr b [Actor]
+behaviourActors = readAttr behaviourGetActors
 
 {# fun unsafe behaviour_get_nth_actor as ^
        `(BehaviourClass b)' => { withBehaviourClass* `b', `Int' } -> `Actor' newActor* #}
+{# fun unsafe behaviour_get_n_actors as ^
+       `(BehaviourClass b)' => { withBehaviourClass* `b' } -> `Int' #}
+behaviourNActors:: (BehaviourClass b) => ReadAttr b Int
+behaviourNActors = readAttr behaviourGetNActors
 
 {# fun unsafe behaviour_get_alpha as ^
        `(BehaviourClass b)' => { withBehaviourClass* `b' } -> `Alpha' newAlpha* #}

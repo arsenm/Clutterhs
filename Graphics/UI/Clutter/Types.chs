@@ -137,6 +137,23 @@ module Graphics.UI.Clutter.Types (
                                   BehaviourScale,
                                   withBehaviourScale,
                                   newBehaviourScale,
+                                  BehaviourDepthClass,
+                                  BehaviourDepth,
+                                  withBehaviourDepth,
+                                  newBehaviourDepth,
+                                  BehaviourEllipseClass,
+                                  BehaviourEllipse,
+                                  withBehaviourEllipse,
+                                  newBehaviourEllipse,
+                                  BehaviourOpacityClass,
+                                  BehaviourOpacity,
+                                  withBehaviourOpacity,
+                                  newBehaviourOpacity,
+                                  BehaviourRotateClass,
+                                  BehaviourRotate,
+                                  withBehaviourRotate,
+                                  newBehaviourRotate,
+
 
                                   PathClass,
                                   Path,
@@ -149,7 +166,9 @@ module Graphics.UI.Clutter.Types (
                                   withGroup,
 
                                   AlphaFunc,
-                                  newAlphaFunc
+                                  newAlphaFunc,
+
+                                  RotateDirection(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -212,6 +231,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterScrollDirection as ScrollDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterTimelineDirection as TimelineDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterRotateDirection as RotateDirection {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
 --it because toEnum can't match 3...but why is it trying? silly bits.
@@ -629,7 +649,7 @@ class GObjectClass o => BehaviourClass o
 toBehaviour :: BehaviourClass o => o -> Clone
 toBehaviour = unsafeCastGObject . toGObject
 
-newBehaviour a = makeNewObject Behaviour $ return (castPtr a)
+newBehaviour a = makeNewGObject Behaviour $ return (castPtr a)
 
 instance BehaviourClass Behaviour
 instance GObjectClass Behaviour where
@@ -646,7 +666,7 @@ class GObjectClass o => BehaviourScaleClass o
 toBehaviourScale :: BehaviourScaleClass o => o -> Clone
 toBehaviourScale = unsafeCastGObject . toGObject
 
-newBehaviourScale a = makeNewObject BehaviourScale $ return (castPtr a)
+newBehaviourScale a = makeNewGObject BehaviourScale $ return (castPtr a)
 
 instance BehaviourScaleClass BehaviourScale
 instance BehaviourClass BehaviourScale
@@ -656,6 +676,77 @@ instance GObjectClass BehaviourScale where
 
 -- ***************************************************************
 
+-- *************************************************************** BehaviourDepth
+
+{# pointer *ClutterBehaviourDepth as BehaviourDepth foreign newtype #}
+
+class GObjectClass o => BehaviourDepthClass o
+toBehaviourDepth :: BehaviourDepthClass o => o -> Clone
+toBehaviourDepth = unsafeCastGObject . toGObject
+
+newBehaviourDepth a = makeNewGObject BehaviourDepth $ return (castPtr a)
+
+instance BehaviourDepthClass BehaviourDepth
+instance BehaviourClass BehaviourDepth
+instance GObjectClass BehaviourDepth where
+  toGObject (BehaviourDepth i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BehaviourDepth (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** BehaviourEllipse
+
+{# pointer *ClutterBehaviourEllipse as BehaviourEllipse foreign newtype #}
+
+class GObjectClass o => BehaviourEllipseClass o
+toBehaviourEllipse :: BehaviourEllipseClass o => o -> Clone
+toBehaviourEllipse = unsafeCastGObject . toGObject
+
+newBehaviourEllipse a = makeNewGObject BehaviourEllipse $ return (castPtr a)
+
+instance BehaviourEllipseClass BehaviourEllipse
+instance BehaviourClass BehaviourEllipse
+instance GObjectClass BehaviourEllipse where
+  toGObject (BehaviourEllipse i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BehaviourEllipse (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** BehaviourOpacity
+
+{# pointer *ClutterBehaviourOpacity as BehaviourOpacity foreign newtype #}
+
+class GObjectClass o => BehaviourOpacityClass o
+toBehaviourOpacity :: BehaviourOpacityClass o => o -> Clone
+toBehaviourOpacity = unsafeCastGObject . toGObject
+
+newBehaviourOpacity a = makeNewGObject BehaviourOpacity $ return (castPtr a)
+
+instance BehaviourOpacityClass BehaviourOpacity
+instance BehaviourClass BehaviourOpacity
+instance GObjectClass BehaviourOpacity where
+  toGObject (BehaviourOpacity i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BehaviourOpacity (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** BehaviourRotate
+
+{# pointer *ClutterBehaviourRotate as BehaviourRotate foreign newtype #}
+
+class GObjectClass o => BehaviourRotateClass o
+toBehaviourRotate :: BehaviourRotateClass o => o -> Clone
+toBehaviourRotate = unsafeCastGObject . toGObject
+
+newBehaviourRotate a = makeNewGObject BehaviourRotate $ return (castPtr a)
+
+instance BehaviourRotateClass BehaviourRotate
+instance BehaviourClass BehaviourRotate
+instance GObjectClass BehaviourRotate where
+  toGObject (BehaviourRotate i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BehaviourRotate (castForeignPtr o)
+
+-- ***************************************************************
 
 -- *************************************************************** Path
 

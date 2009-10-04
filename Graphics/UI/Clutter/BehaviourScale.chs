@@ -37,7 +37,8 @@ import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_scale_new as ^
-       { withAlpha* `Alpha', `Double', `Double', `Double', `Double'} -> `()' #}
+       { withAlpha* `Alpha', `Double', `Double', `Double', `Double'} ->
+       `BehaviourScale' newBehaviourScale* #}
 
 {# fun unsafe behaviour_scale_set_bounds as ^
        { withBehaviourScale* `BehaviourScale', `Double', `Double', `Double', `Double'} -> `()' #}
@@ -49,7 +50,7 @@ import System.Glib.Attributes
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*} -> `()' #}
 
---maybe make this work
+--TODO: maybe make this work
 --behaviourScaleBounds :: Attr BehaviourScale (Double, Double, Double, Double)
 --behaviourScaleBounds = newAttr behaviourGetBounds behaviourSetBounds
 

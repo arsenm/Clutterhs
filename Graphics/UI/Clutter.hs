@@ -39,6 +39,10 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Clone,
                             module Graphics.UI.Clutter.Behaviour,
                             module Graphics.UI.Clutter.BehaviourScale,
+                            module Graphics.UI.Clutter.BehaviourDepth,
+                            module Graphics.UI.Clutter.BehaviourEllipse,
+                            module Graphics.UI.Clutter.BehaviourOpacity,
+                            module Graphics.UI.Clutter.BehaviourRotate,
                             module Graphics.UI.Clutter.Interval,
                             module Graphics.UI.Clutter.Path
                            ) where
@@ -64,6 +68,10 @@ import Graphics.UI.Clutter.ChildMeta
 import Graphics.UI.Clutter.Clone
 import Graphics.UI.Clutter.Behaviour
 import Graphics.UI.Clutter.BehaviourScale
+import Graphics.UI.Clutter.BehaviourDepth
+import Graphics.UI.Clutter.BehaviourEllipse
+import Graphics.UI.Clutter.BehaviourOpacity
+import Graphics.UI.Clutter.BehaviourRotate
 import Graphics.UI.Clutter.Interval
 import Graphics.UI.Clutter.Path
 

@@ -134,5 +134,10 @@ main = do
   khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 200::Float)) :: IO Animation
   timelineStart tl
 
+  -- try behaviours
+  behav <- behaviourRotateNew alphaParticle XAxis RotateCw 0 360
+  behaviourRotateSetCenter behav 0 50 15
+  behaviourApply behav rec2
+
   clutterMain
 

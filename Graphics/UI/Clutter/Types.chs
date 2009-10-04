@@ -173,7 +173,12 @@ module Graphics.UI.Clutter.Types (
                                   AlphaFunc,
                                   newAlphaFunc,
 
-                                  RotateDirection(..)
+                                  RotateDirection(..),
+                                  TextureQuality(..),
+                                  Texture,
+                                  TextureClass,
+                                  newTexture,
+                                  withTexture
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -242,6 +247,7 @@ newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
 {# enum ClutterTimelineDirection as TimelineDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRotateDirection as RotateDirection {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterTextureQuality as TextureQuality {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
 --it because toEnum can't match 3...but why is it trying? silly bits.
@@ -792,6 +798,23 @@ instance PathClass Path
 instance GObjectClass Path where
   toGObject (Path i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Path (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Texture
+
+{# pointer *ClutterTexture as Texture foreign newtype #}
+
+class GObjectClass o => TextureClass o
+toTexture :: TextureClass o => o -> Clone
+toTexture = unsafeCastGObject . toGObject
+
+newTexture a = makeNewObject Texture $ return (castPtr a)
+
+instance TextureClass Texture
+instance GObjectClass Texture where
+  toGObject (Texture i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Texture (castForeignPtr o)
 
 -- ***************************************************************
 

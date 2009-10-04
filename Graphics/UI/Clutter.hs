@@ -25,6 +25,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Container,
                             module Graphics.UI.Clutter.General,
                             module Graphics.UI.Clutter.Rectangle,
+                            module Graphics.UI.Clutter.Texture,
                             module Graphics.UI.Clutter.Text,
                             module Graphics.UI.Clutter.Event,
                             module Graphics.UI.Clutter.Stage,
@@ -56,6 +57,7 @@ import Graphics.UI.Clutter.Color
 import Graphics.UI.Clutter.Actor
 import Graphics.UI.Clutter.General
 import Graphics.UI.Clutter.Rectangle
+import Graphics.UI.Clutter.Texture
 import Graphics.UI.Clutter.Text
 import Graphics.UI.Clutter.Animation
 import Graphics.UI.Clutter.Timeline
@@ -74,4 +76,5 @@ import Graphics.UI.Clutter.BehaviourOpacity
 import Graphics.UI.Clutter.BehaviourRotate
 import Graphics.UI.Clutter.Interval
 import Graphics.UI.Clutter.Path
+
 

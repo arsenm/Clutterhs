@@ -1,5 +1,5 @@
 -- -*-haskell-*-
---  GValue
+--  AnimateArgs
 --
 --  Author : Matthew Arsenault
 --
@@ -91,7 +91,9 @@ class AnimateType t where
     runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> t
     runAnimHack :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
 
--- Multiple return types isn't useful. We only want IO Animation
+-- Multiple return types isn't useful. We only want IO Animation.
+-- This breaks things if you remove the instance for ().
+-- Also type inference not working in many cases. maybe find a better way
 instance AnimateType (IO Animation) where
     runAnim actor mode duration args = uanimate actor mode duration args
     runAnimHack actor alpha args = uanimatewithalpha actor alpha args
@@ -142,7 +144,7 @@ uanimate _ _ _ [] = error "Need arguments to animate"
 uanimate actor mode duration us =
     let (names, uvals) = unzip us
         size = {# sizeof GValue #}
-        --FIXME: unsafe?
+        --CHECKME: unsafe?
         animatev = {# call unsafe actor_animatev #}
     in do
     cstrs <- mapM newCString names
@@ -166,7 +168,7 @@ uanimatewithalpha _ _ [] = error "Need arguments to animate with alpha"
 uanimatewithalpha actor alpha us =
     let (names, uvals) = unzip us
         size = {# sizeof GValue #}
-        --FIXME: unsafe?
+        --CHECKME: unsafe?
         animatev = {# call unsafe actor_animate_with_alphav #}
     in do
     cstrs <- mapM newCString names

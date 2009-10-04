@@ -500,7 +500,7 @@ newAlphaFunc userfunc = mkAlphaFunc (newAlphaFunc' userfunc)
       newAlphaFunc' userfunc aptr = newAlpha aptr >>= userfunc
 
 foreign import ccall "wrapper"
-        mkAlphaFunc ::  (Ptr Alpha -> IO Double) -> IO AlphaFunc
+    mkAlphaFunc :: (Ptr Alpha -> IO Double) -> IO AlphaFunc
 
 -- ***************************************************************
 

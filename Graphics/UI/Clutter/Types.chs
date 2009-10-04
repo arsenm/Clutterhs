@@ -172,6 +172,7 @@ module Graphics.UI.Clutter.Types (
 
                                   AlphaFunc,
                                   newAlphaFunc,
+                                  freeHaskellFunPtrPtr,
 
                                   RotateDirection(..),
                                   TextureQuality(..),
@@ -526,17 +527,20 @@ instance GObjectClass Alpha where
 
 -- *************************************************************** AlphaFunc
 
-type HSAlphaFunc = Alpha -> IO Double
-type AlphaFunc = FunPtr (Ptr Alpha -> Ptr () -> IO CDouble)
+type AlphaFunc = Alpha -> IO Double
+type CAlphaFunc = FunPtr (Ptr Alpha -> Ptr () -> IO CDouble)
 
-newAlphaFunc :: (Alpha -> IO Double) -> IO AlphaFunc
+newAlphaFunc :: AlphaFunc -> IO CAlphaFunc
 newAlphaFunc userfunc = mkAlphaFunc (newAlphaFunc' userfunc)
     where
       newAlphaFunc' :: (Alpha -> IO Double) -> Ptr Alpha -> IO Double
       newAlphaFunc' userfunc aptr = newAlpha aptr >>= userfunc
 
 foreign import ccall "wrapper"
-    mkAlphaFunc :: (Ptr Alpha -> IO Double) -> IO AlphaFunc
+    mkAlphaFunc :: (Ptr Alpha -> IO Double) -> IO CAlphaFunc
+
+--CHECKME: Does this actually work?
+foreign import ccall "&hs_free_fun_ptr" freeHaskellFunPtrPtr :: FunPtr (FunPtr a -> IO ())
 
 -- ***************************************************************
 

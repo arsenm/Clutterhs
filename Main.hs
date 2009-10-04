@@ -128,17 +128,16 @@ main = do
   putStrLn "A wild stage appeared!"
 
   --Try out alphas
-  khan <- textNewWithText "sans" "KHAAAAAAAAAAAAAAAAN!!!!"
+  khan <- textNewWithText "sans bold 20" "KHAAAAAAAAAAAAAAN!!!!"
   containerAddActor stg khan
-  actorSetPosition khan 10 20
+  actorSetPosition khan 10 100
   actorShow khan
 
   tl <- timelineNew 9001
-  af <- newAlphaFunc cetiAlpha5
-  alphaParticle <- alphaNewWithFunc tl af
+  alphaParticle <- alphaNewWithFunc tl cetiAlpha5
 
   --wtf is this needing :: IO (type)
-  khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 200::Float)) :: IO Animation
+  khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 300::Float)) :: IO Animation
   timelineStart tl
 
   -- try behaviours
@@ -154,8 +153,7 @@ main = do
   actorSetSize texture 200 135
   actorShow texture
 
-  kirkAF <- newAlphaFunc kirkAlpha
-  ka <- alphaNewWithFunc tl kirkAF
+  ka <- alphaNewWithFunc tl kirkAlpha
 
   --CHECKME: Doesn't work with RotateCcw but does with RotateCw??
   kirkBehav1 <- behaviourRotateNew ka ZAxis RotateCw 0 360

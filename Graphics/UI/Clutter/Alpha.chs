@@ -57,10 +57,12 @@ import System.Glib.Properties
 {# fun unsafe alpha_new_full as ^
        { withTimeline* `Timeline', cFromEnum `AnimationMode' } -> `Alpha' newAlpha* #}
 
---we don't care about the user data or GDestroyNotify
+--we don't care about the user data, and GDestroyNotify should always free the haskell function ptr
 alphaNewWithFunc :: Timeline -> AlphaFunc -> IO Alpha
 alphaNewWithFunc tl af = withTimeline tl $ \tlptr -> do
-                         {# call unsafe alpha_new_with_func #} tlptr af nullPtr (castPtrToFunPtr nullPtr) >>= newAlpha
+                         afptr <- newAlphaFunc af
+                         a <- {# call unsafe alpha_new_with_func #} tlptr afptr nullPtr (castFunPtr freeHaskellFunPtrPtr)
+                         newAlpha a
 
 {# fun unsafe alpha_set_timeline as ^
        { withAlpha* `Alpha', withTimeline* `Timeline' } -> `()' #}

@@ -58,10 +58,21 @@ import System.Glib.Properties
        { withTimeline* `Timeline', cFromEnum `AnimationMode' } -> `Alpha' newAlpha* #}
 
 --we don't care about the user data, and GDestroyNotify should always free the haskell function ptr
+--FIXME: I'm not really sure what pointer the final argument is passed.
+--It's almost certainly not the function pointer, so this is wrong.
+--If I need to pass curried freeHaskellFunPtr, but that requires another wrapper call.
+--Then that wrapped func, would need to be freed later, but how? No ForeignFunPtr with finalizer
+--I think it might be passed the user data, so pass the function pointer to the function as the user data :p
+--This somehow seems to not crash, which I really don't believe. Also somehow this works as unsafe which I don't understand.
+--FIXME/CHECKME: Somewhat related, what happens when using alpha_set_func when a function was previously set?
+--does the GDestroyNotify still get called and free the function (supposing any of the above worked),
+--or does it start leaking functions??
 alphaNewWithFunc :: Timeline -> AlphaFunc -> IO Alpha
 alphaNewWithFunc tl af = withTimeline tl $ \tlptr -> do
                          afptr <- newAlphaFunc af
-                         a <- {# call unsafe alpha_new_with_func #} tlptr afptr nullPtr (castFunPtr freeHaskellFunPtrPtr)
+                         let gptr1 = castFunPtrToPtr afptr
+                         let gptr2 = castFunPtr freeHaskellFunPtrPtr
+                         a <- {# call unsafe alpha_new_with_func #} tlptr afptr gptr1 gptr2
                          newAlpha a
 
 {# fun unsafe alpha_set_timeline as ^

@@ -135,10 +135,13 @@ main = do
 
   tl <- timelineNew 9001
   alphaParticle <- alphaNewWithFunc tl cetiAlpha5
+  performGC
 
   --wtf is this needing :: IO (type)
   khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 300::Float)) :: IO Animation
   timelineStart tl
+
+  performGC
 
   -- try behaviours
   behav <- behaviourRotateNew alphaParticle XAxis RotateCw 0 360
@@ -153,6 +156,8 @@ main = do
   actorSetSize texture 200 135
   actorShow texture
 
+  performGC
+
   ka <- alphaNewWithFunc tl kirkAlpha
 
   --CHECKME: Doesn't work with RotateCcw but does with RotateCw??
@@ -160,8 +165,12 @@ main = do
   behaviourRotateSetCenter kirkBehav1 100 100 100
   kirkBehav2 <- behaviourScaleNew ka 0.1 0.1 1 1
 
+  performGC
+
   behaviourApply kirkBehav1 texture
   behaviourApply kirkBehav2 texture
+
+  performGC
 
   clutterMain
 

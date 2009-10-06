@@ -26,18 +26,18 @@
 --TODO: Property list of children?
 
 module Graphics.UI.Clutter.Container (
-                                      containerAddActor
+                                      containerAddActor,
                                     --containerAddList
-                                    --containerRemoveActor,
+                                      containerRemoveActor,
                                     --containerRemove,
                                     --containerRemoveList,
-                                    --containerGetChildren,
+                                      containerGetChildren,
                                     --containerForeach,
                                     --containerForeachWithInternals,
-                                    --containerFindChildByName,
-                                    --containerRaiseChild,
-                                    --containerLowerChild,
-                                    --containerSortDepthOrder,
+                                      containerFindChildByName,
+                                      containerRaiseChild,
+                                      containerLowerChild,
+                                      containerSortDepthOrder
                                     --containerClassFindChildProperty,
                                     --containerClassListChildProperties,
                                     --containerChildSetProperty,
@@ -57,4 +57,26 @@ import System.Glib.GObject
        `(ContainerClass container, ActorClass actor)' =>
            { withContainerClass* `container', withActorClass* `actor' } -> `()' #}
 
+
+{# fun unsafe container_remove_actor as ^
+       `(ContainerClass container, ActorClass actor)' =>
+           { withContainerClass* `container', withActorClass* `actor' } -> `()' #}
+
+{# fun unsafe container_get_children as ^
+       `(ContainerClass container)' => { withContainerClass* `container' } -> `[Actor]' newActorList* #}
+
+
+{# fun unsafe container_find_child_by_name as ^
+       `(ContainerClass container)' => { withContainerClass* `container', `String' } -> `Actor' newActor* #}
+
+
+{# fun unsafe container_raise_child as ^
+       `(ContainerClass container, ActorClass a, ActorClass b)' =>
+           { withContainerClass* `container', withActorClass* `a', withActorClass* `b' } -> `()' #}
+{# fun unsafe container_lower_child as ^
+       `(ContainerClass container, ActorClass a, ActorClass b)' =>
+           { withContainerClass* `container', withActorClass* `a', withActorClass* `b' } -> `()' #}
+
+{# fun unsafe container_sort_depth_order as ^
+       `(ContainerClass container)' => { withContainerClass* `container' } -> `()' #}
 

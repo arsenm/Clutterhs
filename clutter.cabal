@@ -55,6 +55,7 @@ Library
                    Graphics.UI.Clutter.Path,
                    Graphics.UI.Clutter.Shader,
                    Graphics.UI.Clutter.Model,
+                   Graphics.UI.Clutter.Script,
                    Graphics.UI.Clutter
 
   Exposed: True

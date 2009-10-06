@@ -192,7 +192,12 @@ module Graphics.UI.Clutter.Types (
                                   Model,
                                   ModelClass,
                                   withModel,
-                                  withModelClass
+                                  withModelClass,
+
+                                  Script,
+                                  ScriptClass,
+                                  withScript,
+                                  newScript
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -876,6 +881,27 @@ instance ActorClass Model
 instance GObjectClass Model where
   toGObject (Model i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Model (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Script
+
+{# pointer *ClutterScript as Script foreign newtype #}
+
+class GObjectClass o => ScriptClass o
+toScript :: ScriptClass o => o -> Script
+toScript = unsafeCastGObject . toGObject
+
+withScriptClass::ScriptClass o => o -> (Ptr Script -> IO b) -> IO b
+withScriptClass o = (withScript . toScript) o
+
+newScript a = makeNewObject Script $ return (castPtr a)
+
+instance ScriptClass Script
+instance ActorClass Script
+instance GObjectClass Script where
+  toGObject (Script i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Script (castForeignPtr o)
 
 -- ***************************************************************
 

@@ -60,6 +60,7 @@ module Graphics.UI.Clutter.Types (
                                   Container,
                                   ContainerClass,
                                   toContainer,
+                                  newContainer,
                                   withContainer,
                                   withContainerClass,
 
@@ -412,6 +413,9 @@ toContainer = unsafeCastGObject . toGObject
 
 withContainerClass::ContainerClass o => o -> (Ptr Container -> IO b) -> IO b
 withContainerClass o = (withContainer . toContainer) o
+
+newContainer :: Ptr Actor -> IO Container
+newContainer a = makeNewObject Container $ return (castPtr a)
 
 instance ContainerClass Container
 instance GObjectClass Container where

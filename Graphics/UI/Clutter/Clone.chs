@@ -17,14 +17,14 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Clone (
-                                --cloneNew,
+                                  cloneNew
                                 --cloneSetSource,
                                 --cloneGetSource,
                                 --cloneSource
@@ -36,13 +36,14 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
---FIXME: Same problem...What out?
-{-
-{# fun unsafe clone_new as ^ `(ActorClass a)' => { withActorClass* `a' } -> `a' newActor* #}
+{# fun unsafe clone_new as ^ `(ActorClass a)' => { withActorClass* `a' } -> `Clone' newClone* #}
 
+
+{-
+--Attribute is unhappy, class Actor vs. ActorClass.
 {# fun unsafe clone_get_source as ^ { withClone* `Clone' } -> `Actor' newActor* #}
 {# fun unsafe clone_set_source as ^ `(ActorClass a)' => { withClone* `Clone', withActorClass* `a' } -> `()' #}
-cloneSource :: (ActorClass self) => ReadAttr self Container
+cloneSource :: (ActorClass self) => Attr Clone self
 cloneSource = newAttr cloneGetSource cloneSetSource
 -}
 

@@ -17,14 +17,14 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.ChildMeta (
-                                    --childMetaGetContainer,
+                                      childMetaGetContainer
                                     --childMetaContainer,
                                     --childMetaGetActor,
                                     --childMetaActor
@@ -36,14 +36,19 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
+childMetaGetContainer = undefined
+
 {-
-{# fun unsafe child_meta_get_container as ^ { withChildMeta* `ChildMeta' } -> newContainer* `Container' #}
-childMetaContainer :: (ActorClass self) => ReadAttr self Container
+--TODO: not use this, since it's just a simple struct
+
+{# fun unsafe child_meta_get_container as ^ { withChildMeta* `ChildMeta' } -> `Container' newContainer* #}
+childMetaContainer :: (ChildMetaClass cm) => ReadAttr cm Container
 childMetaContainer = readAttr childMetaGetContainer
 
-{# fun unsafe child_meta_get_actor as ^ { withChildMeta* `ChildMeta' } -> newContainer* `Container' #}
-childMetaActor :: (ActorClass self) => ReadAttr self Actor
-childMetaActor = readAttr childMetaGetActor
--}
 
+{# fun unsafe child_meta_get_actor as ^ { withChildMeta* `ChildMeta' } -> `Actor' newActor* #}
+childMetaActor :: (ChildMetaClass cm) => ReadAttr cm Actor
+childMetaActor = readAttr childMetaGetActor
+
+-}
 

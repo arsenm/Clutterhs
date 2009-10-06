@@ -120,6 +120,7 @@ module Graphics.UI.Clutter.Types (
                                   Media,
                                   MediaClass,
                                   withMedia,
+                                  withMediaClass,
 
                                   ChildMeta,
                                   ChildMetaClass,
@@ -613,6 +614,10 @@ instance GObjectClass CairoTexture where
 
 --FIXME: Doesn't derive from GObject just GInterface??
 {# pointer *ClutterMedia as Media foreign newtype #}
+
+withMediaClass::MediaClass o => o -> (Ptr Media -> IO b) -> IO b
+withMediaClass o = (withMedia . toMedia) o
+
 
 class GObjectClass o => MediaClass o
 toMedia :: MediaClass o => o -> Media

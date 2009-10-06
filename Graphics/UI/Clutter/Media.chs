@@ -56,33 +56,33 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
-{# fun unsafe media_set_uri as ^ { withMedia* `Media', `String' } -> `()' #}
-{# fun unsafe media_get_uri as ^ { withMedia* `Media' } -> `String' #}
+{# fun unsafe media_set_uri as ^ `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
+{# fun unsafe media_get_uri as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `String' #}
 mediaUri :: Attr Media String
 mediaUri = newAttr mediaGetUri mediaSetUri
 
-{# fun unsafe media_set_playing as ^ { withMedia* `Media', `Bool' } -> `()' #}
-{# fun unsafe media_get_playing as ^ { withMedia* `Media' } -> `Bool' #}
+{# fun unsafe media_set_playing as ^ `(MediaClass m)' => { withMediaClass* `m', `Bool' } -> `()' #}
+{# fun unsafe media_get_playing as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Bool' #}
 mediaPlaying :: Attr Media Bool
 mediaPlaying = newAttr mediaGetPlaying mediaSetPlaying
 
-{# fun unsafe media_set_progress as ^ { withMedia* `Media', `Double' } -> `()' #}
-{# fun unsafe media_get_progress as ^ { withMedia* `Media' } -> `Double' #}
+{# fun unsafe media_set_progress as ^ `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
+{# fun unsafe media_get_progress as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 mediaProgress :: Attr Media Double
 mediaProgress = newAttr mediaGetProgress mediaSetProgress
 
-{# fun unsafe media_set_audio_volume as ^ { withMedia* `Media', `Double' } -> `()' #}
-{# fun unsafe media_get_audio_volume as ^ { withMedia* `Media' } -> `Double' #}
+{# fun unsafe media_set_audio_volume as ^ `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
+{# fun unsafe media_get_audio_volume as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 mediaAudioVolume :: Attr Media Double
 mediaAudioVolume = newAttr mediaGetAudioVolume mediaSetAudioVolume
 
-{# fun unsafe media_get_can_seek as ^ { withMedia* `Media' } -> `Bool' #}
+{# fun unsafe media_get_can_seek as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Bool' #}
 {- TODO: Read only attrs
 mediaCanSeek :: Attr Media Bool
 mediaCanSeek = newAttr mediaGetPlaying mediaSetPlaying
 -}
-{# fun unsafe media_get_buffer_fill as ^ { withMedia* `Media' } -> `Double' #}
-{# fun unsafe media_get_duration as ^ { withMedia* `Media' } -> `Double' #}
+{# fun unsafe media_get_buffer_fill as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
+{# fun unsafe media_get_duration as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 
-{# fun unsafe media_set_filename as ^ { withMedia* `Media', `String' } -> `()' #}
+{# fun unsafe media_set_filename as ^ `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
 

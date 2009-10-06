@@ -136,6 +136,7 @@ timelineListMarkers tml time = withTimeline tml $ \tmlptr ->
 {# fun unsafe timeline_remove_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}
 {# fun unsafe timeline_advance_to_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}
 
+--TODO: Check these
 
 onCompleted, afterCompleted :: Timeline -> IO () -> IO (ConnectId Timeline)
 onCompleted = connect_NONE__NONE "completed" False
@@ -143,4 +144,36 @@ afterCompleted = connect_NONE__NONE "completed" True
 
 completed :: Signal Timeline (IO ())
 completed = Signal (connect_NONE__NONE "completed")
+
+
+onMarkerreached, afterMarkerreached :: Timeline -> (Char -> Int -> IO ()) -> IO (ConnectId Timeline)
+onMarkerreached = connect_CHAR_INT__NONE "marker-reached" False
+afterMarkerreached = connect_CHAR_INT__NONE "marker-reached" True
+
+markerReached :: Signal Timeline (Char -> Int -> IO ())
+markerReached = Signal (connect_CHAR_INT__NONE "marker-reached")
+
+
+onNewFrame, afterNewFrame :: Timeline -> (Int -> IO ()) -> IO (ConnectId Timeline)
+onNewFrame = connect_INT__NONE "new-frame" False
+afterNewFrame = connect_INT__NONE "new-frame" True
+
+newFrame :: Signal Timeline (Int -> IO ())
+newFrame = Signal (connect_INT__NONE "new-frame")
+
+
+onPaused, afterPaused :: Timeline -> IO () -> IO (ConnectId Timeline)
+onPaused = connect_NONE__NONE "paused" False
+afterPaused = connect_NONE__NONE "paused" True
+
+paused :: Signal Timeline (IO ())
+paused = Signal (connect_NONE__NONE "paused")
+
+
+onStarted, afterStarted :: Timeline -> IO () -> IO (ConnectId Timeline)
+onStarted = connect_NONE__NONE "started" False
+afterStarted = connect_NONE__NONE "started" True
+
+started :: Signal Timeline (IO ())
+started = Signal (connect_NONE__NONE "started")
 

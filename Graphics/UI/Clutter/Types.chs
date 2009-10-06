@@ -180,7 +180,14 @@ module Graphics.UI.Clutter.Types (
                                   Texture,
                                   TextureClass,
                                   newTexture,
-                                  withTexture
+                                  withTexture,
+
+                                  Shader,
+                                  ShaderClass,
+                                  withShader,
+                                  newShader,
+
+                                  ShaderError(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -250,6 +257,7 @@ newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
 {# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRotateDirection as RotateDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterTextureQuality as TextureQuality {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterShaderError as ShaderError {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
 --it because toEnum can't match 3...but why is it trying? silly bits.
@@ -825,6 +833,24 @@ instance ActorClass Texture
 instance GObjectClass Texture where
   toGObject (Texture i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Texture (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Shader
+
+{# pointer *ClutterShader as Shader foreign newtype #}
+
+class GObjectClass o => ShaderClass o
+toShader :: ShaderClass o => o -> Clone
+toShader = unsafeCastGObject . toGObject
+
+newShader a = makeNewObject Shader $ return (castPtr a)
+
+instance ShaderClass Shader
+instance ActorClass Shader
+instance GObjectClass Shader where
+  toGObject (Shader i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Shader (castForeignPtr o)
 
 -- ***************************************************************
 

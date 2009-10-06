@@ -53,6 +53,7 @@ Library
                    Graphics.UI.Clutter.BehaviourRotate,
                    Graphics.UI.Clutter.Interval,
                    Graphics.UI.Clutter.Path,
+                   Graphics.UI.Clutter.Shader,
                    Graphics.UI.Clutter
 
   Exposed: True

@@ -46,7 +46,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.BehaviourRotate,
                             module Graphics.UI.Clutter.Interval,
                             module Graphics.UI.Clutter.Path,
-                            module Graphics.UI.Clutter.Shader
+                            module Graphics.UI.Clutter.Shader,
+                            module Graphics.UI.Clutter.Model
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -78,5 +79,6 @@ import Graphics.UI.Clutter.BehaviourRotate
 import Graphics.UI.Clutter.Interval
 import Graphics.UI.Clutter.Path
 import Graphics.UI.Clutter.Shader
+import Graphics.UI.Clutter.Model
 
 

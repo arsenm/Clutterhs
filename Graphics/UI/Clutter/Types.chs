@@ -187,7 +187,12 @@ module Graphics.UI.Clutter.Types (
                                   withShader,
                                   newShader,
 
-                                  ShaderError(..)
+                                  ShaderError(..),
+
+                                  Model,
+                                  ModelClass,
+                                  withModel,
+                                  withModelClass
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -626,7 +631,6 @@ instance GObjectClass CairoTexture where
 withMediaClass::MediaClass o => o -> (Ptr Media -> IO b) -> IO b
 withMediaClass o = (withMedia . toMedia) o
 
-
 class GObjectClass o => MediaClass o
 toMedia :: MediaClass o => o -> Media
 toMedia = unsafeCastGObject . toGObject
@@ -734,7 +738,7 @@ instance GObjectClass BehaviourScale where
 {# pointer *ClutterBehaviourDepth as BehaviourDepth foreign newtype #}
 
 class GObjectClass o => BehaviourDepthClass o
-toBehaviourDepth :: BehaviourDepthClass o => o -> Clone
+toBehaviourDepth :: BehaviourDepthClass o => o -> BehaviourDepth
 toBehaviourDepth = unsafeCastGObject . toGObject
 
 newBehaviourDepth a = makeNewGObject BehaviourDepth $ return (castPtr a)
@@ -752,7 +756,7 @@ instance GObjectClass BehaviourDepth where
 {# pointer *ClutterBehaviourEllipse as BehaviourEllipse foreign newtype #}
 
 class GObjectClass o => BehaviourEllipseClass o
-toBehaviourEllipse :: BehaviourEllipseClass o => o -> Clone
+toBehaviourEllipse :: BehaviourEllipseClass o => o -> BehaviourEllipse
 toBehaviourEllipse = unsafeCastGObject . toGObject
 
 newBehaviourEllipse a = makeNewGObject BehaviourEllipse $ return (castPtr a)
@@ -770,7 +774,7 @@ instance GObjectClass BehaviourEllipse where
 {# pointer *ClutterBehaviourOpacity as BehaviourOpacity foreign newtype #}
 
 class GObjectClass o => BehaviourOpacityClass o
-toBehaviourOpacity :: BehaviourOpacityClass o => o -> Clone
+toBehaviourOpacity :: BehaviourOpacityClass o => o -> BehaviourOpacity
 toBehaviourOpacity = unsafeCastGObject . toGObject
 
 newBehaviourOpacity a = makeNewGObject BehaviourOpacity $ return (castPtr a)
@@ -788,7 +792,7 @@ instance GObjectClass BehaviourOpacity where
 {# pointer *ClutterBehaviourRotate as BehaviourRotate foreign newtype #}
 
 class GObjectClass o => BehaviourRotateClass o
-toBehaviourRotate :: BehaviourRotateClass o => o -> Clone
+toBehaviourRotate :: BehaviourRotateClass o => o -> BehaviourRotate
 toBehaviourRotate = unsafeCastGObject . toGObject
 
 newBehaviourRotate a = makeNewGObject BehaviourRotate $ return (castPtr a)
@@ -806,7 +810,7 @@ instance GObjectClass BehaviourRotate where
 {# pointer *ClutterPath as Path foreign newtype #}
 
 class GObjectClass o => PathClass o
-toPath :: PathClass o => o -> Clone
+toPath :: PathClass o => o -> Path
 toPath = unsafeCastGObject . toGObject
 
 newPath a = makeNewObject Path $ return (castPtr a)
@@ -823,7 +827,7 @@ instance GObjectClass Path where
 {# pointer *ClutterTexture as Texture foreign newtype #}
 
 class GObjectClass o => TextureClass o
-toTexture :: TextureClass o => o -> Clone
+toTexture :: TextureClass o => o -> Texture
 toTexture = unsafeCastGObject . toGObject
 
 newTexture a = makeNewObject Texture $ return (castPtr a)
@@ -841,7 +845,7 @@ instance GObjectClass Texture where
 {# pointer *ClutterShader as Shader foreign newtype #}
 
 class GObjectClass o => ShaderClass o
-toShader :: ShaderClass o => o -> Clone
+toShader :: ShaderClass o => o -> Shader
 toShader = unsafeCastGObject . toGObject
 
 newShader a = makeNewObject Shader $ return (castPtr a)
@@ -851,6 +855,27 @@ instance ActorClass Shader
 instance GObjectClass Shader where
   toGObject (Shader i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Shader (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Model
+
+{# pointer *ClutterModel as Model foreign newtype #}
+
+class GObjectClass o => ModelClass o
+toModel :: ModelClass o => o -> Model
+toModel = unsafeCastGObject . toGObject
+
+withModelClass::ModelClass o => o -> (Ptr Model -> IO b) -> IO b
+withModelClass o = (withModel . toModel) o
+
+newModel a = makeNewObject Model $ return (castPtr a)
+
+instance ModelClass Model
+instance ActorClass Model
+instance GObjectClass Model where
+  toGObject (Model i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Model (castForeignPtr o)
 
 -- ***************************************************************
 

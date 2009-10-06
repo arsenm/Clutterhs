@@ -56,7 +56,7 @@ module Graphics.UI.Clutter.Timeline (
 
                                       timelineAddMarkerAtTime,
                                       timelineHasMarker,
-                                    --timelineListMarkers,
+                                      timelineListMarkers,
                                       timelineRemoveMarker,
                                       timelineAdvanceToMarker,
 
@@ -122,9 +122,16 @@ timelineDirection = newAttr timelineGetDirection timelineSetDirection
 
 {# fun unsafe timeline_has_marker as ^ { withTimeline* `Timeline', `String' } -> `Bool' #}
 
---TODO: Get list from array of size n
---{# fun unsafe timeline_list_markers as ^
---  { withTimeline* `Timeline', `Int', `String' } -> `[String]' #}
+--CHECKME: Does the returned gchar** need to be freed from this?
+--CHECME: Unicode?
+--TODO: Maybe better way to get char** out
+timelineListMarkers :: Timeline -> Int -> IO [String]
+timelineListMarkers tml time = withTimeline tml $ \tmlptr ->
+                               alloca $ \intptr -> do
+                               strArrayPtr <- {# call unsafe timeline_list_markers #} tmlptr (cIntConv time) intptr
+                               num <- peek intptr
+                               strPtrList <- peekArray (cIntConv num) strArrayPtr
+                               mapM peekCString strPtrList
 
 {# fun unsafe timeline_remove_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}
 {# fun unsafe timeline_advance_to_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}

@@ -94,6 +94,7 @@ module Graphics.UI.Clutter.Types (
                                   TimelineClass,
                                   withTimeline,
                                   newTimeline,
+                                  newTimelineList,
 
                                   Alpha,
                                   AlphaClass,
@@ -205,7 +206,12 @@ module Graphics.UI.Clutter.Types (
                                   Knot,
                                   withPathNode,
                                   newPathNodes,
-                                  newPathCallback
+                                  newPathCallback,
+
+                                  Score,
+                                  ScoreClass,
+                                  withScore,
+                                  newScore
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -529,10 +535,32 @@ toTimeline = unsafeCastGObject . toGObject
 newTimeline:: Ptr Timeline -> IO Timeline
 newTimeline a = makeNewGObject Timeline $ return a
 
+newTimelineList :: GSList -> IO [Timeline]
+newTimelineList gsl = (fromGSList gsl :: IO [Ptr Timeline]) >>= mapM newTimeline
+
 instance TimelineClass Timeline
 instance GObjectClass Timeline where
   toGObject (Timeline t) = mkGObject (castForeignPtr t)
   unsafeCastGObject (GObject o) = Timeline (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** Score
+
+{# pointer *ClutterScore as Score foreign newtype #}
+
+class GObjectClass o => ScoreClass o
+toScore::ScoreClass o => o -> Score
+toScore = unsafeCastGObject . toGObject
+
+--CHECKME: doesn't derive from Actor, so using makeNewGObject
+newScore :: Ptr Score -> IO Score
+newScore a = makeNewGObject Score $ return (castPtr a)
+
+instance ScoreClass Score
+instance GObjectClass Score where
+  toGObject (Score r) = mkGObject (castForeignPtr r)
+  unsafeCastGObject (GObject o) = Score (castForeignPtr o)
 
 -- ***************************************************************
 

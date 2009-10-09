@@ -66,13 +66,17 @@ mediaUri = newAttr mediaGetUri mediaSetUri
 mediaPlaying :: Attr Media Bool
 mediaPlaying = newAttr mediaGetPlaying mediaSetPlaying
 
-{# fun unsafe media_set_progress as ^ `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
-{# fun unsafe media_get_progress as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
+{# fun unsafe media_set_progress as ^
+       `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
+{# fun unsafe media_get_progress as ^
+       `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 mediaProgress :: Attr Media Double
 mediaProgress = newAttr mediaGetProgress mediaSetProgress
 
-{# fun unsafe media_set_audio_volume as ^ `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
-{# fun unsafe media_get_audio_volume as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
+{# fun unsafe media_set_audio_volume as ^
+       `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
+{# fun unsafe media_get_audio_volume as ^
+       `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 mediaAudioVolume :: Attr Media Double
 mediaAudioVolume = newAttr mediaGetAudioVolume mediaSetAudioVolume
 
@@ -81,8 +85,11 @@ mediaAudioVolume = newAttr mediaGetAudioVolume mediaSetAudioVolume
 mediaCanSeek :: Attr Media Bool
 mediaCanSeek = newAttr mediaGetPlaying mediaSetPlaying
 -}
-{# fun unsafe media_get_buffer_fill as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
-{# fun unsafe media_get_duration as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
+{# fun unsafe media_get_buffer_fill as ^
+       `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
+{# fun unsafe media_get_duration as ^
+       `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 
-{# fun unsafe media_set_filename as ^ `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
+{# fun unsafe media_set_filename as ^
+       `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
 

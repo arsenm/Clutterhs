@@ -82,4 +82,3 @@ behaviourNActors = readAttr behaviourGetNActors
 behaviourAlpha :: (BehaviourClass b) => Attr b Alpha
 behaviourAlpha = newAttr behaviourGetAlpha behaviourSetAlpha
 
-

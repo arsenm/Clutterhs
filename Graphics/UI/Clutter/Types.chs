@@ -18,7 +18,7 @@
 --  Lesser General Public License for more details.
 --
 
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
 
 #include <clutter/clutter.h>
 
@@ -197,7 +197,15 @@ module Graphics.UI.Clutter.Types (
                                   Script,
                                   ScriptClass,
                                   withScript,
-                                  newScript
+                                  newScript,
+
+                                  PathNodeType(..),
+                                  PathNode,
+                                  PathNodePtr,
+                                  Knot,
+                                  withPathNode,
+                                  newPathNodes,
+                                  newPathCallback
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -268,6 +276,7 @@ newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
 {# enum ClutterRotateDirection as RotateDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterTextureQuality as TextureQuality {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterShaderError as ShaderError {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterPathNodeType as PathNodeType {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
 --it because toEnum can't match 3...but why is it trying? silly bits.
@@ -311,7 +320,6 @@ instance Storable Color where
       {# set ClutterColor->green #} p (cIntConv g)
       {# set ClutterColor->blue #} p (cIntConv b)
       {# set ClutterColor->alpha #} p (cIntConv a)
-      return ()
 
 --This seems not right. But it seems to work.
 mkColor :: Color -> IO ColorPtr
@@ -471,7 +479,6 @@ instance Storable Perspective where
       {# set ClutterPerspective->aspect #} p (cFloatConv aspect)
       {# set ClutterPerspective->z_near #} p (cFloatConv z_near)
       {# set ClutterPerspective->z_far #} p (cFloatConv z_far)
-      return ()
 
 --This seems not right. But it seems to work.
 mkPerspective :: Perspective -> IO PerspectivePtr
@@ -904,3 +911,73 @@ instance GObjectClass Script where
 
 -- ***************************************************************
 
+-- *************************************************************** Knot
+
+type Knot = (Int, Int)
+
+--TypeSynonymInstance
+instance Storable Knot where
+    sizeOf _ = {# sizeof ClutterKnot #}
+    alignment _ = alignment (undefined :: Int)
+    peek p = do
+      x <- {# get ClutterKnot->x #} p
+      y <- {# get ClutterKnot->y #} p
+      return (cIntConv x, cIntConv y)
+
+    poke p (x,y) = do
+      {# set ClutterKnot->x #} p (cIntConv x)
+      {# set ClutterKnot->y #} p (cIntConv y)
+
+
+-- ***************************************************************
+
+-- *************************************************************** PathNode
+
+{# pointer *ClutterPathNode as PathNodePtr -> PathNode #}
+
+
+data PathNode = PathNode { pathNodeType :: !PathNodeType,
+                           pathNodePoints :: !(Knot, Knot, Knot)
+                         } deriving (Eq, Show)
+
+instance Storable PathNode where
+  sizeOf _ = {# sizeof ClutterPathNode #}
+  alignment _ = alignment (undefined :: GUInt8)
+  peek p = do
+      tp <- {# get ClutterPathNode->type #} p
+      [p3, p2, p1] <- peekArray 3 (plusPtr p {# sizeof ClutterPathNodeType #})
+      --peekArray gets out backwards
+      return $ PathNode (cToEnum tp) (p1, p2, p3)
+      --FIXME: cIntConv and GUInt8 = ???
+
+  poke p (PathNode tp (p1, p2, p3)) = do
+      {# set ClutterPathNode->type #} p (cFromEnum tp)
+      pokeArray (plusPtr p {# sizeof ClutterPathNodeType #}) [p1, p2, p3]
+
+--This seems not right. But it seems to work.
+mkPathNode :: PathNode -> IO PathNodePtr
+mkPathNode col = do cptr <- (malloc :: IO PathNodePtr)
+                    poke cptr col
+                    return cptr
+
+withPathNode :: PathNode -> (PathNodePtr -> IO a) -> IO a
+withPathNode col = bracket (mkPathNode col) free
+
+newPathNodes :: GSList -> IO [PathNode]
+newPathNodes gsl = (fromGSList gsl :: IO [PathNodePtr]) >>= mapM peek
+
+-- ***************************************************************
+
+-- *************************************************************** PathCallback
+type PathCallback = PathNode -> IO ()
+type CPathCallback = FunPtr (PathNodePtr -> Ptr () -> IO ())
+newPathCallback :: PathCallback -> IO CPathCallback
+newPathCallback userfunc = mkPathCallback (newPathCallback' userfunc)
+    where
+      newPathCallback' :: PathCallback -> PathNodePtr -> IO ()
+      newPathCallback' userfunc pnPtr = peek pnPtr >>= userfunc
+
+foreign import ccall "wrapper"
+    mkPathCallback :: (PathNodePtr -> IO ()) -> IO CPathCallback
+
+-- ***************************************************************

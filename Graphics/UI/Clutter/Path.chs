@@ -34,14 +34,14 @@ module Graphics.UI.Clutter.Path (
                                  pathAddRelCurveTo,
                                  pathAddClose,
                                  pathAddString,
-                               --pathAddNode,
+                                 pathAddNode,
                                --pathAddCairoPath,
-                               --pathGetNNodes,
-                               --pathGetNode,
-                               --pathGetNodes,
-                               --pathInsertNode,
-                               --pathRemoveNode,
-                               --pathReplaceNode,
+                                 pathGetNNodes,
+                                 pathGetNode,
+                                 pathGetNodes,
+                                 pathInsertNode,
+                                 pathRemoveNode,
+                                 pathReplaceNode,
                                  pathGetDescription,
                                  pathSetDescription,
                                --pathDescription,
@@ -72,21 +72,25 @@ import System.Glib.Attributes
 {# fun unsafe path_add_close as ^ { withPath* `Path' } -> `()' #}
 {# fun unsafe path_add_string as ^ { withPath* `Path', `String' } -> `Bool' #}
 
---{# fun unsafe path_add_node as ^ { withPath* `Path', withNode* `PathNode' } -> `()' #}
+{# fun unsafe path_add_node as ^ { withPath* `Path', withPathNode* `PathNode' } -> `()' #}
 --{# fun unsafe path_add_cairo_path as ^ { withPath* `Path', withSomething* `Something' } -> `()' #}
 
 --FIXME: GUInt
 {# fun unsafe path_get_n_nodes as ^ { withPath* `Path' } -> `Int' #}
 
---{# fun unsafe path_get_node as ^ { withPath* `Path', `Int', alloca- `PathNode' peek* } -> `()' #}
---{# fun unsafe path_get_nodes as ^ { withPath* `Path' } -> `[PathNode]' #}
+{# fun unsafe path_get_node as ^ { withPath* `Path', `Int', alloca- `PathNode' peek* } -> `()' #}
+{# fun unsafe path_get_nodes as ^ { withPath* `Path' } -> `[PathNode]' newPathNodes* #}
 
---{# fun unsafe path_foreach as ^ { withPath* `Path', `ClutterPathCallback', UserData } -> `()' #}
+pathForeach path cpcb = withPath path $ \pathPtr -> do
+                        funcPtr <- newPathCallback cpcb
+                        --CHECKME: unsafe?
+                        {# call unsafe path_foreach #} pathPtr funcPtr nullPtr
+                        freeHaskellFunPtr funcPtr
 
 --FIXME: More guint
---{# fun unsafe path_insert_node as ^ { withPath* `Path', `Int', `PathNode' } -> `()' #}
---{# fun unsafe path_remove_node as ^ { withPath* `Path', `Int' } -> `()' #}
---{# fun unsafe path_replace_node as ^ { withPath* `Path', `Int', `PathNode' } -> `()' #}
+{# fun unsafe path_insert_node as ^ { withPath* `Path', `Int', withPathNode* `PathNode' } -> `()' #}
+{# fun unsafe path_remove_node as ^ { withPath* `Path', `Int' } -> `()' #}
+{# fun unsafe path_replace_node as ^ { withPath* `Path', `Int', withPathNode* `PathNode' } -> `()' #}
 
 --FIXME: Attribute with the returning of bool from set description for success I think won't work
 {# fun unsafe path_get_description as ^ { withPath* `Path' } -> `String' #}
@@ -98,7 +102,9 @@ import System.Glib.Attributes
 
 {# fun unsafe path_clear as ^ { withPath* `Path' } -> `()' #}
 
---{# fun unsafe path_get_position as ^ { withPath* `Path', `Double', alloca- `Knot' peek* } -> `()' #}
+--CHECKME: Do you want to get the position out? or is it just storage?
+--TODO: Maybe knot as just as type Knot = (Int, Int) won't work
+--{# fun unsafe path_get_position as ^ { withPath* `Path', `Double', alloca- `Knot' peek* } -> `Int' #}
 --FIXME: GUInt
 {# fun unsafe path_get_length as ^ { withPath* `Path' } -> `Int' #}
 

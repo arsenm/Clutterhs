@@ -50,7 +50,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Shader,
                             module Graphics.UI.Clutter.Model,
                             module Graphics.UI.Clutter.Script,
-                            module Graphics.UI.Clutter.Units
+                            module Graphics.UI.Clutter.Units,
+                            module Graphics.UI.Clutter.Scriptable
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -86,5 +87,6 @@ import Graphics.UI.Clutter.Shader
 import Graphics.UI.Clutter.Model
 import Graphics.UI.Clutter.Script
 import Graphics.UI.Clutter.Units
+import Graphics.UI.Clutter.Scriptable
 
 

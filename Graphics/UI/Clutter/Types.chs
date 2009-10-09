@@ -27,7 +27,6 @@
 module Graphics.UI.Clutter.Types (
 --                                  withGObject,
 --                                  withGObjectClass,
-                                  newActorList,
 
                                   Color(Color),
                                   ColorPtr,
@@ -39,6 +38,7 @@ module Graphics.UI.Clutter.Types (
                                   withActorClass,
                                   toActor,
                                   newActor,
+                                  newActorList,
 
                                   Rectangle,
                                   RectangleClass,
@@ -213,7 +213,11 @@ module Graphics.UI.Clutter.Types (
                                   withScore,
                                   newScore,
 
-                                  UnitType(..)
+                                  UnitType(..),
+
+                                  ScriptableClass,
+                                  Scriptable,
+                                  withScriptableClass
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -259,11 +263,6 @@ makeNewObject constr generator = do
 -- g-types not anywhere??
 type GUInt8 = {# type guint8 #}
 type GFloat = {# type gfloat #}
-
---TODO: this should also go somewhere else??
---CHECKME: Does this actually work?
-newActorList :: GSList -> IO [Actor]
-newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
 
 -- *************************************************************** Misc
 
@@ -354,7 +353,14 @@ withActorClass o = (withActor . toActor) o
 newActor :: (ActorClass actor) =>  Ptr actor -> IO Actor
 newActor a = makeNewObject Actor $ return (castPtr a)
 
+
+--TODO: this should also go somewhere else??
+--CHECKME: Does this actually work?
+newActorList :: GSList -> IO [Actor]
+newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
+
 instance ActorClass Actor
+instance ScriptableClass Actor
 instance GObjectClass Actor where
   toGObject (Actor a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Actor (castForeignPtr o)
@@ -393,6 +399,7 @@ newText a = makeNewObject Text $ return (castPtr a)
 
 instance TextClass Text
 instance ActorClass Text
+instance ScriptableClass Text
 instance GObjectClass Text where
   toGObject (Text a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Text (castForeignPtr o)
@@ -411,6 +418,7 @@ newGroup :: Ptr Actor -> IO Group
 newGroup a = makeNewObject Group $ return (castPtr a)
 
 instance GroupClass Group
+instance ScriptableClass Group
 instance ContainerClass Group
 instance ActorClass Group
 instance GObjectClass Group where
@@ -456,6 +464,7 @@ instance StageClass Stage
 instance ContainerClass Stage
 instance GroupClass Stage
 instance ActorClass Stage
+instance ScriptableClass Stage
 instance GObjectClass Stage where
   toGObject (Stage s) = mkGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = Stage (castForeignPtr o)
@@ -714,6 +723,7 @@ toClone = unsafeCastGObject . toGObject
 newClone a = makeNewObject Clone $ return (castPtr a)
 
 instance CloneClass Clone
+instance ScriptableClass Clone
 instance GObjectClass Clone where
   toGObject (Clone i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Clone (castForeignPtr o)
@@ -734,6 +744,7 @@ withBehaviourClass o = (withBehaviour . toBehaviour) o
 newBehaviour a = makeNewGObject Behaviour $ return (castPtr a)
 
 instance BehaviourClass Behaviour
+instance ScriptableClass Behaviour
 instance GObjectClass Behaviour where
   toGObject (Behaviour i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Behaviour (castForeignPtr o)
@@ -768,6 +779,7 @@ newBehaviourScale a = makeNewGObject BehaviourScale $ return (castPtr a)
 
 instance BehaviourScaleClass BehaviourScale
 instance BehaviourClass BehaviourScale
+instance ScriptableClass BehaviourScale
 instance GObjectClass BehaviourScale where
   toGObject (BehaviourScale i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourScale (castForeignPtr o)
@@ -786,6 +798,7 @@ newBehaviourDepth a = makeNewGObject BehaviourDepth $ return (castPtr a)
 
 instance BehaviourDepthClass BehaviourDepth
 instance BehaviourClass BehaviourDepth
+instance ScriptableClass BehaviourDepth
 instance GObjectClass BehaviourDepth where
   toGObject (BehaviourDepth i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourDepth (castForeignPtr o)
@@ -804,6 +817,7 @@ newBehaviourEllipse a = makeNewGObject BehaviourEllipse $ return (castPtr a)
 
 instance BehaviourEllipseClass BehaviourEllipse
 instance BehaviourClass BehaviourEllipse
+instance ScriptableClass BehaviourEllipse
 instance GObjectClass BehaviourEllipse where
   toGObject (BehaviourEllipse i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourEllipse (castForeignPtr o)
@@ -822,6 +836,7 @@ newBehaviourOpacity a = makeNewGObject BehaviourOpacity $ return (castPtr a)
 
 instance BehaviourOpacityClass BehaviourOpacity
 instance BehaviourClass BehaviourOpacity
+instance ScriptableClass BehaviourOpacity
 instance GObjectClass BehaviourOpacity where
   toGObject (BehaviourOpacity i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourOpacity (castForeignPtr o)
@@ -840,6 +855,7 @@ newBehaviourRotate a = makeNewGObject BehaviourRotate $ return (castPtr a)
 
 instance BehaviourRotateClass BehaviourRotate
 instance BehaviourClass BehaviourRotate
+instance ScriptableClass BehaviourRotate
 instance GObjectClass BehaviourRotate where
   toGObject (BehaviourRotate i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourRotate (castForeignPtr o)
@@ -875,6 +891,7 @@ newTexture a = makeNewObject Texture $ return (castPtr a)
 
 instance TextureClass Texture
 instance ActorClass Texture
+instance ScriptableClass Texture
 instance GObjectClass Texture where
   toGObject (Texture i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Texture (castForeignPtr o)
@@ -1052,3 +1069,24 @@ newParamSpecUnits :: GSList -> IO [ParamSpecUnits]
 newParamSpecUnits gsl = (fromGSList gsl :: IO [ParamSpecUnitsPtr]) >>= mapM peek
 
 -- ***************************************************************
+
+-- *************************************************************** Scriptable
+
+--TODO: How to do GInterface properly. This seems wrong
+
+{# pointer *ClutterScriptable as Scriptable foreign newtype #}
+
+class GObjectClass o => ScriptableClass o
+toScriptable :: ScriptableClass o => o -> Scriptable
+toScriptable = unsafeCastGObject . toGObject
+
+withScriptableClass::ScriptableClass o => o -> (Ptr Scriptable -> IO b) -> IO b
+withScriptableClass o = (withScriptable . toScriptable) o
+
+instance ScriptableClass Scriptable
+instance GObjectClass Scriptable where
+  toGObject (Scriptable i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Scriptable (castForeignPtr o)
+
+-- ***************************************************************
+

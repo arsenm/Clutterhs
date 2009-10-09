@@ -138,7 +138,7 @@ module Graphics.UI.Clutter.Types (
                                   withBehaviourClass,
                                   newBehaviour,
                                   BehaviourForeachFunc,
-                                  HSBehaviourForeachFunc,
+                                  CBehaviourForeachFunc,
                                   newBehaviourForeachFunc,
                                   BehaviourScaleClass,
                                   BehaviourScale,
@@ -174,7 +174,6 @@ module Graphics.UI.Clutter.Types (
 
                                   AlphaFunc,
                                   newAlphaFunc,
-                                  freeHaskellFunPtrPtr,
 
                                   RotateDirection(..),
                                   TextureQuality(..),
@@ -562,9 +561,6 @@ newAlphaFunc userfunc = mkAlphaFunc (newAlphaFunc' userfunc)
 foreign import ccall "wrapper"
     mkAlphaFunc :: (Ptr Alpha -> IO Double) -> IO CAlphaFunc
 
---CHECKME: Does this actually work?
-foreign import ccall "&hs_free_fun_ptr" freeHaskellFunPtrPtr :: FunPtr (FunPtr a -> IO ())
-
 -- ***************************************************************
 
 -- *************************************************************** Interval
@@ -708,19 +704,18 @@ instance GObjectClass Behaviour where
 -- ***************************************************************
 
 -- *************************************************************** BehaviourForeachFunc
-type HSBehaviourForeachFunc = Behaviour -> Actor -> IO ()
-type BehaviourForeachFunc = FunPtr (Ptr Behaviour -> Ptr Actor -> Ptr () -> IO ())
-
-newBehaviourForeachFunc :: (Behaviour -> Actor -> IO ()) -> IO BehaviourForeachFunc
+type BehaviourForeachFunc = Behaviour -> Actor -> IO ()
+type CBehaviourForeachFunc = FunPtr (Ptr Behaviour -> Ptr Actor -> Ptr () -> IO ())
+newBehaviourForeachFunc :: BehaviourForeachFunc -> IO CBehaviourForeachFunc
 newBehaviourForeachFunc userfunc = mkBehaviourForeachFunc (newBehaviourForeachFunc' userfunc)
     where
-      newBehaviourForeachFunc' :: (Behaviour -> Actor -> IO ()) -> Ptr Behaviour -> Ptr Actor -> IO ()
-      newBehaviourForeachFunc' userfunc bptr aptr = newActor aptr >>= \actor ->
-                                                    newBehaviour bptr >>= \behave ->
+      newBehaviourForeachFunc' :: BehaviourForeachFunc -> Ptr Behaviour -> Ptr Actor -> IO ()
+      newBehaviourForeachFunc' userfunc bptr aptr = newBehaviour bptr >>= \behave ->
+                                                    newActor aptr >>= \actor ->
                                                     userfunc behave actor
 
 foreign import ccall "wrapper"
-    mkBehaviourForeachFunc :: (Ptr Behaviour -> Ptr Actor -> IO ()) -> IO BehaviourForeachFunc
+    mkBehaviourForeachFunc :: (Ptr Behaviour -> Ptr Actor -> IO ()) -> IO CBehaviourForeachFunc
 
 -- ***************************************************************
 

@@ -37,11 +37,11 @@ module Graphics.UI.Clutter.Alpha (
                                   alphaMode,
 
                                   alphaGetAlpha,
-                                  alphaAlpha
+                                  alphaAlpha,
 
                                 --alphaSetClosure,
                                 --alphaRegisterClosure,
-                                --alphaRegisterFunc
+                                  alphaRegisterFunc
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -83,8 +83,20 @@ alphaMode = newAttr alphaGetMode alphaSetMode
 alphaAlpha :: ReadAttr Alpha Double
 alphaAlpha = readAttr alphaGetAlpha
 
---{# fun unsafe alpha_set_func as ^
---       { withAlpha* `Alpha', `AlphaFunc', `Userdata', `GDestroyNotify' } -> `Double' #}
+alphaSetFunc :: Alpha -> AlphaFunc -> IO ()
+alphaSetFunc alp af = withAlpha alp $ \alpPtr -> do
+                        afptr <- newAlphaFunc af
+                        gdestroy <- mkFunPtrDestroyNotify afptr
+                        {# call unsafe alpha_set_func #} alpPtr afptr nullPtr gdestroy
+
+--TODO: some kind of ID Type for this
+alphaRegisterFunc :: AlphaFunc -> IO Word64
+alphaRegisterFunc af = do
+  afptr <- newAlphaFunc af
+  ret <- {# call unsafe alpha_register_func #} afptr nullPtr
+  return (cIntConv ret)
+
+--pretty sure don't care about gclosure
 --{# fun unsafe alpha_set_closure as ^ { withAlpha* `Alpha', `GClosure' } -> `()' #}
 --{# fun unsafe alpha_register_closure as ^ { `GClosure' } -> `GULong' #}
---{# fun unsafe alpha_register_func as ^ { `AlphaFunc', userdata } -> `GULong' #}
+

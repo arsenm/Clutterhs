@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -56,8 +56,10 @@ import System.Glib.Attributes
        `(BehaviourClass b, ActorClass a)' => { withBehaviourClass* `b', withActorClass* `a' } -> `Bool' #}
 
 behaviourActorsForeach :: (BehaviourClass b) => b -> BehaviourForeachFunc -> IO ()
-behaviourActorsForeach b func = withBehaviourClass b $ \bptr ->
-                                {# call unsafe behaviour_actors_foreach #} bptr func nullPtr
+behaviourActorsForeach b func = withBehaviourClass b $ \bptr -> do
+                                funcPtr <- newBehaviourForeachFunc func
+                                {# call unsafe behaviour_actors_foreach #} bptr funcPtr nullPtr
+                                freeHaskellFunPtr funcPtr
                                 --CHECKME: unsafe?
 
 --TODO: We could make a rw attribute even though clutter doesn't do that.

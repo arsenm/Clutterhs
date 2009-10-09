@@ -49,7 +49,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Path,
                             module Graphics.UI.Clutter.Shader,
                             module Graphics.UI.Clutter.Model,
-                            module Graphics.UI.Clutter.Script
+                            module Graphics.UI.Clutter.Script,
+                            module Graphics.UI.Clutter.Units
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -84,5 +85,6 @@ import Graphics.UI.Clutter.Path
 import Graphics.UI.Clutter.Shader
 import Graphics.UI.Clutter.Model
 import Graphics.UI.Clutter.Script
+import Graphics.UI.Clutter.Units
 
 

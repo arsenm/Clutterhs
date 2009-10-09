@@ -57,6 +57,7 @@ Library
                    Graphics.UI.Clutter.Shader,
                    Graphics.UI.Clutter.Model,
                    Graphics.UI.Clutter.Script,
+                   Graphics.UI.Clutter.Units,
                    Graphics.UI.Clutter
 
   Exposed: True

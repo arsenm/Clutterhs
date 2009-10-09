@@ -211,7 +211,9 @@ module Graphics.UI.Clutter.Types (
                                   Score,
                                   ScoreClass,
                                   withScore,
-                                  newScore
+                                  newScore,
+
+                                  UnitType(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -283,6 +285,7 @@ newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
 {# enum ClutterTextureQuality as TextureQuality {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterShaderError as ShaderError {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterPathNodeType as PathNodeType {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterUnitType as UnitType {underscoreToCase} deriving (Show, Eq) #}
 
 --FIXME/TODO: ModifierType one at least fails everytime I try to use
 --it because toEnum can't match 3...but why is it trying? silly bits.
@@ -633,7 +636,6 @@ instance Storable Fog where
   poke p (Fog zn zf) = do
       {# set ClutterFog->z_near #} p (cFloatConv zn)
       {# set ClutterFog->z_far #} p (cFloatConv zf)
-      return ()
 
 --This seems not right. But it seems to work.
 mkFog :: Fog -> IO FogPtr
@@ -1007,5 +1009,46 @@ newPathCallback userfunc = mkPathCallback (newPathCallback' userfunc)
 
 foreign import ccall "wrapper"
     mkPathCallback :: (PathNodePtr -> IO ()) -> IO CPathCallback
+
+-- ***************************************************************
+
+-- *************************************************************** ParamSpecUnits
+
+{# pointer *ClutterParamSpecUnits as ParamSpecUnitsPtr -> ParamSpecUnits #}
+
+--TODO: Prefix the names of the fields of this
+data ParamSpecUnits = ParamSpecUnits { defaultType :: !UnitType,
+                                       defaultValue :: !Float,
+                                       minimum :: !Float,
+                                       maximum :: !Float
+                                     } deriving (Eq, Show)
+
+--FIXME: Type for alignment
+instance Storable ParamSpecUnits where
+  sizeOf _ = {# sizeof ClutterParamSpecUnits #}
+  alignment _ = alignment (undefined :: Word64)
+  peek p = do
+      dt <- {# get ClutterParamSpecUnits->default_type #} p
+      dval <- {# get ClutterParamSpecUnits->default_value #} p
+      min <- {# get ClutterParamSpecUnits->minimum #} p
+      max <- {# get ClutterParamSpecUnits->maximum #} p
+      return $ ParamSpecUnits (cToEnum dt) (cFloatConv dval) (cFloatConv min) (cFloatConv max)
+  poke p (ParamSpecUnits dt dval min max) = do
+      {# set ClutterParamSpecUnits->default_type #} p (cFromEnum dt)
+      {# set ClutterParamSpecUnits->default_value #} p (cFloatConv dval)
+      {# set ClutterParamSpecUnits->minimum #} p (cFloatConv min)
+      {# set ClutterParamSpecUnits->maximum #} p (cFloatConv max)
+
+--This seems not right. But it seems to work.
+mkParamSpecUnits :: ParamSpecUnits -> IO ParamSpecUnitsPtr
+mkParamSpecUnits col = do cptr <- (malloc :: IO ParamSpecUnitsPtr)
+                          poke cptr col
+                          return cptr
+
+withParamSpecUnits :: ParamSpecUnits -> (ParamSpecUnitsPtr -> IO a) -> IO a
+withParamSpecUnits col = bracket (mkParamSpecUnits col) free
+
+newParamSpecUnits :: GSList -> IO [ParamSpecUnits]
+newParamSpecUnits gsl = (fromGSList gsl :: IO [ParamSpecUnitsPtr]) >>= mapM peek
 
 -- ***************************************************************

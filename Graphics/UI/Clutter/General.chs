@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 
@@ -27,6 +27,15 @@ module Graphics.UI.Clutter.General (
                                     clutterInit,
                                     clutterMain,
                                     clutterMainQuit,
+
+
+                                    getKeyboardGrab,
+                                    getPointerGrab,
+                                    grabKeyboard,
+                                    ungrabKeyboard,
+                                    grabPointerForDevice,
+                                    ungrabPointerForDevice
+                                  --doEvent
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -59,4 +68,15 @@ clutterInit = do
                 when (res /= InitSuccess) $ error ("Cannot initialize Clutter." ++ show res)
                 return res
 
+
+{# fun unsafe get_keyboard_grab as ^ { } -> `Actor' newActor* #}
+{# fun unsafe get_pointer_grab as ^ { } -> `Actor' newActor* #}
+{# fun unsafe grab_keyboard as ^ { withActor* `Actor' } -> `()' #}
+{# fun unsafe grab_pointer as ^ { withActor* `Actor' } -> `()' #}
+{# fun unsafe ungrab_keyboard as ^ { } -> `()' #}
+{# fun unsafe ungrab_pointer as ^ { } -> `()' #}
+{# fun unsafe grab_pointer_for_device as ^ { withActor* `Actor', `Int' } -> `()' #}
+{# fun unsafe ungrab_pointer_for_device as ^ { `Int' } -> `()' #}
+
+--{# fun unsafe clutter_do_event { withEvent* `Event' } -> `()' #}
 

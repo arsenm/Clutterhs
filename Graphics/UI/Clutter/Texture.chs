@@ -28,9 +28,46 @@ module Graphics.UI.Clutter.Texture (
                                     textureNewFromFile,
                                     textureNewFromActor,
 
+                                  --textureSetFromFile,
+                                  --textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
+                                  --textureSetFromYuvData,
+                                  --textureSetAreaFromRgbData,
+                                  --textureGetBaseSize,
+
+                                  --textureGetPixelFormat,
+                                  --textureGetMaxTileWaste,
+
+                                    textureGetFilterQuality,
+                                    textureSetFilterQuality,
+                                    textureFilterQuality,
+
+                                  --textureGetCoglTexture,
+                                  --textureSetCoglTexture,
+                                  --textureCoglTexture,
+
+                                  --textureSetCoglMaterial,
+                                  --textureGetCoglMaterial,
+                                  --textureCoglMaterial,
+
+                                    textureGetSyncSize,
+                                    textureSetSyncSize,
+                                    textureSyncSize,
+
+                                  --textureGetRepeat,
+                                  --textureSetRepeat,
+                                  --textureRepeat,
+
                                     textureSetKeepAspectRatio,
                                     textureGetKeepAspectRatio,
-                                    textureKeepAspectRatio
+                                    textureKeepAspectRatio,
+
+                                    textureGetLoadAsync,
+                                    textureSetLoadAsync,
+                                    textureLoadAsync,
+
+                                    textureGetLoadDataAsync,
+                                    textureSetLoadDataAsync,
+                                    textureLoadDataAsync
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -64,8 +101,53 @@ textureNewFromFile filename = withCString filename $ \cstr -> do
 
 {# fun unsafe texture_new_from_actor as ^ `(ActorClass a)' => { withActorClass* `a'} -> `Texture' newTexture* #}
 
+
+
+
+
+
+
+
+
+{# fun unsafe texture_get_filter_quality as ^
+       { withTexture* `Texture' } -> `TextureQuality' cToEnum #}
+{# fun unsafe texture_set_filter_quality as ^
+       { withTexture* `Texture', cFromEnum `TextureQuality' } -> `()' #}
+textureFilterQuality :: Attr Texture TextureQuality
+textureFilterQuality = newAttr textureGetFilterQuality textureSetFilterQuality
+
+
+
+
+
+{# fun unsafe texture_get_sync_size as ^ { withTexture* `Texture' } -> `Bool' #}
+{# fun unsafe texture_set_sync_size as ^ { withTexture* `Texture', `Bool' } -> `()' #}
+textureSyncSize :: Attr Texture Bool
+textureSyncSize = newAttr textureGetSyncSize textureSetSyncSize
+
+{-
+--c2hs bug??? alloca- `Bool' peek* isn't working, complaining that it infereed IO (CInt, CInt)
+{# fun unsafe texture_get_repeat as ^
+       { withTexture* `Texture', alloca- `Bool' peek*, alloca- `Bool' peek* } -> `()' #}
+{# fun unsafe texture_set_repeat as ^ { withTexture* `Texture', `Bool', `Bool' } -> `()' #}
+--textureRepeat :: Attr Texture (Bool, Bool)
+--textureRepeat = newAttr textureGetRepeat textureSetRepeat
+-}
+
 {# fun unsafe texture_get_keep_aspect_ratio as ^ { withTexture* `Texture' } -> `Bool' #}
 {# fun unsafe texture_set_keep_aspect_ratio as ^ { withTexture* `Texture', `Bool'} -> `()' #}
 textureKeepAspectRatio :: Attr Texture Bool
 textureKeepAspectRatio = newAttr textureGetKeepAspectRatio textureSetKeepAspectRatio
+
+
+{# fun unsafe texture_get_load_async as ^ { withTexture* `Texture' } -> `Bool' #}
+{# fun unsafe texture_set_load_async as ^ { withTexture* `Texture', `Bool'} -> `()' #}
+textureLoadAsync :: Attr Texture Bool
+textureLoadAsync = newAttr textureGetLoadAsync textureSetLoadAsync
+
+
+{# fun unsafe texture_get_load_data_async as ^ { withTexture* `Texture' } -> `Bool' #}
+{# fun unsafe texture_set_load_data_async as ^ { withTexture* `Texture', `Bool'} -> `()' #}
+textureLoadDataAsync :: Attr Texture Bool
+textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
 

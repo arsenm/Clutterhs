@@ -37,20 +37,11 @@ import Control.Monad (liftM)
 import System.Glib.GType
 import System.Glib.GValue (GValue(GValue))
 
-
---valueSetInt :: GValue -> Int -> IO ()
---valueSetInt (GValue gvalue) value =
---  {# call unsafe value_set_int #} gvalue (fromIntegral value)
-
 withGValue (GValue gval) = castPtr gval
 
---{# fun unsafe value_set_int as ^ { withGValue `GValue', `Int' } -> `()' #}
-
---TODO: loltypes. FIXFIXFIX.
---More importantly. This is commented out in c2hs.
---Lack of intconv?
-{# fun unsafe value_get_char as ^ { withGValue `GValue' } -> `Int8' #}
-{# fun unsafe value_set_char as ^ { withGValue `GValue', `Int8' } -> `()' #}
+--This is commented out in c2hs.
+{# fun unsafe value_get_char as ^ { withGValue `GValue' } -> `Char' cToEnum #}
+{# fun unsafe value_set_char as ^ { withGValue `GValue', cFromEnum `Char' } -> `()' #}
 
 {# fun unsafe value_set_uchar as ^ { withGValue `GValue', `Word8' } -> `()' #}
 {# fun unsafe value_get_uchar as ^ { withGValue `GValue' } -> `Word8' #}

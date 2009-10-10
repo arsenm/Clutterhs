@@ -51,7 +51,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Model,
                             module Graphics.UI.Clutter.Script,
                             module Graphics.UI.Clutter.Units,
-                            module Graphics.UI.Clutter.Scriptable
+                            module Graphics.UI.Clutter.Scriptable,
+                            module Graphics.UI.Clutter.BindingPool
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -88,5 +89,6 @@ import Graphics.UI.Clutter.Model
 import Graphics.UI.Clutter.Script
 import Graphics.UI.Clutter.Units
 import Graphics.UI.Clutter.Scriptable
+import Graphics.UI.Clutter.BindingPool
 
 

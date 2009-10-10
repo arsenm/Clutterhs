@@ -217,7 +217,13 @@ module Graphics.UI.Clutter.Types (
 
                                   ScriptableClass,
                                   Scriptable,
-                                  withScriptableClass
+                                  withScriptableClass,
+
+                                  BindingPool,
+                                  newBindingPool,
+                                  withBindingPool,
+
+                                  ModifierType(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -1087,6 +1093,24 @@ instance ScriptableClass Scriptable
 instance GObjectClass Scriptable where
   toGObject (Scriptable i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Scriptable (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** BindingPool
+
+{# pointer *ClutterBindingPool as BindingPool foreign newtype #}
+
+class GObjectClass o => BindingPoolClass o
+toBindingPool :: BindingPoolClass o => o -> BindingPool
+toBindingPool = unsafeCastGObject . toGObject
+
+newBindingPool a = makeNewGObject BindingPool $ return (castPtr a)
+
+instance BindingPoolClass BindingPool
+instance ActorClass BindingPool
+instance GObjectClass BindingPool where
+  toGObject (BindingPool i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BindingPool (castForeignPtr o)
 
 -- ***************************************************************
 

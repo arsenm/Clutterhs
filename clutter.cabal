@@ -59,6 +59,7 @@ Library
                    Graphics.UI.Clutter.Script,
                    Graphics.UI.Clutter.Units,
                    Graphics.UI.Clutter.Scriptable,
+                   Graphics.UI.Clutter.BindingPool,
                    Graphics.UI.Clutter
 
   Exposed: True

@@ -25,7 +25,7 @@
 
 module Graphics.UI.Clutter.Text (
                                  textNew,
---                                 textNewFull,
+                                 textNewFull,
                                  textNewWithText,
 
                                  textGetText,
@@ -40,9 +40,9 @@ module Graphics.UI.Clutter.Text (
                                  textSetColor,
                                  textColor,
 
-                               --textGetEllipsize,
-                               --textSetEllipsize,
-                               --textEllipsize,
+                                 textGetEllipsize,
+                                 textSetEllipsize,
+                                 textEllipsize,
 
                                  textGetFontName,
                                  textSetFontName,
@@ -58,17 +58,17 @@ module Graphics.UI.Clutter.Text (
 
                                --textGetLayout,
 
-                               --testSetLineAlignment,
-                               --textGetLineAlignment,
-                               --textLineAlignment,
+                                 textSetLineAlignment,
+                                 textGetLineAlignment,
+                                 textLineAlignment,
 
                                  textGetLineWrap,
                                  textSetLineWrap,
                                  textLineWrap,
 
-                               --textSetLineWrapMode,
-                               --textGetLineWrapMode,
-                               --textLineWrapMode,
+                                 textSetLineWrapMode,
+                                 textGetLineWrapMode,
+                                 textLineWrapMode,
 
                                  textSetMaxLength,
                                  textGetMaxLength,
@@ -78,34 +78,34 @@ module Graphics.UI.Clutter.Text (
                                  textGetSelectable,
                                  textSelectable,
 
-                               --textSetSelection,
-                               --textGetSelection,
+                                 textSetSelection,
+                                 textGetSelection,
                                --textSelection,
 
-                               --textGetSelectionBound,
-                               --textSetSelectionBound,
-                               --textSelectionBound,
+                                 textGetSelectionBound,
+                                 textSetSelectionBound,
+                                 textSelectionBound,
 
-                               --textSetSingleLineMode,
-                               --textGetSingleLineMode,
-                               --textSingleLineMode,
+                                 textSetSingleLineMode,
+                                 textGetSingleLineMode,
+                                 textSingleLineMode,
 
-                               --textSetUseMarkup,
-                               --textGetUseMarkup,
-                               --textUseMarkup,
+                                 textSetUseMarkup,
+                                 textGetUseMarkup,
+                                 textUseMarkup,
 
                                  textSetEditable,
                                  textGetEditable,
                                  textEditable,
 
-                               --textInsertText,
+                                 textInsertText,
                                --textInsertUnichar,
 
-                               --textDeleteChars,
-                               --textDeleteText,
+                                 textDeleteChars,
+                                 textDeleteText,
 
-                               --textDeleteSelection,
-                               --textGetChars,
+                                 textDeleteSelection,
+                                 textGetChars,
 
                                  textGetCursorColor,
                                  textSetCursorColor,
@@ -128,8 +128,13 @@ module Graphics.UI.Clutter.Text (
                                  textCursorSize,
 
                                  textActivate,
-                                 textPositionToCoords
+                                 textPositionToCoords,
 
+                                 --TODO: Export more of Pango?
+                                 PangoLayout,
+                                 LayoutWrapMode,
+                                 LayoutAlignment,
+                                 EllipsizeMode,
                                 ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -139,8 +144,17 @@ import System.Glib.GObject
 import System.Glib.Attributes
 import Control.Monad (liftM)
 
+import Graphics.UI.Gtk.Pango.Types (PangoLayout)
+import Graphics.UI.Gtk.Pango.Layout (LayoutWrapMode, LayoutAlignment)
+import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
+
+--CHECKME: Is LayoutWrapMode/LayoutAlignment the wrap mode we want?
+
+
 {# fun unsafe text_new as ^ {} -> `Text' newText* #}
+{#fun unsafe text_new_full as ^ { `String', `String', withColor* `Color' } -> `Text' newText* #}
 {#fun unsafe text_new_with_text as ^ { `String', `String' } -> `Text' newText* #}
+
 
 {# fun unsafe text_get_text as ^ { withText* `Text' } -> `String' #}
 {# fun unsafe text_set_text as ^ { withText* `Text', `String' } -> `()' #}
@@ -160,19 +174,19 @@ textAttributes = newAttr textGetAttributes textSetAttributes
 -}
 
 {# fun unsafe text_get_color as ^ {withText* `Text', alloca- `Color' peek* } -> `()' #}
-{# fun unsafe text_set_color as ^ {withText* `Text', withColor* `Color'} -> `()' #}
+{# fun unsafe text_set_color as ^ {withText* `Text', withColor* `Color' } -> `()' #}
 textColor :: Attr Text Color
 textColor = newAttr textGetColor textSetColor
 
-{-
-{# fun unsafe text_get_ellipsize as ^ {withText* `Text', alloca- `PangoEllipsizeMode' peek* } -> `()' #}
-{# fun unsafe text_set_ellipsize as ^ {withText* `Text', withColor* `PangoEllipsizeMode'} -> `()' #}
-textEllipsize :: Attr Text Ellipsize
+
+{# fun unsafe text_get_ellipsize as ^ {withText* `Text' } -> `EllipsizeMode' cToEnum #}
+{# fun unsafe text_set_ellipsize as ^ {withText* `Text', cFromEnum `EllipsizeMode' } -> `()' #}
+textEllipsize :: Attr Text EllipsizeMode
 textEllipsize = newAttr textGetEllipsize textSetEllipsize
--}
+
 
 {# fun unsafe text_get_font_name as ^ { withText* `Text' } -> `String' #}
-{# fun unsafe text_set_font_name as ^ { withText* `Text', `String'} -> `()' #}
+{# fun unsafe text_set_font_name as ^ { withText* `Text', `String' } -> `()' #}
 textFontName :: Attr Text String
 textFontName = newAttr textGetFontName textSetFontName
 
@@ -189,30 +203,29 @@ textFontName = newAttr textGetPasswordChar textSetPasswordChar
 textJustify :: Attr Text Bool
 textJustify = newAttr textGetJustify textSetJustify
 
-{-
-TODO: Read only attribute??
-{# fun unsafe text_get_layout as ^ {withText* `Text' } -> `PangoLayout' #}
-textLayout :: Attr Text PangoLayout
-textLayout = newAttr textGetJustify textSetJustify
-
-
-{# fun unsafe text_get_line_alignment as ^ { withText* `Text' } -> `PangoAlignment' #}
-{# fun unsafe text_set_line_alignment as ^ { withText* `Text', `PangoAlignment'} -> `()' #}
-textAlignment :: Attr Text PangoAlignment
-textAlignment = newAttr textGetAlignment textSetAlignment
+{-TODO: Marshal in and out PangoLayout?
+{# fun unsafe text_get_layout as ^ {withText* `Text' } -> `PangoLayout' peek* #}
+textLayout :: ReadAttr Text PangoLayout
+textLayout = readAttr textGetLayout
 -}
+
+{# fun unsafe text_get_line_alignment as ^ { withText* `Text' } -> `LayoutAlignment' cToEnum #}
+{# fun unsafe text_set_line_alignment as ^ { withText* `Text', cFromEnum `LayoutAlignment'} -> `()' #}
+textLineAlignment :: Attr Text LayoutAlignment
+textLineAlignment = newAttr textGetLineAlignment textSetLineAlignment
+
 
 {# fun unsafe text_get_line_wrap as ^ { withText* `Text' } -> `Bool' #}
 {# fun unsafe text_set_line_wrap as ^ { withText* `Text', `Bool'} -> `()' #}
 textLineWrap :: Attr Text Bool
 textLineWrap = newAttr textGetLineWrap textSetLineWrap
 
-{-
-{# fun unsafe text_get_line_wrap_mode as ^ { withText* `Text' } -> `PangoWrapMode' #}
-{# fun unsafe text_set_line_wrap_mode as ^ { withText* `Text', `PangoWrapMode'} -> `()' #}
-textLineWrapMode :: Attr Text PangoWrapMode
+
+{# fun unsafe text_get_line_wrap_mode as ^ { withText* `Text' } -> `LayoutWrapMode' cToEnum #}
+{# fun unsafe text_set_line_wrap_mode as ^ { withText* `Text', cFromEnum `LayoutWrapMode' } -> `()' #}
+textLineWrapMode :: Attr Text LayoutWrapMode
 textLineWrapMode = newAttr textGetLineWrapMode textSetLineWrapMode
--}
+
 
 {# fun unsafe text_get_max_length as ^ { withText* `Text' } -> `Int' #}
 {# fun unsafe text_set_max_length as ^ { withText* `Text', `Int'} -> `()' #}
@@ -224,6 +237,32 @@ textMaxLength = newAttr textGetMaxLength textSetMaxLength
 textSelectable :: Attr Text Bool
 textSelectable = newAttr textGetSelectable textSetSelectable
 
+
+{# fun unsafe text_get_selection as ^ { withText* `Text' } -> `String' #}
+--TODO: gssize
+{# fun unsafe text_set_selection as ^ { withText* `Text', `Word64', `Word64' } -> `()' #}
+--this won't work
+--textSelection :: Attr Text Int
+--textSelection = newAttr textGetSelection textSetSelection
+
+
+{# fun unsafe text_get_selection_bound as ^ { withText* `Text' } -> `Int' #}
+{# fun unsafe text_set_selection_bound as ^ { withText* `Text', `Int' } -> `()' #}
+textSelectionBound :: Attr Text Int
+textSelectionBound = newAttr textGetSelectionBound textSetSelectionBound
+
+
+{# fun unsafe text_get_single_line_mode as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_set_single_line_mode as ^ { withText* `Text', `Bool' } -> `()' #}
+textSingleLineMode :: Attr Text Bool
+textSingleLineMode = newAttr textGetSingleLineMode textSetSingleLineMode
+
+
+{# fun unsafe text_get_use_markup as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_set_use_markup as ^ { withText* `Text', `Bool' } -> `()' #}
+textUseMarkup :: Attr Text Bool
+textUseMarkup = newAttr textGetUseMarkup textSetUseMarkup
+
 --TODO: Selection bounds and other functions
 
 {# fun unsafe text_get_editable as ^ { withText* `Text' } -> `Bool' #}
@@ -232,6 +271,19 @@ textEditable :: Attr Text Bool
 textEditable = newAttr textGetEditable textSetEditable
 
 --Insertions
+
+--TODO: gssize
+{# fun unsafe text_insert_text as ^ { withText* `Text', `String', `Word64' } -> `()' #}
+
+--{# fun unsafe text_insert_unichar as ^ { withText* `Text', `gunichar' } -> `()' #}
+--TODO: guint
+{# fun unsafe text_delete_chars as ^ { withText* `Text', `Word64' } -> `()' #}
+
+--TODO: More gssize. Basically all the Word64 is wrong.
+{# fun unsafe text_delete_text as ^ { withText* `Text', `Word64', `Word64' } -> `()' #}
+
+{# fun unsafe text_delete_selection as ^ { withText* `Text' } -> `()' #}
+{# fun unsafe text_get_chars as ^ { withText* `Text', `Word64', `Word64' } -> `()' #}
 
 {# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
 {# fun unsafe text_set_cursor_color as ^ { withText* `Text', withColor* `Color' } -> `()' #}

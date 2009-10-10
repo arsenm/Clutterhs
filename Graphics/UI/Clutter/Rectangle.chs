@@ -46,22 +46,22 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
-{# fun unsafe rectangle_new as ^ {} -> `Rectangle' newRectangle* #}
-{# fun unsafe rectangle_new_with_color as ^ {withColor* `Color'} -> `Rectangle' newRectangle* #}
+{# fun unsafe rectangle_new as ^ { } -> `Rectangle' newRectangle* #}
+{# fun unsafe rectangle_new_with_color as ^ { withColor* `Color' } -> `Rectangle' newRectangle* #}
 
-{# fun unsafe rectangle_get_color as ^ {withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
-{# fun unsafe rectangle_set_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
+{# fun unsafe rectangle_get_color as ^ { withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
+{# fun unsafe rectangle_set_color as ^ { withRectangle* `Rectangle', withColor* `Color' } -> `()' #}
 rectangleColor :: Attr Rectangle Color
 rectangleColor = newAttr rectangleGetColor rectangleSetColor
 
-{# fun unsafe rectangle_get_border_color as ^ {withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
-{# fun unsafe rectangle_set_border_color as ^ {withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
+{# fun unsafe rectangle_get_border_color as ^ { withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
+{# fun unsafe rectangle_set_border_color as ^ { withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
 rectangleBorderColor :: Attr Rectangle Color
 rectangleBorderColor = newAttr rectangleGetBorderColor rectangleSetBorderColor
 
 --FIXME: guint vs. int
-{# fun unsafe rectangle_get_border_width as ^ {withRectangle* `Rectangle'} -> `Int' #}
-{# fun unsafe rectangle_set_border_width as ^ {withRectangle* `Rectangle', `Int'} -> `()' #}
+{# fun unsafe rectangle_get_border_width as ^ { withRectangle* `Rectangle' } -> `Int' #}
+{# fun unsafe rectangle_set_border_width as ^ { withRectangle* `Rectangle', `Int' } -> `()' #}
 rectangleBorderWidth :: Attr Rectangle Int
 rectangleBorderWidth = newAttr rectangleGetBorderWidth rectangleSetBorderWidth
 

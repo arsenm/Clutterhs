@@ -42,7 +42,7 @@ module Graphics.UI.Clutter.Stage (
                                   stageShowCursor,
                                   stageHideCursor,
 
-                                --stageGetActorAtPos,
+                                  stageGetActorAtPos,
 
                                   stageEnsureCurrent,
                                   stageEnsureViewport,
@@ -75,6 +75,9 @@ module Graphics.UI.Clutter.Stage (
                                   stageGetUseFog,
                                   stageUseFog,
 
+                                  stageSetFog,
+                                  stageGetFog,
+                                  stageFog
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}

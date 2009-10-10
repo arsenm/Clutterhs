@@ -49,7 +49,7 @@ scatterRectangle h w rec = do
   animate rec EaseOutBounce 3000 ("x", rnd1 * w)
                                  ("y", rnd2 * h / 2 + h / 2)
                                  ("rotation-angle-z", ang)
-                               --("opacity", 0::Word8)
+                                 ("opacity", 0::Word8)
 
 --FIXME: Why did this need a type signature?
 completedAnimation :: Stage -> IO Animation

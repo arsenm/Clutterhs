@@ -34,6 +34,7 @@ module Graphics.UI.Clutter.AnimateArgs (
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Animation #}
 {# import Graphics.UI.Clutter.GValue #}
+{# import Graphics.UI.Clutter.External #}
 
 import C2HS
 
@@ -55,7 +56,7 @@ import Control.Monad (liftM, foldM)
 --by UAnimate, I mean GValue that animatev accepts. Fix that later (rename)
 --Not sure this is how I want to do this.
 --FIXME: the gvalue set/get functions for char are commented out in gtk2hs...
-data UAnimate = UChar Char
+data UAnimate = UChar Int8
               | UString String
               | UUChar Word8
               | UInteger Int
@@ -73,10 +74,14 @@ instance Storable UAnimate where
                 in do
                 {# set GValue->g_type #} p (0 :: GType)
                 case ut of
+                --FIXME: Char/UCHar vs. Int8 type sort of hacky,
+                --intconv, why missing char marshaller?
                   (UInteger val) -> valueInit gv GType.int >> valueSetInt gv val
                   (UDouble val) -> valueInit gv GType.double >> valueSetDouble gv val
                   (UFloat val) -> valueInit gv GType.float >> valueSetFloat gv val
                   (UString val) -> valueInit gv GType.string >> valueSetString gv val
+                  (UChar val) -> valueInit gv GType.char >> valueSetChar gv val
+                  (UUChar val) -> valueInit gv GType.uchar >> valueSetUchar gv val
                   _ -> error $ "Type needs to be done for poke " ++ show ut
 
 --TODO: Type for Duration, type Duration = UInt or whatever

@@ -32,12 +32,12 @@ module Graphics.UI.Clutter.External (
                                      valueGetChar
                                     ) where
 
+{# import Graphics.UI.Clutter.GValue #}
+
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.GType
 import System.Glib.GValue (GValue(GValue))
-
-withGValue (GValue gval) = castPtr gval
 
 --This is commented out in c2hs.
 {# fun unsafe value_get_char as ^ { withGValue `GValue' } -> `Char' cToEnum #}

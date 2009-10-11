@@ -24,51 +24,76 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Color (
-                                  colorFromString
---                                  colorNew,
---                                  colorFree,
---                                  colorCopy
+                                  colorFromString,
+
+                                  colorToString,
+                                --colorNew,
+                                --colorFree,
+                                --colorCopy,
+
+                                  colorFromHls,
+                                  colorToHls,
+                                  colorFromPixel,
+                                  colorToPixel,
+                                  colorAdd,
+                                  colorSubtract,
+                                  colorLighten,
+                                  colorDarken,
+                                  colorShade,
+                                  valueSetColor,
+                                  valueGetColor
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import Data.Word
 import System.Glib.GType (GType, typeInstanceIsA)
 import System.Glib.GObject
+import System.Glib.GValue (GValue(GValue))
 
 --FIXME: Check this for ok unsafePerformIO. Ceiling cat is watching.
 colorFromString::String -> Maybe Color
 colorFromString name = unsafePerformIO $ withCString name $ \cstr ->
-                       alloca $ \colptr -> return $
+                       alloca $ \colptr ->
                        if cToBool ({# call pure unsafe color_from_string #} colptr cstr)
-                         then Just (unsafePerformIO (peek colptr))
-                         else Prelude.Nothing
+                         then peek colptr >>= return . Just
+                         else return Prelude.Nothing
 
-{-
---colorFromString::String -> Maybe Color
-colorFromString name = do
-  strptr <- newCString name
-  colptr <- malloc :: IO (Ptr Color)
-  succ <- {# call unsafe color_from_string #} (castPtr colptr) strptr
-  let a = if cToBool succ
-            then Just (unsafePerformIO (peek colptr))
-            else Nothing
---  seq a (return ())
-  free colptr
-  free strptr
-  return a
--}
+{# fun pure unsafe color_to_string as ^ { withColor* `Color' } -> `String' #}
 
---{#fun unsafe color_new
---      {withCUChar* `s', withCUChar* `s'} -> `Color' Color #}
---{#fun color_new { r b g a } -> `Color' Color #}
+{# fun pure unsafe color_from_hls as ^
+       { alloca- `Color' peek*, `Float', `Float', `Float' } -> `()' #}
 
---{#fun color_new as colorNew { `CUChar', `CUChar', `CUChar', `CUChar'} -> `Color' Color #}
+{# fun pure unsafe color_to_hls as ^
+       { withColor*`Color',
+         alloca- `Float' peekFloatConv*,
+         alloca- `Float' peekFloatConv*,
+         alloca- `Float' peekFloatConv* } -> `()' #}
 
---addForeignPtrFinalizer ??
+--CHECKME: guint32
+{# fun pure unsafe color_from_pixel as ^ { alloca- `Color' peek*, `Word32' } -> `()' #}
+{# fun pure unsafe color_to_pixel as ^ { withColor* `Color' } -> `Word32' #}
 
---colorCopy :: Color -> IO Color
---colorCopy = undefined
+{# fun pure unsafe color_add as ^
+       { withColor* `Color', withColor* `Color', alloca- `Color' peek* } -> `()' #}
+
+{# fun pure unsafe color_subtract as ^
+       { withColor* `Color', withColor* `Color', alloca- `Color' peek* } -> `()' #}
+
+--CHECKME: Are these pure? Probably.
+{# fun pure unsafe color_lighten as ^
+       { withColor* `Color', alloca- `Color' peek* } -> `()' #}
+{# fun pure unsafe color_darken as ^
+       { withColor* `Color', alloca- `Color' peek* } -> `()' #}
+
+{# fun pure unsafe color_shade as ^
+       { withColor* `Color', `Double', alloca- `Color' peek* } -> `()' #}
+
+--TODO: ClutterParamSpecColor stuff
+
+{# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
+{# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
 
 

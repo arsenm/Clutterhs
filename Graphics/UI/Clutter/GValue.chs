@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances, FlexibleInstances #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 #include <glib.h>
@@ -25,8 +25,13 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.GValue (
-                                 --GValueClass,
-                                   withGValue
+                                  --GValueClass,
+                                  withGValue,
+
+                                  color,
+                                  valueSetColor,
+                                  valueGetColor
+
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -61,4 +66,12 @@ class GValueClass a where
 -}
 
 withGValue (GValue gval) = castPtr gval
+
+
+--Color GValue
+{# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
+{# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
+
+--constant
+{# fun pure unsafe color_get_type as color { } -> `GType' cToEnum #}
 

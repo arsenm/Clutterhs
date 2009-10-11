@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 
@@ -39,9 +39,7 @@ module Graphics.UI.Clutter.Color (
                                   colorSubtract,
                                   colorLighten,
                                   colorDarken,
-                                  colorShade,
-                                  valueSetColor,
-                                  valueGetColor
+                                  colorShade
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -92,8 +90,4 @@ colorFromString name = unsafePerformIO $ withCString name $ \cstr ->
        { withColor* `Color', `Double', alloca- `Color' peek* } -> `()' #}
 
 --TODO: ClutterParamSpecColor stuff
-
-{# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
-{# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
-
 

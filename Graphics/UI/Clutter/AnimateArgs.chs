@@ -56,12 +56,14 @@ import Control.Monad (liftM, foldM)
 --by UAnimate, I mean GValue that animatev accepts. Fix that later (rename)
 --Not sure this is how I want to do this.
 --FIXME: the gvalue set/get functions for char are commented out in gtk2hs...
+--It's probably a better idea to have a GValueClass, and then an init, set and get function
 data UAnimate = UChar Char
               | UString String
               | UUChar Word8
               | UInteger Int
               | UFloat Float
               | UDouble Double
+              | UColor Color
               deriving (Show, Eq)
 
 {# pointer *GValue as UanimatePtr -> UAnimate #}
@@ -82,6 +84,7 @@ instance Storable UAnimate where
                   (UString val) -> valueInit gv GType.string >> valueSetString gv val
                   (UChar val) -> valueInit gv GType.char >> valueSetChar gv val
                   (UUChar val) -> valueInit gv GType.uchar >> valueSetUChar gv val
+                  (UColor val) -> valueInit gv Graphics.UI.Clutter.GValue.color >> valueSetColor gv val
                   _ -> error $ "Type needs to be done for poke " ++ show ut
 
 --TODO: Type for Duration, type Duration = UInt or whatever
@@ -130,6 +133,9 @@ instance AnimateArg (String, Int) where
 instance AnimateArg (String, Float) where
     toUAnimate = second UFloat
 
+instance AnimateArg (String, Color) where
+    toUAnimate = second UColor
+
 instance AnimateArg (String, Double) where
     toUAnimate = second UDouble
 
@@ -151,22 +157,20 @@ uanimate actor mode duration us =
         size = {# sizeof GValue #}
         --CHECKME: unsafe?
         animatev = {# call unsafe actor_animatev #}
-    in do
-    cstrs <- mapM newCString names
-    res <- withArrayLen cstrs $ \len strptr ->
-           withActorClass actor $ \actptr ->
-           withArray uvals $ \gvPtr ->
-            let unsetOne i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
-            in do
-              result <- animatev actptr (cFromEnum mode) (cIntConv duration) (cIntConv len) strptr gvPtr
-              foldM_ unsetOne gvPtr uvals
-              return result
-              --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
-    mapM free cstrs
-    newres <- newAnimation res  --FIXME: Do I need to do this here? reffing?
-    return newres
+    in
+    withMany withCString names $ \cstrs -> do
+      res <- withArrayLen cstrs $ \len strptr ->
+             withActorClass actor $ \actptr ->
+             withArray uvals $ \gvPtr ->
+                 let unsetOne i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
+                 in do
+                   result <- animatev actptr (cFromEnum mode) (cIntConv duration) (cIntConv len) strptr gvPtr
+                   foldM_ unsetOne gvPtr uvals
+                   return result
+      --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
+      newAnimation res  --FIXME: Do I need to do this here? reffing?
 
---FIXME: Duplication here
+--FIXME: Duplication here?
 
 uanimatewithalpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO Animation
 uanimatewithalpha _ _ [] = error "Need arguments to animate with alpha"
@@ -175,9 +179,9 @@ uanimatewithalpha actor alpha us =
         size = {# sizeof GValue #}
         --CHECKME: unsafe?
         animatev = {# call unsafe actor_animate_with_alphav #}
-    in do
-    cstrs <- mapM newCString names
-    res <- withArrayLen cstrs $ \len strptr ->
+    in
+    withMany withCString names $ \cstrs -> do
+      res <- withArrayLen cstrs $ \len strptr ->
            withActorClass actor $ \actptr ->
            withAlpha alpha $ \alphptr ->
            withArray uvals $ \gvPtr ->
@@ -187,7 +191,5 @@ uanimatewithalpha actor alpha us =
               foldM_ unsetOne gvPtr uvals
               return result
               --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
-    mapM free cstrs
-    newres <- newAnimation res  --FIXME: Do I need to do this here? reffing?
-    return newres
+      newAnimation res  --FIXME: Do I need to do this here? reffing?
 

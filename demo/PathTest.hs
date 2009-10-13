@@ -1,6 +1,4 @@
 
-
-
 import Graphics.UI.Clutter
 
 main :: IO ()
@@ -24,7 +22,6 @@ main = do
 
   --CHECKME: This list is supposed to be freed but I don't remember if I made that happen
   nodes <- pathGetNodes path
-
 
   tml <- timelineNew 3000
   alph <- alphaNewFull tml EaseInSine

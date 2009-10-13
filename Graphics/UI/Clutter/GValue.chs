@@ -25,13 +25,11 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.GValue (
-                                  --GValueClass,
-                                  withGValue,
+                                   withGValue,
 
-                                  color,
-                                  valueSetColor,
-                                  valueGetColor
-
+                                   color,
+                                   valueSetColor,
+                                   valueGetColor
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -52,21 +50,7 @@ import qualified System.Glib.GTypeConstants as GType
 
 import Control.Monad (liftM)
 
-
---this seems like it should have been done already.  The motivation is
---you don't need to do an explicit conversion / creation of a GValue
---when you try to use clutter_animatev and co
---I might do this. I might just not bother.
---I'm not sure it's worth it.
-{-
-class GValueClass a where
---  toGValue :: a -> IO GValue
-  withGValue :: a -> (GValue -> IO b) -> IO b
-  withGValue (GValue gval) = castPtr gval
--}
-
 withGValue (GValue gval) = castPtr gval
-
 
 --Color GValue
 {# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}

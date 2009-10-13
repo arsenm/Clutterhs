@@ -53,6 +53,7 @@ Library
                    Graphics.UI.Clutter.BehaviourEllipse,
                    Graphics.UI.Clutter.BehaviourOpacity,
                    Graphics.UI.Clutter.BehaviourRotate,
+                   Graphics.UI.Clutter.BehaviourPath,
                    Graphics.UI.Clutter.Interval,
                    Graphics.UI.Clutter.Path,
                    Graphics.UI.Clutter.Shader,
@@ -82,6 +83,19 @@ Library
 
 Executable arst
   Main-Is:         Main.hs
+  Other-Modules:   Graphics.UI.Clutter
+  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  Hs-Source-Dirs:  .,
+                   Graphics,
+                   Graphics/UI,
+                   Graphics/UI/Clutter,
+                   dist/build
+
+  Build-Depends: base, glib
+
+
+Executable pathtest
+  Main-Is:         PathTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   Hs-Source-Dirs:  .,

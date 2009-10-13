@@ -161,7 +161,10 @@ module Graphics.UI.Clutter.Types (
                                   BehaviourRotate,
                                   withBehaviourRotate,
                                   newBehaviourRotate,
-
+                                  BehaviourPathClass,
+                                  BehaviourPath,
+                                  withBehaviourPath,
+                                  newBehaviourPath,
 
                                   PathClass,
                                   Path,
@@ -223,7 +226,6 @@ module Graphics.UI.Clutter.Types (
                                   newBindingPool,
                                   withBindingPool,
 
-                                  ModifierType(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -865,6 +867,26 @@ instance ScriptableClass BehaviourRotate
 instance GObjectClass BehaviourRotate where
   toGObject (BehaviourRotate i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourRotate (castForeignPtr o)
+
+-- ***************************************************************
+
+
+-- *************************************************************** BehaviourPath
+
+{# pointer *ClutterBehaviourPath as BehaviourPath foreign newtype #}
+
+class GObjectClass o => BehaviourPathClass o
+toBehaviourPath :: BehaviourPathClass o => o -> BehaviourPath
+toBehaviourPath = unsafeCastGObject . toGObject
+
+newBehaviourPath a = makeNewGObject BehaviourPath $ return (castPtr a)
+
+instance BehaviourPathClass BehaviourPath
+instance BehaviourClass BehaviourPath
+instance ScriptableClass BehaviourPath
+instance GObjectClass BehaviourPath where
+  toGObject (BehaviourPath i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BehaviourPath (castForeignPtr o)
 
 -- ***************************************************************
 

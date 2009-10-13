@@ -45,6 +45,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.BehaviourEllipse,
                             module Graphics.UI.Clutter.BehaviourOpacity,
                             module Graphics.UI.Clutter.BehaviourRotate,
+                            module Graphics.UI.Clutter.BehaviourPath,
                             module Graphics.UI.Clutter.Interval,
                             module Graphics.UI.Clutter.Path,
                             module Graphics.UI.Clutter.Shader,
@@ -82,6 +83,7 @@ import Graphics.UI.Clutter.BehaviourDepth
 import Graphics.UI.Clutter.BehaviourEllipse
 import Graphics.UI.Clutter.BehaviourOpacity
 import Graphics.UI.Clutter.BehaviourRotate
+import Graphics.UI.Clutter.BehaviourPath
 import Graphics.UI.Clutter.Interval
 import Graphics.UI.Clutter.Path
 import Graphics.UI.Clutter.Shader
@@ -90,5 +92,6 @@ import Graphics.UI.Clutter.Script
 import Graphics.UI.Clutter.Units
 import Graphics.UI.Clutter.Scriptable
 import Graphics.UI.Clutter.BindingPool
+
 
 

@@ -29,22 +29,21 @@ module Graphics.UI.Clutter.Container (
                                       containerAddActor,
                                     --containerAddList
                                       containerRemoveActor,
-                                    --containerRemove,
                                     --containerRemoveList,
                                       containerGetChildren,
-                                    --containerForeach,
-                                    --containerForeachWithInternals,
+                                      containerForeach,
+                                      containerForeachWithInternals,
                                       containerFindChildByName,
                                       containerRaiseChild,
                                       containerLowerChild,
-                                      containerSortDepthOrder
+                                      containerSortDepthOrder,
                                     --containerClassFindChildProperty,
                                     --containerClassListChildProperties,
                                     --containerChildSetProperty,
                                     --containerChildGetProperty,
                                     --containerChildSet,
                                     --containerChildGet,
-                                    --containerGetChildMeta
+                                      containerGetChildMeta
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -56,7 +55,7 @@ import System.Glib.GObject
 {# fun unsafe container_add_actor as ^
        `(ContainerClass container, ActorClass actor)' =>
            { withContainerClass* `container', withActorClass* `actor' } -> `()' #}
-
+--TODO: add/removeList as var args function, to allow multiple types of the actor class in the list
 
 {# fun unsafe container_remove_actor as ^
        `(ContainerClass container, ActorClass actor)' =>
@@ -65,10 +64,24 @@ import System.Glib.GObject
 {# fun unsafe container_get_children as ^
        `(ContainerClass container)' => { withContainerClass* `container' } -> `[Actor]' newActorList* #}
 
+containerForeach :: (ContainerClass c) => c -> Callback -> IO ()
+containerForeach c func = withBehaviourClass c $ \cptr -> do
+                            funcPtr <- newBehaviourForeachFunc func
+                            {# call container_foreach #} cptr funcPtr nullPtr
+                            freeHaskellFunPtr funcPtr
+                            --CHECKME: unsafe?
+
+containerForeachWithInternals :: (ContainerClass c) => c -> Callback -> IO ()
+containerForeachWithInternals c func = withBehaviourClass c $ \cptr -> do
+                                         funcPtr <- newBehaviourForeachFunc func
+                                         {# call container_foreach #} cptr funcPtr nullPtr
+                                         freeHaskellFunPtr funcPtr
+                                       --CHECKME: unsafe?
+
+
 
 {# fun unsafe container_find_child_by_name as ^
        `(ContainerClass container)' => { withContainerClass* `container', `String' } -> `Actor' newActor* #}
-
 
 {# fun unsafe container_raise_child as ^
        `(ContainerClass container, ActorClass a, ActorClass b)' =>
@@ -79,4 +92,23 @@ import System.Glib.GObject
 
 {# fun unsafe container_sort_depth_order as ^
        `(ContainerClass container)' => { withContainerClass* `container' } -> `()' #}
+{-
+{# fun unsafe container_class_find_child_property as ^
+       `(GObjectClass gobj)' => { withGObjectClass* `gobj', `String' } -> `GParamSpec' #}
+
+--FIXME: guint
+{# fun unsafe container_class_list_child_properties as ^
+       `(GObjectClass gobj)' => { withGObjectClass* `gobj', `Word32' } -> `[GParamSpec]' #}
+-}
+--container_child_set_property
+--container_child_get_property
+--TODO: Set property functions, hiding gvalues.
+--container_child_set
+--container_child_get are var arg functions, but can just wrap many calls to single one
+
+{# fun unsafe container_get_child_meta as ^
+       `(ContainerClass container)' =>
+       { withContainerClass* `container',
+         withActor* `Actor' } ->
+        `ChildMeta' newChildMeta* #}
 

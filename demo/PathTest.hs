@@ -6,14 +6,15 @@ main = do
   clutterInit
 
   stage <- stageGetDefault
-
   path <- pathNew
 
   pathAddMoveTo path 15 15
   pathAddRelMoveTo path 30 0
   pathAddRelLineTo path 10 100
   pathAddRelCurveTo path 10 10 40 40 90 90
-  pathAddMoveTo path 200 200
+  pathAddRelCurveTo path 50 30 40 40 140 90
+  pathAddMoveTo path 300 350
+  pathAddRelCurveTo path 10 20 50 40 40 90
   pathAddClose path
   n <- pathGetNNodes path
   length <- pathGetLength path

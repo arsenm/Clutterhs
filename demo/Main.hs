@@ -1,4 +1,3 @@
-
 module Main where
 
 import Graphics.UI.Clutter hiding (show)
@@ -8,9 +7,7 @@ import System.Glib.Signals (on, after)
 import System.Mem
 import Control.Monad.Trans (liftIO)
 import Data.Maybe (fromMaybe)
-import Foreign.Ptr
 
-import C2HS
 import Random
 
 cetiAlpha5 :: Alpha -> IO Double
@@ -38,11 +35,6 @@ main = do
   let cnamed = fromMaybe (error "color parsing failed") (colorFromString "green")
   print cnamed
 
-  {-
-  c <- colorNew 255 0 0 200
-  c2 <- colorNew 0 0 123 123
-  blue <- colorNew 0 0 255 200
-  -}
   rec <- rectangleNewWithColor c
   rec2 <- rectangleNewWithColor blue
   stg <- stageNew
@@ -61,6 +53,8 @@ main = do
   timelineStart animtml
 
   on stg hide (clutterMainQuit)
+  set stg [actorWidth := 800,
+           actorHeight := 800]
 
   on stg buttonPressEvent $
        tryEvent $ do
@@ -84,7 +78,7 @@ main = do
   actorSetPosition rec 50 50
   actorSetSize rec 100 100
 
-  actorSetPosition rec2 100 100
+  actorSetPosition rec2 200 350
   actorSetSize rec2 100 100
 
   (xpos, ypos) <- actorGetPosition rec
@@ -92,13 +86,12 @@ main = do
   print ypos
   stageSetColor stg cnamed
 
-  actorSetPosition txt 100 200
+  actorSetPosition txt 200 300
   actorSetSize txt 100 30
   actorSetZRotationFromGravity txt 30 GravityCenter
 
   orig <- stageGetPerspective stg
   putStrLn $ "got orig: " ++ show orig
-
 
   let pers = Perspective 90 2 0.1 100
 
@@ -110,19 +103,13 @@ main = do
 --either of these work
   onShow stg (putStrLn "I'm shown!")
 --  on stg C.show (putStrLn "I'm shown!")
---  onButtonPressEvent stg (\_ -> putStrLn "I'm clicked!")
-
-  actorShow rec
-  actorShow txt
-  actorShow stg
 
   out <- stageGetPerspective stg
   putStrLn $ "got out: " ++ show out
 
   actorShowAll stg
 
-  a <- actorGetZRotationGravity rec
-  print a
+  actorGetZRotationGravity rec >>= print
   performGC
 
   putStrLn "A wild stage appeared!"

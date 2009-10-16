@@ -1,3 +1,4 @@
+module ClutterGame where
 
 import Graphics.UI.Clutter hiding (Nothing)
 import System.Glib.Attributes
@@ -79,6 +80,7 @@ main = do
   let size = height / fromIntegral (length colors)
 
   --TODO: Can do animations with signals in name
+  --FIXME: This takes...2 arguments....function in your gvalue...triple...this...requires making work.
   (Just finAnim, recs, _) <- foldM (createRectangles stage size) (Nothing, [], 0) colors
   tml <- get finAnim animationTimeline
 

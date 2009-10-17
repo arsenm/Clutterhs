@@ -64,7 +64,7 @@ data UAnimate = UChar Char
               | UFloat Float
               | UDouble Double
               | UColor Color
-              deriving (Show, Eq)
+              | UGObject GObject
 
 {# pointer *GValue as UanimatePtr -> UAnimate #}
 --FIXME: Rename this and fix the need for cast. i.e. get rid of uanimate type sort of.
@@ -78,14 +78,14 @@ instance Storable UAnimate where
                 case ut of
                 --FIXME: Char/UCHar vs. Int8 type sort of hacky,
                 --intconv, why missing char marshaller?
-                  (UInteger val) -> valueInit gv GType.int >> valueSetInt gv val
-                  (UDouble val) -> valueInit gv GType.double >> valueSetDouble gv val
-                  (UFloat val) -> valueInit gv GType.float >> valueSetFloat gv val
-                  (UString val) -> valueInit gv GType.string >> valueSetString gv val
-                  (UChar val) -> valueInit gv GType.char >> valueSetChar gv val
-                  (UUChar val) -> valueInit gv GType.uchar >> valueSetUChar gv val
-                  (UColor val) -> valueInit gv Graphics.UI.Clutter.GValue.color >> valueSetColor gv val
-                  _ -> error $ "Type needs to be done for poke " ++ show ut
+                  (UInteger val) -> gValueInitSet gv val
+                  (UDouble val) ->  gValueInitSet gv val
+                  (UFloat val) -> gValueInitSet gv val
+                  (UString val) ->  gValueInitSet gv val
+                  (UChar val) ->  gValueInitSet gv val
+                  (UUChar val) -> gValueInitSet gv val
+                  (UColor val) -> gValueInitSet gv val
+                  (UGObject val) -> gValueInitSet gv val
 
 --TODO: Type for Duration, type Duration = UInt or whatever
 
@@ -121,34 +121,22 @@ instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
 class AnimateArg a where
     toUAnimate :: a -> (String, UAnimate)
 
---Making these pairs instances of the arg class
---requires FlexibleInstances extension
---Is there any good way around this? Do I care?
-instance (IsChar c) => AnimateArg (String, [c]) where
-    toUAnimate = second (UString . map toChar)
-
+instance AnimateArg (String, String) where
+    toUAnimate = second UString
 instance AnimateArg (String, Int) where
     toUAnimate = second UInteger
-
 instance AnimateArg (String, Float) where
     toUAnimate = second UFloat
-
 instance AnimateArg (String, Color) where
     toUAnimate = second UColor
-
 instance AnimateArg (String, Double) where
     toUAnimate = second UDouble
-
 instance AnimateArg (String, Word8) where
     toUAnimate = second UUChar
+instance (GObjectClass obj) => AnimateArg (String, obj) where
+    toUAnimate = second (UGObject . toGObject)
+--how the hell does gobjectclass overlap float?
 
-class IsChar c where
-    toChar :: c -> Char
-    fromChar :: Char -> c
-
-instance IsChar Char where
-    toChar = id
-    fromChar = id
 
 uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"

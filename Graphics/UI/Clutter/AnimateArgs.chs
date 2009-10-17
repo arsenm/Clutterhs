@@ -57,15 +57,18 @@ import Control.Monad (liftM, foldM)
 --Not sure this is how I want to do this.
 --FIXME: the gvalue set/get functions for char are commented out in gtk2hs...
 --It's probably a better idea to have a GValueClass, and then an init, set and get function
-data (GValueClass a) => UAnimate a = Basic a
-                                   | Func a a
+data UAnimate = UChar Char
+              | UString String
+              | UUChar Word8
+              | UInteger Int
+              | UFloat Float
+              | UDouble Double
+              | UColor Color
+              deriving (Show, Eq)
 
--- {# pointer *GValue as UanimatePtr -> UAnimate #}
-
-type UanimatePtr a = Ptr (UAnimate a)
-
+{# pointer *GValue as UanimatePtr -> UAnimate #}
 --FIXME: Rename this and fix the need for cast. i.e. get rid of uanimate type sort of.
-instance (GValueClass gv) => Storable (UAnimate gv) where
+instance Storable UAnimate where
     sizeOf _ = {# sizeof GValue #}
     alignment _ = alignment (undefined :: GType)
     peek _ = error "peek undefined for GValue"
@@ -73,8 +76,16 @@ instance (GValueClass gv) => Storable (UAnimate gv) where
                 in do
                 {# set GValue->g_type #} p (0 :: GType)
                 case ut of
-                  (Basic val) -> gValueInitSet gv val
-                  _ -> error "lol"
+                --FIXME: Char/UCHar vs. Int8 type sort of hacky,
+                --intconv, why missing char marshaller?
+                  (UInteger val) -> valueInit gv GType.int >> valueSetInt gv val
+                  (UDouble val) -> valueInit gv GType.double >> valueSetDouble gv val
+                  (UFloat val) -> valueInit gv GType.float >> valueSetFloat gv val
+                  (UString val) -> valueInit gv GType.string >> valueSetString gv val
+                  (UChar val) -> valueInit gv GType.char >> valueSetChar gv val
+                  (UUChar val) -> valueInit gv GType.uchar >> valueSetUChar gv val
+                  (UColor val) -> valueInit gv Graphics.UI.Clutter.GValue.color >> valueSetColor gv val
+                  _ -> error $ "Type needs to be done for poke " ++ show ut
 
 --TODO: Type for Duration, type Duration = UInt or whatever
 
@@ -85,8 +96,8 @@ animateWithAlpha :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
 animateWithAlpha actor alpha = runAnimHack actor alpha []
 
 class AnimateType t where
-    runAnim :: (ActorClass actor, GValueClass gv) => actor -> AnimationMode -> Int -> [(String, gv)] -> t
-    runAnimHack :: (ActorClass actor, GValueClass gv) => actor -> Alpha -> [(String, gv)] -> t
+    runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> t
+    runAnimHack :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
 
 -- Multiple return types isn't useful. We only want IO Animation.
 -- This breaks things if you remove the instance for ().
@@ -108,15 +119,38 @@ instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
 -- (String, Something that can be a GValue)
 --how to enforce this nicely? Is this good enough?
 class AnimateArg a where
-    toUAnimate :: (GValueClass gv) => a -> (String, gv)
+    toUAnimate :: a -> (String, UAnimate)
 
 --Making these pairs instances of the arg class
 --requires FlexibleInstances extension
 --Is there any good way around this? Do I care?
-instance (GValueClass gv) => AnimateArg (String, gv) where
-    toUAnimate = second Basic
+instance (IsChar c) => AnimateArg (String, [c]) where
+    toUAnimate = second (UString . map toChar)
 
-uanimate :: (ActorClass actor, GValueClass gv) => actor -> AnimationMode -> Int -> [(String, UAnimate gv)] -> IO Animation
+instance AnimateArg (String, Int) where
+    toUAnimate = second UInteger
+
+instance AnimateArg (String, Float) where
+    toUAnimate = second UFloat
+
+instance AnimateArg (String, Color) where
+    toUAnimate = second UColor
+
+instance AnimateArg (String, Double) where
+    toUAnimate = second UDouble
+
+instance AnimateArg (String, Word8) where
+    toUAnimate = second UUChar
+
+class IsChar c where
+    toChar :: c -> Char
+    fromChar :: Char -> c
+
+instance IsChar Char where
+    toChar = id
+    fromChar = id
+
+uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"
 uanimate actor mode duration us =
     let (names, uvals) = unzip us
@@ -138,7 +172,7 @@ uanimate actor mode duration us =
 
 --FIXME: Duplication here?
 
-uanimatewithalpha :: (ActorClass actor, GValueClass gv) => actor -> Alpha -> [(String, UAnimate gv)] -> IO Animation
+uanimatewithalpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO Animation
 uanimatewithalpha _ _ [] = error "Need arguments to animate with alpha"
 uanimatewithalpha actor alpha us =
     let (names, uvals) = unzip us

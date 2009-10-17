@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances  #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 #include <glib.h>
@@ -26,8 +26,6 @@
 
 module Graphics.UI.Clutter.GValue (
                                    withGValue,
-                                   gValueInitSet,
-                                   GValueClass,
 
                                    color,
                                    valueSetColor,
@@ -53,48 +51,6 @@ import qualified System.Glib.GTypeConstants as GType
 import Control.Monad (liftM)
 
 withGValue (GValue gval) = castPtr gval
-
-class GValueClass a where
-    gValueInitSet :: GValue -> a -> IO ()
-
-instance GValueClass Int where
-    gValueInitSet gv val = valueInit gv GType.int >> valueSetInt gv val
-
-instance GValueClass Double where
-    gValueInitSet gv val = valueInit gv GType.double >> valueSetDouble gv val
-
-instance GValueClass Float where
-    gValueInitSet gv val = valueInit gv GType.float >> valueSetFloat gv val
-
-instance GValueClass String where
-    gValueInitSet gv val = valueInit gv GType.string >> valueSetString gv val
-
-instance GValueClass Char where
-    gValueInitSet gv val = valueInit gv GType.char >> valueSetChar gv val
-
-instance GValueClass Word8 where
-    gValueInitSet gv val = valueInit gv GType.uchar >> valueSetUChar gv val
-
-instance GValueClass Bool where
-    gValueInitSet gv val = valueInit gv GType.bool >> valueSetBool gv val
-
-instance GValueClass Color where
-    gValueInitSet gv val = valueInit gv color >> valueSetColor gv val
-
---using gobject or actor class is unhappy here, so repeat the same thing many times..
---long and stupid, but it works for types that I know of...
---FIXME: A better solution. How to deal with pointer to ???
-gobjInitSet gv val = valueInit gv GType.object >> valueSetGObject gv val
-instance GValueClass GObject where
-    gValueInitSet = gobjInitSet
-instance GValueClass Actor where
-    gValueInitSet = gobjInitSet
-instance GValueClass Rectangle where
-    gValueInitSet = gobjInitSet
-instance GValueClass Texture where
-    gValueInitSet = gobjInitSet
-instance GValueClass Timeline where
-    gValueInitSet = gobjInitSet
 
 --Color GValue
 {# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}

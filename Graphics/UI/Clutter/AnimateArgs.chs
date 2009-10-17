@@ -63,8 +63,12 @@ data UAnimate = UChar Char
               | UInteger Int
               | UFloat Float
               | UDouble Double
+              | UBool Bool
               | UColor Color
-              deriving (Show, Eq)
+              | UGObject GObject    --TODO: Since of the annoying pointer stuff...do the whole family...
+              | UActor Actor
+              | UTimeline Timeline
+              | URectangle Rectangle
 
 {# pointer *GValue as UanimatePtr -> UAnimate #}
 --FIXME: Rename this and fix the need for cast. i.e. get rid of uanimate type sort of.
@@ -76,16 +80,18 @@ instance Storable UAnimate where
                 in do
                 {# set GValue->g_type #} p (0 :: GType)
                 case ut of
-                --FIXME: Char/UCHar vs. Int8 type sort of hacky,
-                --intconv, why missing char marshaller?
-                  (UInteger val) -> valueInit gv GType.int >> valueSetInt gv val
-                  (UDouble val) -> valueInit gv GType.double >> valueSetDouble gv val
-                  (UFloat val) -> valueInit gv GType.float >> valueSetFloat gv val
-                  (UString val) -> valueInit gv GType.string >> valueSetString gv val
-                  (UChar val) -> valueInit gv GType.char >> valueSetChar gv val
-                  (UUChar val) -> valueInit gv GType.uchar >> valueSetUChar gv val
-                  (UColor val) -> valueInit gv Graphics.UI.Clutter.GValue.color >> valueSetColor gv val
-                  _ -> error $ "Type needs to be done for poke " ++ show ut
+                  (UInteger val) -> gValueInitSet gv val
+                  (UDouble val) -> gValueInitSet gv val
+                  (UFloat val) -> gValueInitSet gv val
+                  (UString val) -> gValueInitSet gv val
+                  (UChar val) -> gValueInitSet gv val
+                  (UUChar val) -> gValueInitSet gv val
+                  (UBool val) -> gValueInitSet gv val
+                  (UColor val) -> gValueInitSet gv val
+                  (UActor val) -> gValueInitSet gv val
+                  (URectangle val) -> gValueInitSet gv val
+                  (UTimeline val) -> gValueInitSet gv val
+                  (UGObject val) -> gValueInitSet gv val
 
 --TODO: Type for Duration, type Duration = UInt or whatever
 

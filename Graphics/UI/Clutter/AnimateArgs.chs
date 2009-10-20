@@ -72,7 +72,7 @@ instance Storable UAnimate where
     sizeOf _ = {# sizeof GValue #}
     alignment _ = alignment (undefined :: GType)
     peek _ = error "peek undefined for GValue"
-    poke p ut = let gv = GValue (castPtr p) --FIXME: This castPtr = badnews bears
+    poke p ut = let gv = GValue (castPtr p) --FIXME: This castPtr = badnews bears?
                 in do
                 {# set GValue->g_type #} p (0 :: GType)
                 case ut of
@@ -137,6 +137,7 @@ instance (GObjectClass obj) => AnimateArg (String, obj) where
     toUAnimate = second (UGObject . toGObject)
 --how the hell does gobjectclass overlap float?
 
+unsetOneGVal i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
 
 uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"
@@ -149,12 +150,10 @@ uanimate actor mode duration us =
     withMany withCString names $ \cstrs -> do
       res <- withArrayLen cstrs $ \len strptr ->
              withActorClass actor $ \actptr ->
-             withArray uvals $ \gvPtr ->
-                 let unsetOne i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
-                 in do
-                   result <- animatev actptr (cFromEnum mode) (cIntConv duration) (cIntConv len) strptr gvPtr
-                   foldM_ unsetOne gvPtr uvals
-                   return result
+             withArray uvals $ \gvPtr -> do
+               result <- animatev actptr (cFromEnum mode) (cIntConv duration) (cIntConv len) strptr gvPtr
+               foldM_ unsetOneGVal gvPtr uvals
+               return result
       --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
       newAnimation res  --FIXME: Do I need to do this here? reffing?
 
@@ -172,12 +171,10 @@ uanimatewithalpha actor alpha us =
       res <- withArrayLen cstrs $ \len strptr ->
            withActorClass actor $ \actptr ->
            withAlpha alpha $ \alphptr ->
-           withArray uvals $ \gvPtr ->
-            let unsetOne i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
-            in do
-              result <- animatev actptr alphptr (cIntConv len) strptr gvPtr
-              foldM_ unsetOne gvPtr uvals
-              return result
+           withArray uvals $ \gvPtr -> do
+             result <- animatev actptr alphptr (cIntConv len) strptr gvPtr
+             foldM_ unsetOneGVal gvPtr uvals
+             return result
               --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
-      newAnimation res  --FIXME: Do I need to do this here? reffing?
+      newAnimation res  --CHECKME: Do I need to do this here? reffing?
 

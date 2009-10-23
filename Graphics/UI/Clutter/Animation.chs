@@ -138,13 +138,6 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 
 {# fun animation_completed as ^ { withAnimation* `Animation' } -> `()' #}
 
-{-
-animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [Property]
-animate actor mode tml props = do
--}
-
---{# fun animation_bind as ^
---       {withAnimation* `Animation', `String', withGValue* `GValue'} -> `Animation' newStage #}
 --This shouldn't be this messy. Why do I need the casting? And use fun
 --I'm still missing something about the wrapping stuff
 --Peter says that won't work
@@ -153,27 +146,16 @@ animationBind self name gval = do
   b <- withCString name $ \str ->
        withAnimation self $ \anptr ->
       {# call animation_bind #} anptr str (unGValue gval)
+      --CHECKME: unsafe?
   newAnimation b
 
---I bet this won't work.
 unGValue :: GValue -> Ptr ()
 unGValue (GValue a) = castPtr a
-
-{-
-{# pointer *GValue newtype #}
-newtype GValue = GValue (Ptr (GValue))
--}
 
 {# fun actor_get_animation as ^
        `ActorClass a' =>{ withActorClass* `a' } -> `Animation' newAnimation* #}
 
-
-
---FIXME: Types as usual
 --by UAnimate, I mean GValue that animatev accepts. Fix that later (rename)
---Not sure this is how I want to do this.
---FIXME: the gvalue set/get functions for char are commented out in gtk2hs...
---It's probably a better idea to have a GValueClass, and then an init, set and get function
 data UAnimate = UChar Char
               | UString String
               | UUChar Word8
@@ -234,6 +216,7 @@ instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
 
 --this should always be a pair of a name and something which can be a gvalue
 -- (String, Something that can be a GValue)
+--Also I think if you use a signal you need a callback and an actor
 --how to enforce this nicely? Is this good enough?
 class AnimateArg a where
     toUAnimate :: a -> (String, UAnimate)

@@ -192,26 +192,26 @@ animate :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int ->
 animate actor mode duration = runAnim actor mode duration []
 
 animateWithAlpha :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
-animateWithAlpha actor alpha = runAnimHack actor alpha []
+animateWithAlpha actor alpha = runAnimWithAlpha actor alpha []
 
 class AnimateType t where
     runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> t
-    runAnimHack :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
+    runAnimWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
 
 -- Multiple return types isn't useful. We only want IO Animation.
 -- This breaks things if you remove the instance for ().
 -- Also type inference not working in many cases. maybe find a better way
 instance AnimateType (IO Animation) where
     runAnim actor mode duration args = uanimate actor mode duration args
-    runAnimHack actor alpha args = uanimatewithalpha actor alpha args
+    runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args
 
 instance AnimateType (IO ()) where
     runAnim actor mode duration args = uanimate actor mode duration args >> return ()
-    runAnimHack actor alpha args = uanimatewithalpha actor alpha args >> return ()
+    runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args >> return ()
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     runAnim actor mode duration args = \a -> runAnim actor mode duration (toUAnimate a : args)
-    runAnimHack actor alpha args = \a -> runAnimHack actor alpha (toUAnimate a : args)
+    runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toUAnimate a : args)
 
 
 --this should always be a pair of a name and something which can be a gvalue
@@ -257,9 +257,9 @@ uanimate actor mode duration us =
 
 --FIXME: Duplication here?
 
-uanimatewithalpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO Animation
-uanimatewithalpha _ _ [] = error "Need arguments to animate with alpha"
-uanimatewithalpha actor alpha us =
+uanimateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO Animation
+uanimateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
+uanimateWithAlpha actor alpha us =
     let (names, uvals) = unzip us
         animatev = {# call unsafe actor_animate_with_alphav #}    --CHECKME: unsafe?
     in

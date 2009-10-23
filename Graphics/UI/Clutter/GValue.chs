@@ -35,7 +35,6 @@ module Graphics.UI.Clutter.GValue (
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.Animation #}
 
 import C2HS
 

@@ -23,7 +23,7 @@ Library
   Build-Tools: c2hs
   Includes: clutter/clutter.h
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
---I'm not sure that GValue or AnimateArgs should be exposed
+--I'm not sure that GValue should be exposed
   Exposed-modules: Graphics.UI.Clutter.Types,
                    Graphics.UI.Clutter.External,
                    Graphics.UI.Clutter.GValue,
@@ -39,7 +39,6 @@ Library
                    Graphics.UI.Clutter.Text,
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter.Animation,
-                   Graphics.UI.Clutter.AnimateArgs,
                    Graphics.UI.Clutter.Timeline,
                    Graphics.UI.Clutter.Score,
                    Graphics.UI.Clutter.CairoTexture,

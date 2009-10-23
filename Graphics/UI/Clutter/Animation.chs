@@ -88,30 +88,15 @@ import qualified System.Glib.GTypeConstants as GType
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.GValue #}
---{# import Graphics.UI.Clutter.External #}
 
 {# fun unsafe animation_new as ^ {} -> `Animation' newAnimation* #}
 
-
---withGObjectClass::GObjectClass o => o -> (Ptr GObject -> IO b) -> IO b
---FIXME: Why are things expecting Ptr ()? and not Ptr Type? I thought this was working before
---FIXME: This really should work with (Ptr GObject -> IO b) but it doesn't
---and I don't understand why
-withGObject::GObjectClass o => o -> (Ptr () -> IO b) -> IO b
-withGObject obj act = (withForeignPtr . unGObject . toGObject) obj $ \ptr -> act (castPtr ptr)
---withGObject obj = withForeignPtr . unGObject . toGObject
-
---yet another terrible thing?
-outGObject a = makeNewGObject mkGObject $ return (castPtr a)
-
 {# fun unsafe animation_set_object as ^
        `GObjectClass obj' => { withAnimation* `Animation', withGObject* `obj' } -> `()' #}
---FIXME: Is this right? Is there a better way to get something of right type out?
--- how to have polymorphic return type
 {# fun unsafe animation_get_object as ^
-       { withAnimation* `Animation' } -> `GObject' outGObject* #}
+       { withAnimation* `Animation' } -> `GObject' newGObject* #}
 
---this is the issue I still don't know how to deal with
+--FIXME?: Property issue since can set any gobject class, but can only get GObject back
 --animationObject :: (GObjectClass obj) => Attr Animation obj
 animationObject :: Attr Animation GObject
 animationObject = newAttr animationGetObject animationSetObject
@@ -123,16 +108,6 @@ animationObject = newAttr animationGetObject animationSetObject
 {# fun unsafe animation_get_mode as ^ { withAnimation* `Animation' } -> `AnimationMode' cToEnum #}
 animationMode :: Attr Animation AnimationMode
 animationMode = newAttr animationGetMode animationSetMode
-
-{-
---FIXME/TODO/CHECKME: withGObject stuff
-{# fun unsafe animation_set_object as ^
-     `(GObjectClass o)' => { withAnimation* `Animation', withGObjectClass* `o' } -> `()' #}
-{# fun unsafe animation_get_object as ^
-     `(GObjectClass o)' => { withAnimation* `Animation' } -> `o' makeNewGObject* #}
-animationObject :: (GObjectClass o) => Attr Animation o
-animationObject = newAttr animationGetObject animationSetObject
--}
 
 {# fun unsafe animation_set_duration as ^ { withAnimation* `Animation', `Int' } -> `()' #}
 --FIXME: Set an gint, get a guint? what? why?

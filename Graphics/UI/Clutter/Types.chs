@@ -25,8 +25,9 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Types (
---                                  withGObject,
+                                  withGObject,
 --                                  withGObjectClass,
+                                  newGObject,
 
                                   Color(Color),
                                   ColorPtr,
@@ -262,6 +263,14 @@ makeNewObject constr generator = do
   obj <- System.Glib.FFI.newForeignPtr objPtr objectUnref
   return $! constr obj
 
+--withGObjectClass::GObjectClass o => o -> (Ptr GObject -> IO b) -> IO b
+--FIXME: Why are things expecting Ptr ()? and not Ptr Type? I thought this was working before
+--FIXME: This really should work with (Ptr GObject -> IO b) but it doesn't
+--and I don't understand why
+withGObject::GObjectClass o => o -> (Ptr () -> IO b) -> IO b
+withGObject obj act = (withForeignPtr . unGObject . toGObject) obj $ \ptr -> act (castPtr ptr)
+
+newGObject a = makeNewGObject mkGObject $ return (castPtr a)
 
 --this doesn't seem to work since GObjectClass is not here...
 --I'm not sure if I can work around this. Oh well, I don't think it's that important

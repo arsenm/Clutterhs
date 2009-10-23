@@ -26,13 +26,13 @@
 {# context lib="glib" prefix="g" #}
 
 module Graphics.UI.Clutter.External (
-                                     valueSetUchar,
-                                     valueGetUchar,
+                                     valueSetUChar,
+                                     valueGetUChar,
                                      valueSetChar,
                                      valueGetChar
                                     ) where
 
-{# import Graphics.UI.Clutter.GValue #}
+{# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -43,7 +43,7 @@ import System.Glib.GValue (GValue(GValue))
 {# fun unsafe value_get_char as ^ { withGValue `GValue' } -> `Char' cToEnum #}
 {# fun unsafe value_set_char as ^ { withGValue `GValue', cFromEnum `Char' } -> `()' #}
 
-{# fun unsafe value_set_uchar as ^ { withGValue `GValue', `Word8' } -> `()' #}
-{# fun unsafe value_get_uchar as ^ { withGValue `GValue' } -> `Word8' #}
+{# fun unsafe value_set_uchar as valueSetUChar { withGValue `GValue', `Word8' } -> `()' #}
+{# fun unsafe value_get_uchar as valueGetUChar { withGValue `GValue' } -> `Word8' #}
 
 

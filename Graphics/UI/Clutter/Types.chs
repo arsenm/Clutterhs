@@ -28,6 +28,7 @@ module Graphics.UI.Clutter.Types (
                                   withGObject,
 --                                  withGObjectClass,
                                   newGObject,
+                                  withGValue,
 
                                   Color(Color),
                                   ColorPtr,
@@ -234,12 +235,14 @@ import Prelude hiding (Nothing)
 
 import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
+import System.Glib.GValue (GValue(GValue))
 import System.Glib.GList
 import System.Glib.Flags
 import Foreign.ForeignPtr hiding (newForeignPtr)
 import System.Glib.FFI
 import Control.Monad (liftM, when)
 import Control.Exception (bracket)
+
 
 --GTK uses the floating reference stuff
 --this function is from gtk2hs, where they use the
@@ -271,6 +274,8 @@ withGObject::GObjectClass o => o -> (Ptr () -> IO b) -> IO b
 withGObject obj act = (withForeignPtr . unGObject . toGObject) obj $ \ptr -> act (castPtr ptr)
 
 newGObject a = makeNewGObject mkGObject $ return (castPtr a)
+
+withGValue (GValue gval) = castPtr gval
 
 --this doesn't seem to work since GObjectClass is not here...
 --I'm not sure if I can work around this. Oh well, I don't think it's that important

@@ -35,6 +35,7 @@ module Graphics.UI.Clutter.GValue (
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.External #}
 
 import C2HS
 
@@ -50,8 +51,6 @@ import Control.Arrow (second)
 import qualified System.Glib.GTypeConstants as GType
 
 import Control.Monad (liftM)
-
-withGValue (GValue gval) = castPtr gval
 
 class GValueClass a where
     gValueInitSet :: GValue -> a -> IO ()

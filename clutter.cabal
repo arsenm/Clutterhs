@@ -25,8 +25,8 @@ Library
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
 --I'm not sure that GValue should be exposed
   Exposed-modules: Graphics.UI.Clutter.Types,
-                   Graphics.UI.Clutter.External,
                    Graphics.UI.Clutter.GValue,
+                   Graphics.UI.Clutter.External,
                    Graphics.UI.Clutter.Signals,
                    Graphics.UI.Clutter.General,
                    Graphics.UI.Clutter.Color,

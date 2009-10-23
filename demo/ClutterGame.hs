@@ -1,4 +1,4 @@
-module ClutterGame where
+module Main where
 
 import Graphics.UI.Clutter hiding (Nothing)
 import System.Glib.Attributes

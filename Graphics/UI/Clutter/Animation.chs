@@ -17,7 +17,10 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances, FlexibleInstances #-}
+{-# LANGUAGE ForeignFunctionInterface,
+             TypeSynonymInstances,
+             FlexibleInstances,
+             OverlappingInstances #-}
 
 #include <glib.h>
 #include <clutter/clutter.h>
@@ -164,6 +167,7 @@ data UAnimate = UChar Char
               | UDouble Double
               | UColor Color
               | UGObject GObject
+           -- | UFunc (Actor -> IO ()) Actor
 
 {# pointer *GValue as UanimatePtr -> UAnimate #}
 --FIXME: Rename this and fix the need for cast. i.e. get rid of uanimate type sort of.
@@ -216,7 +220,12 @@ instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
 
 --this should always be a pair of a name and something which can be a gvalue
 -- (String, Something that can be a GValue)
---Also I think if you use a signal you need a callback and an actor
+--TODO: Also I think if you use a signal you need a function and an actor
+--Something like
+--instance (ActorClass a) => AnimateArg (String, a -> IO (), a) where
+--    toUAnimate (a, b, c) = (a, UFunc b (toActor c))
+--but then how to pass 2 things in the array, and the n?
+--empty spot? Look at seed
 --how to enforce this nicely? Is this good enough?
 class AnimateArg a where
     toUAnimate :: a -> (String, UAnimate)
@@ -233,9 +242,10 @@ instance AnimateArg (String, Double) where
     toUAnimate = second UDouble
 instance AnimateArg (String, Word8) where
     toUAnimate = second UUChar
+--CHECKME: class constraints applied after matching, so doing it this way requires
+--overlapping instances. Is this ok or should I use another way?
 instance (GObjectClass obj) => AnimateArg (String, obj) where
     toUAnimate = second (UGObject . toGObject)
---how the hell does gobjectclass overlap float?
 
 unsetOneGVal i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
 

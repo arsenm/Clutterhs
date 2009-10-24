@@ -26,7 +26,10 @@
 module Graphics.UI.Clutter.Utility (
                                     tup2ToF,
                                     tup3ToF,
-                                    tup4ToF
+                                    tup4ToF,
+
+                                    cFromFlags,
+                                    cToFlags
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -34,6 +37,7 @@ module Graphics.UI.Clutter.Utility (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.Flags
 
 --There's Probably a better way to do this I'm using this for related
 --attributes that you might want to set at once rather than
@@ -43,4 +47,11 @@ tup2ToF f item (a,b) = f item a b
 tup3ToF f item (a,b,c) = f item a b c
 tup4ToF f item (a,b,c,d) = f item a b c d
 
+--flag functions from gtk2hs with c int conversion
+
+cToFlags :: (Flags a) => CInt ->  [a]
+cToFlags = toFlags . cIntConv
+
+cFromFlags :: (Flags a) => [a] -> CInt
+cFromFlags = cIntConv . fromFlags
 

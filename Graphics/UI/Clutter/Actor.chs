@@ -1,5 +1,5 @@
 -- -*-haskell-*-
---  Clutter Color
+--  Clutter Actor
 --
 --  Author : Matthew Arsenault
 --
@@ -23,9 +23,6 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
---TODO: Maybe for the parent property
---TODO: list of the flags and use that
-
 module Graphics.UI.Clutter.Actor (
                                   actorSetFlags,
                                   actorUnsetFlags,
@@ -45,6 +42,7 @@ module Graphics.UI.Clutter.Actor (
                                   actorPosition,
                                   actorSetSize,
                                   actorGetSize,
+                                  actorSize,
 
                                   actorSetWidth,
                                   actorGetWidth,
@@ -81,14 +79,14 @@ module Graphics.UI.Clutter.Actor (
                                   actorGetClip,
 
                                   actorSetParent,
-                                --actorGetParent,
-                                --actorParent
+                                  actorGetParent,
+                                --actorParent,
                                   actorReparent,
                                   actorRaise,
                                   actorLower,
                                   actorRaiseTop,
                                   actorLowerBottom,
-                                --actorGetStage,
+                                  actorGetStage,
                                   actorSetDepth,
                                   actorGetDepth,
                                   actorDepth,
@@ -100,14 +98,15 @@ module Graphics.UI.Clutter.Actor (
                                   actorGetScaleGravity,
                                   actorIsScaled,
                                 --actorApplyTransformToPoint,
-                                --actorTransformStagePoint,
+                                  actorTransformStagePoint,
                                 --actorApplyRelativeTransformToPoint,
                                 --actorGetTransformedPosition,
-                                --actorGetTransformedSize,
+                                  actorGetTransformedSize,
+                                  actorTransformedSize,
                                 --actorGetPaintOpacity,
                                 --actorGetPaintVisibility,
                                 --actorGetAbsAllocationVertices,
-                                --actorGetTransformationMatrix
+                                --actorGetTransformationMatrix,
                                   actorSetAnchorPoint,
                                   actorGetAnchorPoint,
                                   actorAnchorPoint,
@@ -125,7 +124,7 @@ module Graphics.UI.Clutter.Actor (
                                 --actorSetShaderParam,
                                 --actorSetShaderParamFloat,
                                 --actorSetShaderParamInt,
-                                --actorGrabKeyFocus,
+                                  actorGrabKeyFocus,
                                 --actorGetPangoContext,
                                 --actorCreatePangoContext,
                                 --actorCreatePangoLayout,
@@ -185,7 +184,6 @@ module Graphics.UI.Clutter.Actor (
 {# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
 
-
 --FIXME: should I do something about clutter/prelude conflicts?
 import Prelude hiding (show)
 
@@ -201,11 +199,11 @@ import System.Glib.Signals
 
 --TODO: Accept a list of the flags and add them and stuff.
 {# fun unsafe actor_set_flags as ^
-   `(ActorClass self)' => { withActorClass* `self', cFromEnum `ActorFlags' } -> `()' #}
+   `(ActorClass self)' => { withActorClass* `self', cFromFlags `[ActorFlags]' } -> `()' #}
 {# fun unsafe actor_unset_flags as ^
-   `(ActorClass self)' => { withActorClass* `self', cFromEnum `ActorFlags' } -> `()' #}
+   `(ActorClass self)' => { withActorClass* `self', cFromFlags `[ActorFlags]' } -> `()' #}
 {# fun unsafe actor_get_flags as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `ActorFlags' cToEnum #}
+   `(ActorClass self)' => { withActorClass* `self' } -> `[ActorFlags]' cToFlags #}
 
 {# fun actor_show as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
 {# fun actor_show_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
@@ -223,9 +221,11 @@ import System.Glib.Signals
 {# fun unsafe actor_set_parent as ^
    `(ActorClass child, ActorClass parent)' => { withActorClass* `child', withActorClass* `parent' } -> `()' #}
 
---TODO: Not sure how to out marshal this
---{# fun unsafe actor_get_parent as ^
---   `(ActorClass child)' => { withActorClass* `child' } -> `Ptr Actor' #}
+{# fun unsafe actor_get_parent as ^
+   `(ActorClass child)' => { withActorClass* `child' } -> `Actor' newActor* #}
+--actorParent :: (ActorClass self, ActorClass parent) => Attr self parent
+--actorParent = newAttr actorGetPartent actorSetParent
+
 
 {# fun unsafe actor_unparent as ^
    `(ActorClass child)' => { withActorClass* `child' } -> `()' #}
@@ -241,8 +241,8 @@ import System.Glib.Signals
 {# fun unsafe actor_lower_bottom as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
---{# fun unsafe actor_get_stage as ^
---   `(ActorClass child)' => { withActorClass* `child' } -> `Ptr Actor' #}
+{# fun unsafe actor_get_stage as ^
+   `(ActorClass child)' => { withActorClass* `child' } -> `Stage' newStage* #}
 
 
 {# fun unsafe actor_get_depth as ^
@@ -261,18 +261,33 @@ actorDepth = newAttr actorGetDepth actorSetDepth
 {# fun unsafe actor_get_scale as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Double' peekFloatConv*,
-                            alloca- `Double' peekFloatConv*} -> `()' #}
+                            alloca- `Double' peekFloatConv* } -> `()' #}
 
 {# fun unsafe actor_get_scale_center as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Double' peekFloatConv*,
-                            alloca- `Double' peekFloatConv*} -> `()' #}
+                            alloca- `Double' peekFloatConv* } -> `()' #}
 
 {# fun unsafe actor_get_scale_gravity as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Gravity' cToEnum #}
 {# fun unsafe actor_is_scaled as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Bool' #}
 
+--CHECKME: unsafe?
+{# fun unsafe actor_transform_stage_point as ^
+   `(ActorClass a)' => { withActorClass* `a',
+                         `Float',
+                         `Float',
+                         alloca- `Float' peekFloatConv*,
+                         alloca- `Float' peekFloatConv* } ->
+                         `Bool' #}
+
+{# fun unsafe actor_get_transformed_size as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            alloca- `Double' peekFloatConv*,
+                            alloca- `Double' peekFloatConv* } -> `()' #}
+actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
+actorTransformedSize = readAttr actorGetTransformedSize
 
 {# fun unsafe actor_set_reactive as ^
    `(ActorClass self)' => { withActorClass* `self', `Bool' } -> `()' #}
@@ -293,6 +308,10 @@ actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
 {# fun unsafe actor_get_size as ^
    `(ActorClass self)' => { withActorClass* `self', alloca- `Float' peekFloatConv*, alloca- `Float' peekFloatConv*} -> `()' #}
+
+actorSize :: (ActorClass self) => Attr self (Float, Float)
+actorSize = newAttr actorGetSize (tup2ToF actorSetSize)
+
 
 {# fun unsafe actor_get_width as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
@@ -324,6 +343,10 @@ actorY = newAttr actorGetY actorSetY
 
 {# fun unsafe actor_is_in_clone_paint as ^
        `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+
+--CHECKME: unsafe?
+{# fun unsafe actor_grab_key_focus as ^
+   `(ActorClass a)' => { withActorClass* `a' } -> `()' #}
 
 {# fun unsafe actor_move_by as ^
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
@@ -379,8 +402,6 @@ actorGid = readAttr actorGetGid
 {# fun unsafe actor_remove_clip as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
-
---TODO: (Float,Float) pair for point attribute
 {# fun unsafe actor_set_anchor_point as ^
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
 {# fun unsafe actor_get_anchor_point as ^

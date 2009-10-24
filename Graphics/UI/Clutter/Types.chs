@@ -293,7 +293,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterPickMode as PickMode {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterAllocationFlags as AllocationFlags {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterGravity as Gravity {underscoreToCase} deriving (Show, Eq) #}
-{# enum ClutterActorFlags as ActorFlags {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterActorFlags as ActorFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 {# enum ClutterRequestMode as RequestMode {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRotateAxis as RotateAxis {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterEventType as EventType {underscoreToCase} deriving (Show, Eq) #}
@@ -311,6 +311,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterInputDeviceType as InputDeviceType {underscoreToCase} deriving (Show, Eq) #}
 
 instance Flags EventFlags
+instance Flags ActorFlags
 
 -- ***************************************************************
 

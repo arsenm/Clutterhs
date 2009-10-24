@@ -64,12 +64,13 @@ main = do
          flags <- eventFlags
          mod <- eventState
          dt <- eventDeviceType
-         liftIO $ putStrLn ("Flags: " ++ show flags)
-         liftIO $ putStrLn ("Time: " ++ show t)
-         liftIO $ putStrLn ("Coords: " ++ show coords)
-         liftIO $ putStrLn ("Button: " ++ show button)
-         liftIO $ putStrLn ("Modifier: " ++ show mod)
-         liftIO $ putStrLn ("Device Type: " ++ show dt)
+         liftIO $ do
+           putStrLn ("Flags: " ++ show flags)
+           putStrLn ("Time: " ++ show t)
+           putStrLn ("Coords: " ++ show coords)
+           putStrLn ("Button: " ++ show button)
+           putStrLn ("Modifier: " ++ show mod)
+           putStrLn ("Device Type: " ++ show dt)
 
 
   containerAddActor stg rec

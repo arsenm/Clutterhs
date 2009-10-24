@@ -25,7 +25,6 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.GValue (
-                                   withGValue,
                                    gValueInitSet,
                                    GValueClass,
 

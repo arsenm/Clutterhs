@@ -23,6 +23,11 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+--TODO: Note the low level stuff ignored here
+--TODO: This is in need of a lot of testing
+--TODO: Make stuff here more consistent with itself,
+--struct using vs. functions. Don't need to do silly struct things.
+
 module Graphics.UI.Clutter.Event (
                                   EventM,
 
@@ -38,14 +43,25 @@ module Graphics.UI.Clutter.Event (
                                   tryEvent,
 
                                   eventCoordinates,
-                                  eventTime,
                                   eventState,
+                                  eventTime,
+                                  eventSource,
+                                  eventStage,
                                   eventFlags,
-                                --eventStage,
-                                --eventSource,
                                   eventButton,
+                                  eventClickCount,
+                                  eventKeySymbol,
+                                  eventKeyUnicode,
 
-                                  eventNew,
+                                  keysymToUnicode,
+
+                                --eventDevice,
+                                  eventDeviceId,
+                                  eventDeviceType,
+                                --eventGetInputDeviceForId,
+                                --inputDeviceGetDeviceType,
+
+                                  getCurrentEventTime,
 
                                   scrollEvent,
                                   motionNotifyEvent,
@@ -144,18 +160,14 @@ eventFlags :: EventM t [EventFlags]
 eventFlags = ask >>= \ptr ->
              liftIO $ liftM (toFlags . cIntConv) ({# get ClutterAnyEvent->flags #} ptr)
 
-{-
 eventStage :: EventM t Stage
 eventStage = ask >>= \ptr ->
-             liftIO $ makeNewGObject mkStage $
-               {# get ClutterAnyEvent->stage #} ptr
-
+             liftIO $ newStage . castPtr =<< {# get ClutterAnyEvent->stage #} ptr
 
 eventSource :: EventM t Actor
 eventSource = ask >>= \ptr ->
-             liftIO $ makeNewGObject mkActor $
-               {# get ClutterAnyEvent->source #} ptr
--}
+             liftIO $ newActor =<< {# get ClutterAnyEvent->source #} ptr
+
 
 -- | Retrieve the @(x,y)@ coordinates of the mouse.
 eventCoordinates :: HasCoordinates t => EventM t (Float, Float)
@@ -249,6 +261,25 @@ eventButton :: EventM EButton Word32
 eventButton = ask >>= \ptr ->
               liftIO $ liftM cIntConv ({# get ClutterButtonEvent->button #} ptr)
 
+eventClickCount :: EventM EButton Word32
+eventClickCount = ask >>= \ptr ->
+                  liftIO $ liftM cIntConv ({# get ClutterButtonEvent->click_count #} ptr)
+
+
+--TODO: guint vs. Word32, also conversion
+eventKeySymbol :: EventM EButton Word32
+eventKeySymbol = ask >>= \ptr ->
+                 liftIO $ liftM cIntConv ({# get ClutterKeyEvent->keyval #} ptr)
+
+eventKeyCode :: EventM EButton Word16
+eventKeyCode = ask >>= \ptr ->
+               liftIO $ liftM cIntConv ({# get ClutterKeyEvent->hardware_keycode #} ptr)
+
+eventKeyUnicode :: EventM EButton Word32
+eventKeyUnicode = ask >>= \ptr ->
+                 liftIO $ liftM cIntConv ({# get ClutterKeyEvent->unicode_value #} ptr)
+
+
 eventScrollDirection :: EventM EScroll ScrollDirection
 eventScrollDirection = ask >>= \ptr ->
               liftIO $ liftM cToEnum ({# get ClutterScrollEvent->direction #} ptr)
@@ -284,13 +315,32 @@ eM allModifs = do
       else error ("eventModifiers: none for event type "++show ty)
 -}
 
+--TODO: Should this happen automatically?. Also guint
+{# fun unsafe keysym_to_unicode as ^ { `Int' } -> `Word32' #}
+
+{-
+{# fun unsafe get_input_device_for_id as ^ { `Int' } -> `InputDevice' #}
+
+TODO: The Device stuff I don't think is useful without first looking
+at some of the backend specific stuff
+
+eventDevice :: EventM t InputDevice
+eventDevice = ask >>= \ptr ->
+                 liftIO $ liftM cIntConv ({# get ClutterAnyEvent->device #} ptr)
+
+-}
+--TODO: DeviceID type? Silly structiness?
+--I also don't understand why the cast is needed
+eventDeviceId :: EventM any Int
+eventDeviceId = ask >>= \ptr ->
+                liftIO $ liftM cIntConv $ {# call unsafe event_get_device_id #} (castPtr ptr)
 
 
---FIXME: Return guint32
-{# fun unsafe get_current_event_time as ^ {} -> `Int' #}
+eventDeviceType :: EventM any InputDeviceType
+eventDeviceType = ask >>= \ptr ->
+                liftIO $ liftM cToEnum $ {# call unsafe event_get_device_type #} (castPtr ptr)
 
-
-eventNew::EventType -> IO Event
-eventNew et = undefined
+--TODO: Time type for guint32
+{# fun unsafe get_current_event_time as ^ { } -> `Word32' #}
 
 

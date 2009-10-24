@@ -228,6 +228,7 @@ module Graphics.UI.Clutter.Types (
                                   newBindingPool,
                                   withBindingPool,
 
+                                  InputDeviceType(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -297,7 +298,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterRotateAxis as RotateAxis {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterEventType as EventType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterEventFlags as EventFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
-{# enum ClutterModifierType as ModifierType {underscoreToCase} deriving (Show, Eq, Bounded) #}
+{# enum ClutterModifierType as ModifierType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterStageState as StageState {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterScrollDirection as ScrollDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterTimelineDirection as TimelineDirection {underscoreToCase} deriving (Show, Eq) #}
@@ -307,20 +308,9 @@ type GFloat = {# type gfloat #}
 {# enum ClutterShaderError as ShaderError {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterPathNodeType as PathNodeType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterUnitType as UnitType {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterInputDeviceType as InputDeviceType {underscoreToCase} deriving (Show, Eq) #}
 
---FIXME/TODO: ModifierType one at least fails everytime I try to use
---it because toEnum can't match 3...but why is it trying? silly bits.
---also using Bounded, I think goes through all 32 bits
---but it uses 1..12, 26,27,28, and 30, and a crazy mask.
---Figure it out later.
-instance Flags ModifierType
 instance Flags EventFlags
-
---maybe a not right hackishness?
---withGObjectClass::GObjectClass o => o -> (Ptr GObject -> IO b) -> IO b
---withGObjectClass o = (withGObject . toGObject) o
---This really should work. It was working. Something bad is happening.
---withGObject (GObject fptr) = withForeignPtr fptr
 
 -- ***************************************************************
 

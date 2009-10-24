@@ -63,11 +63,13 @@ main = do
          button <- eventButton
          flags <- eventFlags
          mod <- eventState
+         dt <- eventDeviceType
          liftIO $ putStrLn ("Flags: " ++ show flags)
          liftIO $ putStrLn ("Time: " ++ show t)
          liftIO $ putStrLn ("Coords: " ++ show coords)
          liftIO $ putStrLn ("Button: " ++ show button)
          liftIO $ putStrLn ("Modifier: " ++ show mod)
+         liftIO $ putStrLn ("Device Type: " ++ show dt)
 
 
   containerAddActor stg rec

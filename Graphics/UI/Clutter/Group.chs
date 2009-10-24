@@ -33,7 +33,6 @@ module Graphics.UI.Clutter.Group (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import System.Glib.GObject
 
 {# fun unsafe group_new as ^ {} -> `Group' newGroup* #}
 {# fun unsafe group_remove_all as ^ { withGroup* `Group' } -> `()' #}

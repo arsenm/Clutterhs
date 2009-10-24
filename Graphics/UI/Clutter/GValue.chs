@@ -168,4 +168,27 @@ instance GValueArgClass Word8 where
 instance (GObjectClass obj) => GValueArgClass obj where
     toGValueArg = UGObject . toGObject
 
+--FIXME: GValueArgList, GValueArgListArg, these are the worst names ever
+--FIXME: All of these names need help
+--FIXME: Consolidate with AnimateArgs once a better naming solution happens
+--since this is almost the same thing with a different name
+class GValueArgListArg a where
+    toGValueArgListArg :: a -> (String, GValueArg)
+
+instance GValueArgListArg (String, String) where
+    toGValueArgListArg = second UString
+instance GValueArgListArg (String, Int) where
+    toGValueArgListArg = second UInteger
+instance GValueArgListArg (String, Float) where
+    toGValueArgListArg = second UFloat
+instance GValueArgListArg (String, Color) where
+    toGValueArgListArg = second UColor
+instance GValueArgListArg (String, Double) where
+    toGValueArgListArg = second UDouble
+instance GValueArgListArg (String, Word8) where
+    toGValueArgListArg = second UUChar
+
+--CHECKME: OverlappingInstances
+instance (GObjectClass obj) => GValueArgListArg (String, obj) where
+    toGValueArgListArg = second (UGObject . toGObject)
 

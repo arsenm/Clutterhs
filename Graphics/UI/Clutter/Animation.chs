@@ -76,20 +76,15 @@ module Graphics.UI.Clutter.Animation (
 import C2HS
 
 import Control.Arrow (second)
-import Control.Monad (liftM, foldM, foldM_)
+import Control.Monad (foldM_)
 
 import System.Glib.GObject
 import System.Glib.Attributes
-import System.Glib.Properties
-import System.Glib.GValue
-import System.Glib.GType
-import System.Glib.GValueTypes
-import qualified System.Glib.GTypeConstants as GType
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.GValue #}
 
-{# fun unsafe animation_new as ^ {} -> `Animation' newAnimation* #}
+{# fun unsafe animation_new as ^ { } -> `Animation' newAnimation* #}
 
 {# fun unsafe animation_set_object as ^
        `GObjectClass obj' => { withAnimation* `Animation', withGObject* `obj' } -> `()' #}
@@ -107,6 +102,7 @@ animationObject = newAttr animationGetObject animationSetObject
 animationMode :: Attr Animation AnimationMode
 animationMode = newAttr animationGetMode animationSetMode
 
+--CHECKME: Set a gint, get out a guint?
 {# fun unsafe animation_set_duration as ^ { withAnimation* `Animation', `Int' } -> `()' #}
 {# fun unsafe animation_get_duration as ^ { withAnimation* `Animation' } -> `Int' #}
 animationDuration :: Attr Animation Int

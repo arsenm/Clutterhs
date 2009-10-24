@@ -84,9 +84,7 @@ module Graphics.UI.Clutter.Stage (
 
 import C2HS
 import Control.Monad (liftM)
-import System.Glib.GObject
 import System.Glib.Attributes
-import System.Glib.Properties
 
 {# fun unsafe stage_get_default as ^ {} -> `Stage' newStage* #}
 {# fun unsafe stage_new as ^ {} -> `Stage' newStage* #}

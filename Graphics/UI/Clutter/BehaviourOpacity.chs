@@ -24,31 +24,30 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BehaviourOpacity (
-                                           --behaviourOpacityNew,
-                                           --behaviourOpacitySetBounds,
-                                           --behaviourOpacityGetBounds,
-                                           --behaviourOpacityBounds
+                                             behaviourOpacityNew,
+                                             behaviourOpacitySetBounds,
+                                             behaviourOpacityGetBounds,
+                                             behaviourOpacityBounds
                                             ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
-{-
 {# fun unsafe behaviour_opacity_new as ^
-       { withAlpha* `Alpha', `GUInt8', `GUInt8'} -> `BehaviourOpacity' newBehaviourOpacity* #}
+       { withAlpha* `Alpha', `Word8', `Word8'} -> `BehaviourOpacity' newBehaviourOpacity* #}
 
 {# fun unsafe behaviour_opacity_set_bounds as ^
-       { withBehaviourOpacity* `BehaviourOpacity', `GUInt8', `GUInt8'} -> `()' #}
+       { withBehaviourOpacity* `BehaviourOpacity', `Word8', `Word8'} -> `()' #}
 
 {# fun unsafe behaviour_opacity_get_bounds as ^
        { withBehaviourOpacity* `BehaviourOpacity',
-         alloca- `GUInt8' peekSomethingConv*,
-         alloca- `GUInt8' peekSomethingConv*} -> `()' #}
--}
---maybe make this work
---behaviourOpacityBounds :: Attr BehaviourOpacity (GUInt8, GUInt8)
---behaviourOpacityBounds = newAttr behaviourGetBounds behaviourSetBounds
+         alloca- `Word8' peekIntConv*,
+         alloca- `Word8' peekIntConv*} -> `()' #}
+
+behaviourOpacityBounds :: Attr BehaviourOpacity (Word8, Word8)
+behaviourOpacityBounds = newAttr behaviourOpacityGetBounds (tup2ToF behaviourOpacitySetBounds)
 

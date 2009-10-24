@@ -288,11 +288,11 @@ withGValue (GValue gval) = castPtr gval
 --{# class GObjectClass GObject #}
 
 -- g-types not anywhere??
-type GUInt8 = {# type guint8 #}
 type GFloat = {# type gfloat #}
 type GSSize = {# type gssize #}
 type GUnichar = {# type gunichar #}
 type GUInt = {# type guint #}
+--type GUInt8 = {# type guint8 #}
 
 -- *************************************************************** Misc
 
@@ -328,22 +328,21 @@ instance Flags TextureFlags
 
 {# pointer *ClutterColor as ColorPtr -> Color #}
 
-data Color = Color { red :: GUInt8,
-                     green :: GUInt8,
-                     blue :: GUInt8,
-                     alpha :: GUInt8
+data Color = Color { red :: Word8,
+                     green :: Word8,
+                     blue :: Word8,
+                     alpha :: Word8
                    } deriving (Eq, Show)
 
 instance Storable Color where
   sizeOf _ = {# sizeof ClutterColor #}
-  alignment _ = alignment (undefined :: GUInt8)
+  alignment _ = alignment (undefined :: Word8)
   peek p = do
       red <- {# get ClutterColor->red #} p
       blue <- {# get ClutterColor->blue #} p
       green <- {# get ClutterColor->green #} p
       alpha <- {# get ClutterColor->alpha #} p
       return $ Color (cIntConv red) (cIntConv green) (cIntConv blue) (cIntConv alpha)
-      --FIXME: cIntConv and GUInt8 = ???
 
   poke p (Color r g b a) = do
       {# set ClutterColor->red #} p (cIntConv r)   --FIXME: cIntConv is wrong?
@@ -359,7 +358,6 @@ mkColor col = do cptr <- (malloc :: IO ColorPtr)
 
 withColor :: Color -> (ColorPtr -> IO a) -> IO a
 withColor col = bracket (mkColor col) free
-
 
 -- *************************************************************** Actor
 
@@ -1024,20 +1022,18 @@ instance Storable Knot where
 
 {# pointer *ClutterPathNode as PathNodePtr -> PathNode #}
 
-
 data PathNode = PathNode { pathNodeType :: !PathNodeType,
                            pathNodePoints :: !(Knot, Knot, Knot)
                          } deriving (Eq, Show)
 
 instance Storable PathNode where
   sizeOf _ = {# sizeof ClutterPathNode #}
-  alignment _ = alignment (undefined :: GUInt8)
+  alignment _ = alignment (undefined :: Word8)
   peek p = do
       tp <- {# get ClutterPathNode->type #} p
       [p3, p2, p1] <- peekArray 3 (plusPtr p {# sizeof ClutterPathNodeType #})
       --peekArray gets out backwards
       return $ PathNode (cToEnum tp) (p1, p2, p3)
-      --FIXME: cIntConv and GUInt8 = ???
 
   poke p (PathNode tp (p1, p2, p3)) = do
       {# set ClutterPathNode->type #} p (cFromEnum tp)

@@ -110,7 +110,6 @@ data GValueArg = UChar Char
                | UDouble Double
                | UColor Color
                | UGObject GObject
-           --- | UFunc (Actor -> IO ()) Actor
 
 mkGValueArg :: GValueArg -> IO GValueArgPtr
 mkGValueArg gva = do cptr <- (malloc :: IO GValueArgPtr)

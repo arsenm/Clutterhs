@@ -31,6 +31,7 @@
 module Graphics.UI.Clutter.Animation (
                                       animate,
                                       animateWithAlpha,
+                                      animateWithTimeline,
 
                                       animationNew,
                                       animationSetObject,
@@ -58,19 +59,13 @@ module Graphics.UI.Clutter.Animation (
                                       animationAlpha,
 
                                       animationCompleted,
-                                    --animationBind,
-                                    --animationBindInterval,
-                                    --animationUpdateInterval,
+                                      animationBind,
+                                      animationBindInterval,
+                                      animationUpdateInterval,
                                       animationHasProperty,
                                       animationUnbindProperty,
-                                    --animationGetInterval,
+                                      animationGetInterval,
 
-                                    --actorAnimate,
-                                    --actorAnimateWithTimeline,
-                                    --actorAnimateWithAlpha,
-                                    --actorAnimatev,
-                                    --actorAnimatevwithTimelinev,
-                                    --actorAnimatevWithAlphav,
                                       actorGetAnimation,
                                       actorAnimation
                                      ) where
@@ -147,21 +142,32 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 --I'm still missing something about the wrapping stuff
 --Peter says that won't work
 --TODO: Don't take gvalue directly, use gvaluearg
-{-
-animationBind:: (GValueArgClass arg) => Animation -> String -> arg -> IO Animation
-animationBind self name gval = do
-  b <- withCString name $ \str ->
-       withAnimation self $ \anptr ->
-      {# call animation_bind #} anptr str (unGValue gval)
-      --CHECKME: unsafe?
-  newAnimation b
--}
+--Says it returns the Animation as a convenience for language bindings.
+--This is convenient to me how?
+{# fun unsafe animation_bind as ^
+   `(GValueArgClass final)' => { withAnimation* `Animation',
+                                 `String', withGValueArg* `final'} ->
+                                 `Animation' newAnimation* #}
+
+{# fun unsafe animation_bind_interval as ^
+   { withAnimation* `Animation',
+     `String',
+     withInterval* `Interval'} ->
+     `Animation' newAnimation* #}
+
+{# fun unsafe animation_update_interval as ^
+   { withAnimation* `Animation', `String', withInterval* `Interval'} -> `()' #}
 
 {# fun unsafe animation_has_property as ^
        { withAnimation* `Animation', `String' } -> `Bool' #}
+
 --CHECKME: unsafe?
 {# fun unsafe animation_unbind_property as ^
        { withAnimation* `Animation', `String' } -> `()' #}
+
+{# fun unsafe animation_get_interval as ^
+   { withAnimation* `Animation', `String' } -> `Interval' newInterval* #}
+
 
 unGValue :: GValue -> Ptr ()
 unGValue (GValue a) = castPtr a
@@ -179,9 +185,18 @@ animate actor mode duration = runAnim actor mode duration []
 animateWithAlpha :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
 animateWithAlpha actor alpha = runAnimWithAlpha actor alpha []
 
+animateWithTimeline :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Timeline -> r
+animateWithTimeline actor mode tml = runAnimWithTimeline actor mode tml []
+
 class AnimateType t where
     runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GValueArg)] -> t
     runAnimWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GValueArg)] -> t
+    runAnimWithTimeline :: (ActorClass actor) =>
+                           actor ->
+                           AnimationMode ->
+                           Timeline ->
+                           [(String, GValueArg)] ->
+                           t
 
 -- Multiple return types isn't useful. We only want IO Animation.
 -- This breaks things if you remove the instance for ().
@@ -189,22 +204,26 @@ class AnimateType t where
 instance AnimateType (IO Animation) where
     runAnim actor mode duration args = uanimate actor mode duration args
     runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args
+    runAnimWithTimeline actor mode tml args = uanimateWithTimeline actor mode tml args
 
 instance AnimateType (IO ()) where
     runAnim actor mode duration args = uanimate actor mode duration args >> return ()
     runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args >> return ()
+    runAnimWithTimeline actor mode tml args = uanimateWithTimeline actor mode tml args >> return ()
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     runAnim actor mode duration args = \a -> runAnim actor mode duration (toAnimateArg a : args)
     runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toAnimateArg a : args)
+    runAnimWithTimeline actor mode tml args = \a -> runAnimWithTimeline actor mode tml (toAnimateArg a : args)
 --this should always be a pair of a name and something which can be a gvalue
 -- (String, Something that can be a GValue)
 --TODO: Also I think if you use a signal you need a function and an actor
 --Something like
 --instance (ActorClass a) => AnimateArg (String, a -> IO (), a) where
 --    toAnimateArg (a, b, c) = (a, UFunc b (toActor c))
---but then how to pass 2 things in the array, and the n?
---empty spot? Look at seed
+--Actually you can't do this with the animatev* family of functions according to
+--a warning in the docs. I could try looking at the string, and connecting the signal
+--separately somewhere.
 --how to enforce this nicely? Is this good enough?
 uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GValueArg)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"
@@ -236,6 +255,29 @@ uanimateWithAlpha actor alpha us =
            withAlpha alpha $ \alphptr ->
            withArray uvals $ \gvPtr -> do
              result <- animatev actptr alphptr (cIntConv len) strptr gvPtr
+             foldM_ unsetOneGVal gvPtr uvals
+             return result
+              --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
+      newAnimation res  --CHECKME: Do I need to do this here? reffing?
+
+
+uanimateWithTimeline :: (ActorClass actor) =>
+                        actor ->
+                        AnimationMode ->
+                        Timeline ->
+                        [(String, GValueArg)] ->
+                        IO Animation
+uanimateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
+uanimateWithTimeline actor mode tml us =
+    let (names, uvals) = unzip us
+        animatev = {# call unsafe actor_animate_with_timelinev #}    --CHECKME: unsafe?
+    in
+    withMany withCString names $ \cstrs -> do
+      res <- withArrayLen cstrs $ \len strptr ->
+           withActorClass actor $ \actptr ->
+           withTimeline tml $ \tmlptr ->
+           withArray uvals $ \gvPtr -> do
+             result <- animatev actptr (cFromEnum mode) tmlptr (cIntConv len) strptr gvPtr
              foldM_ unsetOneGVal gvPtr uvals
              return result
               --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere

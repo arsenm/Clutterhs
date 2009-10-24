@@ -32,7 +32,8 @@ module Graphics.UI.Clutter.Texture (
                                   --textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
                                   --textureSetFromYuvData,
                                   --textureSetAreaFromRgbData,
-                                  --textureGetBaseSize,
+                                    textureGetBaseSize,
+                                    textureBaseSize,
 
                                   --textureGetPixelFormat,
                                   --textureGetMaxTileWaste,
@@ -53,9 +54,9 @@ module Graphics.UI.Clutter.Texture (
                                     textureSetSyncSize,
                                     textureSyncSize,
 
-                                  --textureGetRepeat,
-                                  --textureSetRepeat,
-                                  --textureRepeat,
+                                    textureGetRepeat,
+                                    textureSetRepeat,
+                                    textureRepeat,
 
                                     textureSetKeepAspectRatio,
                                     textureGetKeepAspectRatio,
@@ -71,6 +72,7 @@ module Graphics.UI.Clutter.Texture (
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM, unless, when)
@@ -99,14 +101,15 @@ textureNewFromFile filename = withCString filename $ \cstr -> do
  -}
                               --somehowthe thing isn't happening
 
-{# fun unsafe texture_new_from_actor as ^ `(ActorClass a)' => { withActorClass* `a'} -> `Texture' newTexture* #}
+{# fun unsafe texture_new_from_actor as ^
+       `(ActorClass a)' => { withActorClass* `a'} -> `Texture' newTexture* #}
 
-
-
-
-
-
-
+{# fun unsafe texture_get_base_size as ^
+       { withTexture* `Texture',
+         alloca- `Int' peekIntConv*,
+         alloca- `Int' peekIntConv* } -> `()' #}
+textureBaseSize :: ReadAttr Texture (Int, Int)
+textureBaseSize = readAttr textureGetBaseSize
 
 
 {# fun unsafe texture_get_filter_quality as ^
@@ -125,14 +128,12 @@ textureFilterQuality = newAttr textureGetFilterQuality textureSetFilterQuality
 textureSyncSize :: Attr Texture Bool
 textureSyncSize = newAttr textureGetSyncSize textureSetSyncSize
 
-{-
---c2hs bug??? alloca- `Bool' peek* isn't working, complaining that it infereed IO (CInt, CInt)
 {# fun unsafe texture_get_repeat as ^
-       { withTexture* `Texture', alloca- `Bool' peek*, alloca- `Bool' peek* } -> `()' #}
+       { withTexture* `Texture', alloca- `Bool' peekBool*, alloca- `Bool' peekBool* } -> `()' #}
 {# fun unsafe texture_set_repeat as ^ { withTexture* `Texture', `Bool', `Bool' } -> `()' #}
---textureRepeat :: Attr Texture (Bool, Bool)
---textureRepeat = newAttr textureGetRepeat textureSetRepeat
--}
+textureRepeat :: Attr Texture (Bool, Bool)
+textureRepeat = newAttr textureGetRepeat (tup2ToF textureSetRepeat)
+
 
 {# fun unsafe texture_get_keep_aspect_ratio as ^ { withTexture* `Texture' } -> `Bool' #}
 {# fun unsafe texture_set_keep_aspect_ratio as ^ { withTexture* `Texture', `Bool'} -> `()' #}

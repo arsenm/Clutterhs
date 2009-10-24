@@ -305,6 +305,7 @@ type GFloat = {# type gfloat #}
 {# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterRotateDirection as RotateDirection {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterTextureQuality as TextureQuality {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterTextureFlags as TextureFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 {# enum ClutterShaderError as ShaderError {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterPathNodeType as PathNodeType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterUnitType as UnitType {underscoreToCase} deriving (Show, Eq) #}
@@ -312,6 +313,7 @@ type GFloat = {# type gfloat #}
 
 instance Flags EventFlags
 instance Flags ActorFlags
+instance Flags TextureFlags
 
 -- ***************************************************************
 

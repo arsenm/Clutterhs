@@ -24,7 +24,7 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Interval (
-                                     intervalNew
+                                     intervalNew,
                                      intervalNewWithValues,
                                    --intervalClone,
                                    --intervalGetValueType,
@@ -53,22 +53,26 @@ import qualified System.Glib.GTypeConstants as GType
 
 intervalNew = error "ClutterInterval unimplemented"
 
---this seems to replace intervalNew for language bindings so rename it?
---FIXME: toGValue and then pattern match against constructors is dumb
---but I'm too lazy to fix it now
+--this seems to replace intervalNew for language bindings so rename
+--it?  FIXME: toGValue and then pattern match against constructors is
+--kind of dumb but I'm too lazy to fix it now
+gValueArgGType val = case toGValueArg val of
+                       (UInteger _) -> GType.int
+                       (UDouble _) ->  GType.double
+                       (UFloat _) -> GType.float
+                       (UString _) -> GType.string
+                       (UChar _) ->  GType.char
+                       (UUChar _) -> GType.uchar
+                       (UColor _) -> color
+                       (UGObject _) -> GType.object
+
+
 intervalNewWithValues :: (GValueArgClass arg) => arg -> arg -> IO Interval
 intervalNewWithValues initial final = let func = {# call unsafe interval_new_with_values #}
-                                          typedFunc = case toGValueArg initial of
-                                                        (UInteger _) -> func GType.int
-                                                        (UDouble _) ->  func GType.double
-                                                        (UFloat _) -> func GType.float
-                                                        (UString _) ->  func GType.string
-                                                        (UChar _) ->  func GType.char
-                                                        (UUChar _) -> func GType.uchar
-                                                        (UColor _) -> func color
-                                                        (UGObject _) -> func GType.object
+                                          gtype = gValueArgGType initial
                                       in withGValueArg initial $ \argptr1 ->
                                           withGValueArg final $ \argptr2 ->
-                                            newInterval =<< typedFunc argptr1 argptr2
+                                            newInterval =<< func gtype argptr1 argptr2
 
-
+{# fun unsafe interval_set_initial_value as ^
+   `(GValueArgClass value)' => { withInterval* `Interval', withGValueArg* `value' } -> `()' #}

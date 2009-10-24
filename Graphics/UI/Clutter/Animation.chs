@@ -197,10 +197,6 @@ instance AnimateType (IO ()) where
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     runAnim actor mode duration args = \a -> runAnim actor mode duration (toAnimateArg a : args)
     runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toAnimateArg a : args)
-
-toAnimateArg :: (GValueClass gvalue) => (String, gvalue) -> (String, GValueArg)
-toAnimateArg = second toGValueArg
-
 --this should always be a pair of a name and something which can be a gvalue
 -- (String, Something that can be a GValue)
 --TODO: Also I think if you use a signal you need a function and an actor
@@ -246,4 +242,24 @@ uanimateWithAlpha actor alpha us =
       newAnimation res  --CHECKME: Do I need to do this here? reffing?
 
 
+
+class AnimateArg a where
+    toAnimateArg :: a -> (String, GValueArg)
+
+instance AnimateArg (String, String) where
+    toAnimateArg = second UString
+instance AnimateArg (String, Int) where
+    toAnimateArg = second UInteger
+instance AnimateArg (String, Float) where
+    toAnimateArg = second UFloat
+instance AnimateArg (String, Color) where
+    toAnimateArg = second UColor
+instance AnimateArg (String, Double) where
+    toAnimateArg = second UDouble
+instance AnimateArg (String, Word8) where
+    toAnimateArg = second UUChar
+
+--CHECKME: OverlappingInstances
+instance (GObjectClass obj) => AnimateArg (String, obj) where
+    toAnimateArg = second (UGObject . toGObject)
 

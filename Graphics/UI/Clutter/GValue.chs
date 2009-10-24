@@ -19,9 +19,9 @@
 --
 {-# LANGUAGE ForeignFunctionInterface,
              TypeSynonymInstances,
-             UndecidableInstances,
-             IncoherentInstances,
-             OverlappingInstances #-}
+             FlexibleInstances,
+             UndecidableInstances #-}
+
 
 #include <clutter/clutter.h>
 #include <glib.h>
@@ -35,7 +35,7 @@ module Graphics.UI.Clutter.GValue (
                                    GValueClass,
                                    GValueArg(..),
                                    GValueArgPtr,
-                                   withGValueArg,
+                                 --withGValueArg,
                                    unsetOneGVal,
 
                                    color,
@@ -110,8 +110,8 @@ data GValueArg = UChar Char
            --- | UFunc (Actor -> IO ()) Actor
 
 --CHECKME: Referencing here?
-withGValueArg :: (GValueClass arg) => arg -> (GValueArg -> IO a) -> IO a
-withGValueArg arg act = act (toGValueArg arg)
+--withGValueArg :: (GValueClass arg) => arg -> (GValueArg -> IO a) -> IO a
+--withGValueArg arg act = act (toGValueArg arg)
 
 {# pointer *GValue as GValueArgPtr -> GValueArg #}
 
@@ -133,7 +133,8 @@ instance Storable GValueArg where
                   (UColor val) -> gValueInitSet gv val
                   (UGObject val) -> gValueInitSet gv val
 
-unsetOneGVal ::  GValueArgPtr -> Int -> IO GValueArgPtr
+--The list doesn't matter, just gets the length
+unsetOneGVal :: GValueArgPtr -> a -> IO GValueArgPtr
 unsetOneGVal i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
 
 class IntervalArg a where
@@ -153,9 +154,7 @@ instance IntervalArg Word8 where
     toGValueArg = UUChar
 
 
-
---CHECKME: UndecidableInstances and IncoherentInstances needed for this. Check that it's ok and works
---when I was pairing, needed OverlappingInstances
+--CHECKME: FlexibleInstances, UndecidableInstances and needed for this. Check that it's ok and works
 instance (GObjectClass obj) => IntervalArg obj where
     toGValueArg = UGObject . toGObject
 

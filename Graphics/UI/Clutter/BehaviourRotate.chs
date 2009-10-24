@@ -36,14 +36,15 @@ module Graphics.UI.Clutter.BehaviourRotate (
 
                                             behaviourRotateSetBounds,
                                             behaviourRotateGetBounds,
-                                          --behaviourRotateBounds,
+                                            behaviourRotateBounds,
 
                                             behaviourRotateSetCenter,
-                                            behaviourRotateGetCenter
-                                          --behaviourRotateCenter
+                                            behaviourRotateGetCenter,
+                                            behaviourRotateCenter
                                            ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -79,9 +80,8 @@ behaviourRotateDirection = newAttr behaviourRotateGetDirection behaviourRotateSe
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv* } -> `()' #}
 
---TODO: maybe make this work
---behaviourRotateBounds :: Attr BehaviourRotate (Double, Double)
---behaviourRotateBounds = newAttr behaviourGetBounds behaviourSetBounds
+behaviourRotateBounds :: Attr BehaviourRotate (Double, Double)
+behaviourRotateBounds = newAttr behaviourRotateGetBounds (tup2ToF behaviourRotateSetBounds)
 
 {# fun unsafe behaviour_rotate_set_center as ^
        { withBehaviourRotate* `BehaviourRotate', `Int', `Int', `Int'} -> `()' #}
@@ -92,7 +92,6 @@ behaviourRotateDirection = newAttr behaviourRotateGetDirection behaviourRotateSe
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
 
---TODO: maybe make this work
---behaviourRotateCenter :: Attr BehaviourRotate (Int, Int)
---behaviourRotateCenter = newAttr behaviourGetCenter behaviourSetCenter
+behaviourRotateCenter :: Attr BehaviourRotate (Int, Int, Int)
+behaviourRotateCenter = newAttr behaviourRotateGetCenter (tup3ToF behaviourRotateSetCenter)
 

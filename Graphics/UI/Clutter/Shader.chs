@@ -25,6 +25,10 @@
 
 module Graphics.UI.Clutter.Shader (
                                    shaderNew,
+                                   shaderIsCompiled,
+                                   shaderSetIsEnabled,
+                                   shaderGetIsEnabled,
+                                   shaderIsEnabled
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -33,6 +37,13 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
-{# fun unsafe shader_new as ^ {} -> `Shader' newShader* #}
+{# fun unsafe shader_new as ^ { } -> `Shader' newShader* #}
 
+
+{# fun unsafe shader_is_compiled as ^ { withShader* `Shader' } -> `Bool' #}
+
+{# fun unsafe shader_set_is_enabled as ^ { withShader* `Shader', `Bool' } -> `()' #}
+{# fun unsafe shader_get_is_enabled as ^ { withShader* `Shader' } -> `Bool' #}
+shaderIsEnabled :: Attr Shader Bool
+shaderIsEnabled = newAttr shaderGetIsEnabled shaderSetIsEnabled
 

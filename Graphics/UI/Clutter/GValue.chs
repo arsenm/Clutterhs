@@ -29,14 +29,17 @@
 {# context lib="clutter" prefix="clutter" #}
 
 --TODO: Lots of stuff here should be private
+--FIXME: Messy names
 
 module Graphics.UI.Clutter.GValue (
                                    gValueInitSet,
                                    GValueClass,
                                    GValueArg(..),
                                    GValueArgPtr,
-                                 --withGValueArg,
+                                   GValueArgClass,
+                                   withGValueArg,
                                    unsetOneGVal,
+                                   toGValueArg,
 
                                    color,
                                    valueSetColor,
@@ -50,16 +53,16 @@ import C2HS
 
 import System.Glib.GObject
 import System.Glib.GType
+import qualified System.Glib.GTypeConstants as GType
 import System.Glib.GValue
 import System.Glib.Attributes
 import System.Glib.Properties
 
 import System.Glib.GValueTypes
 import Control.Arrow (second)
-
-import qualified System.Glib.GTypeConstants as GType
-
+import Control.Exception (bracket)
 import Control.Monad (liftM)
+
 
 class GValueClass a where
     gValueInitSet :: GValue -> a -> IO ()
@@ -109,9 +112,13 @@ data GValueArg = UChar Char
                | UGObject GObject
            --- | UFunc (Actor -> IO ()) Actor
 
---CHECKME: Referencing here?
---withGValueArg :: (GValueClass arg) => arg -> (GValueArg -> IO a) -> IO a
---withGValueArg arg act = act (toGValueArg arg)
+mkGValueArg :: GValueArg -> IO GValueArgPtr
+mkGValueArg gva = do cptr <- (malloc :: IO GValueArgPtr)
+                     poke cptr gva
+                     return cptr
+
+withGValueArg :: (GValueArgClass arg) => arg -> (GValueArgPtr -> IO a) -> IO a
+withGValueArg gva = bracket (mkGValueArg (toGValueArg gva)) free
 
 {# pointer *GValue as GValueArgPtr -> GValueArg #}
 
@@ -137,25 +144,25 @@ instance Storable GValueArg where
 unsetOneGVal :: GValueArgPtr -> a -> IO GValueArgPtr
 unsetOneGVal i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
 
-class IntervalArg a where
+class GValueArgClass a where
     toGValueArg :: a -> GValueArg
 
-instance IntervalArg String where
+instance GValueArgClass String where
     toGValueArg = UString
-instance IntervalArg Int where
+instance GValueArgClass Int where
     toGValueArg = UInteger
-instance IntervalArg Float where
+instance GValueArgClass Float where
     toGValueArg = UFloat
-instance IntervalArg Color where
+instance GValueArgClass Color where
     toGValueArg = UColor
-instance IntervalArg Double where
+instance GValueArgClass Double where
     toGValueArg = UDouble
-instance IntervalArg Word8 where
+instance GValueArgClass Word8 where
     toGValueArg = UUChar
 
 
 --CHECKME: FlexibleInstances, UndecidableInstances and needed for this. Check that it's ok and works
-instance (GObjectClass obj) => IntervalArg obj where
+instance (GObjectClass obj) => GValueArgClass obj where
     toGValueArg = UGObject . toGObject
 
 

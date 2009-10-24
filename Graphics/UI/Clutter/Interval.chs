@@ -25,7 +25,7 @@
 
 module Graphics.UI.Clutter.Interval (
                                      intervalNew
-                                   --intervalNewWithValues,
+                                     intervalNewWithValues,
                                    --intervalClone,
                                    --intervalGetValueType,
                                    --intervalSetInitialValue,
@@ -49,10 +49,26 @@ module Graphics.UI.Clutter.Interval (
 
 import C2HS
 import System.Glib.GObject
+import qualified System.Glib.GTypeConstants as GType
 
 intervalNew = error "ClutterInterval unimplemented"
 
 --this seems to replace intervalNew for language bindings so rename it?
---intervalNewWithValues :: (
---intervalNewWithValues initial final
+--FIXME: toGValue and then pattern match against constructors is dumb
+--but I'm too lazy to fix it now
+intervalNewWithValues :: (GValueArgClass arg) => arg -> arg -> IO Interval
+intervalNewWithValues initial final = let func = {# call unsafe interval_new_with_values #}
+                                          typedFunc = case toGValueArg initial of
+                                                        (UInteger _) -> func GType.int
+                                                        (UDouble _) ->  func GType.double
+                                                        (UFloat _) -> func GType.float
+                                                        (UString _) ->  func GType.string
+                                                        (UChar _) ->  func GType.char
+                                                        (UUChar _) -> func GType.uchar
+                                                        (UColor _) -> func color
+                                                        (UGObject _) -> func GType.object
+                                      in withGValueArg initial $ \argptr1 ->
+                                          withGValueArg final $ \argptr2 ->
+                                            newInterval =<< typedFunc argptr1 argptr2
+
 

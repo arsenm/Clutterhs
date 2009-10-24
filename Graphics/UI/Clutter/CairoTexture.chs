@@ -27,19 +27,21 @@ module Graphics.UI.Clutter.CairoTexture (
                                          cairoTextureNew,
                                          cairoTextureSetSurfaceSize,
                                          cairoTextureGetSurfaceSize,
-                                       --cairoTextureSurfaceSize, --TODO: Pair
-                                       --cairoTextureCreate,
-                                       --cairoTextureCreateRegion,
-                                       --cairoTextureClear,
-                                       --cairoSetSourceColor
-                                       --cairoSourceColor --TODO write only attr
+                                         cairoTextureSurfaceSize,
+                                         cairoTextureCreate,
+                                         cairoTextureCreateRegion,
+                                         cairoTextureClear,
+                                         cairoSetSourceColor,
+                                         cairoSourceColor
                                         ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 
 {# fun unsafe cairo_texture_new as ^ { `Int', `Int' } -> `CairoTexture' newCairoTexture* #}
 
@@ -48,20 +50,20 @@ import System.Glib.Attributes
 {# fun unsafe cairo_texture_get_surface_size as ^
        { withCairoTexture* `CairoTexture', alloca- `Int' peekIntConv*, alloca- `Int' peekIntConv* } -> `()' #}
 
+cairoTextureSurfaceSize :: Attr CairoTexture (Int,Int)
+cairoTextureSurfaceSize = newAttr cairoTextureGetSurfaceSize (tup2ToF cairoTextureSetSurfaceSize)
 
-{-
---TODO: Lookup cairo types
+
 {# fun unsafe cairo_texture_create as ^
-       { withCairoTexture* `CairoTexture' } -> `CairoT' #}
+       { withCairoTexture* `CairoTexture' } -> `Cairo' newCairo #}
 {# fun unsafe cairo_texture_create_region as ^
-       { withCairoTexture* `CairoTexture', `Int', `Int', `Int', `Int' } -> `CairoT' #}
-
--}
+       { withCairoTexture* `CairoTexture', `Int', `Int', `Int', `Int' } -> `Cairo' newCairo #}
 
 {# fun unsafe cairo_texture_clear as ^ { withCairoTexture* `CairoTexture' } -> `()' #}
 
-{-
 {# fun unsafe cairo_set_source_color as ^
-       { withCairo* `CairoT', withColor* `Color' } -> `()' #}
--}
+       { withCairo `Cairo', withColor* `Color' } -> `()' #}
+
+cairoSourceColor :: WriteAttr Cairo Color
+cairoSourceColor = writeAttr cairoSetSourceColor
 

@@ -55,6 +55,7 @@ module Graphics.UI.Clutter.Path (
                                 ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM, liftM2)
@@ -76,7 +77,6 @@ import qualified Graphics.Rendering.Cairo.Types as Cairo
 
 {# fun unsafe path_add_node as ^ { withPath* `Path', withPathNode* `PathNode' } -> `()' #}
 
-withCairoPath = castPtr . Cairo.unPath
 {# fun unsafe path_add_cairo_path as ^ { withPath* `Path', withCairoPath `Cairo.Path' } -> `()' #}
 
 --FIXME: GUInt
@@ -102,8 +102,6 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --pathDescription :: Attr Path String
 --pathDescription = newAttr pathGetDescription pathSetDescription
 
-withCairo = castPtr . unCairo
-
 {# fun unsafe path_to_cairo_path as ^ { withPath* `Path', withCairo `Cairo' } -> `()' #}
 
 {# fun unsafe path_clear as ^ { withPath* `Path' } -> `()' #}
@@ -114,7 +112,7 @@ withCairo = castPtr . unCairo
 pathGetPosition :: Path -> Double -> IO (GUInt, Knot)
 pathGetPosition path progress = withPath path $ \pathptr ->
                                 alloca $ \kptr ->
-                                  liftM2 (,) ({# call unsafe path_get_position #} pathptr (cFloatConv progress) (castPtr kptr))
+                                   liftM2 (,) ({# call unsafe path_get_position #} pathptr (cFloatConv progress) (castPtr kptr))
                                              (peek kptr)
 
 {# fun unsafe path_get_length as ^ { withPath* `Path' } -> `GUInt' cIntConv #}

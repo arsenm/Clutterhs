@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface  #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -29,7 +29,11 @@ module Graphics.UI.Clutter.Utility (
                                     tup4ToF,
 
                                     cFromFlags,
-                                    cToFlags
+                                    cToFlags,
+
+                                    newCairo,
+                                    withCairo,
+                                    withCairoPath,
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -38,6 +42,10 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.Flags
+import Graphics.Rendering.Cairo
+import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
+import qualified Graphics.Rendering.Cairo.Types as Cairo
+
 
 --There's Probably a better way to do this I'm using this for related
 --attributes that you might want to set at once rather than
@@ -54,4 +62,10 @@ cToFlags = toFlags . cIntConv
 
 cFromFlags :: (Flags a) => [a] -> CInt
 cFromFlags = cIntConv . fromFlags
+
+--convenient marshalling not provided by gtk2hs
+newCairo = Cairo . castPtr
+withCairoPath = castPtr . Cairo.unPath
+withCairo = castPtr . unCairo
+
 

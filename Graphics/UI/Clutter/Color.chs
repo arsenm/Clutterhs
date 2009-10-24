@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface  #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -70,7 +70,6 @@ colorFromString name = unsafePerformIO $ withCString name $ \cstr ->
          alloca- `Float' peekFloatConv*,
          alloca- `Float' peekFloatConv* } -> `()' #}
 
---CHECKME: guint32
 {# fun pure unsafe color_from_pixel as ^ { alloca- `Color' peek*, `Word32' } -> `()' #}
 {# fun pure unsafe color_to_pixel as ^ { withColor* `Color' } -> `Word32' #}
 

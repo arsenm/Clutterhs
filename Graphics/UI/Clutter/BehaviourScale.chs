@@ -31,6 +31,7 @@ module Graphics.UI.Clutter.BehaviourScale (
                                           ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -53,8 +54,6 @@ import System.Glib.Attributes
 --CHECKME: Do I want this?
 behaviourScaleBounds :: Attr BehaviourScale (Double, Double, Double, Double)
 behaviourScaleBounds = newAttr behaviourScaleGetBounds (tup4ToF behaviourScaleSetBounds)
-    where tup4ToF f bhv (a,b,c,d) = f bhv a b c d
-
 
 
 

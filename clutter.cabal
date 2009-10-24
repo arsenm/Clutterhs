@@ -23,8 +23,9 @@ Library
   Build-Tools: c2hs
   Includes: clutter/clutter.h
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
---I'm not sure that GValue should be exposed
+--I'm not sure that GValue should be exposed. Utility definitely not
   Exposed-modules: Graphics.UI.Clutter.Types,
+                   Graphics.UI.Clutter.Utility,
                    Graphics.UI.Clutter.GValue,
                    Graphics.UI.Clutter.External,
                    Graphics.UI.Clutter.Signals,

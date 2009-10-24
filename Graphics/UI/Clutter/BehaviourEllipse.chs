@@ -27,7 +27,7 @@ module Graphics.UI.Clutter.BehaviourEllipse (
                                              behaviourEllipseNew,
                                              behaviourEllipseSetCenter,
                                              behaviourEllipseGetCenter,
-                                           --behaviourEllipseCenter,
+                                             behaviourEllipseCenter,
                                              behaviourEllipseSetAngleStart,
                                              behaviourEllipseGetAngleStart,
                                              behaviourEllipseAngleStart,
@@ -37,7 +37,7 @@ module Graphics.UI.Clutter.BehaviourEllipse (
 
                                              behaviourEllipseSetAngleTilt,
                                              behaviourEllipseGetAngleTilt,
-                                             --behaviourEllipseAngleTilt, TODO: Property for each axis
+                                           --behaviourEllipseAngleTilt, TODO: Property for each axis
 
                                              behaviourEllipseSetHeight,
                                              behaviourEllipseGetHeight,
@@ -47,19 +47,22 @@ module Graphics.UI.Clutter.BehaviourEllipse (
                                              behaviourEllipseGetWidth,
                                              behaviourEllipseWidth,
 
+                                             behaviourEllipseSize,
+
                                              behaviourEllipseSetTilt,
                                              behaviourEllipseGetTilt,
-                                           --behaviourEllipseTilt,
+                                             behaviourEllipseTilt,
 
                                              behaviourEllipseSetDirection,
                                              behaviourEllipseGetDirection,
                                              behaviourEllipseDirection
-                                          ) where
+                                            ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
+import Control.Monad (liftM, liftM2)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_ellipse_new as ^
@@ -81,9 +84,8 @@ import System.Glib.Attributes
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
 
---TODO: Make this work
---behaviourEllipseCenter :: Attr BehaviourEllipse (Int, Int)
---behaviourEllipseCenter = newAttr behaviourGetCenter behaviourSetCenter
+behaviourEllipseCenter :: Attr BehaviourEllipse (Int, Int)
+behaviourEllipseCenter = newAttr behaviourEllipseGetCenter (tup2ToF behaviourEllipseSetCenter)
 
 {# fun unsafe behaviour_ellipse_set_angle_start as ^
        { withBehaviourEllipse* `BehaviourEllipse', `Double' } -> `()' #}
@@ -121,6 +123,14 @@ behaviourEllipseHeight = newAttr behaviourEllipseGetHeight behaviourEllipseSetHe
 behaviourEllipseWidth :: Attr BehaviourEllipse Int
 behaviourEllipseWidth = newAttr behaviourEllipseGetWidth behaviourEllipseSetWidth
 
+--set width and height at the same time
+behaviourEllipseSize :: Attr BehaviourEllipse (Int, Int)
+behaviourEllipseSize = newAttr
+                        (\x -> liftM2 (,) (behaviourEllipseGetWidth x)
+                                          (behaviourEllipseGetHeight x))
+                        (\x (a,b) -> behaviourEllipseSetWidth x a >>
+                                     behaviourEllipseSetHeight x b)
+
 {# fun unsafe behaviour_ellipse_set_tilt as ^
        { withBehaviourEllipse* `BehaviourEllipse',
        `Double',
@@ -132,8 +142,8 @@ behaviourEllipseWidth = newAttr behaviourEllipseGetWidth behaviourEllipseSetWidt
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*
        } -> `()' #}
---behaviourEllipseTilt :: Attr BehaviourEllipse (Double, Double, Double)
---behaviourEllipseTilt = newAttr behaviourGetTilt behaviourSetTilt
+behaviourEllipseTilt :: Attr BehaviourEllipse (Double, Double, Double)
+behaviourEllipseTilt = newAttr behaviourEllipseGetTilt (tup3ToF behaviourEllipseSetTilt)
 
 
 {# fun unsafe behaviour_ellipse_set_direction as ^

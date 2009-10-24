@@ -48,7 +48,7 @@ type KeyVal = Word64
 
 {# fun unsafe binding_pool_new as ^ { `String' } -> `BindingPool' newBindingPool* #}
 
---
+--I don't understand this function. Looks dirty though.
 --{# fun unsafe binding_pool_get_for_class as ^ {} -> `BindingPool' newBindingPool* #}
 
 {# fun unsafe binding_pool_find as ^ { `String' } -> `BindingPool' newBindingPool* #}

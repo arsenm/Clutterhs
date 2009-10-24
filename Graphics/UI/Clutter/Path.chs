@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -39,6 +39,7 @@ module Graphics.UI.Clutter.Path (
                                  pathGetNNodes,
                                  pathGetNode,
                                  pathGetNodes,
+                                 pathForeach,
                                  pathInsertNode,
                                  pathRemoveNode,
                                  pathReplaceNode,
@@ -58,7 +59,7 @@ module Graphics.UI.Clutter.Path (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM, liftM2)
+import Control.Monad (liftM2)
 import System.Glib.Attributes
 import Graphics.Rendering.Cairo.Types (Cairo, unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
@@ -85,6 +86,7 @@ import qualified Graphics.Rendering.Cairo.Types as Cairo
 {# fun unsafe path_get_node as ^ { withPath* `Path', `Int', alloca- `PathNode' peek* } -> `()' #}
 {# fun unsafe path_get_nodes as ^ { withPath* `Path' } -> `[PathNode]' newPathNodes* #}
 
+pathForeach :: Path -> PathCallback -> IO ()
 pathForeach path cpcb = withPath path $ \pathPtr -> do
                         funcPtr <- newPathCallback cpcb
                         --CHECKME: unsafe?

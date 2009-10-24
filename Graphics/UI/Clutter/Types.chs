@@ -215,6 +215,8 @@ module Graphics.UI.Clutter.Types (
                                   Knot,
                                   withPathNode,
                                   newPathNodes,
+                                  PathCallback,
+                                  CPathCallback,
                                   newPathCallback,
 
                                   Score,

@@ -39,7 +39,6 @@ module Graphics.UI.Clutter.CairoTexture (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 import Graphics.Rendering.Cairo.Types (Cairo)
 

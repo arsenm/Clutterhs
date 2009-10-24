@@ -34,7 +34,6 @@ module Graphics.UI.Clutter.BehaviourOpacity (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_opacity_new as ^

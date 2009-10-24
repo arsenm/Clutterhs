@@ -26,8 +26,8 @@ Library
 --I'm not sure that GValue should be exposed. Utility definitely not
   Exposed-modules: Graphics.UI.Clutter.Types,
                    Graphics.UI.Clutter.Utility,
-                   Graphics.UI.Clutter.GValue,
                    Graphics.UI.Clutter.External,
+                   Graphics.UI.Clutter.GValue,
                    Graphics.UI.Clutter.Signals,
                    Graphics.UI.Clutter.General,
                    Graphics.UI.Clutter.Color,

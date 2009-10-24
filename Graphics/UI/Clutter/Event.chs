@@ -60,6 +60,8 @@ module Graphics.UI.Clutter.Event (
 
 --FIXME: Conflict with EventType Nothing
 import Prelude hiding (Nothing, catch)
+import Data.Maybe (catMaybes)
+import qualified Prelude as P
 
 import C2HS
 import System.Glib.GObject
@@ -74,6 +76,7 @@ import Control.Exception (Handler(..),
                           catches,
                           throw)
 import System.IO.Error (isUserError, ioeGetErrorString)
+
 
 --FIXME: Move this. guint32
 type TimeStamp = Word32
@@ -137,11 +140,9 @@ instance HasModifierType EKey
 instance HasModifierType EMotion
 instance HasModifierType EScroll
 
-
---TODO: Use bitwise and get list of flags.
 eventFlags :: EventM t [EventFlags]
 eventFlags = ask >>= \ptr ->
-             liftIO $ liftM (toFlags.cIntConv) ({# get ClutterAnyEvent->flags #} ptr)
+             liftIO $ liftM (toFlags . cIntConv) ({# get ClutterAnyEvent->flags #} ptr)
 
 {-
 eventStage :: EventM t Stage
@@ -202,18 +203,46 @@ scrollEvent = Signal (eventM "scroll_event")
 motionNotifyEvent :: ActorClass self => Signal self (EventM EMotion Bool)
 motionNotifyEvent = Signal (eventM "motion_event")
 
+
+--The normal one from gtk2hs does not work here. there is a
+--discontinuity in the enum of unused bits and also an internally used
+--bit, therefore minBound .. maxBound fails, so do this shitty listing
+--of all options
+toModFlags :: Int -> [ModifierType]
+toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
+                            then Just flag
+                            else P.Nothing
+                          | flag <- [ShiftMask,
+                                     LockMask,
+                                     ControlMask,
+                                     Mod1Mask,
+                                     Mod2Mask,
+                                     Mod3Mask,
+                                     Mod4Mask,
+                                     Mod5Mask,
+                                     Button1Mask,
+                                     Button2Mask,
+                                     Button3Mask,
+                                     Button4Mask,
+                                     Button5Mask,
+                                     SuperMask,
+                                     HyperMask,
+                                     MetaMask,
+                                     ReleaseMask,
+                                     ModifierMask]
+                         ]
+
 eventModifierType :: HasModifierType t => EventM t [ModifierType]
 eventModifierType = do
   ptr <- ask
   liftIO $ do
     ty <- {# get ClutterEvent->type #} ptr
     case cToEnum ty of
-      KeyPress -> liftM (toFlags.cIntConv) ({# get ClutterKeyEvent->modifier_state #} ptr)
-      ButtonPress -> liftM (toFlags.cIntConv) ({# get ClutterButtonEvent->modifier_state #} ptr)
-      Motion -> liftM (toFlags.cIntConv) ({# get ClutterMotionEvent->modifier_state #} ptr)
-      Scroll -> liftM (toFlags.cIntConv) ({# get ClutterScrollEvent->modifier_state #} ptr)
+      KeyPress -> liftM (toModFlags.cIntConv) ({# get ClutterKeyEvent->modifier_state #} ptr)
+      ButtonPress -> liftM (toModFlags.cIntConv) ({# get ClutterButtonEvent->modifier_state #} ptr)
+      Motion -> liftM (toModFlags.cIntConv) ({# get ClutterMotionEvent->modifier_state #} ptr)
+      Scroll -> liftM (toModFlags.cIntConv) ({# get ClutterScrollEvent->modifier_state #} ptr)
       _ -> error ("eventModifierType: none for event type " ++ show ty)
-
 
 --TODO: Word32, guint32 i'm sure doesn't matter but whatever
 eventButton :: EventM EButton Word32

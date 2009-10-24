@@ -61,12 +61,13 @@ main = do
          t <- eventTime
          coords <- eventCoordinates
          button <- eventButton
-         --modifier doesn't work quite right yet
---         mod <- eventModifierType
+         flags <- eventFlags
+         mod <- eventModifierType
+         liftIO $ putStrLn ("Flags: " ++ show flags)
          liftIO $ putStrLn ("Time: " ++ show t)
          liftIO $ putStrLn ("Coords: " ++ show coords)
          liftIO $ putStrLn ("Button: " ++ show button)
---         liftIO $ putStrLn ("Modifier: " ++ show mod)
+         liftIO $ putStrLn ("Modifier: " ++ show mod)
 
 
   containerAddActor stg rec

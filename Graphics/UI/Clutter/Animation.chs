@@ -101,16 +101,13 @@ import qualified System.Glib.GTypeConstants as GType
 animationObject :: Attr Animation GObject
 animationObject = newAttr animationGetObject animationSetObject
 
-
 {# fun unsafe animation_set_mode as ^
        { withAnimation* `Animation', cFromEnum `AnimationMode' } -> `()' #}
---FIXME: Set an gint, get a guint? what? why?
 {# fun unsafe animation_get_mode as ^ { withAnimation* `Animation' } -> `AnimationMode' cToEnum #}
 animationMode :: Attr Animation AnimationMode
 animationMode = newAttr animationGetMode animationSetMode
 
 {# fun unsafe animation_set_duration as ^ { withAnimation* `Animation', `Int' } -> `()' #}
---FIXME: Set an gint, get a guint? what? why?
 {# fun unsafe animation_get_duration as ^ { withAnimation* `Animation' } -> `Int' #}
 animationDuration :: Attr Animation Int
 animationDuration = newAttr animationGetDuration animationSetDuration
@@ -169,9 +166,6 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 {# fun unsafe animation_get_interval as ^
    { withAnimation* `Animation', `String' } -> `Interval' newInterval* #}
 
-
-unGValue :: GValue -> Ptr ()
-unGValue (GValue a) = castPtr a
 
 {# fun actor_get_animation as ^
        `(ActorClass a)' => { withActorClass* `a' } -> `Animation' newAnimation* #}

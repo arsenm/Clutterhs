@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -62,7 +62,23 @@ module Graphics.UI.Clutter.Timeline (
 
                                       onCompleted,
                                       afterCompleted,
-                                      completed
+                                      completed,
+
+                                      onMarkerReached,
+                                      afterMarkerReached,
+                                      markerReached,
+
+                                      onNewFrame,
+                                      afterNewFrame,
+                                      newFrame,
+
+                                      onPaused,
+                                      afterPaused,
+                                      paused,
+
+                                      onStarted,
+                                      afterStarted,
+                                      started
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -146,12 +162,12 @@ completed :: Signal Timeline (IO ())
 completed = Signal (connect_NONE__NONE "completed")
 
 
-onMarkerreached, afterMarkerreached :: Timeline -> (Char -> Int -> IO ()) -> IO (ConnectId Timeline)
-onMarkerreached = connect_CHAR_INT__NONE "marker-reached" False
-afterMarkerreached = connect_CHAR_INT__NONE "marker-reached" True
+onMarkerReached, afterMarkerReached :: Timeline -> (String -> Int -> IO ()) -> IO (ConnectId Timeline)
+onMarkerReached = connect_STRING_INT__NONE "marker-reached" False
+afterMarkerReached = connect_STRING_INT__NONE "marker-reached" True
 
-markerReached :: Signal Timeline (Char -> Int -> IO ())
-markerReached = Signal (connect_CHAR_INT__NONE "marker-reached")
+markerReached :: Signal Timeline (String -> Int -> IO ())
+markerReached = Signal (connect_STRING_INT__NONE "marker-reached")
 
 
 onNewFrame, afterNewFrame :: Timeline -> (Int -> IO ()) -> IO (ConnectId Timeline)

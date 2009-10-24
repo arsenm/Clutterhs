@@ -51,6 +51,7 @@ module Graphics.UI.Clutter.Signals (
   connect_PTR__NONE,
   connect_PTR_ENUM__NONE,
   connect_CHAR_INT__NONE,
+  connect_STRING_INT__NONE,
 
   ) where
 
@@ -202,4 +203,17 @@ connect_CHAR_INT__NONE signal after obj user =
         action _ char1 int2 =
           failOnGError $
           user char1 int2
+
+connect_STRING_INT__NONE ::
+  GObjectClass obj => SignalName ->
+  ConnectAfter -> obj ->
+  (String -> Int -> IO ()) ->
+  IO (ConnectId obj)
+connect_STRING_INT__NONE signal after obj user =
+  connectGeneric signal after obj action
+  where action :: Ptr GObject -> CString -> Int -> IO ()
+        action _ str1 int2 =
+          failOnGError $
+          peekUTFString str1 >>= \str1' ->
+          user str1' int2
 

@@ -40,6 +40,7 @@ module Graphics.UI.Clutter.GValue (
                                    withGValueArg,
                                    unsetOneGVal,
                                    toGValueArg,
+                                   unGValue,
 
                                    color,
                                    valueSetColor,
@@ -120,6 +121,9 @@ withGValueArg :: (GValueArgClass arg) => arg -> (GValueArgPtr -> IO a) -> IO a
 withGValueArg gva = bracket (mkGValueArg (toGValueArg gva)) free
 
 {# pointer *GValue as GValueArgPtr -> GValueArg #}
+
+unGValue :: GValue -> Ptr ()
+unGValue (GValue a) = castPtr a
 
 instance Storable GValueArg where
     sizeOf _ = {# sizeof GValue #}

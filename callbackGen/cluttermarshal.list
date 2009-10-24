@@ -38,4 +38,4 @@ VOID:POINTER
 #FIXME:Test these ones when you get to them
 VOID:POINTER,ENUM
 VOID:CHAR,INT
-
+VOID:STRING,INT

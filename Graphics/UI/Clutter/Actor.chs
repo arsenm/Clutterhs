@@ -42,7 +42,7 @@ module Graphics.UI.Clutter.Actor (
 
                                   actorSetPosition,
                                   actorGetPosition,
-                                --actorPosition ???? TODO: Tuple Point type???
+                                  actorPosition,
                                   actorSetSize,
                                   actorGetSize,
 
@@ -110,6 +110,7 @@ module Graphics.UI.Clutter.Actor (
                                 --actorGetTransformationMatrix
                                   actorSetAnchorPoint,
                                   actorGetAnchorPoint,
+                                  actorAnchorPoint,
                                   actorSetAnchorPointFromGravity,
                                   actorGetAnchorPointGravity,
                                   actorAnchorPointGravity,
@@ -181,6 +182,7 @@ module Graphics.UI.Clutter.Actor (
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
 
 
@@ -284,11 +286,8 @@ actorReactive = newAttr actorGetReactive actorSetReactive
 {# fun unsafe actor_get_position as ^
    `(ActorClass self)' => { withActorClass* `self', alloca- `Float' peekFloatConv*, alloca- `Float' peekFloatConv*} -> `()' #}
 
---should I tuple these?
---actorPosition :: (ActorClass self) => Attr Self (Float, Float)
---actorPosition = newAttr  actorGetPosition actorSetPosition
-
---FIXME: lol withActorClass
+actorPosition :: (ActorClass self) => Attr self (Float, Float)
+actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
 
 {# fun unsafe actor_set_size as ^
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
@@ -388,6 +387,9 @@ actorGid = readAttr actorGetGid
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Float' peekFloatConv*,
                             alloca- `Float' peekFloatConv*} -> `()' #}
+
+actorAnchorPoint :: (ActorClass self) => Attr self (Float, Float)
+actorAnchorPoint = newAttr actorGetAnchorPoint (tup2ToF actorSetAnchorPoint)
 
 {# fun unsafe actor_set_anchor_point_from_gravity as ^
    `(ActorClass self)' => { withActorClass* `self', cFromEnum `Gravity' } -> `()' #}

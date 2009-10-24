@@ -26,7 +26,7 @@
 module Graphics.UI.Clutter.BehaviourPath (
                                           behaviourPathNew,
                                           behaviourPathNewWithDescription,
-                                        --behaviourPathNewWithKnots,
+                                          behaviourPathNewWithKnots,
                                           behaviourPathSetPath,
                                           behaviourPathGetPath,
                                           behaviourPathPath,
@@ -46,9 +46,13 @@ import System.Glib.Attributes
 {# fun unsafe behaviour_path_new_with_description as ^
        { withAlpha* `Alpha', `String' } -> `BehaviourPath' newBehaviourPath* #}
 
---TODO: Do this function
---{# fun unsafe behaviour_path_new_with_knots as ^
---       { withAlpha* `Alpha', `[Knots]', `String' } -> `BehaviourPath' newBehaviourPath* #}
+--CHECKME: Again, why the casting from Ptr Knot to Ptr ()
+behaviourPathNewWithKnots :: Alpha -> [Knot] -> IO BehaviourPath
+behaviourPathNewWithKnots alp knots = let func = {# call unsafe behaviour_path_new_with_knots #}
+                                      in withAlpha alp $ \aptr ->
+                                          withArrayLen knots $ \len knotptr ->
+                                          newBehaviourPath =<< func aptr (castPtr knotptr) (cIntConv len)
+
 
 {# fun unsafe behaviour_path_set_path as ^
        { withBehaviourPath* `BehaviourPath', withPath* `Path'} -> `()' #}

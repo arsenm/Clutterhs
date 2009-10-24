@@ -195,41 +195,21 @@ instance AnimateType (IO ()) where
     runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args >> return ()
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
-    runAnim actor mode duration args = \a -> runAnim actor mode duration (toGValueArg a : args)
-    runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toGValueArg a : args)
+    runAnim actor mode duration args = \a -> runAnim actor mode duration (toAnimateArg a : args)
+    runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toAnimateArg a : args)
 
+toAnimateArg :: (GValueClass gvalue) => (String, gvalue) -> (String, GValueArg)
+toAnimateArg = second toGValueArg
 
 --this should always be a pair of a name and something which can be a gvalue
 -- (String, Something that can be a GValue)
 --TODO: Also I think if you use a signal you need a function and an actor
 --Something like
 --instance (ActorClass a) => AnimateArg (String, a -> IO (), a) where
---    toGValueArg (a, b, c) = (a, UFunc b (toActor c))
+--    toAnimateArg (a, b, c) = (a, UFunc b (toActor c))
 --but then how to pass 2 things in the array, and the n?
 --empty spot? Look at seed
 --how to enforce this nicely? Is this good enough?
-class AnimateArg a where
-    toGValueArg :: a -> (String, GValueArg)
-
-instance AnimateArg (String, String) where
-    toGValueArg = second UString
-instance AnimateArg (String, Int) where
-    toGValueArg = second UInteger
-instance AnimateArg (String, Float) where
-    toGValueArg = second UFloat
-instance AnimateArg (String, Color) where
-    toGValueArg = second UColor
-instance AnimateArg (String, Double) where
-    toGValueArg = second UDouble
-instance AnimateArg (String, Word8) where
-    toGValueArg = second UUChar
---CHECKME: class constraints applied after matching, so doing it this way requires
---overlapping instances. Is this ok or should I use another way?
-instance (GObjectClass obj) => AnimateArg (String, obj) where
-    toGValueArg = second (UGObject . toGObject)
-
-unsetOneGVal i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
-
 uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GValueArg)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"
 uanimate actor mode duration us =
@@ -264,4 +244,6 @@ uanimateWithAlpha actor alpha us =
              return result
               --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
       newAnimation res  --CHECKME: Do I need to do this here? reffing?
+
+
 

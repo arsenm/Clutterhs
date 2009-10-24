@@ -17,18 +17,26 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface,
+             TypeSynonymInstances,
+             UndecidableInstances,
+             IncoherentInstances,
+             OverlappingInstances #-}
 
 #include <clutter/clutter.h>
 #include <glib.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
+--TODO: Lots of stuff here should be private
+
 module Graphics.UI.Clutter.GValue (
                                    gValueInitSet,
                                    GValueClass,
                                    GValueArg(..),
                                    GValueArgPtr,
+                                   withGValueArg,
+                                   unsetOneGVal,
 
                                    color,
                                    valueSetColor,
@@ -101,6 +109,10 @@ data GValueArg = UChar Char
                | UGObject GObject
            --- | UFunc (Actor -> IO ()) Actor
 
+--CHECKME: Referencing here?
+withGValueArg :: (GValueClass arg) => arg -> (GValueArg -> IO a) -> IO a
+withGValueArg arg act = act (toGValueArg arg)
+
 {# pointer *GValue as GValueArgPtr -> GValueArg #}
 
 instance Storable GValueArg where
@@ -111,8 +123,7 @@ instance Storable GValueArg where
                 in do
                 {# set GValue->g_type #} p (0 :: GType)
                 case ut of
-                --FIXME: Char/UCHar vs. Int8 type sort of hacky,
-                --intconv, why missing char marshaller?
+                --FIXME: Really actually want char /uchar or Int8/Word8?
                   (UInteger val) -> gValueInitSet gv val
                   (UDouble val) ->  gValueInitSet gv val
                   (UFloat val) -> gValueInitSet gv val
@@ -121,4 +132,31 @@ instance Storable GValueArg where
                   (UUChar val) -> gValueInitSet gv val
                   (UColor val) -> gValueInitSet gv val
                   (UGObject val) -> gValueInitSet gv val
+
+unsetOneGVal ::  GValueArgPtr -> Int -> IO GValueArgPtr
+unsetOneGVal i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
+
+class IntervalArg a where
+    toGValueArg :: a -> GValueArg
+
+instance IntervalArg String where
+    toGValueArg = UString
+instance IntervalArg Int where
+    toGValueArg = UInteger
+instance IntervalArg Float where
+    toGValueArg = UFloat
+instance IntervalArg Color where
+    toGValueArg = UColor
+instance IntervalArg Double where
+    toGValueArg = UDouble
+instance IntervalArg Word8 where
+    toGValueArg = UUChar
+
+
+
+--CHECKME: UndecidableInstances and IncoherentInstances needed for this. Check that it's ok and works
+--when I was pairing, needed OverlappingInstances
+instance (GObjectClass obj) => IntervalArg obj where
+    toGValueArg = UGObject . toGObject
+
 

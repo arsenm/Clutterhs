@@ -50,7 +50,7 @@ module Graphics.UI.Clutter.Stage (
                                   stageQueueRedraw,
 
                                 --stageEvent,
-                                --stageSetKeyFocus,
+                                  stageSetKeyFocus,
                                   stageGetKeyFocus,
                                 --stageKeyFocus,
                                 --stageReadPixels,
@@ -116,13 +116,17 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 {# fun unsafe stage_ensure_redraw as ^ { withStage* `Stage' } -> `()' #}
 {# fun unsafe stage_queue_redraw as ^ { withStage* `Stage' } -> `()' #}
 
+--CHECKME this might fall under the category of low level event stuff we're not dealing with
 --{# fun unsafe stage_event as ^ { withStage* `Stage', withEvent* `Event' } -> `Bool' #}
 {# fun unsafe stage_set_key_focus as ^ `(ActorClass actor)' => { withStage* `Stage', withActorClass* `actor' } -> `()' #}
-
 {# fun unsafe stage_get_key_focus as ^ { withStage* `Stage' } -> `Actor' newActor* #}
+--TODO: Same problem as other places, setting and getting ActorClass is unhappy
+--stageKeyFocus :: (ActorClass actor) => Attr Stage actor
+--stageKeyFocus = newAttr stageGetKeyFocus stageSetKeyFocus
 
---TODO: all those types, namely guchar* out
---{# fun unsafe stage_read_pixels as ^ { withStage* `Stage', `Int', `Int', `Int', `Int' } -> `GUChar' #}
+--TODO: all those types, namely guchar* out = what?
+--Returns some kind of image buffer, what do I do with it?
+--{# fun unsafe stage_read_pixels as ^ { withStage* `Stage', `Int', `Int', `Int', `Int' } -> `Ptr ()' #}
 
 {# fun unsafe stage_set_throttle_motion_events as ^ { withStage* `Stage', `Bool' } -> `()' #}
 {# fun unsafe stage_get_throttle_motion_events as ^ { withStage* `Stage' } -> `Bool' #}

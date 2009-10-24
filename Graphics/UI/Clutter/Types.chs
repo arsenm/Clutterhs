@@ -30,6 +30,10 @@ module Graphics.UI.Clutter.Types (
                                   newGObject,
                                   withGValue,
 
+                                  GSSize,
+                                  GUnichar,
+                                  GUInt,
+
                                   Color(Color),
                                   ColorPtr,
                                   withColor,
@@ -286,6 +290,9 @@ withGValue (GValue gval) = castPtr gval
 -- g-types not anywhere??
 type GUInt8 = {# type guint8 #}
 type GFloat = {# type gfloat #}
+type GSSize = {# type gssize #}
+type GUnichar = {# type gunichar #}
+type GUInt = {# type guint #}
 
 -- *************************************************************** Misc
 

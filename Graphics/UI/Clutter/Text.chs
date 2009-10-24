@@ -20,8 +20,10 @@
 {-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
 
 #include <clutter/clutter.h>
+#include <pango/pango.h>
 
 {# context lib="clutter" prefix="clutter" #}
+{# context lib="pango" prefix="pango" #}
 
 module Graphics.UI.Clutter.Text (
                                  textNew,
@@ -48,15 +50,16 @@ module Graphics.UI.Clutter.Text (
                                  textSetFontName,
                                  textFontName,
 
-                               --textSetPasswordChar,
-                               --textGetPasswordChar,
-                               --textPasswordChar,
+                                 textSetPasswordChar,
+                                 textGetPasswordChar,
+                                 textPasswordChar,
 
                                  textGetJustify,
                                  textSetJustify,
                                  textJustify,
 
-                               --textGetLayout,
+                                 textGetLayout,
+                                 textLayout,
 
                                  textSetLineAlignment,
                                  textGetLineAlignment,
@@ -99,7 +102,7 @@ module Graphics.UI.Clutter.Text (
                                  textEditable,
 
                                  textInsertText,
-                               --textInsertUnichar,
+                                 textInsertUnichar,
 
                                  textDeleteChars,
                                  textDeleteText,
@@ -142,18 +145,22 @@ module Graphics.UI.Clutter.Text (
 import C2HS
 import System.Glib.GObject
 import System.Glib.Attributes
-import Control.Monad (liftM)
+import System.Glib.UTFString
 
-import Graphics.UI.Gtk.Pango.Types (PangoLayout)
-import Graphics.UI.Gtk.Pango.Layout (LayoutWrapMode, LayoutAlignment)
+import Control.Monad (liftM)
+import Data.IORef
+
+import Graphics.UI.Gtk.Types (mkPangoLayoutRaw, toPangoLayoutRaw, unPangoLayoutRaw)
+import Graphics.UI.Gtk.Pango.Types
+import Graphics.UI.Gtk.Pango.Layout
 import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 --CHECKME: Is LayoutWrapMode/LayoutAlignment the wrap mode we want?
 
 
 {# fun unsafe text_new as ^ {} -> `Text' newText* #}
-{#fun unsafe text_new_full as ^ { `String', `String', withColor* `Color' } -> `Text' newText* #}
-{#fun unsafe text_new_with_text as ^ { `String', `String' } -> `Text' newText* #}
+{# fun unsafe text_new_full as ^ { `String', `String', withColor* `Color' } -> `Text' newText* #}
+{# fun unsafe text_new_with_text as ^ { `String', `String' } -> `Text' newText* #}
 
 
 {# fun unsafe text_get_text as ^ { withText* `Text' } -> `String' #}
@@ -190,24 +197,34 @@ textEllipsize = newAttr textGetEllipsize textSetEllipsize
 textFontName :: Attr Text String
 textFontName = newAttr textGetFontName textSetFontName
 
-{-
---TODO: Some kind of unicode stuff
-{# fun unsafe text_get_password_char as ^ {withText* `Text' } -> `??' #}
-{# fun unsafe text_set_password_char as ^ {withText* `Text', `??' } -> `()' #}
-textFontName :: Attr Text ??
-textFontName = newAttr textGetPasswordChar textSetPasswordChar
--}
+--TODO: Do something with unicode stuff?
+{# fun unsafe text_get_password_char as ^ {withText* `Text' } -> `GUnichar' cIntConv #}
+{# fun unsafe text_set_password_char as ^ {withText* `Text', cIntConv `GUnichar' } -> `()' #}
+textPasswordChar :: Attr Text GUnichar
+textPasswordChar = newAttr textGetPasswordChar textSetPasswordChar
+
 
 {# fun unsafe text_get_justify as ^ { withText* `Text' } -> `Bool' #}
 {# fun unsafe text_set_justify as ^ { withText* `Text', `Bool'} -> `()' #}
 textJustify :: Attr Text Bool
 textJustify = newAttr textGetJustify textSetJustify
 
-{-TODO: Marshal in and out PangoLayout?
-{# fun unsafe text_get_layout as ^ {withText* `Text' } -> `PangoLayout' peek* #}
+withPangoLayoutRaw = withForeignPtr . unPangoLayoutRaw
+--CHECKME: I have no idea if this is right or makes sense.
+--particularly the getting the text from the layoutraw and putting it
+--in PangoLayout, the newGObject followed by the with, and really just
+--this whole function needs to be looked at
+textGetLayout :: Text -> IO PangoLayout
+textGetLayout self = withText self $ \ctextptr -> do
+                       pl <- constructNewGObject mkPangoLayoutRaw $ liftM castPtr $ {# call unsafe text_get_layout #} ctextptr
+                       withPangoLayoutRaw pl $ \plptr -> do
+                                                    str <- {#call unsafe layout_get_text#} (castPtr plptr) >>= peekUTFString
+                                                    ps <- makeNewPangoString str
+                                                    psRef <- newIORef ps
+                                                    return (PangoLayout psRef pl)
+
 textLayout :: ReadAttr Text PangoLayout
 textLayout = readAttr textGetLayout
--}
 
 {# fun unsafe text_get_line_alignment as ^ { withText* `Text' } -> `LayoutAlignment' cToEnum #}
 {# fun unsafe text_set_line_alignment as ^ { withText* `Text', cFromEnum `LayoutAlignment'} -> `()' #}
@@ -239,8 +256,7 @@ textSelectable = newAttr textGetSelectable textSetSelectable
 
 
 {# fun unsafe text_get_selection as ^ { withText* `Text' } -> `String' #}
---TODO: gssize
-{# fun unsafe text_set_selection as ^ { withText* `Text', `Word64', `Word64' } -> `()' #}
+{# fun unsafe text_set_selection as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 --this won't work
 --textSelection :: Attr Text Int
 --textSelection = newAttr textGetSelection textSetSelection
@@ -263,8 +279,6 @@ textSingleLineMode = newAttr textGetSingleLineMode textSetSingleLineMode
 textUseMarkup :: Attr Text Bool
 textUseMarkup = newAttr textGetUseMarkup textSetUseMarkup
 
---TODO: Selection bounds and other functions
-
 {# fun unsafe text_get_editable as ^ { withText* `Text' } -> `Bool' #}
 {# fun unsafe text_set_editable as ^ { withText* `Text', `Bool' } -> `()' #}
 textEditable :: Attr Text Bool
@@ -272,18 +286,15 @@ textEditable = newAttr textGetEditable textSetEditable
 
 --Insertions
 
---TODO: gssize
-{# fun unsafe text_insert_text as ^ { withText* `Text', `String', `Word64' } -> `()' #}
+{# fun unsafe text_insert_text as ^ { withText* `Text', `String', cIntConv `GSSize' } -> `()' #}
 
---{# fun unsafe text_insert_unichar as ^ { withText* `Text', `gunichar' } -> `()' #}
---TODO: guint
-{# fun unsafe text_delete_chars as ^ { withText* `Text', `Word64' } -> `()' #}
+{# fun unsafe text_insert_unichar as ^ { withText* `Text', cIntConv `GUnichar' } -> `()' #}
+{# fun unsafe text_delete_chars as ^ { withText* `Text', cIntConv `GUInt' } -> `()' #}
 
---TODO: More gssize. Basically all the Word64 is wrong.
-{# fun unsafe text_delete_text as ^ { withText* `Text', `Word64', `Word64' } -> `()' #}
+{# fun unsafe text_delete_text as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 
 {# fun unsafe text_delete_selection as ^ { withText* `Text' } -> `()' #}
-{# fun unsafe text_get_chars as ^ { withText* `Text', `Word64', `Word64' } -> `()' #}
+{# fun unsafe text_get_chars as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 
 {# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
 {# fun unsafe text_set_cursor_color as ^ { withText* `Text', withColor* `Color' } -> `()' #}

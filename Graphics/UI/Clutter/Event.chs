@@ -39,6 +39,8 @@ module Graphics.UI.Clutter.Event (
                                   EStageState,
                                   ECrossing,
 
+                                  Timestamp,
+
                                   eventM,
                                   tryEvent,
 
@@ -93,9 +95,8 @@ import Control.Exception (Handler(..),
                           throw)
 import System.IO.Error (isUserError, ioeGetErrorString)
 
-
---FIXME: Move this. guint32
-type TimeStamp = Word32
+--TODO: Move this, also others like KeyVal?
+type Timestamp = Word32
 
 --Taken almost straight from Gtk. Should I try something else?
 
@@ -199,7 +200,7 @@ eventCoordinates = do
       _ -> error ("eventCoordinates: none for event type " ++ show ty)
 
 
-eventTime :: EventM t TimeStamp
+eventTime :: EventM t Timestamp
 eventTime = ask >>= \ptr ->
             liftIO $ liftM fromIntegral ({# get ClutterAnyEvent-> time #} ptr)
 
@@ -256,7 +257,6 @@ eventState = do
       Scroll -> liftM (toModFlags.cIntConv) ({# get ClutterScrollEvent->modifier_state #} ptr)
       _ -> error ("eventModifierType: none for event type " ++ show ty)
 
---TODO: Word32, guint32 i'm sure doesn't matter but whatever
 eventButton :: EventM EButton Word32
 eventButton = ask >>= \ptr ->
               liftIO $ liftM cIntConv ({# get ClutterButtonEvent->button #} ptr)
@@ -340,7 +340,6 @@ eventDeviceType :: EventM any InputDeviceType
 eventDeviceType = ask >>= \ptr ->
                 liftIO $ liftM cToEnum $ {# call unsafe event_get_device_type #} (castPtr ptr)
 
---TODO: Time type for guint32
-{# fun unsafe get_current_event_time as ^ { } -> `Word32' #}
+{# fun unsafe get_current_event_time as ^ { } -> `Timestamp' cIntConv #}
 
 

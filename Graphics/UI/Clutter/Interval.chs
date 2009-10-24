@@ -45,10 +45,14 @@ module Graphics.UI.Clutter.Interval (
                                     ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import System.Glib.GObject
 
 intervalNew = error "ClutterInterval unimplemented"
 
+--this seems to replace intervalNew for language bindings so rename it?
+--intervalNewWithValues :: (
+--intervalNewWithValues initial final
 

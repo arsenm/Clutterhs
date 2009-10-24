@@ -58,7 +58,7 @@ module Graphics.UI.Clutter.Animation (
                                       animationAlpha,
 
                                       animationCompleted,
-                                      animationBind,
+                                    --animationBind,
                                     --animationBindInterval,
                                     --animationUpdateInterval,
                                       animationHasProperty,
@@ -76,6 +76,7 @@ module Graphics.UI.Clutter.Animation (
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 
@@ -145,13 +146,16 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 --This shouldn't be this messy. Why do I need the casting? And use fun
 --I'm still missing something about the wrapping stuff
 --Peter says that won't work
-animationBind:: Animation -> String -> GValue -> IO Animation
+--TODO: Don't take gvalue directly, use gvaluearg
+{-
+animationBind:: (GValueArgClass arg) => Animation -> String -> arg -> IO Animation
 animationBind self name gval = do
   b <- withCString name $ \str ->
        withAnimation self $ \anptr ->
       {# call animation_bind #} anptr str (unGValue gval)
       --CHECKME: unsafe?
   newAnimation b
+-}
 
 {# fun unsafe animation_has_property as ^
        { withAnimation* `Animation', `String' } -> `Bool' #}
@@ -167,39 +171,6 @@ unGValue (GValue a) = castPtr a
 actorAnimation :: (ActorClass actor) => ReadAttr actor Animation
 actorAnimation = readAttr actorGetAnimation
 
-
---by UAnimate, I mean GValue that animatev accepts. Fix that later (rename)
-data UAnimate = UChar Char
-              | UString String
-              | UUChar Word8
-              | UInteger Int
-              | UFloat Float
-              | UDouble Double
-              | UColor Color
-              | UGObject GObject
-          --- | UFunc (Actor -> IO ()) Actor
-
-{# pointer *GValue as UanimatePtr -> UAnimate #}
---FIXME: Rename this and fix the need for cast. i.e. get rid of uanimate type sort of.
-instance Storable UAnimate where
-    sizeOf _ = {# sizeof GValue #}
-    alignment _ = alignment (undefined :: GType)
-    peek _ = error "peek undefined for GValue"
-    poke p ut = let gv = GValue (castPtr p) --FIXME: This castPtr = badnews bears?
-                in do
-                {# set GValue->g_type #} p (0 :: GType)
-                case ut of
-                --FIXME: Char/UCHar vs. Int8 type sort of hacky,
-                --intconv, why missing char marshaller?
-                  (UInteger val) -> gValueInitSet gv val
-                  (UDouble val) ->  gValueInitSet gv val
-                  (UFloat val) -> gValueInitSet gv val
-                  (UString val) ->  gValueInitSet gv val
-                  (UChar val) ->  gValueInitSet gv val
-                  (UUChar val) -> gValueInitSet gv val
-                  (UColor val) -> gValueInitSet gv val
-                  (UGObject val) -> gValueInitSet gv val
-
 --TODO: Type for Duration, type Duration = UInt or whatever
 
 animate :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int -> r
@@ -209,8 +180,8 @@ animateWithAlpha :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
 animateWithAlpha actor alpha = runAnimWithAlpha actor alpha []
 
 class AnimateType t where
-    runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> t
-    runAnimWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> t
+    runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GValueArg)] -> t
+    runAnimWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GValueArg)] -> t
 
 -- Multiple return types isn't useful. We only want IO Animation.
 -- This breaks things if you remove the instance for ().
@@ -224,8 +195,8 @@ instance AnimateType (IO ()) where
     runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args >> return ()
 
 instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
-    runAnim actor mode duration args = \a -> runAnim actor mode duration (toUAnimate a : args)
-    runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toUAnimate a : args)
+    runAnim actor mode duration args = \a -> runAnim actor mode duration (toGValueArg a : args)
+    runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toGValueArg a : args)
 
 
 --this should always be a pair of a name and something which can be a gvalue
@@ -233,33 +204,33 @@ instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
 --TODO: Also I think if you use a signal you need a function and an actor
 --Something like
 --instance (ActorClass a) => AnimateArg (String, a -> IO (), a) where
---    toUAnimate (a, b, c) = (a, UFunc b (toActor c))
+--    toGValueArg (a, b, c) = (a, UFunc b (toActor c))
 --but then how to pass 2 things in the array, and the n?
 --empty spot? Look at seed
 --how to enforce this nicely? Is this good enough?
 class AnimateArg a where
-    toUAnimate :: a -> (String, UAnimate)
+    toGValueArg :: a -> (String, GValueArg)
 
 instance AnimateArg (String, String) where
-    toUAnimate = second UString
+    toGValueArg = second UString
 instance AnimateArg (String, Int) where
-    toUAnimate = second UInteger
+    toGValueArg = second UInteger
 instance AnimateArg (String, Float) where
-    toUAnimate = second UFloat
+    toGValueArg = second UFloat
 instance AnimateArg (String, Color) where
-    toUAnimate = second UColor
+    toGValueArg = second UColor
 instance AnimateArg (String, Double) where
-    toUAnimate = second UDouble
+    toGValueArg = second UDouble
 instance AnimateArg (String, Word8) where
-    toUAnimate = second UUChar
+    toGValueArg = second UUChar
 --CHECKME: class constraints applied after matching, so doing it this way requires
 --overlapping instances. Is this ok or should I use another way?
 instance (GObjectClass obj) => AnimateArg (String, obj) where
-    toUAnimate = second (UGObject . toGObject)
+    toGValueArg = second (UGObject . toGObject)
 
 unsetOneGVal i u = {#call unsafe g_value_unset#} i >> return (advancePtr i 1)
 
-uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, UAnimate)] -> IO Animation
+uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GValueArg)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"
 uanimate actor mode duration us =
     let (names, uvals) = unzip us
@@ -277,7 +248,7 @@ uanimate actor mode duration us =
 
 --FIXME: Duplication here?
 
-uanimateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, UAnimate)] -> IO Animation
+uanimateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GValueArg)] -> IO Animation
 uanimateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
 uanimateWithAlpha actor alpha us =
     let (names, uvals) = unzip us

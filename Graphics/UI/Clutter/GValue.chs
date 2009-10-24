@@ -27,6 +27,8 @@
 module Graphics.UI.Clutter.GValue (
                                    gValueInitSet,
                                    GValueClass,
+                                   GValueArg(..),
+                                   GValueArgPtr,
 
                                    color,
                                    valueSetColor,
@@ -87,4 +89,36 @@ instance GValueClass GObject where
 
 --constant
 {# fun pure unsafe color_get_type as color { } -> `GType' cToEnum #}
+
+--CHECKME: Should this be private?
+data GValueArg = UChar Char
+               | UString String
+               | UUChar Word8
+               | UInteger Int
+               | UFloat Float
+               | UDouble Double
+               | UColor Color
+               | UGObject GObject
+           --- | UFunc (Actor -> IO ()) Actor
+
+{# pointer *GValue as GValueArgPtr -> GValueArg #}
+
+instance Storable GValueArg where
+    sizeOf _ = {# sizeof GValue #}
+    alignment _ = alignment (undefined :: GType)
+    peek _ = error "peek undefined for GValueArg"
+    poke p ut = let gv = GValue (castPtr p) --FIXME: This castPtr = badnews bears? Why needed?
+                in do
+                {# set GValue->g_type #} p (0 :: GType)
+                case ut of
+                --FIXME: Char/UCHar vs. Int8 type sort of hacky,
+                --intconv, why missing char marshaller?
+                  (UInteger val) -> gValueInitSet gv val
+                  (UDouble val) ->  gValueInitSet gv val
+                  (UFloat val) -> gValueInitSet gv val
+                  (UString val) ->  gValueInitSet gv val
+                  (UChar val) ->  gValueInitSet gv val
+                  (UUChar val) -> gValueInitSet gv val
+                  (UColor val) -> gValueInitSet gv val
+                  (UGObject val) -> gValueInitSet gv val
 

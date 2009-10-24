@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -40,56 +40,61 @@ module Graphics.UI.Clutter.Media (
                                   mediaGetAudioVolume,
                                   mediaAudioVolume,
 
-                                  mediaGetCanSeek,  --TODO: Read only attrs
-                                --mediaCanSeek,
+                                  mediaGetCanSeek,
+                                  mediaCanSeek,
                                   mediaGetBufferFill,
-                                --mediaBufferFill,
+                                  mediaBufferFill,
                                   mediaGetDuration,
-                                --mediaDuration
-                                  mediaSetFilename
-                                --mediaFilename
+                                  mediaDuration,
+                                  mediaSetFilename,
+                                  mediaFilename
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe media_set_uri as ^ `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
 {# fun unsafe media_get_uri as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `String' #}
-mediaUri :: Attr Media String
+mediaUri :: (MediaClass media) => Attr media String
 mediaUri = newAttr mediaGetUri mediaSetUri
 
 {# fun unsafe media_set_playing as ^ `(MediaClass m)' => { withMediaClass* `m', `Bool' } -> `()' #}
 {# fun unsafe media_get_playing as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Bool' #}
-mediaPlaying :: Attr Media Bool
+mediaPlaying :: (MediaClass media) => Attr media Bool
 mediaPlaying = newAttr mediaGetPlaying mediaSetPlaying
 
 {# fun unsafe media_set_progress as ^
        `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
 {# fun unsafe media_get_progress as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
-mediaProgress :: Attr Media Double
+mediaProgress :: (MediaClass media) => Attr media Double
 mediaProgress = newAttr mediaGetProgress mediaSetProgress
 
 {# fun unsafe media_set_audio_volume as ^
        `(MediaClass m)' => { withMediaClass* `m', `Double' } -> `()' #}
 {# fun unsafe media_get_audio_volume as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
-mediaAudioVolume :: Attr Media Double
+mediaAudioVolume :: (MediaClass media) => Attr media Double
 mediaAudioVolume = newAttr mediaGetAudioVolume mediaSetAudioVolume
 
 {# fun unsafe media_get_can_seek as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Bool' #}
-{- TODO: Read only attrs
-mediaCanSeek :: Attr Media Bool
-mediaCanSeek = newAttr mediaGetPlaying mediaSetPlaying
--}
+mediaCanSeek :: (MediaClass media) => ReadAttr media Bool
+mediaCanSeek = readAttr mediaGetCanSeek
+
 {# fun unsafe media_get_buffer_fill as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
+mediaBufferFill :: (MediaClass media) => ReadAttr media Double
+mediaBufferFill = readAttr mediaGetBufferFill
+
 {# fun unsafe media_get_duration as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
+mediaDuration :: (MediaClass media) => ReadAttr media Double
+mediaDuration = readAttr mediaGetDuration
 
 {# fun unsafe media_set_filename as ^
        `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
+mediaFilename :: (MediaClass media) => WriteAttr media String
+mediaFilename = writeAttr mediaSetFilename
 

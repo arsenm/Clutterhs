@@ -204,6 +204,11 @@ module Graphics.UI.Clutter.Types (
                                   withModel,
                                   withModelClass,
 
+                                  ListModel,
+                                  ListModelClass,
+                                  withListModel,
+                                  newListModel,
+
                                   Script,
                                   ScriptClass,
                                   withScript,
@@ -979,6 +984,25 @@ instance ActorClass Model
 instance GObjectClass Model where
   toGObject (Model i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Model (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** ListModel
+
+{# pointer *ClutterListModel as ListModel foreign newtype #}
+
+class GObjectClass o => ListModelClass o
+toListModel :: ListModelClass o => o -> ListModel
+toListModel = unsafeCastGObject . toGObject
+
+newListModel a = makeNewObject ListModel $ return (castPtr a)
+
+instance ModelClass ListModel
+instance ListModelClass ListModel
+instance ActorClass ListModel
+instance GObjectClass ListModel where
+  toGObject (ListModel i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = ListModel (castForeignPtr o)
 
 -- ***************************************************************
 

@@ -25,7 +25,9 @@
 
 module Graphics.UI.Clutter.Model (
                                   modelSetNames,
-                                  modelSetTypes
+                                  modelSetTypes,
+
+                                  listModelNew
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -34,11 +36,17 @@ module Graphics.UI.Clutter.Model (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.GType
+import qualified System.Glib.GTypeConstants as GType
 
 modelSetNames = undefined
 
 modelSetTypes = undefined
 
---TODO: Split ListModel stuff into separate file
-
+listModelNew :: [(GType, String)] -> IO ListModel
+listModelNew lst = let (types, names) = unzip lst
+                   in withMany withCString names $ \cstrs ->
+                       withArrayLen cstrs $ \len namesPtr ->
+                       withArray types $ \typesPtr ->
+                          newListModel =<< {# call unsafe list_model_newv #} (cIntConv len) typesPtr namesPtr
 

@@ -27,6 +27,10 @@ main = do
   tml <- timelineNew 3000
   alph <- alphaNewFull tml EaseInSine
 
+
+  pos <- pathGetPosition path 0.5
+  putStrLn $ "pathGetPosition: pos = " ++ Prelude.show pos
+
   behav <- behaviourPathNew alph path
 
   rect <- rectangleNewWithColor (Color 0 0 255 200)

@@ -35,7 +35,7 @@ module Graphics.UI.Clutter.Path (
                                  pathAddClose,
                                  pathAddString,
                                  pathAddNode,
-                               --pathAddCairoPath,
+                                 pathAddCairoPath,
                                  pathGetNNodes,
                                  pathGetNode,
                                  pathGetNodes,
@@ -45,9 +45,9 @@ module Graphics.UI.Clutter.Path (
                                  pathGetDescription,
                                  pathSetDescription,
                                --pathDescription,
-                               --pathToCairoPath,
+                                 pathToCairoPath,
                                  pathClear,
-                               --pathGetPosition,
+                                 pathGetPosition,
                                  pathGetLength
                                --pathCopy,
                                --pathFree,
@@ -57,8 +57,10 @@ module Graphics.UI.Clutter.Path (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
+import Control.Monad (liftM, liftM2)
 import System.Glib.Attributes
+import Graphics.Rendering.Cairo.Types (Cairo, unCairo)
+import qualified Graphics.Rendering.Cairo.Types as Cairo
 
 {# fun unsafe path_new as ^ { } -> `Path' newPath* #}
 {# fun unsafe path_new_with_description as ^ { `String' } -> `Path' newPath* #}
@@ -73,7 +75,9 @@ import System.Glib.Attributes
 {# fun unsafe path_add_string as ^ { withPath* `Path', `String' } -> `Bool' #}
 
 {# fun unsafe path_add_node as ^ { withPath* `Path', withPathNode* `PathNode' } -> `()' #}
---{# fun unsafe path_add_cairo_path as ^ { withPath* `Path', withSomething* `Something' } -> `()' #}
+
+withCairoPath = castPtr . Cairo.unPath
+{# fun unsafe path_add_cairo_path as ^ { withPath* `Path', withCairoPath `Cairo.Path' } -> `()' #}
 
 --FIXME: GUInt
 {# fun unsafe path_get_n_nodes as ^ { withPath* `Path' } -> `Int' #}
@@ -98,15 +102,22 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --pathDescription :: Attr Path String
 --pathDescription = newAttr pathGetDescription pathSetDescription
 
---{# fun unsafe path_to_cairo_path as ^ { withPath* `Path', `CairoT' } -> `String' #}
+withCairo = castPtr . unCairo
+
+{# fun unsafe path_to_cairo_path as ^ { withPath* `Path', withCairo `Cairo' } -> `()' #}
 
 {# fun unsafe path_clear as ^ { withPath* `Path' } -> `()' #}
 
 --CHECKME: Do you want to get the position out? or is it just storage?
---TODO: Maybe knot as just as type Knot = (Int, Int) won't work
---{# fun unsafe path_get_position as ^ { withPath* `Path', `Double', alloca- `Knot' peek* } -> `Int' #}
---FIXME: GUInt
-{# fun unsafe path_get_length as ^ { withPath* `Path' } -> `Int' #}
+--CHECKME: Maybe not use type Knot = (Int, Int)
+--CHECKME: is this what I want to return?
+pathGetPosition :: Path -> Double -> IO (GUInt, Knot)
+pathGetPosition path progress = withPath path $ \pathptr ->
+                                alloca $ \kptr ->
+                                  liftM2 (,) ({# call unsafe path_get_position #} pathptr (cFloatConv progress) (castPtr kptr))
+                                             (peek kptr)
+
+{# fun unsafe path_get_length as ^ { withPath* `Path' } -> `GUInt' cIntConv #}
 
 --these unnecessary
 --{# fun unsafe path_node_copy as ^ { withPathNode* `PathNode' } -> `PathNode' #}

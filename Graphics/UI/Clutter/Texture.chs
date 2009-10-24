@@ -84,7 +84,7 @@ import System.IO (hPutStrLn, stderr)
 --allocaGErrorAddr act = alloca $ \gep -> do
 --                       sptr <- newStablePtr gep
 
-{# fun unsafe texture_new as ^ {} -> `Texture' newTexture* #}
+{# fun unsafe texture_new as ^ { } -> `Texture' newTexture* #}
 
 --{# fun unsafe texture_new_from_file as ^ { `String', alloca- `GError' peek* } -> `Texture' newTexture* #}
 
@@ -118,7 +118,6 @@ textureBaseSize = readAttr textureGetBaseSize
        { withTexture* `Texture', cFromEnum `TextureQuality' } -> `()' #}
 textureFilterQuality :: Attr Texture TextureQuality
 textureFilterQuality = newAttr textureGetFilterQuality textureSetFilterQuality
-
 
 
 

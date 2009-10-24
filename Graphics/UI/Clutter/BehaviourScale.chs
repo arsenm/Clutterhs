@@ -51,9 +51,6 @@ import System.Glib.Attributes
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*} -> `()' #}
 
---CHECKME: Do I want this?
 behaviourScaleBounds :: Attr BehaviourScale (Double, Double, Double, Double)
 behaviourScaleBounds = newAttr behaviourScaleGetBounds (tup4ToF behaviourScaleSetBounds)
-
-
 

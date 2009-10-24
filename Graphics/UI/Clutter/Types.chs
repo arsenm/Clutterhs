@@ -203,6 +203,12 @@ module Graphics.UI.Clutter.Types (
                                   ModelClass,
                                   withModel,
                                   withModelClass,
+                                  newModel,
+
+                                  ModelIter,
+                                  ModelIterClass,
+                                  withModelIter,
+                                  newModelIter,
 
                                   ListModel,
                                   ListModelClass,
@@ -959,7 +965,6 @@ toShader = unsafeCastGObject . toGObject
 newShader a = makeNewObject Shader $ return (castPtr a)
 
 instance ShaderClass Shader
-instance ActorClass Shader
 instance GObjectClass Shader where
   toGObject (Shader i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Shader (castForeignPtr o)
@@ -977,10 +982,9 @@ toModel = unsafeCastGObject . toGObject
 withModelClass::ModelClass o => o -> (Ptr Model -> IO b) -> IO b
 withModelClass o = (withModel . toModel) o
 
-newModel a = makeNewObject Model $ return (castPtr a)
+newModel a = makeNewGObject Model $ return (castPtr a)
 
 instance ModelClass Model
-instance ActorClass Model
 instance GObjectClass Model where
   toGObject (Model i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Model (castForeignPtr o)
@@ -995,14 +999,30 @@ class GObjectClass o => ListModelClass o
 toListModel :: ListModelClass o => o -> ListModel
 toListModel = unsafeCastGObject . toGObject
 
-newListModel a = makeNewObject ListModel $ return (castPtr a)
+newListModel a = makeNewGObject ListModel $ return (castPtr a)
 
 instance ModelClass ListModel
 instance ListModelClass ListModel
-instance ActorClass ListModel
 instance GObjectClass ListModel where
   toGObject (ListModel i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ListModel (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** ModelIter
+
+{# pointer *ClutterModelIter as ModelIter foreign newtype #}
+
+class GObjectClass o => ModelIterClass o
+toModelIter :: ModelIterClass o => o -> ModelIter
+toModelIter = unsafeCastGObject . toGObject
+
+newModelIter a = makeNewGObject ModelIter $ return (castPtr a)
+
+instance ModelIterClass ModelIter
+instance GObjectClass ModelIter where
+  toGObject (ModelIter i) = mkGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = ModelIter (castForeignPtr o)
 
 -- ***************************************************************
 

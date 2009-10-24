@@ -49,6 +49,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Path,
                             module Graphics.UI.Clutter.Shader,
                             module Graphics.UI.Clutter.Model,
+                            module Graphics.UI.Clutter.ModelIter,
                             module Graphics.UI.Clutter.Script,
                             module Graphics.UI.Clutter.Units,
                             module Graphics.UI.Clutter.Scriptable,
@@ -86,6 +87,7 @@ import Graphics.UI.Clutter.Interval
 import Graphics.UI.Clutter.Path
 import Graphics.UI.Clutter.Shader
 import Graphics.UI.Clutter.Model
+import Graphics.UI.Clutter.ModelIter
 import Graphics.UI.Clutter.Script
 import Graphics.UI.Clutter.Units
 import Graphics.UI.Clutter.Scriptable

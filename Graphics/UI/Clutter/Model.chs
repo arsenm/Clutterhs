@@ -29,6 +29,7 @@ module Graphics.UI.Clutter.Model (
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -37,5 +38,7 @@ import System.Glib.Attributes
 modelSetNames = undefined
 
 modelSetTypes = undefined
+
+--TODO: Split ListModel stuff into separate file
 
 

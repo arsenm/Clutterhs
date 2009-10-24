@@ -26,14 +26,14 @@
 module Graphics.UI.Clutter.BehaviourDepth (
                                            behaviourDepthNew,
                                            behaviourDepthSetBounds,
-                                           behaviourDepthGetBounds
-                                         --behaviourDepthBounds
+                                           behaviourDepthGetBounds,
+                                           behaviourDepthBounds
                                           ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_depth_new as ^
@@ -48,7 +48,6 @@ import System.Glib.Attributes
          alloca- `Int' peekIntConv*
        } -> `()' #}
 
---TODO: maybe make this work
---behaviourDepthBounds :: Attr BehaviourScale (Double, Double, Double, Double)
---behaviourDepthBounds = newAttr behaviourDepthGetBounds behaviourDepthSetBounds
+behaviourDepthBounds :: Attr BehaviourDepth (Int, Int)
+behaviourDepthBounds = newAttr behaviourDepthGetBounds (tup2ToF behaviourDepthSetBounds)
 

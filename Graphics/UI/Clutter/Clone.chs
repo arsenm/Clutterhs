@@ -24,26 +24,24 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Clone (
-                                  cloneNew
-                                --cloneSetSource,
-                                --cloneGetSource,
+                                  cloneNew,
+                                  cloneSetSource,
+                                  cloneGetSource,
                                 --cloneSource
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe clone_new as ^ `(ActorClass a)' => { withActorClass* `a' } -> `Clone' newClone* #}
 
-
-{-
---Attribute is unhappy, class Actor vs. ActorClass.
 {# fun unsafe clone_get_source as ^ { withClone* `Clone' } -> `Actor' newActor* #}
 {# fun unsafe clone_set_source as ^ `(ActorClass a)' => { withClone* `Clone', withActorClass* `a' } -> `()' #}
-cloneSource :: (ActorClass self) => Attr Clone self
-cloneSource = newAttr cloneGetSource cloneSetSource
--}
+
+--Attribute is unhappy, class Actor vs. ActorClass.
+--cloneSource :: (ActorClass self) => Attr Clone self
+--cloneSource = newAttr cloneGetSource cloneSetSource
+
 

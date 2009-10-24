@@ -146,7 +146,8 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 --This is convenient to me how?
 {# fun unsafe animation_bind as ^
    `(GValueArgClass final)' => { withAnimation* `Animation',
-                                 `String', withGValueArg* `final'} ->
+                                 `String',
+                                 withGValueArg* `final'} ->
                                  `Animation' newAnimation* #}
 
 {# fun unsafe animation_bind_interval as ^

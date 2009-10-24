@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -27,7 +27,7 @@ module Graphics.UI.Clutter.BehaviourScale (
                                            behaviourScaleNew,
                                            behaviourScaleSetBounds,
                                            behaviourScaleGetBounds,
-                                         --behaviourScaleBounds
+                                           behaviourScaleBounds
                                           ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -50,7 +50,11 @@ import System.Glib.Attributes
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*} -> `()' #}
 
---TODO: maybe make this work
---behaviourScaleBounds :: Attr BehaviourScale (Double, Double, Double, Double)
---behaviourScaleBounds = newAttr behaviourGetBounds behaviourSetBounds
+--CHECKME: Do I want this?
+behaviourScaleBounds :: Attr BehaviourScale (Double, Double, Double, Double)
+behaviourScaleBounds = newAttr behaviourScaleGetBounds (tup4ToF behaviourScaleSetBounds)
+    where tup4ToF f bhv (a,b,c,d) = f bhv a b c d
+
+
+
 

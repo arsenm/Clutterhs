@@ -61,8 +61,8 @@ module Graphics.UI.Clutter.Animation (
                                       animationBind,
                                     --animationBindInterval,
                                     --animationUpdateInterval,
-                                    --animationHasProperty,
-                                    --animationUnbindProperty,
+                                      animationHasProperty,
+                                      animationUnbindProperty,
                                     --animationGetInterval,
 
                                     --actorAnimate,
@@ -71,7 +71,8 @@ module Graphics.UI.Clutter.Animation (
                                     --actorAnimatev,
                                     --actorAnimatevwithTimelinev,
                                     --actorAnimatevWithAlphav,
-                                      actorGetAnimation
+                                      actorGetAnimation,
+                                      actorAnimation
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -152,11 +153,20 @@ animationBind self name gval = do
       --CHECKME: unsafe?
   newAnimation b
 
+{# fun unsafe animation_has_property as ^
+       { withAnimation* `Animation', `String' } -> `Bool' #}
+--CHECKME: unsafe?
+{# fun unsafe animation_unbind_property as ^
+       { withAnimation* `Animation', `String' } -> `()' #}
+
 unGValue :: GValue -> Ptr ()
 unGValue (GValue a) = castPtr a
 
 {# fun actor_get_animation as ^
-       `ActorClass a' =>{ withActorClass* `a' } -> `Animation' newAnimation* #}
+       `(ActorClass a)' => { withActorClass* `a' } -> `Animation' newAnimation* #}
+actorAnimation :: (ActorClass actor) => ReadAttr actor Animation
+actorAnimation = readAttr actorGetAnimation
+
 
 --by UAnimate, I mean GValue that animatev accepts. Fix that later (rename)
 data UAnimate = UChar Char
@@ -167,7 +177,7 @@ data UAnimate = UChar Char
               | UDouble Double
               | UColor Color
               | UGObject GObject
-           -- | UFunc (Actor -> IO ()) Actor
+          --- | UFunc (Actor -> IO ()) Actor
 
 {# pointer *GValue as UanimatePtr -> UAnimate #}
 --FIXME: Rename this and fix the need for cast. i.e. get rid of uanimate type sort of.

@@ -65,7 +65,7 @@ Library
                    Graphics.UI.Clutter
 
   Exposed: True
---  GHC-options: -Wall
+  GHC-options: -W
   Hs-Source-Dirs:  .,
                    ./Graphics,
                    ./Graphics/UI,

@@ -41,7 +41,7 @@ module Graphics.UI.Clutter.CairoTexture (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
-import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
+import Graphics.Rendering.Cairo.Types (Cairo)
 
 {# fun unsafe cairo_texture_new as ^ { `Int', `Int' } -> `CairoTexture' newCairoTexture* #}
 

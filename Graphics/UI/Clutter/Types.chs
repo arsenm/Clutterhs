@@ -26,7 +26,7 @@
 
 module Graphics.UI.Clutter.Types (
                                   withGObject,
---                                  withGObjectClass,
+                                --withGObjectClass,
                                   newGObject,
                                   withGValue,
 
@@ -232,7 +232,11 @@ module Graphics.UI.Clutter.Types (
                                   newBindingPool,
                                   withBindingPool,
 
-                                  InputDeviceType(..)
+                                  InputDeviceType(..),
+
+                                  GCallback,
+                                  CGCallback,
+                                  newGCallback
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -243,9 +247,8 @@ import System.Glib.GObject
 import System.Glib.GValue (GValue(GValue))
 import System.Glib.GList
 import System.Glib.Flags
-import Foreign.ForeignPtr hiding (newForeignPtr)
 import System.Glib.FFI
-import Control.Monad (liftM, when)
+import Control.Monad (when)
 import Control.Exception (bracket)
 
 
@@ -1143,6 +1146,16 @@ instance ActorClass BindingPool
 instance GObjectClass BindingPool where
   toGObject (BindingPool i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BindingPool (castForeignPtr o)
+
+-- ***************************************************************
+
+-- *************************************************************** GCallback
+
+type GCallback = IO ()
+type CGCallback = FunPtr (IO ())
+
+foreign import ccall "wrapper"
+    newGCallback :: IO () -> IO CGCallback
 
 -- ***************************************************************
 

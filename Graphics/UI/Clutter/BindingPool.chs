@@ -27,22 +27,21 @@ module Graphics.UI.Clutter.BindingPool (
                                         bindingPoolNew,
                                       --bindingPoolGetForClass,
                                         bindingPoolFind,
-                                      --bindingPoolInstallAction,
+                                        bindingPoolInstallAction,
                                       --bindingPoolInstallClosure,
-                                      --bindingPoolOverrideAction,
+                                        bindingPoolOverrideAction,
                                       --bindingPoolOverrideClosure,
                                         bindingPoolFindAction,
                                         bindingPoolRemoveAction,
                                         bindingPoolBlockAction,
-                                        bindingPoolUnblockAction
-                                      --bindingPoolActivate
+                                        bindingPoolUnblockAction,
+                                        bindingPoolActivate
                                        ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
-import System.Glib.Attributes
+import System.Glib.GObject
 
 --TODO: GUInt, also move to Types and possibly rename
 type KeyVal = Word64
@@ -54,10 +53,29 @@ type KeyVal = Word64
 
 {# fun unsafe binding_pool_find as ^ { `String' } -> `BindingPool' newBindingPool* #}
 
---install
---bindingPoolInstallAction :: BindingPool -> String -> KeyVal -> ModifierType -> GCallback -> IO ()
---bindingPoolInstallAction bp name keyval modif gCB = withBindingPool bp $ \bpPtr ->
+bindingPoolInstallAction :: BindingPool -> String -> KeyVal -> ModifierType -> GCallback -> IO ()
+bindingPoolInstallAction bp name keyval modif gCB = withBindingPool bp $ \bpPtr ->
+                                                    withCString name $ \namePtr ->
+                                                    --CHECKME: unsafe? Most likely safe, callback
+                                                    let func = {# call binding_pool_install_action #}
+                                                        mod = cFromEnum modif
+                                                        kc = cIntConv keyval
+                                                    in do
+                                                      gcbPtr <- newGCallback gCB
+                                                      gdestroy <- mkFunPtrDestroyNotify gcbPtr
+                                                      func bpPtr namePtr kc mod gcbPtr nullPtr gdestroy
 
+
+bindingPoolOverrideAction :: BindingPool -> KeyVal -> ModifierType -> GCallback -> IO ()
+bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
+                                                --CHECKME: unsafe? Most likely safe, callback
+                                                let func = {# call binding_pool_override_action #}
+                                                    mod = cFromEnum modif
+                                                    kc = cIntConv keyval
+                                                in do
+                                                  gcbPtr <- newGCallback gCB
+                                                  gdestroy <- mkFunPtrDestroyNotify gcbPtr
+                                                  func bpPtr kc mod gcbPtr nullPtr gdestroy
 
 {# fun unsafe binding_pool_find_action as ^
        { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromEnum `ModifierType' } -> `String' #}
@@ -71,7 +89,10 @@ type KeyVal = Word64
 {# fun unsafe binding_pool_unblock_action as ^
        { withBindingPool* `BindingPool', `String' } -> `()' #}
 
-{-
+
 {# fun unsafe binding_pool_activate as ^ `(GObjectClass gobject)' =>
-       { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromEnum `ModifierType',  withGObjectClass* `gobject' } -> `Bool' #}
--}
+       { withBindingPool* `BindingPool',
+         cIntConv `KeyVal',
+         cFromEnum `ModifierType',
+         withGObject* `gobject' } -> `Bool' #}
+

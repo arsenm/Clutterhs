@@ -62,7 +62,7 @@ main = do
          coords <- eventCoordinates
          button <- eventButton
          flags <- eventFlags
-         mod <- eventModifierType
+         mod <- eventState
          liftIO $ putStrLn ("Flags: " ++ show flags)
          liftIO $ putStrLn ("Time: " ++ show t)
          liftIO $ putStrLn ("Coords: " ++ show coords)

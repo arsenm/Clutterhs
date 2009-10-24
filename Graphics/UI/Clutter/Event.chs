@@ -39,7 +39,7 @@ module Graphics.UI.Clutter.Event (
 
                                   eventCoordinates,
                                   eventTime,
-                                  eventModifierType,
+                                  eventState,
                                   eventFlags,
                                 --eventStage,
                                 --eventSource,
@@ -232,8 +232,8 @@ toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
                                      ModifierMask]
                          ]
 
-eventModifierType :: HasModifierType t => EventM t [ModifierType]
-eventModifierType = do
+eventState :: HasModifierType t => EventM t [ModifierType]
+eventState = do
   ptr <- ask
   liftIO $ do
     ty <- {# get ClutterEvent->type #} ptr

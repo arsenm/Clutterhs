@@ -26,20 +26,20 @@
 module Graphics.UI.Clutter.Interval (
                                      intervalNew,
                                      intervalNewWithValues,
-                                   --intervalClone,
-                                   --intervalGetValueType,
-                                   --intervalSetInitialValue,
+                                     intervalClone,
+                                     intervalGetValueType,
+                                     intervalSetInitialValue,
                                    --intervalGetInitialValue,
                                    --intervalInitialValue,
                                    --intervalPeekInitalValue,
-                                   --intervalSetFinalValue,
+                                     intervalSetFinalValue,
                                    --intervalGetFinalValue,
                                    --intervalFinalValue,
                                    --intervalPeekFinalValue,
                                    --intervalSetInterval,
                                    --intervalGetInterval,
                                    --intervalInterval,
-                                   --intervalComputeValue,
+                                     intervalComputeValue,
                                    --intervalValidate,
                                    --intervalRegisterProgressFunc
                                     ) where
@@ -49,6 +49,7 @@ module Graphics.UI.Clutter.Interval (
 
 import C2HS
 import System.Glib.GObject
+import System.Glib.GType
 import qualified System.Glib.GTypeConstants as GType
 
 intervalNew = error "ClutterInterval unimplemented"
@@ -74,5 +75,30 @@ intervalNewWithValues initial final = let func = {# call unsafe interval_new_wit
                                           withGValueArg final $ \argptr2 ->
                                             newInterval =<< func gtype argptr1 argptr2
 
+{# fun unsafe interval_clone as ^
+       { withInterval* `Interval' } -> `Interval' newInterval* #}
+
+
 {# fun unsafe interval_set_initial_value as ^
    `(GValueArgClass value)' => { withInterval* `Interval', withGValueArg* `value' } -> `()' #}
+
+{# fun unsafe interval_set_final_value as ^
+   `(GValueArgClass value)' => { withInterval* `Interval', withGValueArg* `value' } -> `()' #}
+
+--TODO: How to get out GValue?
+--Clutter also has set way using varargs to avoid gvalues,
+--but not a arg vector version
+
+{# fun unsafe interval_compute_value as ^
+       `(GValueArgClass value)' =>
+       { withInterval* `Interval',
+         `Double',
+         withGValueArg* `value' } -> `Bool' #}
+
+{# fun unsafe interval_get_value_type as ^
+       { withInterval* `Interval' } -> `GType' cToEnum #}
+
+
+--ProgressFunc: grar gvalues cause me pain
+
+

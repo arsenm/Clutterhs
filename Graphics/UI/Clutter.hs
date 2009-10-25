@@ -53,7 +53,8 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Script,
                             module Graphics.UI.Clutter.Units,
                             module Graphics.UI.Clutter.Scriptable,
-                            module Graphics.UI.Clutter.BindingPool
+                            module Graphics.UI.Clutter.BindingPool,
+                            module Graphics.UI.Clutter.X11
                            ) where
 
 import Graphics.UI.Clutter.Group
@@ -92,6 +93,6 @@ import Graphics.UI.Clutter.Script
 import Graphics.UI.Clutter.Units
 import Graphics.UI.Clutter.Scriptable
 import Graphics.UI.Clutter.BindingPool
-
+import Graphics.UI.Clutter.X11
 
 

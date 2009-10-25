@@ -24,7 +24,7 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Units (
-                                  unitsFromMm
+                                  unitsFromMm,
                                 --unitsFromPt,
                                 --unitsFromEm,
                                 --unitsFromEmForFont,
@@ -35,7 +35,7 @@ module Graphics.UI.Clutter.Units (
                                 --unitsGetUnitType, --do these in record
                                 --unitsGetUnitValue,
                                 --unitsFromString,
-                                --unitsToString,  --instance for show
+                                --unitsToString  --instance for show?
                                 --paramSpecUnits, --TODO: what is this?
                                 --valueSetUnits,
                                 --valueGetUnits
@@ -56,5 +56,7 @@ unitsFromMm mm = unsafePerformIO $ alloca $ \utPtr -> do
                  {# call unsafe units_from_mm #} utPtr (cFloatConv mm)
                  peek utPtr
 -}
+--CHECKME: id as marshaller = what
+--{# fun unsafe units_to_string as ^ { id `Units' } -> `String' #}
 
 

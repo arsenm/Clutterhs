@@ -24,14 +24,58 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Script (
-                                   scriptNew
+                                   scriptNew,
+                                 --scriptLoadFromData,
+                                 --scriptLoadFromFile,
+                                 --scriptAddSearchPaths,
+                                   scriptLookupFilename,
+                                 --scriptGetObject,
+                                 --scriptGetObjects,
+                                 --scriptUnmergeObjects,
+                                   scriptEnsureObjects,
+                                 --scriptListObjects,
+                                   scriptConnectSignals,
+                                 --scriptConnectSignalsFull,
+                                 --scriptGetTypeFromName,
+                                   getScriptId
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import Control.Monad (liftM)
+import System.Glib.GObject
+import System.Glib.GType
+import System.Glib.GTypeConstants
 import System.Glib.Attributes
 
-{# fun unsafe script_new as ^ {} -> `Script' newScript* #}
+{# fun unsafe script_new as ^ { } -> `Script' newScript* #}
+
+{# fun unsafe script_lookup_filename as ^ { withScript* `Script', `String' } -> `String' #}
+
+{# fun unsafe script_unmerge_objects as ^ { withScript* `Script', cIntConv `Word' } -> `()' #}
+{# fun unsafe script_ensure_objects as ^ { withScript* `Script' } -> `()' #}
+
+
+--CHECKME: unsafe probably wrong
+scriptConnectSignals :: Script -> IO ()
+scriptConnectSignals script = withScript script $ \p ->
+                              {# call unsafe script_connect_signals #} p nullPtr
+
+{-
+scriptConnectSignalsFull :: Script -> ScriptConnectFunc -> IO ()
+scriptConnectSignals script func = withScript $ \p -> do
+                                     funcPtr <- mkScriptConnectFunc func
+                                     {# call unsafe script_connect_signals #} p funcPtr nullPtr
+                                     freeHaskellFunPtr funcPtr
+-}
+
+
+{# fun unsafe script_get_type_from_name as ^
+   { withScript* `Script', `String' } -> `GType' cFromEnum #}
+
+{# fun unsafe get_script_id as ^
+       `(GObjectClass gobject)' => { withGObject* `gobject' } -> `String' #}
+
+
 

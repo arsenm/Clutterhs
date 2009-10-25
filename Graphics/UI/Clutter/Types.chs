@@ -33,6 +33,7 @@ module Graphics.UI.Clutter.Types (
                                   GSSize,
                                   GUnichar,
                                   GUInt,
+                                  Word,
 
                                   Color(Color),
                                   ColorPtr,
@@ -261,11 +262,16 @@ module Graphics.UI.Clutter.Types (
 
                                   ActorBox,
                                   ActorBoxPtr,
-                                  withActorBox
+                                  withActorBox,
+
+                                --Units,
+                                --unUnits
+                                  ScriptError(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
 import Prelude hiding (Nothing)
+import Data.Word
 
 import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
@@ -345,11 +351,17 @@ type GUInt = {# type guint #}
 {# enum ClutterPathNodeType as PathNodeType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterUnitType as UnitType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterInputDeviceType as InputDeviceType {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterScriptError as ScriptError {underscoreToCase} deriving (Show, Eq) #}
 
 instance Flags EventFlags
 instance Flags ActorFlags
 instance Flags TextureFlags
 instance Flags AllocationFlags
+
+--CHECKME: I'm not sure how to deal with this opaque type
+--{# pointer *ClutterUnits as Units newtype #}
+
+--unUnits (Units ptr) = ptr
 
 -- ***************************************************************
 

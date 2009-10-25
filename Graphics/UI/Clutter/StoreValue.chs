@@ -42,9 +42,9 @@
 --Maybe do something about this later
 module Graphics.UI.Clutter.StoreValue (
                                        AnimType(..),
-                                       ClutterGV(..),
-                                       valueSetClutterGV,
-                                       valueGetClutterGV
+                                       GenericValue(..),
+                                       valueSetGenericValue,
+                                       valueGetGenericValue
                                       ) where
 
 import C2HS
@@ -71,25 +71,24 @@ import System.Glib.GType
 
 --CHECKME: Types for char, uchar. Do we want them to actually be Int8, Word8?
 --that would also mean gtk2hs patch would need to change.
-data ClutterGV = GVuint    Word
-	       | GVint     Int
-	       | GVuchar   Word8
-	       | GVchar    Int8
-	       | GVboolean Bool
-	       | GVenum    Int
-	       | GVflags   Int
-	   --- | GVpointer (Ptr ())
-	       | GVfloat   Float
-	       | GVdouble  Double
-	       | GVstring  (Maybe String)
-	       | GVobject  GObject
-               | GVcolor  Color
-           --- | GVunits  Units
-	   --- | GVboxed   (Ptr ())
+data GenericValue = GVuint    Word
+	          | GVint     Int
+	          | GVuchar   Word8
+	          | GVchar    Int8
+	          | GVboolean Bool
+	          | GVenum    Int
+	          | GVflags   Int
+              --- | GVpointer (Ptr ())
+	          | GVfloat   Float
+	          | GVdouble  Double
+	          | GVstring  (Maybe String)
+	          | GVobject  GObject
+                  | GVcolor  Color
+              --- | GVunits  Units
+              --- | GVboxed   (Ptr ())
 
 -- This is an enumeration of all GTypes that can be used in an Animation
---
-
+-- It's also probably wrong.
 data AnimType = ATinvalid
 	      | ATuint
 	      | ATint
@@ -143,38 +142,37 @@ instance Enum AnimType where
            | otherwise	 = error "StoreValue.toEnum(AnimType): no dynamic types allowed."
 
 
-valueSetClutterGV :: GValue -> ClutterGV -> IO ()
-valueSetClutterGV gvalue (GVuint x)    = do valueInit gvalue GType.uint
-                                            valueSetUInt gvalue x
-valueSetClutterGV gvalue (GVint x)     = do valueInit gvalue GType.int
-                                            valueSetInt  gvalue x
-valueSetClutterGV gvalue (GVuchar x)   = valueSetUChar   gvalue x
-valueSetClutterGV gvalue (GVchar x)    = valueSetChar    gvalue (cToEnum x)
-valueSetClutterGV gvalue (GVboolean x) = do valueInit gvalue GType.bool
-                                            valueSetBool    gvalue x
-valueSetClutterGV gvalue (GVenum x)    = do valueInit gvalue GType.enum
-                                            valueSetUInt    gvalue (fromIntegral x)
-valueSetClutterGV gvalue (GVflags x)   = do valueInit gvalue GType.flags
-                                            valueSetUInt    gvalue (fromIntegral x)
---valueSetClutterGV gvalue (GVpointer x) = valueSetPointer gvalue x
-valueSetClutterGV gvalue (GVfloat x)   = do valueInit gvalue GType.float
-                                            valueSetFloat   gvalue x
-valueSetClutterGV gvalue (GVdouble x)  = do valueInit gvalue GType.double
-                                            valueSetDouble  gvalue x
-valueSetClutterGV gvalue (GVstring x)  = do valueInit gvalue GType.string
-                                            valueSetMaybeString  gvalue x
-valueSetClutterGV gvalue (GVobject x)  = do valueInit gvalue GType.object
-                                            valueSetGObject gvalue x
+valueSetGenericValue :: GValue -> GenericValue -> IO ()
+valueSetGenericValue gvalue (GVuint x)    = do valueInit gvalue GType.uint
+                                               valueSetUInt gvalue x
+valueSetGenericValue gvalue (GVint x)     = do valueInit gvalue GType.int
+                                               valueSetInt  gvalue x
+valueSetGenericValue gvalue (GVuchar x)   = valueSetUChar   gvalue x
+valueSetGenericValue gvalue (GVchar x)    = valueSetChar    gvalue (cToEnum x)
+valueSetGenericValue gvalue (GVboolean x) = do valueInit gvalue GType.bool
+                                               valueSetBool    gvalue x
+valueSetGenericValue gvalue (GVenum x)    = do valueInit gvalue GType.enum
+                                               valueSetUInt    gvalue (fromIntegral x)
+valueSetGenericValue gvalue (GVflags x)   = do valueInit gvalue GType.flags
+                                               valueSetUInt    gvalue (fromIntegral x)
+--valueSetGenericValue gvalue (GVpointer x) = valueSetPointer gvalue x
+valueSetGenericValue gvalue (GVfloat x)   = do valueInit gvalue GType.float
+                                               valueSetFloat   gvalue x
+valueSetGenericValue gvalue (GVdouble x)  = do valueInit gvalue GType.double
+                                               valueSetDouble  gvalue x
+valueSetGenericValue gvalue (GVstring x)  = do valueInit gvalue GType.string
+                                               valueSetMaybeString  gvalue x
+valueSetGenericValue gvalue (GVobject x)  = do valueInit gvalue GType.object
+                                               valueSetGObject gvalue x
+valueSetGenericValue gvalue (GVcolor x)  = do valueInit gvalue color
+                                              valueSetColor gvalue x
+--valueSetGenericValue gvalue (GVboxed x)   = valueSetPointer gvalue x
 
-valueSetClutterGV gvalue (GVcolor x)  = do valueInit gvalue color
-                                           valueSetColor gvalue x
---valueSetClutterGV gvalue (GVboxed x)   = valueSetPointer gvalue x
-
-valueGetClutterGV :: GValue -> IO ClutterGV
-valueGetClutterGV gvalue = do
+valueGetGenericValue :: GValue -> IO GenericValue
+valueGetGenericValue gvalue = do
   gtype <- valueGetType gvalue
   case cToEnum gtype of
-    ATinvalid	-> throw $ AssertionFailed "valueGetClutterGV: invalid or unavailable value."
+    ATinvalid	-> throw $ AssertionFailed "valueGetGenericValue: invalid or unavailable value."
     ATuint      -> liftM GVuint			  $ valueGetUInt    gvalue
     ATint	-> liftM GVint	                  $ valueGetInt	    gvalue
     ATuchar	-> liftM (GVuchar . cFromEnum)	  $ valueGetUChar   gvalue
@@ -191,11 +189,11 @@ valueGetClutterGV gvalue = do
 --  ATboxed     -> liftM GVpointer		  $ valueGetPointer gvalue
 
 
-instance Storable ClutterGV where
+instance Storable GenericValue where
     sizeOf _ = {# sizeof GValue #}
     alignment _ = alignment (undefined :: GType)
     peek p = let gv = GValue (castPtr p)
-             in valueGetClutterGV gv
+             in valueGetGenericValue gv
     poke p ut = let gv = GValue (castPtr p)
-                in valueSetClutterGV gv ut
+                in valueSetGenericValue gv ut
 

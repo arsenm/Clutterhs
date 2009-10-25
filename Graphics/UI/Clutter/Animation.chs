@@ -59,7 +59,7 @@ module Graphics.UI.Clutter.Animation (
                                       animationAlpha,
 
                                       animationCompleted,
-                                      animationBind,
+                                    --animationBind,
                                       animationBindInterval,
                                       animationUpdateInterval,
                                       animationHasProperty,
@@ -71,18 +71,16 @@ module Graphics.UI.Clutter.Animation (
                                      ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #}
+{# import Graphics.UI.Clutter.StoreValue #}
 
 import C2HS
 
 import Control.Arrow (second)
-import Control.Monad (foldM_)
 
 import System.Glib.GObject
 import System.Glib.Attributes
 
-{# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #}
+--{# import Graphics.UI.Clutter.GValue #}
 
 {# fun unsafe animation_new as ^ { } -> `Animation' newAnimation* #}
 
@@ -137,12 +135,13 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 --TODO: Don't take gvalue directly, use gvaluearg
 --Says it returns the Animation as a convenience for language bindings.
 --This is convenient to me how?
+{-
 {# fun unsafe animation_bind as ^
    `(GValueArgClass final)' => { withAnimation* `Animation',
                                  `String',
                                  withGValueArg* `final'} ->
                                  `Animation' newAnimation* #}
-
+-}
 {# fun unsafe animation_bind_interval as ^
    { withAnimation* `Animation',
      `String',
@@ -162,13 +161,12 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 {# fun unsafe animation_get_interval as ^
    { withAnimation* `Animation', `String' } -> `Interval' newInterval* #}
 
-
 {# fun actor_get_animation as ^
        `(ActorClass a)' => { withActorClass* `a' } -> `Animation' newAnimation* #}
 actorAnimation :: (ActorClass actor) => ReadAttr actor Animation
 actorAnimation = readAttr actorGetAnimation
 
---TODO: Type for Duration, type Duration = UInt or whatever
+--FIXME/TODO: Type for Duration, type Duration = UInt or whatever
 
 animate :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int -> r
 animate actor mode duration = runAnim actor mode duration []
@@ -179,14 +177,15 @@ animateWithAlpha actor alpha = runAnimWithAlpha actor alpha []
 animateWithTimeline :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Timeline -> r
 animateWithTimeline actor mode tml = runAnimWithTimeline actor mode tml []
 
+
 class AnimateType t where
-    runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GValueArg)] -> t
-    runAnimWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GValueArg)] -> t
+    runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GenericValue)] -> t
+    runAnimWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GenericValue)] -> t
     runAnimWithTimeline :: (ActorClass actor) =>
                            actor ->
                            AnimationMode ->
                            Timeline ->
-                           [(String, GValueArg)] ->
+                           [(String, GenericValue)] ->
                            t
 
 -- Multiple return types isn't useful. We only want IO Animation.
@@ -206,93 +205,73 @@ instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     runAnim actor mode duration args = \a -> runAnim actor mode duration (toAnimateArg a : args)
     runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toAnimateArg a : args)
     runAnimWithTimeline actor mode tml args = \a -> runAnimWithTimeline actor mode tml (toAnimateArg a : args)
---this should always be a pair of a name and something which can be a gvalue
--- (String, Something that can be a GValue)
---TODO: Also I think if you use a signal you need a function and an actor
---Something like
---instance (ActorClass a) => AnimateArg (String, a -> IO (), a) where
---    toAnimateArg (a, b, c) = (a, UFunc b (toActor c))
---Actually you can't do this with the animatev* family of functions according to
---a warning in the docs. I could try looking at the string, and connecting the signal
---separately somewhere.
---how to enforce this nicely? Is this good enough?
-uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GValueArg)] -> IO Animation
+
+uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GenericValue)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"
 uanimate actor mode duration us =
-    let (names, uvals) = unzip us
+    let (names, gvals) = unzip us
         animatev = {# call unsafe actor_animatev #}  --CHECKME: unsafe?
+        cmode = cFromEnum mode
+        cdur = cIntConv duration
     in
-    withMany withCString names $ \cstrs -> do
-      res <- withArrayLen cstrs $ \len strptr ->
-             withActorClass actor $ \actptr ->
-             withArray uvals $ \gvPtr -> do
-               result <- animatev actptr (cFromEnum mode) (cIntConv duration) (cIntConv len) strptr gvPtr
-               foldM_ unsetOneGVal gvPtr uvals
-               return result
-      --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
-      newAnimation res  --FIXME: Do I need to do this here? reffing?
+    withMany withCString names $ \cstrs ->
+      withArrayLen cstrs $ \len strptr ->
+         withActorClass actor $ \actptr ->
+           withArray gvals $ \gvPtr ->
+               newAnimation =<< animatev actptr cmode cdur (cIntConv len) strptr (castPtr gvPtr)
 
---FIXME: Duplication here?
-
-uanimateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GValueArg)] -> IO Animation
+uanimateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GenericValue)] -> IO Animation
 uanimateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
 uanimateWithAlpha actor alpha us =
-    let (names, uvals) = unzip us
+    let (names, gvals) = unzip us
         animatev = {# call unsafe actor_animate_with_alphav #}    --CHECKME: unsafe?
     in
-    withMany withCString names $ \cstrs -> do
-      res <- withArrayLen cstrs $ \len strptr ->
-           withActorClass actor $ \actptr ->
-           withAlpha alpha $ \alphptr ->
-           withArray uvals $ \gvPtr -> do
-             result <- animatev actptr alphptr (cIntConv len) strptr gvPtr
-             foldM_ unsetOneGVal gvPtr uvals
-             return result
-              --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
-      newAnimation res  --CHECKME: Do I need to do this here? reffing?
-
+    withMany withCString names $ \cstrs ->
+      withArrayLen cstrs $ \len strptr ->
+        withActorClass actor $ \actptr ->
+          withAlpha alpha $ \alphptr ->
+            withArray gvals $ \gvPtr ->
+              newAnimation =<< animatev actptr alphptr (cIntConv len) strptr (castPtr gvPtr)
 
 uanimateWithTimeline :: (ActorClass actor) =>
                         actor ->
                         AnimationMode ->
                         Timeline ->
-                        [(String, GValueArg)] ->
+                        [(String, GenericValue)] ->
                         IO Animation
 uanimateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
 uanimateWithTimeline actor mode tml us =
     let (names, uvals) = unzip us
         animatev = {# call unsafe actor_animate_with_timelinev #}    --CHECKME: unsafe?
+        cmode = cFromEnum mode
     in
-    withMany withCString names $ \cstrs -> do
-      res <- withArrayLen cstrs $ \len strptr ->
-           withActorClass actor $ \actptr ->
-           withTimeline tml $ \tmlptr ->
-           withArray uvals $ \gvPtr -> do
-             result <- animatev actptr (cFromEnum mode) tmlptr (cIntConv len) strptr gvPtr
-             foldM_ unsetOneGVal gvPtr uvals
-             return result
-              --FIXME: UInt vs. Int yet again. I should really just fix it already everywhere
-      newAnimation res  --CHECKME: Do I need to do this here? reffing?
-
+    withMany withCString names $ \cstrs ->
+      withArrayLen cstrs $ \len strptr ->
+        withActorClass actor $ \actptr ->
+          withTimeline tml $ \tmlptr ->
+            withArray uvals $ \gvPtr ->
+              newAnimation =<< animatev actptr cmode tmlptr (cIntConv len) strptr (castPtr gvPtr)
 
 
 class AnimateArg a where
-    toAnimateArg :: a -> (String, GValueArg)
+    toAnimateArg :: a -> (String, GenericValue)
 
 instance AnimateArg (String, String) where
-    toAnimateArg = second UString
+    toAnimateArg = second (GVstring . Just)
 instance AnimateArg (String, Int) where
-    toAnimateArg = second UInteger
+    toAnimateArg = second GVint
 instance AnimateArg (String, Float) where
-    toAnimateArg = second UFloat
+    toAnimateArg = second GVfloat
 instance AnimateArg (String, Color) where
-    toAnimateArg = second UColor
+    toAnimateArg = second GVcolor
 instance AnimateArg (String, Double) where
-    toAnimateArg = second UDouble
+    toAnimateArg = second GVdouble
 instance AnimateArg (String, Word8) where
-    toAnimateArg = second UUChar
+    toAnimateArg = second GVuchar
 
 --CHECKME: OverlappingInstances
+--TODO: Maybe just list all known gobjects we want to allow?
+--that seems bad...
 instance (GObjectClass obj) => AnimateArg (String, obj) where
-    toAnimateArg = second (UGObject . toGObject)
+    toAnimateArg = second (GVobject . toGObject)
 

@@ -25,21 +25,21 @@
 
 module Graphics.UI.Clutter.Interval (
                                      intervalNew,
-                                     intervalNewWithValues,
-                                     intervalClone,
-                                     intervalGetValueType,
-                                     intervalSetInitialValue,
+                                   --intervalNewWithValues,
+                                   --intervalClone,
+                                   --intervalGetValueType,
+                                   --intervalSetInitialValue,
                                    --intervalGetInitialValue,
                                    --intervalInitialValue,
                                    --intervalPeekInitalValue,
-                                     intervalSetFinalValue,
+                                   --intervalSetFinalValue,
                                    --intervalGetFinalValue,
                                    --intervalFinalValue,
                                    --intervalPeekFinalValue,
                                    --intervalSetInterval,
                                    --intervalGetInterval,
                                    --intervalInterval,
-                                     intervalComputeValue,
+                                   --intervalComputeValue,
                                    --intervalValidate,
                                    --intervalRegisterProgressFunc
                                     ) where
@@ -56,6 +56,7 @@ intervalNew = error "ClutterInterval unimplemented"
 --this seems to replace intervalNew for language bindings so rename
 --it?  FIXME: toGValue and then pattern match against constructors is
 --kind of dumb but I'm too lazy to fix it now
+{-
 gValueArgGType val = case toGValueArg val of
                        (UInteger _) -> GType.int
                        (UDouble _) ->  GType.double
@@ -101,3 +102,4 @@ intervalNewWithValues initial final = let func = {# call unsafe interval_new_wit
 --ProgressFunc: grar gvalues cause me pain
 
 
+-}

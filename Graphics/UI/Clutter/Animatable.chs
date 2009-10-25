@@ -32,7 +32,7 @@ module Graphics.UI.Clutter.Animatable (
 
 import C2HS
 import System.Glib.GObject
-
+{-
 animatableAnimateProperty :: (AnimatableClass animatable, GValueArgClass val) =>
                              animatable ->
                              Animation ->
@@ -42,6 +42,7 @@ animatableAnimateProperty :: (AnimatableClass animatable, GValueArgClass val) =>
                              Double ->
                              val ->
                              IO (Maybe val)
+-}
 animatableAnimateProperty = undefined
 {-
 TODO: Requires getting out the value from the gvalue for this to be meaningful

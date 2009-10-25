@@ -55,7 +55,7 @@ import Control.OldException (throw, Exception(AssertionFailed))
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.External #}
-{# import Graphics.UI.Clutter.GValue #}
+{# import Graphics.UI.Clutter.GValue #} (color, valueSetColor, valueGetColor)
 
 import System.Glib.FFI
 import System.Glib.GValue
@@ -89,6 +89,7 @@ data GenericValue = GVuint    Word
 
 -- This is an enumeration of all GTypes that can be used in an Animation
 -- It's also probably wrong.
+
 data AnimType = ATinvalid
 	      | ATuint
 	      | ATint
@@ -188,12 +189,17 @@ valueGetGenericValue gvalue = do
     ATcolor	-> liftM GVcolor		  $ valueGetColor gvalue
 --  ATboxed     -> liftM GVpointer		  $ valueGetPointer gvalue
 
-
+--peek takes care of unset'ing
 instance Storable GenericValue where
     sizeOf _ = {# sizeof GValue #}
     alignment _ = alignment (undefined :: GType)
     peek p = let gv = GValue (castPtr p)
-             in valueGetGenericValue gv
+             in do
+               ret <- valueGetGenericValue gv
+               {# call unsafe g_value_unset #} (castPtr p)
+               return ret
     poke p ut = let gv = GValue (castPtr p)
-                in valueSetGenericValue gv ut
+                in do
+                  {# set GValue->g_type #} p (0 :: GType) --must be initialized to 0 or init will fail
+                  valueSetGenericValue gv ut
 

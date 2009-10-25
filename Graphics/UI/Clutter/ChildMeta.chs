@@ -32,9 +32,7 @@ module Graphics.UI.Clutter.ChildMeta (
 
 {# import Graphics.UI.Clutter.Types #}
 
-import C2HS
-import Control.Monad (liftM)
-import System.Glib.Attributes
+--import System.Glib.Attributes
 
 childMetaGetContainer = undefined
 

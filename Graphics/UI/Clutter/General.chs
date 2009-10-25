@@ -45,7 +45,7 @@ import C2HS
 import System.Glib.GObject
 import System.Glib.UTFString
 import System.Environment (getProgName, getArgs)
-import Control.Monad (liftM, mapM, when)
+import Control.Monad (liftM, when)
 
 {# fun main as clutterMain { } -> `()' #}
 {# fun main_quit as clutterMainQuit { } -> `()' #}

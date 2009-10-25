@@ -62,7 +62,7 @@ module Graphics.UI.Clutter.BehaviourEllipse (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM, liftM2)
+import Control.Monad (liftM2)
 import Control.Arrow ((&&&))
 import System.Glib.Attributes
 

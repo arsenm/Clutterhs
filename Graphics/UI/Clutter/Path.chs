@@ -60,8 +60,7 @@ module Graphics.UI.Clutter.Path (
 
 import C2HS
 import Control.Monad (liftM2)
-import System.Glib.Attributes
-import Graphics.Rendering.Cairo.Types (Cairo, unCairo)
+import Graphics.Rendering.Cairo.Types (Cairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 
 {# fun unsafe path_new as ^ { } -> `Path' newPath* #}

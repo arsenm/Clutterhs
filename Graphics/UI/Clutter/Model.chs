@@ -62,11 +62,9 @@ module Graphics.UI.Clutter.Model (
 {# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.GType
 import Data.Word
-import qualified System.Glib.GTypeConstants as GType
 
 {# fun unsafe model_get_column_name as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `String' #}

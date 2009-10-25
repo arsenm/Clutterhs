@@ -48,7 +48,6 @@ module Graphics.UI.Clutter.Interval (
 {# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
-import System.Glib.GObject
 import System.Glib.GType
 import qualified System.Glib.GTypeConstants as GType
 

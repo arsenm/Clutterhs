@@ -47,7 +47,6 @@ module Graphics.UI.Clutter.BehaviourRotate (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_rotate_new as ^

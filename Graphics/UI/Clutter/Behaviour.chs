@@ -41,7 +41,6 @@ module Graphics.UI.Clutter.Behaviour (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_apply as ^

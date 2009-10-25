@@ -34,7 +34,6 @@ module Graphics.UI.Clutter.Scriptable (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe scriptable_get_id as ^ `(ScriptableClass o)' => { withScriptableClass* `o'} -> `String' #}

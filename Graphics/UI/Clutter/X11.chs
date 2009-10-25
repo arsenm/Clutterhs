@@ -62,13 +62,7 @@ module Graphics.UI.Clutter.X11 (
                               --X11TexturePixmapClass
                                ) where
 
-{# import Graphics.UI.Clutter.Types #}
-
 import C2HS
-import System.Glib.GObject
-import System.Glib.UTFString
-import System.Environment (getProgName, getArgs)
-import Control.Monad (liftM, mapM, when)
 
 {# enum ClutterX11FilterReturn as X11FilterReturn {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterX11XInputEventTypes as X11XInputEventTypes {underscoreToCase} deriving (Show, Eq) #}

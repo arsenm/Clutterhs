@@ -38,7 +38,6 @@ module Graphics.UI.Clutter.BehaviourPath (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_path_new as ^

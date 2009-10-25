@@ -119,10 +119,10 @@ module Graphics.UI.Clutter.Actor (
                                   actorGetScaleCenter,
                                   actorGetScaleGravity,
                                   actorIsScaled,
-                                --actorApplyTransformToPoint,
+                                  actorApplyTransformToPoint,
                                   actorTransformStagePoint,
-                                --actorApplyRelativeTransformToPoint,
-                                --actorGetTransformedPosition,
+                                  actorApplyRelativeTransformToPoint,
+                                  actorGetTransformedPosition,
                                   actorGetTransformedSize,
                                   actorTransformedSize,
                                   actorGetPaintOpacity,
@@ -461,6 +461,13 @@ actorDepth = newAttr actorGetDepth actorSetDepth
 {# fun unsafe actor_is_scaled as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Bool' #}
 
+{# fun unsafe actor_apply_transform_to_point as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            withVertex* `Vertex',
+                            alloca- `Vertex' peek*
+                          } -> `()' #}
+
+
 --CHECKME: unsafe?
 {# fun unsafe actor_transform_stage_point as ^
    `(ActorClass a)' => { withActorClass* `a',
@@ -469,6 +476,20 @@ actorDepth = newAttr actorGetDepth actorSetDepth
                          alloca- `Float' peekFloatConv*,
                          alloca- `Float' peekFloatConv* } ->
                          `Bool' #}
+
+
+{# fun unsafe actor_apply_relative_transform_to_point as ^
+   `(ActorClass self, ActorClass ancestor)' => { withActorClass* `self',
+                                                 withActorClass* `ancestor',
+                                                 withVertex* `Vertex',
+                                                 alloca- `Vertex' peek*
+                                               } -> `()' #}
+
+{# fun unsafe actor_get_transformed_position as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*
+                          } -> `()' #}
 
 {# fun unsafe actor_get_transformed_size as ^
    `(ActorClass self)' => { withActorClass* `self',

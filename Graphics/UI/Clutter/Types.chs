@@ -253,7 +253,11 @@ module Graphics.UI.Clutter.Types (
 
                                   Geometry,
                                   GeometryPtr,
-                                  withGeometry
+                                  withGeometry,
+
+                                  Vertex,
+                                  VertexPtr,
+                                  withVertex
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -1244,6 +1248,45 @@ mkGeometry pst = do pptr <- (malloc :: IO GeometryPtr)
 
 withGeometry :: Geometry -> (GeometryPtr -> IO a) -> IO a
 withGeometry pst = bracket (mkGeometry pst) free
+
+-- ***************************************************************
+
+
+-- *************************************************************** Vertex
+
+--CHECKME: Do I want to use a simple tuple instead?
+
+data Vertex = Vertex {
+      vertexX :: !Float,
+      vertexY :: !Float,
+      vertexZ :: !Float
+    } deriving (Show, Eq)
+
+{# pointer *ClutterVertex as VertexPtr -> Vertex #}
+
+instance Storable Vertex where
+  sizeOf _ = {# sizeof ClutterVertex #}
+  alignment _ = alignment (undefined :: Float)
+  peek p = do
+      x <- {# get ClutterVertex->x #} p
+      y <- {# get ClutterVertex->y #} p
+      z <- {# get ClutterVertex->z #} p
+      return $ Vertex (cFloatConv x) (cFloatConv y) (cFloatConv z)
+
+  poke p (Vertex x y z) = do
+      {# set ClutterVertex->x #} p (cFloatConv x)
+      {# set ClutterVertex->y #} p (cFloatConv y)
+      {# set ClutterVertex->z #} p (cFloatConv z)
+
+
+--This seems not right. But it seems to work.
+mkVertex :: Vertex -> IO VertexPtr
+mkVertex pst = do pptr <- (malloc :: IO VertexPtr)
+                  poke pptr pst
+                  return pptr
+
+withVertex :: Vertex -> (VertexPtr -> IO a) -> IO a
+withVertex pst = bracket (mkVertex pst) free
 
 -- ***************************************************************
 

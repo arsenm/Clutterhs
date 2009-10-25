@@ -129,8 +129,8 @@ main = do
   performGC
 
   --wtf is this needing :: IO (type)
---  khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 300::Float)) :: IO Animation
---  timelineStart tl
+  khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 300::Float)) :: IO Animation
+  timelineStart tl
 
   performGC
 

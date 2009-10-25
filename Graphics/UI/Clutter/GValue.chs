@@ -51,7 +51,6 @@ import System.Glib.Properties
 
 import System.Glib.GValueTypes
 import Control.Arrow (second)
-import Control.Exception (bracket)
 import Control.Monad (liftM)
 
 

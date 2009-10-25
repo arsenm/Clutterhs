@@ -76,6 +76,7 @@ module Graphics.UI.Clutter.Animation (
 import C2HS
 
 import Control.Arrow (second)
+import Control.Monad (foldM_)
 
 import System.Glib.GObject
 import System.Glib.Attributes
@@ -217,8 +218,10 @@ uanimate actor mode duration us =
     withMany withCString names $ \cstrs ->
       withArrayLen cstrs $ \len strptr ->
          withActorClass actor $ \actptr ->
-           withArray gvals $ \gvPtr ->
-               newAnimation =<< animatev actptr cmode cdur (cIntConv len) strptr (castPtr gvPtr)
+           withArray gvals $ \gvPtr -> do
+               ret <- animatev actptr cmode cdur (cIntConv len) strptr (castPtr gvPtr)
+               foldM_ unsetOneGVal gvPtr gvals
+               newAnimation ret
 
 uanimateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GenericValue)] -> IO Animation
 uanimateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
@@ -230,8 +233,11 @@ uanimateWithAlpha actor alpha us =
       withArrayLen cstrs $ \len strptr ->
         withActorClass actor $ \actptr ->
           withAlpha alpha $ \alphptr ->
-            withArray gvals $ \gvPtr ->
-              newAnimation =<< animatev actptr alphptr (cIntConv len) strptr (castPtr gvPtr)
+            withArray gvals $ \gvPtr -> do
+              ret <- animatev actptr alphptr (cIntConv len) strptr (castPtr gvPtr)
+              foldM_ unsetOneGVal gvPtr gvals
+              newAnimation ret
+
 
 uanimateWithTimeline :: (ActorClass actor) =>
                         actor ->
@@ -241,7 +247,7 @@ uanimateWithTimeline :: (ActorClass actor) =>
                         IO Animation
 uanimateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
 uanimateWithTimeline actor mode tml us =
-    let (names, uvals) = unzip us
+    let (names, gvals) = unzip us
         animatev = {# call unsafe actor_animate_with_timelinev #}    --CHECKME: unsafe?
         cmode = cFromEnum mode
     in
@@ -249,9 +255,10 @@ uanimateWithTimeline actor mode tml us =
       withArrayLen cstrs $ \len strptr ->
         withActorClass actor $ \actptr ->
           withTimeline tml $ \tmlptr ->
-            withArray uvals $ \gvPtr ->
-              newAnimation =<< animatev actptr cmode tmlptr (cIntConv len) strptr (castPtr gvPtr)
-
+            withArray gvals $ \gvPtr -> do
+              ret <- animatev actptr cmode tmlptr (cIntConv len) strptr (castPtr gvPtr)
+              foldM_ unsetOneGVal gvPtr gvals
+              newAnimation ret
 
 class AnimateArg a where
     toAnimateArg :: a -> (String, GenericValue)
@@ -259,7 +266,7 @@ class AnimateArg a where
 instance AnimateArg (String, String) where
     toAnimateArg = second (GVstring . Just)
 instance AnimateArg (String, Int) where
-    toAnimateArg = second GVint
+    toAnimateArg = second toGenericValue
 instance AnimateArg (String, Float) where
     toAnimateArg = second GVfloat
 instance AnimateArg (String, Color) where

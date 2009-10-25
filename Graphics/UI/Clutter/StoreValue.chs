@@ -29,7 +29,7 @@
 -- Portability : portable (depends on GHC)
 --
 
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
 
 
 #include <clutter/clutter.h>
@@ -44,7 +44,13 @@ module Graphics.UI.Clutter.StoreValue (
                                        AnimType(..),
                                        GenericValue(..),
                                        valueSetGenericValue,
-                                       valueGetGenericValue
+                                       valueGetGenericValue,
+                                       GenericValueClass,
+                                       toGenericValue,
+                                       withGenericValue,
+                                       unGValue,  --I don't remember why this is here.
+                                       unsetGValue,
+                                       unsetOneGVal
                                       ) where
 
 import C2HS
@@ -52,6 +58,8 @@ import Control.Monad (liftM)
 
 --TODO: New exceptions
 import Control.OldException (throw, Exception(AssertionFailed))
+
+import Control.Exception (bracket)
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.External #}
@@ -189,17 +197,69 @@ valueGetGenericValue gvalue = do
     ATcolor	-> liftM GVcolor		  $ valueGetColor gvalue
 --  ATboxed     -> liftM GVpointer		  $ valueGetPointer gvalue
 
---peek takes care of unset'ing
+
+--for folding along a list
+--The list doesn't matter, just gets the length
+--CHECKME: why casting to Ptr () again?
+unsetOneGVal :: Ptr GenericValue -> a -> IO (Ptr GenericValue)
+unsetOneGVal i _ = {# call unsafe g_value_unset #} (castPtr i) >> return (advancePtr i 1)
+
+unsetGValue :: Ptr GenericValue -> IO ()
+unsetGValue p = {# call unsafe g_value_unset #} (castPtr p)
+
+--CHECKME: Bad things?
 instance Storable GenericValue where
     sizeOf _ = {# sizeof GValue #}
     alignment _ = alignment (undefined :: GType)
     peek p = let gv = GValue (castPtr p)
-             in do
-               ret <- valueGetGenericValue gv
-               {# call unsafe g_value_unset #} (castPtr p)
-               return ret
+             in valueGetGenericValue gv
     poke p ut = let gv = GValue (castPtr p)
                 in do
                   {# set GValue->g_type #} p (0 :: GType) --must be initialized to 0 or init will fail
                   valueSetGenericValue gv ut
+
+mkGValueFromGenericValue :: GenericValue -> IO (Ptr GenericValue)
+mkGValueFromGenericValue gv = do cptr <- malloc
+                                 poke cptr gv
+                                 return cptr
+
+freeGValue :: Ptr GenericValue -> IO ()
+freeGValue p = unsetGValue p >> free p
+
+--get gvalue out: allocaGValue (in body use valueGetGenericValue), then
+--escape the generic value
+
+withGenericValue :: (GenericValueClass arg) => arg -> (Ptr GenericValue -> IO a) -> IO a
+withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) freeGValue
+
+
+class GenericValueClass a where
+  toGenericValue :: a -> GenericValue
+instance GenericValueClass Int where
+  toGenericValue = GVint
+instance GenericValueClass Word where
+  toGenericValue = GVuint
+instance GenericValueClass Float where
+  toGenericValue = GVfloat
+instance GenericValueClass Double where
+  toGenericValue = GVdouble
+instance GenericValueClass Int8 where
+  toGenericValue = GVchar
+instance GenericValueClass Word8 where
+  toGenericValue = GVuchar
+instance GenericValueClass Bool where
+  toGenericValue = GVboolean
+instance GenericValueClass String where
+  toGenericValue = GVstring . Just
+
+instance GenericValueClass Color where
+  toGenericValue = GVcolor
+
+--UndecidableInstances
+--instance (GObjectClass obj) => GenericValueClass obj where
+--  toGenericValue = GVobject . toGObject
+
+
+unGValue :: GValue -> Ptr ()
+unGValue (GValue a) = castPtr a
 

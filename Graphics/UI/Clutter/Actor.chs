@@ -40,12 +40,12 @@ module Graphics.UI.Clutter.Actor (
                                   actorShouldPickPaint,
                                   actorMap,
                                   actorUnmap,
-                                --actorAllocate,
-                                --actorAllocatePreferredSize,
-                                --actorAllocateAvailableSize,
-                                --actorGetAllocationBox,
-                                --actorGetAllocationGeometry,
-                                --actorGetAllocationVertices,
+                                  actorAllocate,
+                                  actorAllocatePreferredSize,
+                                  actorAllocateAvailableSize,
+                                  actorGetAllocationBox,
+                                  actorGetAllocationGeometry,
+                                  actorGetAllocationVertices,
 
                                   actorGetPreferredSize,
                                   actorGetPreferredWidth,
@@ -129,7 +129,7 @@ module Graphics.UI.Clutter.Actor (
                                   actorPaintOpacity,
                                   actorGetPaintVisibility,
                                   actorPaintVisibility,
-                                --actorGetAbsAllocationVertices,
+                                  actorGetAbsAllocationVertices,
                                 --actorGetTransformationMatrix,
                                   actorSetAnchorPoint,
                                   actorGetAnchorPoint,
@@ -158,15 +158,15 @@ module Graphics.UI.Clutter.Actor (
                                 --actorBoxCopy,
                                 --actorBoxFree,
                                 --actorBoxEqual,
-                                --actorBoxGetX,
-                                --actorBoxGetY,
-                                --actorBoxGetWidth,
-                                --actorBoxGetHeight,
-                                --actorBoxGetOrigin,
-                                --actorBoxGetSize,
-                                --actorBoxGetArea,
-                                --actorBoxContains,
-                                --actorBoxFromVertices,
+                                  actorBoxGetX,
+                                  actorBoxGetY,
+                                  actorBoxGetWidth,
+                                  actorBoxGetHeight,
+                                  actorBoxGetOrigin,
+                                  actorBoxGetSize,
+                                  actorBoxGetArea,
+                                  actorBoxContains,
+                                  actorBoxFromVertices,
                                 --vertexNew,
                                 --vertexCopy,
                                 --vertexFree,
@@ -262,9 +262,44 @@ import System.Glib.Signals
 {# fun unsafe actor_map as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
 {# fun unsafe actor_unmap as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
 
---{# fun unsafe actor_get_allocation_box as ^ #}
---{# fun unsafe actor_get_allocation_geometry as ^ #}
---{# fun unsafe actor_get_allocation_vertices as ^ #}
+
+{# fun unsafe actor_allocate as ^
+ `(ActorClass self)' => { withActorClass* `self',
+                          withActorBox* `ActorBox',
+                          cFromFlags `[AllocationFlags]'
+                        } -> `()' #}
+
+{# fun unsafe actor_allocate_preferred_size as ^
+       `(ActorClass self)' => { withActorClass* `self',
+                                cFromFlags `[AllocationFlags]'
+                              } -> `()' #}
+
+{# fun unsafe actor_allocate_available_size as ^
+       `(ActorClass self)' => { withActorClass* `self',
+                                `Float',
+                                `Float',
+                                `Float',
+                                `Float',
+                                cFromFlags `[AllocationFlags]'
+                              } -> `()' #}
+
+{# fun unsafe actor_get_allocation_box as ^
+       `(ActorClass self)' => { withActorClass* `self',
+                                alloca- `ActorBox' peek* } -> `()' #}
+
+{# fun unsafe actor_get_allocation_geometry as ^
+       `(ActorClass self)' => { withActorClass* `self',
+                                alloca- `Geometry' peek*
+                              } -> `()' #}
+
+actorGetAllocationVertices  :: (ActorClass self, ActorClass ancestor) => self -> ancestor -> IO [Vertex]
+actorGetAllocationVertices self ancestor = let func = {# call unsafe actor_get_allocation_vertices #}
+                                           in
+                                             withActorClass self $ \selfPtr ->
+                                               withActorClass ancestor $ \ancPtr ->
+                                               allocaArray 4 $ \vsPtr -> do
+                                                 func selfPtr ancPtr vsPtr
+                                                 peekArray 4 vsPtr
 
 {# fun unsafe actor_get_preferred_size as ^
    `(ActorClass self)' => { withActorClass* `self',
@@ -508,6 +543,15 @@ actorPaintOpacity = readAttr actorGetPaintOpacity
 actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
 actorPaintVisibility = readAttr actorGetPaintVisibility
 
+
+actorGetAbsAllocationVertices  :: (ActorClass self) => self -> IO [Vertex]
+actorGetAbsAllocationVertices self = let func = {# call unsafe actor_get_abs_allocation_vertices #}
+                                     in
+                                       withActorClass self $ \selfPtr ->
+                                           allocaArray 4 $ \vsPtr -> do
+                                             func selfPtr vsPtr
+                                             peekArray 4 vsPtr
+
 {# fun unsafe actor_set_reactive as ^
    `(ActorClass self)' => { withActorClass* `self', `Bool' } -> `()' #}
 {# fun unsafe actor_get_reactive as ^
@@ -567,6 +611,29 @@ actorAnchorPointGravity = newAttr actorGetAnchorPointGravity actorSetAnchorPoint
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
 {# fun unsafe actor_move_anchor_point_from_gravity as ^
    `(ActorClass self)' => { withActorClass* `self', cFromEnum `Gravity' } -> `()' #}
+
+
+
+--TODO: Check they are pure. Also wouldn't be hard to actually haskellize them
+{# fun pure unsafe actor_box_get_x as ^ { withActorBox* `ActorBox' } -> `Float' #}
+{# fun pure unsafe actor_box_get_y as ^ { withActorBox* `ActorBox' } -> `Float' #}
+{# fun pure unsafe actor_box_get_width as ^ { withActorBox* `ActorBox' } -> `Float' #}
+{# fun pure unsafe actor_box_get_height as ^ { withActorBox* `ActorBox' } -> `Float' #}
+{# fun pure unsafe actor_box_get_origin as ^ { withActorBox* `ActorBox',
+                                               alloca- `Float' peekFloatConv*,
+                                               alloca- `Float' peekFloatConv* } -> `()' #}
+{# fun pure unsafe actor_box_get_size as ^ { withActorBox* `ActorBox',
+                                             alloca- `Float' peekFloatConv*,
+                                             alloca- `Float' peekFloatConv* } -> `()' #}
+{# fun pure unsafe actor_box_get_area as ^ { withActorBox* `ActorBox' } -> `Float' #}
+
+{# fun pure unsafe actor_box_contains as ^ { withActorBox* `ActorBox',
+                                             `Float',
+                                             `Float' } -> `()' #}
+
+{# fun pure unsafe actor_box_from_vertices as ^ { withActorBox* `ActorBox',
+                                                  withArray* `[Vertex]'
+                                                } -> `()' #}
 
 onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onDestroy = connect_NONE__NONE "destroy" False

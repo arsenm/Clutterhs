@@ -257,7 +257,11 @@ module Graphics.UI.Clutter.Types (
 
                                   Vertex,
                                   VertexPtr,
-                                  withVertex
+                                  withVertex,
+
+                                  ActorBox,
+                                  ActorBoxPtr,
+                                  withActorBox
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -322,7 +326,7 @@ type GUInt = {# type guint #}
 
 {# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterPickMode as PickMode {underscoreToCase} deriving (Show, Eq) #}
-{# enum ClutterAllocationFlags as AllocationFlags {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterAllocationFlags as AllocationFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 {# enum ClutterGravity as Gravity {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterActorFlags as ActorFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 {# enum ClutterRequestMode as RequestMode {underscoreToCase} deriving (Show, Eq) #}
@@ -345,6 +349,7 @@ type GUInt = {# type guint #}
 instance Flags EventFlags
 instance Flags ActorFlags
 instance Flags TextureFlags
+instance Flags AllocationFlags
 
 -- ***************************************************************
 
@@ -1287,6 +1292,47 @@ mkVertex pst = do pptr <- (malloc :: IO VertexPtr)
 
 withVertex :: Vertex -> (VertexPtr -> IO a) -> IO a
 withVertex pst = bracket (mkVertex pst) free
+
+-- ***************************************************************
+
+-- *************************************************************** ActorBox
+
+--CHECKME: Do I want to use a simple tuple instead?
+
+data ActorBox = ActorBox {
+      actorBoxX1 :: !Float,
+      actorBoxY1 :: !Float,
+      actorBoxX2 :: !Float,
+      actorBoxY2 :: !Float
+    } deriving (Show, Eq)
+
+{# pointer *ClutterActorBox as ActorBoxPtr -> ActorBox #}
+
+instance Storable ActorBox where
+  sizeOf _ = {# sizeof ClutterActorBox #}
+  alignment _ = alignment (undefined :: Float)
+  peek p = do
+      x1 <- {# get ClutterActorBox->x1 #} p
+      y1 <- {# get ClutterActorBox->y1 #} p
+      x2 <- {# get ClutterActorBox->x2 #} p
+      y2 <- {# get ClutterActorBox->y2 #} p
+      return $ ActorBox (cFloatConv x1) (cFloatConv y1) (cFloatConv x2) (cFloatConv y2)
+
+  poke p (ActorBox x1 y1 x2 y2) = do
+      {# set ClutterActorBox->x1 #} p (cFloatConv x1)
+      {# set ClutterActorBox->y1 #} p (cFloatConv y1)
+      {# set ClutterActorBox->x2 #} p (cFloatConv x2)
+      {# set ClutterActorBox->y2 #} p (cFloatConv y2)
+
+
+--This seems not right. But it seems to work.
+mkActorBox :: ActorBox -> IO ActorBoxPtr
+mkActorBox pst = do pptr <- (malloc :: IO ActorBoxPtr)
+                    poke pptr pst
+                    return pptr
+
+withActorBox :: ActorBox -> (ActorBoxPtr -> IO a) -> IO a
+withActorBox pst = bracket (mkActorBox pst) free
 
 -- ***************************************************************
 

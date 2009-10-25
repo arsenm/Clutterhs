@@ -30,6 +30,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Event,
                             module Graphics.UI.Clutter.Stage,
                             module Graphics.UI.Clutter.Animation,
+                            module Graphics.UI.Clutter.Animatable,
                             module Graphics.UI.Clutter.Timeline,
                             module Graphics.UI.Clutter.Score,
                             module Graphics.UI.Clutter.GValue,
@@ -69,6 +70,7 @@ import Graphics.UI.Clutter.Rectangle
 import Graphics.UI.Clutter.Texture
 import Graphics.UI.Clutter.Text
 import Graphics.UI.Clutter.Animation
+import Graphics.UI.Clutter.Animatable
 import Graphics.UI.Clutter.Timeline
 import Graphics.UI.Clutter.Score
 import Graphics.UI.Clutter.GValue

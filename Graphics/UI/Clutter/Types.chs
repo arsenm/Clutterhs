@@ -267,7 +267,12 @@ module Graphics.UI.Clutter.Types (
                                 --Units,
                                 --unUnits
                                   ScriptError(..),
-                                  FontFlags(..)
+                                  FontFlags(..),
+
+                                  Animatable,
+                                  AnimatableClass,
+                                  withAnimatable,
+                                  withAnimatableClass
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -1349,6 +1354,30 @@ mkActorBox pst = do pptr <- (malloc :: IO ActorBoxPtr)
 
 withActorBox :: ActorBox -> (ActorBoxPtr -> IO a) -> IO a
 withActorBox pst = bracket (mkActorBox pst) free
+
+-- ***************************************************************
+
+-- *************************************************************** Animatable
+
+{# pointer *ClutterAnimatable as Animatable foreign newtype #}
+--CHECKME: I'm assuming everything that uses it is a gobject. I think
+--this is correct, but maybe not
+class GObjectClass o => AnimatableClass o
+toAnimatable::AnimatableClass o => o -> Animatable
+toAnimatable = unsafeCastGObject . toGObject
+
+withAnimatableClass::AnimatableClass o => o -> (Ptr Animatable -> IO b) -> IO b
+withAnimatableClass o = (withAnimatable . toAnimatable) o
+
+--CHECKME: makeNewObject or makeNewGObject?? Is is always some kind of actor?
+--does it always have a floating reference or what?
+newAnimatable :: (AnimatableClass actor) =>  Ptr actor -> IO Animatable
+newAnimatable a = makeNewGObject Animatable $ return (castPtr a)
+
+instance AnimatableClass Animatable
+instance GObjectClass Animatable where
+  toGObject (Animatable a) = mkGObject (castForeignPtr a)
+  unsafeCastGObject (GObject o) = Animatable (castForeignPtr o)
 
 -- ***************************************************************
 

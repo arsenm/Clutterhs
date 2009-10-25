@@ -39,6 +39,7 @@ module Graphics.UI.Clutter.General (
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import System.Glib.GObject
@@ -46,8 +47,8 @@ import System.Glib.UTFString
 import System.Environment (getProgName, getArgs)
 import Control.Monad (liftM, mapM, when)
 
-{#fun main as clutterMain {} -> `()' #}
-{#fun main_quit as clutterMainQuit {} -> `()' #}
+{# fun main as clutterMain { } -> `()' #}
+{# fun main_quit as clutterMainQuit { } -> `()' #}
 
 --FIXME: use of id as marshaller seems horribly wrong
 {# fun unsafe clutter_init as secretClutterInit {id `Ptr CInt', id `Ptr (Ptr (CString))'} -> `InitError' cToEnum #}
@@ -67,6 +68,33 @@ clutterInit = do
                 res <- secretClutterInit (castPtr argcp) (castPtr argvp)
                 when (res /= InitSuccess) $ error ("Cannot initialize Clutter." ++ show res)
                 return res
+
+
+
+{# fun unsafe get_debug_enabled as ^ { } -> `Bool' #}
+{# fun unsafe get_show_fps as ^ { } -> `Bool' #}
+
+--CHECKME: GULong
+{# fun unsafe get_timestamp as ^ { } -> `Word' cIntConv #}
+
+--TODO: GID type
+{# fun unsafe get_actor_by_gid as ^ { `Word32' } -> `Actor' newActor* #}
+
+{# fun unsafe set_default_frame_rate as ^ { cIntConv `Word' } -> `()' #}
+{# fun unsafe get_default_frame_rate as ^ { } -> `Word' cIntConv #}
+
+{# fun unsafe set_motion_events_enabled as ^ { `Bool' } -> `()' #}
+{# fun unsafe get_motion_events_enabled as ^ { } -> `Bool' #}
+{# fun unsafe clear_glyph_cache as ^ { } -> `()' #}
+{# fun unsafe set_font_flags as ^ { cFromFlags `[FontFlags]' } -> `()' #}
+{# fun unsafe get_font_flags as ^ { } -> `[FontFlags]' cToFlags #}
+
+
+--TODO: A bunch of functions here
+--{# fun unsafe get_font_map as ^ { } -> `FontMap' #}
+--{# threads_set_lock_functions
+
+
 
 
 {# fun unsafe get_keyboard_grab as ^ { } -> `Actor' newActor* #}

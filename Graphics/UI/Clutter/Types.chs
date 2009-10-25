@@ -266,7 +266,8 @@ module Graphics.UI.Clutter.Types (
 
                                 --Units,
                                 --unUnits
-                                  ScriptError(..)
+                                  ScriptError(..),
+                                  FontFlags(..)
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -352,11 +353,13 @@ type GUInt = {# type guint #}
 {# enum ClutterUnitType as UnitType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterInputDeviceType as InputDeviceType {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterScriptError as ScriptError {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterFontFlags as FontFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 instance Flags EventFlags
 instance Flags ActorFlags
 instance Flags TextureFlags
 instance Flags AllocationFlags
+instance Flags FontFlags
 
 --CHECKME: I'm not sure how to deal with this opaque type
 --{# pointer *ClutterUnits as Units newtype #}

@@ -28,7 +28,7 @@ module Graphics.UI.Clutter.Texture (
                                     textureNewFromFile,
                                     textureNewFromActor,
 
-                                  --textureSetFromFile,
+                                    textureSetFromFile,
                                   --textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
                                   --textureSetFromYuvData,
                                   --textureSetAreaFromRgbData,
@@ -36,7 +36,7 @@ module Graphics.UI.Clutter.Texture (
                                     textureBaseSize,
 
                                   --textureGetPixelFormat,
-                                  --textureGetMaxTileWaste,
+                                    textureGetMaxTileWaste,
 
                                     textureGetFilterQuality,
                                     textureSetFilterQuality,
@@ -75,34 +75,57 @@ module Graphics.UI.Clutter.Texture (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM, unless, when)
+import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.GError
-import System.IO (hPutStrLn, stderr)
-
-
---allocaGErrorAddr act = alloca $ \gep -> do
---                       sptr <- newStablePtr gep
 
 {# fun unsafe texture_new as ^ { } -> `Texture' newTexture* #}
 
---{# fun unsafe texture_new_from_file as ^ { `String', alloca- `GError' peek* } -> `Texture' newTexture* #}
-
 textureNewFromFile :: String -> IO Texture
-textureNewFromFile filename = withCString filename $ \cstr -> do
-                              txt <- propagateGError $ \gerrorPtr ->
-                                                          {# call unsafe texture_new_from_file #} cstr (castPtr gerrorPtr)
-                              newTexture txt
-{-
-                             --FIXME: Make this a better message. use with checkGError
-                              (\err@(GError domain code msg) -> hPutStrLn stderr
-                               ("textureNewFromFile: Error: " ++ show domain ++ " " ++ show code ++ " " ++ show msg)
-                              >> return Prelude.Nothing)
- -}
-                              --somehowthe thing isn't happening
+textureNewFromFile filename = let func = {# call unsafe texture_new_from_file #}
+                              in withCString filename $ \cstr ->
+                                   propagateGError $ \gerrorPtr ->
+                                       func cstr (castPtr gerrorPtr) >>= newTexture
 
 {# fun unsafe texture_new_from_actor as ^
        `(ActorClass a)' => { withActorClass* `a'} -> `Texture' newTexture* #}
+
+textureSetFromFile :: Texture -> String -> IO Bool
+textureSetFromFile txt fname = let func = {# call unsafe texture_set_from_file #}
+                               in liftM cToBool $ withTexture txt $ \txtptr ->
+                                    withCString fname $ \cstr ->
+                                      propagateGError $ \gerrorPtr ->
+                                        func txtptr cstr (castPtr gerrorPtr)
+{-
+--CHECKME: Rgb or RGB?
+--Um..how to deal with random pointer? Not possible?
+textureSetFromRgbData :: Texture ->
+                         ?? ->
+                         Bool ->
+                         Int ->
+                         Int ->
+                         Int ->
+                         Int ->
+                         [TextureFlags] ->
+                         IO Bool
+textureSetFromRgbData txt dat hasA width height rowstride bpp flags =
+    let func = {# call unsafe texture_set_from_rgb_data #}
+    in withTexture txt $ \txtptr ->
+        propagateGError $ \gerrorPtr ->
+            func txtptr
+                 dat
+                 (cFromBool hasA)
+                 (cIntConv width)
+                 (cIntConv height)
+                 (cIntConv rowstride)
+                 (cIntConv dpp)
+                 (cFromFlags flags)
+                 (castPtr gerrorPtr)
+
+tetxure_set_from_yuv_data
+tetxure_set_area_from_rgb_data
+-}
+
 
 {# fun unsafe texture_get_base_size as ^
        { withTexture* `Texture',
@@ -110,6 +133,14 @@ textureNewFromFile filename = withCString filename $ \cstr -> do
          alloca- `Int' peekIntConv* } -> `()' #}
 textureBaseSize :: ReadAttr Texture (Int, Int)
 textureBaseSize = readAttr textureGetBaseSize
+
+{- TODO: Requires cogl
+{# fun unsafe texture_get_pixel_format as ^
+       { withTexture* `Texture' } -> `CoglPixelFormat' cToEnum #}
+-}
+
+{# fun unsafe texture_get_max_tile_waste as ^
+       { withTexture* `Texture' } -> `Int' #}
 
 
 {# fun unsafe texture_get_filter_quality as ^
@@ -119,8 +150,21 @@ textureBaseSize = readAttr textureGetBaseSize
 textureFilterQuality :: Attr Texture TextureQuality
 textureFilterQuality = newAttr textureGetFilterQuality textureSetFilterQuality
 
+{-
+{# fun unsafe texture_get_cogl_texture as ^
+       { withTexture* `Texture' } -> `CoglTexture' newCoglTexture #}
+{# fun unsafe texture_set_cogl_texture as ^
+       { withTexture* `Texture', withCoglTexture `CoglTexture' } -> `()' #}
+textureCoglTexture :: Attr Texture CoglTexture
+textureCoglTexture = newAttr textureGetCoglTexture textureSetCoglTexture
 
-
+{# fun unsafe texture_get_cogl_material as ^
+       { withTexture* `Texture' } -> `CoglMaterial' newCoglMaterial #}
+{# fun unsafe texture_set_cogl_material as ^
+       { withTexture* `Texture', withCoglMaterial `CoglMaterial' } -> `()' #}
+textureCoglMaterial :: Attr Texture CoglMaterial
+textureCoglMaterial = newAttr textureGetCoglMaterial textureSetCoglMaterial
+-}
 
 {# fun unsafe texture_get_sync_size as ^ { withTexture* `Texture' } -> `Bool' #}
 {# fun unsafe texture_set_sync_size as ^ { withTexture* `Texture', `Bool' } -> `()' #}

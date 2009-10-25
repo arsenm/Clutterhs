@@ -971,6 +971,7 @@ class GObjectClass o => TextureClass o
 toTexture :: TextureClass o => o -> Texture
 toTexture = unsafeCastGObject . toGObject
 
+newTexture :: Ptr Actor -> IO Texture
 newTexture a = makeNewObject Texture $ return (castPtr a)
 
 instance TextureClass Texture

@@ -63,6 +63,7 @@ module Graphics.UI.Clutter.BehaviourEllipse (
 
 import C2HS
 import Control.Monad (liftM, liftM2)
+import Control.Arrow ((&&&))
 import System.Glib.Attributes
 
 {# fun unsafe behaviour_ellipse_new as ^
@@ -126,10 +127,10 @@ behaviourEllipseWidth = newAttr behaviourEllipseGetWidth behaviourEllipseSetWidt
 --set width and height at the same time
 behaviourEllipseSize :: Attr BehaviourEllipse (Int, Int)
 behaviourEllipseSize = newAttr
-                        (\x -> liftM2 (,) (behaviourEllipseGetWidth x)
-                                          (behaviourEllipseGetHeight x))
+                        (uncurry (liftM2 (,)) . (behaviourEllipseGetWidth &&& behaviourEllipseGetHeight))
                         (\x (a,b) -> behaviourEllipseSetWidth x a >>
                                      behaviourEllipseSetHeight x b)
+
 
 {# fun unsafe behaviour_ellipse_set_tilt as ^
        { withBehaviourEllipse* `BehaviourEllipse',

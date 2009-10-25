@@ -249,7 +249,11 @@ module Graphics.UI.Clutter.Types (
 
                                   GCallback,
                                   CGCallback,
-                                  newGCallback
+                                  newGCallback,
+
+                                  Geometry,
+                                  GeometryPtr,
+                                  withGeometry
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -1202,6 +1206,44 @@ type CGCallback = FunPtr (IO ())
 
 foreign import ccall "wrapper"
     newGCallback :: IO () -> IO CGCallback
+
+-- ***************************************************************
+
+-- *************************************************************** Geometry
+
+data Geometry = Geometry {
+      geometryX :: !Int,
+      geometryY :: !Int,
+      geometryWidth :: !Word,
+      geometryHeight :: !Word
+    } deriving (Show, Eq)
+
+{# pointer *ClutterGeometry as GeometryPtr -> Geometry #}
+
+instance Storable Geometry where
+  sizeOf _ = {# sizeof ClutterGeometry #}
+  alignment _ = alignment (undefined :: Int)
+  peek p = do
+      x <- {# get ClutterGeometry->x #} p
+      y <- {# get ClutterGeometry->y #} p
+      width <- {# get ClutterGeometry->width #} p
+      height <- {# get ClutterGeometry->height #} p
+      return $ Geometry (cIntConv x) (cIntConv y) (cIntConv width) (cIntConv height)
+
+  poke p (Geometry x y width height) = do
+      {# set ClutterGeometry->x #} p (cIntConv x)
+      {# set ClutterGeometry->y #} p (cIntConv y)
+      {# set ClutterGeometry->width #} p (cIntConv width)
+      {# set ClutterGeometry->height #} p (cIntConv height)
+
+--This seems not right. But it seems to work.
+mkGeometry :: Geometry -> IO GeometryPtr
+mkGeometry pst = do pptr <- (malloc :: IO GeometryPtr)
+                    poke pptr pst
+                    return pptr
+
+withGeometry :: Geometry -> (GeometryPtr -> IO a) -> IO a
+withGeometry pst = bracket (mkGeometry pst) free
 
 -- ***************************************************************
 

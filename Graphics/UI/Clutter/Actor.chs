@@ -37,12 +37,33 @@ module Graphics.UI.Clutter.Actor (
                                   actorQueueRedraw,
                                   actorQueueRelayout,
 
-                                  actorSetPosition,
-                                  actorGetPosition,
-                                  actorPosition,
+                                  actorShouldPickPaint,
+                                  actorMap,
+                                  actorUnmap,
+                                --actorAllocate,
+                                --actorAllocatePreferredSize,
+                                --actorAllocateAvailableSize,
+                                --actorGetAllocationBox,
+                                --actorGetAllocationGeometry,
+                                --actorGetAllocationVertices,
+
+                                  actorGetPreferredSize,
+                                  actorGetPreferredWidth,
+                                  actorGetPreferredHeight,
+                                  actorSetFixedPositionSet,
+                                  actorGetFixedPositionSet,
+                                  actorFixedPositionSet,
+                                  actorSetGeometry,
+                                  actorGetGeometry,
+                                  actorGeometry,
+
                                   actorSetSize,
                                   actorGetSize,
                                   actorSize,
+
+                                  actorSetPosition,
+                                  actorGetPosition,
+                                  actorPosition,
 
                                   actorSetWidth,
                                   actorGetWidth,
@@ -82,6 +103,7 @@ module Graphics.UI.Clutter.Actor (
                                   actorGetParent,
                                 --actorParent,
                                   actorReparent,
+                                  actorUnparent,
                                   actorRaise,
                                   actorLower,
                                   actorRaiseTop,
@@ -103,8 +125,10 @@ module Graphics.UI.Clutter.Actor (
                                 --actorGetTransformedPosition,
                                   actorGetTransformedSize,
                                   actorTransformedSize,
-                                --actorGetPaintOpacity,
-                                --actorGetPaintVisibility,
+                                  actorGetPaintOpacity,
+                                  actorPaintOpacity,
+                                  actorGetPaintVisibility,
+                                  actorPaintVisibility,
                                 --actorGetAbsAllocationVertices,
                                 --actorGetTransformationMatrix,
                                   actorSetAnchorPoint,
@@ -118,9 +142,9 @@ module Graphics.UI.Clutter.Actor (
                                   actorSetReactive,
                                   actorGetReactive,
                                   actorReactive,
-                                --actorSetShader,
-                                --actorGetShader,
-                                --actorShader,
+                                  actorSetShader,
+                                  actorGetShader,
+                                  actorShader,
                                 --actorSetShaderParam,
                                 --actorSetShaderParamFloat,
                                 --actorSetShaderParamInt,
@@ -150,21 +174,17 @@ module Graphics.UI.Clutter.Actor (
 
                                 --signals etc.
 
-                                  onShow,
-                                  afterShow,
-                                  show,
+                                --onAllocationChanged,
+                                --afterAllocationChanged,
+                                --allocationChanged,
+
+                                  onDestroy,
+                                  afterDestroy,
+                                  destroy,
 
                                   onHide,
                                   afterHide,
                                   hide,
-
-                                  onRealize,
-                                  afterRealize,
-                                  realize,
-
-                                  onPaint,
-                                  afterPaint,
-                                  paint,
 
                                   onKeyFocusIn,
                                   afterKeyFocusIn,
@@ -174,10 +194,33 @@ module Graphics.UI.Clutter.Actor (
                                   afterKeyFocusOut,
                                   keyFocusOut,
 
-                                  onDestroy,
-                                  afterDestroy,
-                                  destroy
+                                  onPaint,
+                                  afterPaint,
+                                  paint,
 
+                                --onParentSet,
+                                --afterParentSet,
+                                --parentSet,
+
+                                --onPick,
+                                --afterPick,
+                                --pick,
+
+                                --onQueueRedraw,
+                                --afterQueueRedraw,
+                                --queueRedraw,
+
+                                  onRealize,
+                                  afterRealize,
+                                  realize,
+
+                                  onShow,
+                                  afterShow,
+                                  show,
+
+                                --onUnrealize,
+                                --afterUnrealize,
+                                --unrealize
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -205,18 +248,163 @@ import System.Glib.Signals
 {# fun unsafe actor_get_flags as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `[ActorFlags]' cToFlags #}
 
-{# fun actor_show as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_show_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_hide as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_hide_all as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_realize as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_unrealize as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_paint as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_queue_redraw as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun actor_queue_relayout as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun actor_show as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_show_all as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_hide as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_hide_all as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_realize as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_unrealize as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_paint as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_queue_redraw as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun actor_queue_relayout as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
 
-{# fun unsafe actor_map as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
-{# fun unsafe actor_unmap as ^ `(ActorClass o)' => {withActorClass* `o'} -> `()' #}
+{# fun unsafe actor_should_pick_paint as ^ `(ActorClass o)' => { withActorClass* `o'} -> `Bool' #}
+{# fun unsafe actor_map as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+{# fun unsafe actor_unmap as ^ `(ActorClass o)' => { withActorClass* `o'} -> `()' #}
+
+--{# fun unsafe actor_get_allocation_box as ^ #}
+--{# fun unsafe actor_get_allocation_geometry as ^ #}
+--{# fun unsafe actor_get_allocation_vertices as ^ #}
+
+{# fun unsafe actor_get_preferred_size as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*
+                          } -> `()' #}
+--TODO: Do I want this? Others take another param, would be inconsisent to have just this one
+--actorPreferredSize :: (ActorClass self) => ReadAttr self (Float, Float, Float, Float)
+--actorPreferredSize = readAttr actorGetPreferredSize
+
+{# fun unsafe actor_get_preferred_width as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            `Float',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*
+                          } -> `()' #}
+
+{# fun unsafe actor_get_preferred_height as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            `Float',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*
+                          } -> `()' #}
+
+{# fun unsafe actor_set_fixed_position_set as ^
+       `(ActorClass self)' => { withActorClass* `self', `Bool'} -> `()' #}
+{# fun unsafe actor_get_fixed_position_set as ^
+ `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+actorFixedPositionSet :: (ActorClass self) => Attr self Bool
+actorFixedPositionSet = newAttr actorGetFixedPositionSet actorSetFixedPositionSet
+
+{# fun unsafe actor_get_geometry as ^
+       `(ActorClass self)' => { withActorClass* `self', alloca- `Geometry' peek* } -> `()' #}
+{# fun unsafe actor_set_geometry as ^
+       `(ActorClass self)' => { withActorClass* `self', withGeometry* `Geometry' } -> `()' #}
+actorGeometry :: (ActorClass self) => Attr self Geometry
+actorGeometry = newAttr actorGetGeometry actorSetGeometry
+
+{# fun unsafe actor_set_size as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+{# fun unsafe actor_get_size as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*} -> `()' #}
+
+actorSize :: (ActorClass self) => Attr self (Float, Float)
+actorSize = newAttr actorGetSize (tup2ToF actorSetSize)
+
+{# fun unsafe actor_set_position as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+{# fun unsafe actor_get_position as ^
+   `(ActorClass self)' => { withActorClass* `self', alloca- `Float' peekFloatConv*, alloca- `Float' peekFloatConv*} -> `()' #}
+
+actorPosition :: (ActorClass self) => Attr self (Float, Float)
+actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
+
+{# fun unsafe actor_get_width as ^
+   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
+{# fun unsafe actor_set_width as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
+actorWidth :: (ActorClass self) => Attr self Float
+actorWidth = newAttr actorGetWidth actorSetWidth
+
+{# fun unsafe actor_get_height as ^
+   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
+{# fun unsafe actor_set_height as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
+actorHeight :: (ActorClass self) => Attr self Float
+actorHeight = newAttr actorGetHeight actorSetHeight
+
+{# fun unsafe actor_get_x as ^
+   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
+{# fun unsafe actor_set_x as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
+actorX :: (ActorClass self) => Attr self Float
+actorX = newAttr actorGetX actorSetX
+
+{# fun unsafe actor_get_y as ^
+   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
+{# fun unsafe actor_set_y as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
+actorY :: (ActorClass self) => Attr self Float
+actorY = newAttr actorGetY actorSetY
+
+{# fun unsafe actor_move_by as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+
+{# fun unsafe actor_set_rotation as ^
+   `(ActorClass self)' => { withActorClass* `self', cFromEnum `RotateAxis', `Double', `Float', `Float', `Float' } -> `()' #}
+
+{# fun unsafe actor_set_z_rotation_from_gravity as ^
+   `(ActorClass self)' => { withActorClass* `self', `Double', cFromEnum `Gravity' } -> `()' #}
+{# fun unsafe actor_get_rotation as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            cFromEnum `RotateAxis',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*} -> `Double' #}
+
+{# fun unsafe actor_get_z_rotation_gravity as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Gravity' cToEnum #}
+
+{# fun unsafe actor_is_rotated as ^ `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+
+--FIXME: All the types for everything
+{# fun unsafe actor_set_opacity as ^
+   `(ActorClass self)' => { withActorClass* `self', `Word8' } -> `()' #}
+{# fun unsafe actor_get_opacity as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Word8' #}
+actorOpacity :: (ActorClass self) => Attr self Word8
+actorOpacity = newAttr actorGetOpacity actorSetOpacity
+
+{# fun unsafe actor_set_name as ^
+   `(ActorClass self)' => { withActorClass* `self', `String' } -> `()' #}
+{# fun unsafe actor_get_name as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `String' #}
+actorName :: (ActorClass self) => Attr self String
+actorName = newAttr actorGetName actorSetName
+
+{# fun unsafe actor_get_gid as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Word32' #}
+actorGid :: (ActorClass self) => ReadAttr self Word32
+actorGid = readAttr actorGetGid
+
+{# fun unsafe actor_set_clip as ^
+   `(ActorClass self)' => { withActorClass* `self', `Float', `Float', `Float', `Float' } -> `()' #}
+{# fun unsafe actor_get_clip as ^
+   `(ActorClass self)' => { withActorClass* `self',
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*,
+                            alloca- `Float' peekFloatConv*} -> `()' #}
+
+{# fun unsafe actor_has_clip as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+{# fun unsafe actor_remove_clip as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
+
 
 {# fun unsafe actor_set_parent as ^
    `(ActorClass child, ActorClass parent)' => { withActorClass* `child', withActorClass* `parent' } -> `()' #}
@@ -289,6 +477,16 @@ actorDepth = newAttr actorGetDepth actorSetDepth
 actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
 actorTransformedSize = readAttr actorGetTransformedSize
 
+{# fun unsafe actor_get_paint_opacity as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Word8' #}
+actorPaintOpacity :: (ActorClass self) => ReadAttr self Word8
+actorPaintOpacity = readAttr actorGetPaintOpacity
+
+{# fun unsafe actor_get_paint_visibility as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
+actorPaintVisibility = readAttr actorGetPaintVisibility
+
 {# fun unsafe actor_set_reactive as ^
    `(ActorClass self)' => { withActorClass* `self', `Bool' } -> `()' #}
 {# fun unsafe actor_get_reactive as ^
@@ -296,111 +494,35 @@ actorTransformedSize = readAttr actorGetTransformedSize
 actorReactive :: (ActorClass self) => Attr self Bool
 actorReactive = newAttr actorGetReactive actorSetReactive
 
-{# fun unsafe actor_set_position as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
-{# fun unsafe actor_get_position as ^
-   `(ActorClass self)' => { withActorClass* `self', alloca- `Float' peekFloatConv*, alloca- `Float' peekFloatConv*} -> `()' #}
+{# fun unsafe actor_set_shader as ^
+   `(ActorClass self)' => { withActorClass* `self', withShader* `Shader' } -> `()' #}
+{# fun unsafe actor_get_shader as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Shader' newShader* #}
+actorShader :: (ActorClass self) => Attr self Shader
+actorShader = newAttr actorGetShader actorSetShader
 
-actorPosition :: (ActorClass self) => Attr self (Float, Float)
-actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
+--{# fun unsafe actor_set_shader_param as ^
+--{# fun unsafe actor_set_shader_param_float as ^
+--{# fun unsafe actor_set_shader_param_int as ^
 
-{# fun unsafe actor_set_size as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
-{# fun unsafe actor_get_size as ^
-   `(ActorClass self)' => { withActorClass* `self', alloca- `Float' peekFloatConv*, alloca- `Float' peekFloatConv*} -> `()' #}
-
-actorSize :: (ActorClass self) => Attr self (Float, Float)
-actorSize = newAttr actorGetSize (tup2ToF actorSetSize)
-
-
-{# fun unsafe actor_get_width as ^
-   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
-{# fun unsafe actor_set_width as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
-actorWidth :: (ActorClass self) => Attr self Float
-actorWidth = newAttr actorGetWidth actorSetWidth
-
-{# fun unsafe actor_get_height as ^
-   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
-{# fun unsafe actor_set_height as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
-actorHeight :: (ActorClass self) => Attr self Float
-actorHeight = newAttr actorGetHeight actorSetHeight
-
-{# fun unsafe actor_get_x as ^
-   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
-{# fun unsafe actor_set_x as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
-actorX :: (ActorClass self) => Attr self Float
-actorX = newAttr actorGetX actorSetX
-
-{# fun unsafe actor_get_y as ^
-   `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
-{# fun unsafe actor_set_y as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
-actorY :: (ActorClass self) => Attr self Float
-actorY = newAttr actorGetY actorSetY
-
-{# fun unsafe actor_is_in_clone_paint as ^
-       `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 
 --CHECKME: unsafe?
 {# fun unsafe actor_grab_key_focus as ^
    `(ActorClass a)' => { withActorClass* `a' } -> `()' #}
 
-{# fun unsafe actor_move_by as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+{-
+--TODO: I think I figured out the pango stuff in Text
+{# fun unsafe actor_get_pango_context as ^
+   `(ActorClass a)' => { withActorClass* `a' } -> `PangoContext' newPangoContext* #}
+{# fun unsafe actor_create_pango_context as ^
+   `(ActorClass a)' => { withActorClass* `a' } -> `PangoContext' newPangoContext* #}
+{# fun unsafe actor_create_pango_layout as ^
+   `(ActorClass a)' => { withActorClass* `a', `String' } -> `PangoLayout' newPangoLayout* #}
+-}
 
-{# fun unsafe actor_set_rotation as ^
-   `(ActorClass self)' => { withActorClass* `self', cFromEnum `RotateAxis', `Double', `Float', `Float', `Float' } -> `()' #}
+{# fun unsafe actor_is_in_clone_paint as ^
+       `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 
-{# fun unsafe actor_set_z_rotation_from_gravity as ^
-   `(ActorClass self)' => { withActorClass* `self', `Double', cFromEnum `Gravity' } -> `()' #}
-{# fun unsafe actor_get_rotation as ^
-   `(ActorClass self)' => { withActorClass* `self',
-                            cFromEnum `RotateAxis',
-                            alloca- `Float' peekFloatConv*,
-                            alloca- `Float' peekFloatConv*,
-                            alloca- `Float' peekFloatConv*} -> `Double' #}
-
-{# fun unsafe actor_get_z_rotation_gravity as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `Gravity' cToEnum #}
-
-{# fun unsafe actor_is_rotated as ^ `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
-
---FIXME: All the types for everything
-{# fun unsafe actor_set_opacity as ^
-   `(ActorClass self)' => { withActorClass* `self', `Word8' } -> `()' #}
-{# fun unsafe actor_get_opacity as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `Word8' #}
-actorOpacity :: (ActorClass self) => Attr self Word8
-actorOpacity = newAttr actorGetOpacity actorSetOpacity
-
-{# fun unsafe actor_set_name as ^
-   `(ActorClass self)' => { withActorClass* `self', `String' } -> `()' #}
-{# fun unsafe actor_get_name as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `String' #}
-actorName :: (ActorClass self) => Attr self String
-actorName = newAttr actorGetName actorSetName
-
-{# fun unsafe actor_get_gid as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `Word32' #}
-actorGid :: (ActorClass self) => ReadAttr self Word32
-actorGid = readAttr actorGetGid
-
-{# fun unsafe actor_set_clip as ^
-   `(ActorClass self)' => { withActorClass* `self', `Float', `Float', `Float', `Float' } -> `()' #}
-{# fun unsafe actor_get_clip as ^
-   `(ActorClass self)' => { withActorClass* `self',
-                            alloca- `Float' peekFloatConv*,
-                            alloca- `Float' peekFloatConv*,
-                            alloca- `Float' peekFloatConv*,
-                            alloca- `Float' peekFloatConv*} -> `()' #}
-
-{# fun unsafe actor_has_clip as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
-{# fun unsafe actor_remove_clip as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
 {# fun unsafe actor_set_anchor_point as ^
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}

@@ -28,6 +28,7 @@ Library
                    Graphics.UI.Clutter.Utility,
                    Graphics.UI.Clutter.External,
                    Graphics.UI.Clutter.GValue,
+                   Graphics.UI.Clutter.StoreValue,
                    Graphics.UI.Clutter.Signals,
                    Graphics.UI.Clutter.General,
                    Graphics.UI.Clutter.Color,

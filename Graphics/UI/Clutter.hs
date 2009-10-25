@@ -34,6 +34,7 @@ module Graphics.UI.Clutter (
                             module Graphics.UI.Clutter.Timeline,
                             module Graphics.UI.Clutter.Score,
                             module Graphics.UI.Clutter.GValue,
+                            module Graphics.UI.Clutter.StoreValue,
                             module Graphics.UI.Clutter.Alpha,
                             module Graphics.UI.Clutter.CairoTexture,
                             module Graphics.UI.Clutter.Media,
@@ -74,6 +75,7 @@ import Graphics.UI.Clutter.Animatable
 import Graphics.UI.Clutter.Timeline
 import Graphics.UI.Clutter.Score
 import Graphics.UI.Clutter.GValue
+import Graphics.UI.Clutter.StoreValue
 import Graphics.UI.Clutter.Alpha
 import Graphics.UI.Clutter.CairoTexture
 import Graphics.UI.Clutter.Media

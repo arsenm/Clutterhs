@@ -87,7 +87,7 @@ import System.Glib.Attributes
 {# fun unsafe animation_get_object as ^
        { withAnimation* `Animation' } -> `GObject' newGObject* #}
 
---FIXME?: Property issue since can set any gobject class, but can only get GObject back
+-- FIXME ?: Property issue since can set any gobject class, but can only get GObject back
 --animationObject :: (GObjectClass obj) => Attr Animation obj
 animationObject :: Attr Animation GObject
 animationObject = newAttr animationGetObject animationSetObject

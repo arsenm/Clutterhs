@@ -334,12 +334,13 @@ withGObject obj act = (withForeignPtr . unGObject . toGObject) obj $ \ptr -> act
 
 newGObject a = makeNewGObject mkGObject $ return (castPtr a)
 
+--TODO: Make this castPtr go away
 withGValue (GValue gval) = castPtr gval
 
 --this doesn't seem to work since GObjectClass is not here...
 --I'm not sure if I can work around this. Oh well, I don't think it's that important
---{# pointer *GObject newtype nocode #}
---{# class GObjectClass GObject #}
+-- {# pointer *GObject newtype nocode #}
+-- {# class GObjectClass GObject #}
 
 -- g-types not anywhere??
 type GFloat = {# type gfloat #}
@@ -348,7 +349,7 @@ type GUnichar = {# type gunichar #}
 type GUInt = {# type guint #}
 --type GUInt8 = {# type guint8 #}
 
--- *************************************************************** Misc
+-- *** Misc
 
 {# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterPickMode as PickMode {underscoreToCase} deriving (Show, Eq) #}
@@ -381,13 +382,11 @@ instance Flags AllocationFlags
 instance Flags FontFlags
 
 --CHECKME: I'm not sure how to deal with this opaque type
---{# pointer *ClutterUnits as Units newtype #}
+-- {# pointer *ClutterUnits as Units newtype #}
 
---unUnits (Units ptr) = ptr
+-- unUnits (Units ptr) = ptr
 
--- ***************************************************************
-
--- *************************************************************** Color
+-- *** Color
 
 {# pointer *ClutterColor as ColorPtr -> Color #}
 
@@ -422,7 +421,7 @@ mkColor col = do cptr <- (malloc :: IO ColorPtr)
 withColor :: Color -> (ColorPtr -> IO a) -> IO a
 withColor col = bracket (mkColor col) free
 
--- *************************************************************** Actor
+-- *** Actor
 
 {# pointer *ClutterActor as Actor foreign newtype #}
 
@@ -448,9 +447,7 @@ instance GObjectClass Actor where
   toGObject (Actor a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Actor (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Rectangle
+-- *** Rectangle
 
 {# pointer *ClutterRectangle as Rectangle foreign newtype #}
 
@@ -467,9 +464,7 @@ instance GObjectClass Rectangle where
   toGObject (Rectangle r) = mkGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = Rectangle (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Text
+-- *** Text
 
 {# pointer *ClutterText as Text foreign newtype #}
 
@@ -487,9 +482,7 @@ instance GObjectClass Text where
   toGObject (Text a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Text (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Group
+-- *** Group
 
 {#pointer *ClutterGroup as Group foreign newtype #}
 
@@ -508,9 +501,7 @@ instance GObjectClass Group where
   toGObject (Group g) = mkGObject (castForeignPtr g)
   unsafeCastGObject (GObject o) = Group (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Container
+-- *** Container
 
 {# pointer *ClutterContainer as Container foreign newtype #}
 
@@ -529,10 +520,7 @@ instance GObjectClass Container where
   toGObject (Container c) = mkGObject (castForeignPtr c)
   unsafeCastGObject (GObject o) = Container (castForeignPtr o)
 
--- ***************************************************************
-
-
--- *************************************************************** Stage
+-- *** Stage
 
 {# pointer *ClutterStage as Stage foreign newtype #}
 
@@ -552,9 +540,7 @@ instance GObjectClass Stage where
   toGObject (Stage s) = mkGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = Stage (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Perspective
+-- *** Perspective
 
 data Perspective = Perspective {
       perspectiveFovy :: !Float,
@@ -590,15 +576,11 @@ mkPerspective pst = do pptr <- (malloc :: IO PerspectivePtr)
 withPerspective :: Perspective -> (PerspectivePtr -> IO a) -> IO a
 withPerspective pst = bracket (mkPerspective pst) free
 
--- ***************************************************************
-
--- *************************************************************** ClutterEvent
+-- *** ClutterEvent
 
 {# pointer *ClutterEvent as Event foreign newtype #}
 
--- ***************************************************************
-
--- *************************************************************** Animation
+-- *** Animation
 
 {# pointer *ClutterAnimation as Animation foreign newtype #}
 
@@ -614,9 +596,7 @@ instance GObjectClass Animation where
   toGObject (Animation a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Animation (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Timeline
+-- *** Timeline
 
 --FIXME: DO animations and timelines etc. have floating references or not?
 --They don't derive from actor, so I'm going to go with no
@@ -638,9 +618,7 @@ instance GObjectClass Timeline where
   toGObject (Timeline t) = mkGObject (castForeignPtr t)
   unsafeCastGObject (GObject o) = Timeline (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Score
+-- *** Score
 
 {# pointer *ClutterScore as Score foreign newtype #}
 
@@ -657,9 +635,7 @@ instance GObjectClass Score where
   toGObject (Score r) = mkGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = Score (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Alpha
+-- *** Alpha
 
 {# pointer *ClutterAlpha as Alpha foreign newtype #}
 
@@ -675,9 +651,7 @@ instance GObjectClass Alpha where
   toGObject (Alpha a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Alpha (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** AlphaFunc
+-- *** AlphaFunc
 
 type AlphaFunc = Alpha -> IO Double
 type CAlphaFunc = FunPtr (Ptr Alpha -> Ptr () -> IO CDouble)
@@ -691,9 +665,7 @@ newAlphaFunc userfunc = mkAlphaFunc (newAlphaFunc' userfunc)
 foreign import ccall "wrapper"
     mkAlphaFunc :: (Ptr Alpha -> IO Double) -> IO CAlphaFunc
 
--- ***************************************************************
-
--- *************************************************************** Interval
+-- *** Interval
 
 {# pointer *ClutterInterval as Interval foreign newtype #}
 
@@ -708,9 +680,7 @@ instance GObjectClass Interval where
   toGObject (Interval i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Interval (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Fog
+-- *** Fog
 
 {# pointer *ClutterFog as FogPtr -> Fog #}
 
@@ -738,9 +708,7 @@ mkFog col = do cptr <- (malloc :: IO FogPtr)
 withFog :: Fog -> (FogPtr -> IO a) -> IO a
 withFog col = bracket (mkFog col) free
 
--- ***************************************************************
-
--- *************************************************************** CairoTexture
+-- *** CairoTexture
 
 {# pointer *ClutterCairoTexture as CairoTexture foreign newtype #}
 
@@ -755,9 +723,7 @@ instance GObjectClass CairoTexture where
   toGObject (CairoTexture i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = CairoTexture (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Media
+-- *** Media
 
 --FIXME: Doesn't derive from GObject just GInterface??
 {# pointer *ClutterMedia as Media foreign newtype #}
@@ -776,9 +742,7 @@ instance GObjectClass Media where
   toGObject (Media i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Media (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** ChildMeta
+-- *** ChildMeta
 
 {# pointer *ClutterChildMeta as ChildMeta foreign newtype #}
 
@@ -793,9 +757,7 @@ instance GObjectClass ChildMeta where
   toGObject (ChildMeta i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ChildMeta (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Clone
+-- *** Clone
 
 {# pointer *ClutterClone as Clone foreign newtype #}
 
@@ -811,9 +773,7 @@ instance GObjectClass Clone where
   toGObject (Clone i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Clone (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Behaviour
+-- *** Behaviour
 
 {# pointer *ClutterBehaviour as Behaviour foreign newtype #}
 
@@ -832,9 +792,7 @@ instance GObjectClass Behaviour where
   toGObject (Behaviour i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Behaviour (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** BehaviourForeachFunc
+-- *** BehaviourForeachFunc
 type BehaviourForeachFunc = Behaviour -> Actor -> IO ()
 type CBehaviourForeachFunc = FunPtr (Ptr Behaviour -> Ptr Actor -> Ptr () -> IO ())
 newBehaviourForeachFunc :: BehaviourForeachFunc -> IO CBehaviourForeachFunc
@@ -848,9 +806,7 @@ newBehaviourForeachFunc userfunc = mkBehaviourForeachFunc (newBehaviourForeachFu
 foreign import ccall "wrapper"
     mkBehaviourForeachFunc :: (Ptr Behaviour -> Ptr Actor -> IO ()) -> IO CBehaviourForeachFunc
 
--- ***************************************************************
-
--- *************************************************************** BehaviourScale
+-- *** BehaviourScale
 
 {# pointer *ClutterBehaviourScale as BehaviourScale foreign newtype #}
 
@@ -867,9 +823,7 @@ instance GObjectClass BehaviourScale where
   toGObject (BehaviourScale i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourScale (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** BehaviourDepth
+-- *** BehaviourDepth
 
 {# pointer *ClutterBehaviourDepth as BehaviourDepth foreign newtype #}
 
@@ -886,9 +840,7 @@ instance GObjectClass BehaviourDepth where
   toGObject (BehaviourDepth i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourDepth (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** BehaviourEllipse
+-- *** BehaviourEllipse
 
 {# pointer *ClutterBehaviourEllipse as BehaviourEllipse foreign newtype #}
 
@@ -905,9 +857,7 @@ instance GObjectClass BehaviourEllipse where
   toGObject (BehaviourEllipse i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourEllipse (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** BehaviourOpacity
+-- *** BehaviourOpacity
 
 {# pointer *ClutterBehaviourOpacity as BehaviourOpacity foreign newtype #}
 
@@ -924,9 +874,7 @@ instance GObjectClass BehaviourOpacity where
   toGObject (BehaviourOpacity i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourOpacity (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** BehaviourRotate
+-- *** BehaviourRotate
 
 {# pointer *ClutterBehaviourRotate as BehaviourRotate foreign newtype #}
 
@@ -943,10 +891,8 @@ instance GObjectClass BehaviourRotate where
   toGObject (BehaviourRotate i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourRotate (castForeignPtr o)
 
--- ***************************************************************
 
-
--- *************************************************************** BehaviourPath
+-- *** BehaviourPath
 
 {# pointer *ClutterBehaviourPath as BehaviourPath foreign newtype #}
 
@@ -963,9 +909,7 @@ instance GObjectClass BehaviourPath where
   toGObject (BehaviourPath i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourPath (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Path
+-- *** Path
 
 {# pointer *ClutterPath as Path foreign newtype #}
 
@@ -980,9 +924,7 @@ instance GObjectClass Path where
   toGObject (Path i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Path (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Texture
+-- *** Texture
 
 {# pointer *ClutterTexture as Texture foreign newtype #}
 
@@ -1000,9 +942,7 @@ instance GObjectClass Texture where
   toGObject (Texture i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Texture (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Shader
+-- *** Shader
 
 {# pointer *ClutterShader as Shader foreign newtype #}
 
@@ -1017,9 +957,7 @@ instance GObjectClass Shader where
   toGObject (Shader i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Shader (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Model
+-- *** Model
 
 {# pointer *ClutterModel as Model foreign newtype #}
 
@@ -1037,9 +975,7 @@ instance GObjectClass Model where
   toGObject (Model i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Model (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** ListModel
+-- *** ListModel
 
 {# pointer *ClutterListModel as ListModel foreign newtype #}
 
@@ -1055,9 +991,7 @@ instance GObjectClass ListModel where
   toGObject (ListModel i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ListModel (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** ModelIter
+-- *** ModelIter
 
 {# pointer *ClutterModelIter as ModelIter foreign newtype #}
 
@@ -1072,9 +1006,7 @@ instance GObjectClass ModelIter where
   toGObject (ModelIter i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ModelIter (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Script
+-- *** Script
 
 {# pointer *ClutterScript as Script foreign newtype #}
 
@@ -1093,9 +1025,7 @@ instance GObjectClass Script where
   toGObject (Script i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Script (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** Knot
+-- *** Knot
 
 type Knot = (Int, Int)
 
@@ -1112,10 +1042,7 @@ instance Storable Knot where
       {# set ClutterKnot->x #} p (cIntConv x)
       {# set ClutterKnot->y #} p (cIntConv y)
 
-
--- ***************************************************************
-
--- *************************************************************** PathNode
+-- *** PathNode
 
 {# pointer *ClutterPathNode as PathNodePtr -> PathNode #}
 
@@ -1148,9 +1075,7 @@ withPathNode col = bracket (mkPathNode col) free
 newPathNodes :: GSList -> IO [PathNode]
 newPathNodes gsl = (fromGSList gsl :: IO [PathNodePtr]) >>= mapM peek
 
--- ***************************************************************
-
--- *************************************************************** PathCallback
+-- *** PathCallback
 type PathCallback = PathNode -> IO ()
 type CPathCallback = FunPtr (PathNodePtr -> Ptr () -> IO ())
 newPathCallback :: PathCallback -> IO CPathCallback
@@ -1162,9 +1087,7 @@ newPathCallback userfunc = mkPathCallback (newPathCallback' userfunc)
 foreign import ccall "wrapper"
     mkPathCallback :: (PathNodePtr -> IO ()) -> IO CPathCallback
 
--- ***************************************************************
-
--- *************************************************************** ParamSpecUnits
+-- *** ParamSpecUnits
 
 {# pointer *ClutterParamSpecUnits as ParamSpecUnitsPtr -> ParamSpecUnits #}
 
@@ -1203,9 +1126,7 @@ withParamSpecUnits col = bracket (mkParamSpecUnits col) free
 newParamSpecUnits :: GSList -> IO [ParamSpecUnits]
 newParamSpecUnits gsl = (fromGSList gsl :: IO [ParamSpecUnitsPtr]) >>= mapM peek
 
--- ***************************************************************
-
--- *************************************************************** Scriptable
+-- *** Scriptable
 
 --TODO: How to do GInterface properly. This seems wrong
 
@@ -1223,9 +1144,7 @@ instance GObjectClass Scriptable where
   toGObject (Scriptable i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Scriptable (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** BindingPool
+-- *** BindingPool
 
 {# pointer *ClutterBindingPool as BindingPool foreign newtype #}
 
@@ -1241,9 +1160,7 @@ instance GObjectClass BindingPool where
   toGObject (BindingPool i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BindingPool (castForeignPtr o)
 
--- ***************************************************************
-
--- *************************************************************** GCallback
+-- *** GCallback
 
 type GCallback = IO ()
 type CGCallback = FunPtr (IO ())
@@ -1251,9 +1168,7 @@ type CGCallback = FunPtr (IO ())
 foreign import ccall "wrapper"
     newGCallback :: IO () -> IO CGCallback
 
--- ***************************************************************
-
--- *************************************************************** Geometry
+-- *** Geometry
 
 data Geometry = Geometry {
       geometryX :: !Int,
@@ -1289,10 +1204,7 @@ mkGeometry pst = do pptr <- (malloc :: IO GeometryPtr)
 withGeometry :: Geometry -> (GeometryPtr -> IO a) -> IO a
 withGeometry pst = bracket (mkGeometry pst) free
 
--- ***************************************************************
-
-
--- *************************************************************** Vertex
+-- *** Vertex
 
 --CHECKME: Do I want to use a simple tuple instead?
 
@@ -1328,9 +1240,7 @@ mkVertex pst = do pptr <- (malloc :: IO VertexPtr)
 withVertex :: Vertex -> (VertexPtr -> IO a) -> IO a
 withVertex pst = bracket (mkVertex pst) free
 
--- ***************************************************************
-
--- *************************************************************** ActorBox
+-- *** ActorBox
 
 --CHECKME: Do I want to use a simple tuple instead?
 
@@ -1369,9 +1279,7 @@ mkActorBox pst = do pptr <- (malloc :: IO ActorBoxPtr)
 withActorBox :: ActorBox -> (ActorBoxPtr -> IO a) -> IO a
 withActorBox pst = bracket (mkActorBox pst) free
 
--- ***************************************************************
-
--- *************************************************************** Animatable
+-- *** Animatable
 
 {# pointer *ClutterAnimatable as Animatable foreign newtype #}
 --CHECKME: I'm assuming everything that uses it is a gobject. I think
@@ -1392,6 +1300,4 @@ instance AnimatableClass Animatable
 instance GObjectClass Animatable where
   toGObject (Animatable a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Animatable (castForeignPtr o)
-
--- ***************************************************************
 

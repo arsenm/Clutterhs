@@ -24,19 +24,35 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Behaviour (
-                                      behaviourApply,
-                                      behaviourRemove,
-                                      behaviourRemoveAll,
-                                      behaviourIsApplied,
-                                      behaviourActorsForeach,
-                                      behaviourGetActors, --Set actors??
-                                      behaviourActors,
-                                      behaviourGetNActors,
-                                      behaviourGetNthActor,
-                                      behaviourGetAlpha,
-                                      behaviourSetAlpha,
-                                      behaviourAlpha
-                                     ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Behaviour'
+-- |         +----'BehaviourDepth'
+-- |         +----'BehaviourEllipse'
+-- |         +----'BehaviourOpacity'
+-- |         +----'BehaviourPath'
+-- |         +----'BehaviourRotate'
+-- |         +----'BehaviourScale'
+-- @
+
+-- * Methods
+  behaviourApply,
+  behaviourRemove,
+  behaviourRemoveAll,
+  behaviourIsApplied,
+  behaviourActorsForeach,
+  behaviourGetActors, --Set actors??
+  behaviourGetNActors,
+  behaviourGetNthActor,
+  behaviourGetAlpha,
+  behaviourSetAlpha,
+
+-- * Attributes
+  behaviourActors,
+  behaviourAlpha
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

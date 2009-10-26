@@ -24,24 +24,36 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BehaviourRotate (
-                                            behaviourRotateNew,
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Behaviour'
+-- |         +----'BehaviourRotate'
+-- |
+-- @
 
-                                            behaviourRotateSetAxis,
-                                            behaviourRotateGetAxis,
-                                            behaviourRotateAxis,
+-- * Constructors
+  behaviourRotateNew,
 
-                                            behaviourRotateSetDirection,
-                                            behaviourRotateGetDirection,
-                                            behaviourRotateDirection,
+-- * Methods
+  behaviourRotateSetAxis,
+  behaviourRotateGetAxis,
 
-                                            behaviourRotateSetBounds,
-                                            behaviourRotateGetBounds,
-                                            behaviourRotateBounds,
+  behaviourRotateSetDirection,
+  behaviourRotateGetDirection,
 
-                                            behaviourRotateSetCenter,
-                                            behaviourRotateGetCenter,
-                                            behaviourRotateCenter
-                                           ) where
+  behaviourRotateSetBounds,
+  behaviourRotateGetBounds,
+
+  behaviourRotateSetCenter,
+  behaviourRotateGetCenter,
+
+-- * Attributes
+  behaviourRotateAxis,
+  behaviourRotateDirection,
+  behaviourRotateBounds,
+  behaviourRotateCenter
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}

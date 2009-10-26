@@ -24,11 +24,25 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BehaviourOpacity (
-                                             behaviourOpacityNew,
-                                             behaviourOpacitySetBounds,
-                                             behaviourOpacityGetBounds,
-                                             behaviourOpacityBounds
-                                            ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Behaviour'
+-- |         +----'BehaviourOpacity'
+-- |
+-- @
+
+-- * Constructors
+  behaviourOpacityNew,
+
+-- * Methods
+  behaviourOpacitySetBounds,
+  behaviourOpacityGetBounds,
+
+-- * Attributes
+  behaviourOpacityBounds
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}

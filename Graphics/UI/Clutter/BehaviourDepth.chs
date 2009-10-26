@@ -24,11 +24,25 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BehaviourDepth (
-                                           behaviourDepthNew,
-                                           behaviourDepthSetBounds,
-                                           behaviourDepthGetBounds,
-                                           behaviourDepthBounds
-                                          ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Behaviour'
+-- |         +----'BehaviourDepth'
+-- |
+-- @
+
+-- * Constructors
+  behaviourDepthNew,
+
+-- * Methods
+  behaviourDepthSetBounds,
+  behaviourDepthGetBounds,
+
+-- * Attributes
+  behaviourDepthBounds
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}

@@ -24,39 +24,52 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BehaviourEllipse (
-                                             behaviourEllipseNew,
-                                             behaviourEllipseSetCenter,
-                                             behaviourEllipseGetCenter,
-                                             behaviourEllipseCenter,
-                                             behaviourEllipseSetAngleStart,
-                                             behaviourEllipseGetAngleStart,
-                                             behaviourEllipseAngleStart,
-                                             behaviourEllipseSetAngleEnd,
-                                             behaviourEllipseGetAngleEnd,
-                                             behaviourEllipseAngleEnd,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Behaviour'
+-- |         +----BehaviourEllipse
+-- |
+-- @
 
-                                             behaviourEllipseSetAngleTilt,
-                                             behaviourEllipseGetAngleTilt,
-                                           --behaviourEllipseAngleTilt, TODO: Property for each axis
+-- * Constructors
+  behaviourEllipseNew,
 
-                                             behaviourEllipseSetHeight,
-                                             behaviourEllipseGetHeight,
-                                             behaviourEllipseHeight,
+-- * Methods
+  behaviourEllipseSetCenter,
+  behaviourEllipseGetCenter,
 
-                                             behaviourEllipseSetWidth,
-                                             behaviourEllipseGetWidth,
-                                             behaviourEllipseWidth,
+  behaviourEllipseSetAngleStart,
+  behaviourEllipseGetAngleStart,
+  behaviourEllipseSetAngleEnd,
+  behaviourEllipseGetAngleEnd,
 
-                                             behaviourEllipseSize,
+  behaviourEllipseSetAngleTilt,
+  behaviourEllipseGetAngleTilt,
+  --behaviourEllipseAngleTilt, TODO: Property for each axis
 
-                                             behaviourEllipseSetTilt,
-                                             behaviourEllipseGetTilt,
-                                             behaviourEllipseTilt,
+  behaviourEllipseSetHeight,
+  behaviourEllipseGetHeight,
 
-                                             behaviourEllipseSetDirection,
-                                             behaviourEllipseGetDirection,
-                                             behaviourEllipseDirection
-                                            ) where
+  behaviourEllipseSetWidth,
+  behaviourEllipseGetWidth,
+  behaviourEllipseSize,
+
+  behaviourEllipseSetTilt,
+  behaviourEllipseGetTilt,
+  behaviourEllipseSetDirection,
+  behaviourEllipseGetDirection,
+
+-- * Attributes
+  behaviourEllipseCenter,
+  behaviourEllipseAngleStart,
+  behaviourEllipseAngleEnd,
+  behaviourEllipseHeight,
+  behaviourEllipseWidth,
+  behaviourEllipseTilt,
+  behaviourEllipseDirection
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}

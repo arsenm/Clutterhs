@@ -24,16 +24,31 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BehaviourPath (
-                                          behaviourPathNew,
-                                          behaviourPathNewWithDescription,
-                                          behaviourPathNewWithKnots,
-                                          behaviourPathSetPath,
-                                          behaviourPathGetPath,
-                                          behaviourPathPath,
-                                        --knotCopy, --not needed
-                                        --knotFree,
-                                        --knotEqual
-                                         ) where
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Behaviour'
+-- |         +----'BehaviourPath'
+-- |
+-- @
+
+-- * Constructors
+  behaviourPathNew,
+  behaviourPathNewWithDescription,
+  behaviourPathNewWithKnots,
+
+-- * Methods
+
+  behaviourPathSetPath,
+  behaviourPathGetPath,
+
+-- * Attributes
+  behaviourPathPath,
+
+--knotCopy, --not needed
+--knotFree,
+--knotEqual
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

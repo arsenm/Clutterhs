@@ -158,8 +158,10 @@ valueSetGenericValue gvalue (GVuint x)    = do valueInit gvalue GType.uint
                                                valueSetUInt gvalue x
 valueSetGenericValue gvalue (GVint x)     = do valueInit gvalue GType.int
                                                valueSetInt  gvalue x
-valueSetGenericValue gvalue (GVuchar x)   = valueSetUChar   gvalue x
-valueSetGenericValue gvalue (GVchar x)    = valueSetChar    gvalue (cToEnum x)
+valueSetGenericValue gvalue (GVuchar x)   = do valueInit gvalue GType.uchar
+                                               valueSetUChar gvalue x
+valueSetGenericValue gvalue (GVchar x)    = do valueInit gvalue GType.char
+                                               valueSetChar gvalue (cToEnum x)
 valueSetGenericValue gvalue (GVboolean x) = do valueInit gvalue GType.bool
                                                valueSetBool    gvalue x
 valueSetGenericValue gvalue (GVenum x)    = do valueInit gvalue GType.enum
@@ -202,7 +204,6 @@ valueGetGenericValue gvalue = do
 
 --for folding along a list
 --The list doesn't matter, just gets the length
---CHECKME: why casting to Ptr () again?
 unsetOneGVal :: Ptr GenericValue -> a -> IO (Ptr GenericValue)
 unsetOneGVal i _ = {# call unsafe g_value_unset #} i >> return (advancePtr i 1)
 

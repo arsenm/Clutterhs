@@ -79,6 +79,9 @@ import System.Glib.GType
 
 {# pointer *GValue as GenericValuePtr -> GenericValue #}
 
+--GenericValue is a wrapper around haskell types that can be put in a gvalue
+--GValue is the actual C type. GenericValues get put into GValues
+
 --CHECKME: Types for char, uchar. Do we want them to actually be Int8, Word8?
 --that would also mean gtk2hs patch would need to change.
 data GenericValue = GVuint    Word

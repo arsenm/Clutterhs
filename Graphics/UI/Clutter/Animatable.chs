@@ -28,7 +28,6 @@ module Graphics.UI.Clutter.Animatable (
                                       ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import System.Glib.GObject

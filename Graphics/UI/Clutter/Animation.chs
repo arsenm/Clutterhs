@@ -27,7 +27,6 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
-
 module Graphics.UI.Clutter.Animation (
                                       animate,
                                       animateWithAlpha,
@@ -80,8 +79,6 @@ import Control.Monad (foldM_)
 
 import System.Glib.GObject
 import System.Glib.Attributes
-
---{# import Graphics.UI.Clutter.GValue #}
 
 {# fun unsafe animation_new as ^ { } -> `Animation' newAnimation* #}
 

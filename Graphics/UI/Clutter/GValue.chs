@@ -28,8 +28,9 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
---TODO: Lots of stuff here should be private
+--TODO: Lots of stuff here should be private?
 --FIXME: Messy names
+--TODO: Merge this with StoreValue, since this is what you actually want
 
 module Graphics.UI.Clutter.GValue (
                                    color,
@@ -38,20 +39,10 @@ module Graphics.UI.Clutter.GValue (
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.External #}
 
 import C2HS
-
-import System.Glib.GObject
-import System.Glib.GType
-import qualified System.Glib.GTypeConstants as GType
 import System.Glib.GValue
-import System.Glib.Attributes
-import System.Glib.Properties
-
-import System.Glib.GValueTypes
-import Control.Arrow (second)
-import Control.Monad (liftM)
+import System.Glib.GType
 
 
 --Color GValue

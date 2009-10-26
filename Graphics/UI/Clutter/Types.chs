@@ -36,6 +36,10 @@ module Graphics.UI.Clutter.Types (
                                   Word,
 
                                   Color(Color),
+                                  red,
+                                  green,
+                                  blue,
+                                  alpha,
                                   ColorPtr,
                                   withColor,
 
@@ -74,6 +78,10 @@ module Graphics.UI.Clutter.Types (
                                   Perspective(Perspective),
                                   PerspectivePtr,
                                   withPerspective,
+                                  perspectiveFovy,
+                                  perspectiveAspect,
+                                  perspectiveZNear,
+                                  perspectiveZFar,
                                   PickMode(..),
                                   Gravity(..),
                                   RequestMode(..),
@@ -259,8 +267,15 @@ module Graphics.UI.Clutter.Types (
                                   Vertex,
                                   VertexPtr,
                                   withVertex,
+                                  vertexX,
+                                  vertexY,
+                                  vertexZ,
 
                                   ActorBox,
+                                  actorBoxX1,
+                                  actorBoxY1,
+                                  actorBoxX2,
+                                  actorBoxY2,
                                   ActorBoxPtr,
                                   withActorBox,
 
@@ -287,7 +302,6 @@ import System.Glib.Flags
 import System.Glib.FFI
 import Control.Monad (when)
 import Control.Exception (bracket)
-
 
 --GTK uses the floating reference stuff
 --this function is from gtk2hs, where they use the

@@ -43,13 +43,9 @@ module Graphics.UI.Clutter.Color (
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import Data.Word
-import System.Glib.GType (GType, typeInstanceIsA)
-import System.Glib.GObject
-import System.Glib.GValue (GValue(GValue))
 
 --FIXME: Check this for ok unsafePerformIO. Ceiling cat is watching.
 colorFromString::String -> Maybe Color

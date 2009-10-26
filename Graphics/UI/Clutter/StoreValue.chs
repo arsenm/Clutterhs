@@ -43,6 +43,7 @@
 module Graphics.UI.Clutter.StoreValue (
                                        AnimType(..),
                                        GenericValue(..),
+                                       GenericValuePtr,
                                        valueSetGenericValue,
                                        valueGetGenericValue,
                                        GenericValueClass,
@@ -76,6 +77,7 @@ import System.Glib.GType
 --
 -- * Internally used by "Graphics.UI.Clutter.Animation".
 
+{# pointer *GValue as GenericValuePtr -> GenericValue #}
 
 --CHECKME: Types for char, uchar. Do we want them to actually be Int8, Word8?
 --that would also mean gtk2hs patch would need to change.
@@ -202,10 +204,10 @@ valueGetGenericValue gvalue = do
 --The list doesn't matter, just gets the length
 --CHECKME: why casting to Ptr () again?
 unsetOneGVal :: Ptr GenericValue -> a -> IO (Ptr GenericValue)
-unsetOneGVal i _ = {# call unsafe g_value_unset #} (castPtr i) >> return (advancePtr i 1)
+unsetOneGVal i _ = {# call unsafe g_value_unset #} i >> return (advancePtr i 1)
 
 unsetGValue :: Ptr GenericValue -> IO ()
-unsetGValue p = {# call unsafe g_value_unset #} (castPtr p)
+unsetGValue p = {# call unsafe g_value_unset #} p
 
 --CHECKME: Bad things?
 instance Storable GenericValue where
@@ -218,20 +220,18 @@ instance Storable GenericValue where
                   {# set GValue->g_type #} p (0 :: GType) --must be initialized to 0 or init will fail
                   valueSetGenericValue gv ut
 
-mkGValueFromGenericValue :: GenericValue -> IO (Ptr GenericValue)
+mkGValueFromGenericValue :: GenericValue -> IO GenericValuePtr
 mkGValueFromGenericValue gv = do cptr <- malloc
                                  poke cptr gv
                                  return cptr
 
-freeGValue :: Ptr GenericValue -> IO ()
-freeGValue p = unsetGValue p >> free p
+freeGValue :: GenericValuePtr -> IO ()
+freeGValue p = unsetGValue (castPtr p) >> free p
 
 --get gvalue out: allocaGValue (in body use valueGetGenericValue), then
---escape the generic value
 
-withGenericValue :: (GenericValueClass arg) => arg -> (Ptr GenericValue -> IO a) -> IO a
+withGenericValue :: (GenericValueClass arg) => arg -> (GenericValuePtr -> IO a) -> IO a
 withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) freeGValue
-
 
 class GenericValueClass a where
   toGenericValue :: a -> GenericValue

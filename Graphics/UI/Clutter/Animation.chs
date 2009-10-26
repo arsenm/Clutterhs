@@ -59,7 +59,7 @@ module Graphics.UI.Clutter.Animation (
                                       animationAlpha,
 
                                       animationCompleted,
-                                    --animationBind,
+                                      animationBind,
                                       animationBindInterval,
                                       animationUpdateInterval,
                                       animationHasProperty,
@@ -130,19 +130,14 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 
 {# fun animation_completed as ^ { withAnimation* `Animation' } -> `()' #}
 
---This shouldn't be this messy. Why do I need the casting? And use fun
---I'm still missing something about the wrapping stuff
---Peter says that won't work
---TODO: Don't take gvalue directly, use gvaluearg
 --Says it returns the Animation as a convenience for language bindings.
 --This is convenient to me how?
-{-
 {# fun unsafe animation_bind as ^
-   `(GValueArgClass final)' => { withAnimation* `Animation',
-                                 `String',
-                                 withGValueArg* `final'} ->
-                                 `Animation' newAnimation* #}
--}
+   `(GenericValueClass final)' => { withAnimation* `Animation',
+                                    `String',
+                                    withGenericValue* `final'} ->
+                                   `Animation' newAnimation* #}
+
 {# fun unsafe animation_bind_interval as ^
    { withAnimation* `Animation',
      `String',
@@ -219,7 +214,7 @@ uanimate actor mode duration us =
       withArrayLen cstrs $ \len strptr ->
          withActorClass actor $ \actptr ->
            withArray gvals $ \gvPtr -> do
-               ret <- animatev actptr cmode cdur (cIntConv len) strptr (castPtr gvPtr)
+               ret <- animatev actptr cmode cdur (cIntConv len) strptr gvPtr
                foldM_ unsetOneGVal gvPtr gvals
                newAnimation ret
 
@@ -234,7 +229,7 @@ uanimateWithAlpha actor alpha us =
         withActorClass actor $ \actptr ->
           withAlpha alpha $ \alphptr ->
             withArray gvals $ \gvPtr -> do
-              ret <- animatev actptr alphptr (cIntConv len) strptr (castPtr gvPtr)
+              ret <- animatev actptr alphptr (cIntConv len) strptr gvPtr
               foldM_ unsetOneGVal gvPtr gvals
               newAnimation ret
 
@@ -256,7 +251,7 @@ uanimateWithTimeline actor mode tml us =
         withActorClass actor $ \actptr ->
           withTimeline tml $ \tmlptr ->
             withArray gvals $ \gvPtr -> do
-              ret <- animatev actptr cmode tmlptr (cIntConv len) strptr (castPtr gvPtr)
+              ret <- animatev actptr cmode tmlptr (cIntConv len) strptr gvPtr
               foldM_ unsetOneGVal gvPtr gvals
               newAnimation ret
 

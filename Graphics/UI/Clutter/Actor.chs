@@ -24,6 +24,13 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Actor (
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Actor'
+-- @
                                   actorSetFlags,
                                   actorUnsetFlags,
                                   actorGetFlags,
@@ -172,7 +179,7 @@ module Graphics.UI.Clutter.Actor (
                                 --vertexFree,
                                 --vertexEqual
 
-                                --signals etc.
+                                -- * Signals
 
                                 --onAllocationChanged,
                                 --afterAllocationChanged,
@@ -243,6 +250,10 @@ import System.Glib.Signals
 --TODO: Accept a list of the flags and add them and stuff.
 {# fun unsafe actor_set_flags as ^
    `(ActorClass self)' => { withActorClass* `self', cFromFlags `[ActorFlags]' } -> `()' #}
+
+-- | Unset /flags/ on /self/
+--   This function will emit notifications for the changed properties.
+--
 {# fun unsafe actor_unset_flags as ^
    `(ActorClass self)' => { withActorClass* `self', cFromFlags `[ActorFlags]' } -> `()' #}
 {# fun unsafe actor_get_flags as ^

@@ -24,19 +24,31 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Rectangle (
+                                     -- * Class Hierarchy
+                                     -- |
+                                     -- @
+                                     -- |  'GObject'
+                                     -- |   +----'GInitiallyUnowned'
+                                     -- |         +----'Actor'
+                                     -- |               +----'Rectangle'
+                                     -- @
+
+                                      -- * Constructors
                                       rectangleNew,
                                       rectangleNewWithColor,
 
+                                      -- * Methods
                                       rectangleGetColor,
                                       rectangleSetColor,
-                                      rectangleColor,
 
                                       rectangleGetBorderColor,
                                       rectangleSetBorderColor,
-                                      rectangleBorderColor,
-
                                       rectangleGetBorderWidth,
                                       rectangleSetBorderWidth,
+
+                                      -- * Attributes
+                                      rectangleColor,
+                                      rectangleBorderColor,
                                       rectangleBorderWidth
                                      ) where
 
@@ -46,22 +58,38 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
+-- | Creates a new ClutterActor with a rectangular shape.
 {# fun unsafe rectangle_new as ^ { } -> `Rectangle' newRectangle* #}
+
+-- | Creates a new ClutterActor with a rectangular shape and of the given /color/
+--
 {# fun unsafe rectangle_new_with_color as ^ { withColor* `Color' } -> `Rectangle' newRectangle* #}
 
+-- | Retrieves the color of rectangle
 {# fun unsafe rectangle_get_color as ^ { withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
+-- | Sets the color of a rectangle
 {# fun unsafe rectangle_set_color as ^ { withRectangle* `Rectangle', withColor* `Color' } -> `()' #}
+
+-- | The color of the rectangle.
 rectangleColor :: Attr Rectangle Color
 rectangleColor = newAttr rectangleGetColor rectangleSetColor
 
+-- | Gets the color of the border used by rectangle
 {# fun unsafe rectangle_get_border_color as ^ { withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
+-- | Sets the color of the border used by rectangle using color
 {# fun unsafe rectangle_set_border_color as ^ { withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
+
+-- | The color of the border of the rectangle.
 rectangleBorderColor :: Attr Rectangle Color
 rectangleBorderColor = newAttr rectangleGetBorderColor rectangleSetBorderColor
 
---FIXME: guint vs. int
-{# fun unsafe rectangle_get_border_width as ^ { withRectangle* `Rectangle' } -> `Int' #}
-{# fun unsafe rectangle_set_border_width as ^ { withRectangle* `Rectangle', `Int' } -> `()' #}
-rectangleBorderWidth :: Attr Rectangle Int
+-- | Gets the width (in pixels) of the border used by rectangle
+{# fun unsafe rectangle_get_border_width as ^ { withRectangle* `Rectangle' } -> `Word' cIntConv #}
+
+-- | Sets the width (in pixel) of the border used by rectangle. A width of 0 will unset the border
+{# fun unsafe rectangle_set_border_width as ^ { withRectangle* `Rectangle', cIntConv `Word' } -> `()' #}
+
+-- | The width of the border of the rectangle, in pixels.
+rectangleBorderWidth :: Attr Rectangle Word
 rectangleBorderWidth = newAttr rectangleGetBorderWidth rectangleSetBorderWidth
 

@@ -24,36 +24,47 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Path (
-                                 pathNew,
-                                 pathNewWithDescription,
-                                 pathAddMoveTo,
-                                 pathAddRelMoveTo,
-                                 pathAddLineTo,
-                                 pathAddRelLineTo,
-                                 pathAddCurveTo,
-                                 pathAddRelCurveTo,
-                                 pathAddClose,
-                                 pathAddString,
-                                 pathAddNode,
-                                 pathAddCairoPath,
-                                 pathGetNNodes,
-                                 pathGetNode,
-                                 pathGetNodes,
-                                 pathForeach,
-                                 pathInsertNode,
-                                 pathRemoveNode,
-                                 pathReplaceNode,
-                                 pathGetDescription,
-                                 pathSetDescription,
-                               --pathDescription,
-                                 pathToCairoPath,
-                                 pathClear,
-                                 pathGetPosition,
-                                 pathGetLength
-                               --pathCopy,
-                               --pathFree,
-                               --pathEqual
-                                ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Path'
+-- @
+
+-- * Constructors
+  pathNew,
+  pathNewWithDescription,
+
+-- * Methods
+  pathAddMoveTo,
+  pathAddRelMoveTo,
+  pathAddLineTo,
+  pathAddRelLineTo,
+  pathAddCurveTo,
+  pathAddRelCurveTo,
+  pathAddClose,
+  pathAddString,
+  pathAddNode,
+  pathAddCairoPath,
+  pathGetNNodes,
+  pathGetNode,
+  pathGetNodes,
+  pathForeach,
+  pathInsertNode,
+  pathRemoveNode,
+  pathReplaceNode,
+  pathGetDescription,
+  pathSetDescription,
+--pathDescription,
+  pathToCairoPath,
+  pathClear,
+  pathGetPosition,
+  pathGetLength
+--pathCopy,
+--pathFree,
+--pathEqual
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
@@ -79,8 +90,7 @@ import qualified Graphics.Rendering.Cairo.Types as Cairo
 
 {# fun unsafe path_add_cairo_path as ^ { withPath* `Path', withCairoPath `Cairo.Path' } -> `()' #}
 
---FIXME: GUInt
-{# fun unsafe path_get_n_nodes as ^ { withPath* `Path' } -> `Int' #}
+{# fun unsafe path_get_n_nodes as ^ { withPath* `Path' } -> `Word' cIntConv #}
 
 {# fun unsafe path_get_node as ^ { withPath* `Path', `Int', alloca- `PathNode' peek* } -> `()' #}
 {# fun unsafe path_get_nodes as ^ { withPath* `Path' } -> `[PathNode]' newPathNodes* #}
@@ -92,10 +102,9 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
                         {# call unsafe path_foreach #} pathPtr funcPtr nullPtr
                         freeHaskellFunPtr funcPtr
 
---FIXME: More guint
 {# fun unsafe path_insert_node as ^ { withPath* `Path', `Int', withPathNode* `PathNode' } -> `()' #}
-{# fun unsafe path_remove_node as ^ { withPath* `Path', `Int' } -> `()' #}
-{# fun unsafe path_replace_node as ^ { withPath* `Path', `Int', withPathNode* `PathNode' } -> `()' #}
+{# fun unsafe path_remove_node as ^ { withPath* `Path', cIntConv `Word' } -> `()' #}
+{# fun unsafe path_replace_node as ^ { withPath* `Path', cIntConv `Word', withPathNode* `PathNode' } -> `()' #}
 
 --FIXME: Attribute with the returning of bool from set description for success I think won't work
 {# fun unsafe path_get_description as ^ { withPath* `Path' } -> `String' #}
@@ -110,13 +119,14 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --CHECKME: Do you want to get the position out? or is it just storage?
 --CHECKME: Maybe not use type Knot = (Int, Int)
 --CHECKME: is this what I want to return?
-pathGetPosition :: Path -> Double -> IO (GUInt, Knot)
+pathGetPosition :: Path -> Double -> IO (Word, Knot)
 pathGetPosition path progress = withPath path $ \pathptr ->
-                                alloca $ \kptr ->
-                                   liftM2 (,) ({# call unsafe path_get_position #} pathptr (cFloatConv progress) (castPtr kptr))
-                                             (peek kptr)
+                                alloca $ \kptr -> do
+                                   ret <- ({# call unsafe path_get_position #} pathptr (cFloatConv progress) (castPtr kptr))
+                                   val <- peek kptr
+                                   return (cIntConv ret, val)
 
-{# fun unsafe path_get_length as ^ { withPath* `Path' } -> `GUInt' cIntConv #}
+{# fun unsafe path_get_length as ^ { withPath* `Path' } -> `Word' cIntConv #}
 
 --these unnecessary
 --{# fun unsafe path_node_copy as ^ { withPathNode* `PathNode' } -> `PathNode' #}

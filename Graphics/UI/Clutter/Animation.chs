@@ -28,46 +28,64 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Animation (
-                                      animate,
-                                      animateWithAlpha,
-                                      animateWithTimeline,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Animation'
+-- @
 
-                                      animationNew,
-                                      animationSetObject,
-                                      animationGetObject,
-                                      animationObject,
+-- * Constructors
 
-                                      animationSetMode,
-                                      animationGetMode,
-                                      animationMode,
+  animate,
+  animateWithAlpha,
+  animateWithTimeline,
+  animationNew,
 
-                                      animationSetDuration,
-                                      animationGetDuration,
-                                      animationDuration,
+-- * Methods
+  animationSetObject,
+  animationGetObject,
+  animationSetMode,
+  animationGetMode,
 
-                                      animationSetLoop,
-                                      animationGetLoop,
-                                      animationLoop,
+  animationSetDuration,
+  animationGetDuration,
 
-                                      animationSetTimeline,
-                                      animationGetTimeline,
-                                      animationTimeline,
+  animationSetLoop,
+  animationGetLoop,
 
-                                      animationSetAlpha,
-                                      animationGetAlpha,
-                                      animationAlpha,
+  animationSetTimeline,
+  animationGetTimeline,
+  animationSetAlpha,
+  animationGetAlpha,
+  animationCompleted,
+  animationBind,
+  animationBindInterval,
+  animationUpdateInterval,
 
-                                      animationCompleted,
-                                      animationBind,
-                                      animationBindInterval,
-                                      animationUpdateInterval,
-                                      animationHasProperty,
-                                      animationUnbindProperty,
-                                      animationGetInterval,
+  animationHasProperty,
+  animationUnbindProperty,
+  animationGetInterval,
+  actorGetAnimation,
+  actorAnimation,
 
-                                      actorGetAnimation,
-                                      actorAnimation
-                                     ) where
+-- * Attributes
+  animationObject,
+  animationMode,
+  animationDuration,
+  animationLoop,
+  animationTimeline,
+  animationAlpha
+
+--TODO: Signals, also name conflicts with timeline
+-- * Signals
+--onCompleted,
+--afterCompleted,
+--completed,
+--onStarted,
+--afterStarted,
+--started
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.StoreValue #}

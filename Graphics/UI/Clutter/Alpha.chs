@@ -24,26 +24,38 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Alpha (
-                                  alphaNew,
-                                  alphaNewFull,
-                                  alphaNewWithFunc,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Alpha'
+-- @
 
-                                  alphaSetTimeline,
-                                  alphaGetTimeline,
-                                  alphaTimeline,
+-- * Constructors
+  alphaNew,
+  alphaNewFull,
+  alphaNewWithFunc,
+-- * Methods
 
-                                  alphaSetMode,
-                                  alphaGetMode,
-                                  alphaMode,
+  alphaSetTimeline,
+  alphaGetTimeline,
 
-                                  alphaGetAlpha,
-                                  alphaAlpha,
-                                  alphaSetFunc,
+  alphaSetMode,
+  alphaGetMode,
 
-                                --alphaSetClosure,
-                                --alphaRegisterClosure,
-                                  alphaRegisterFunc
-                                 ) where
+  alphaGetAlpha,
+  alphaSetFunc,
+
+--alphaSetClosure,
+--alphaRegisterClosure,
+  alphaRegisterFunc,
+
+-- * Attributes
+  alphaTimeline,
+  alphaMode,
+  alphaAlpha
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

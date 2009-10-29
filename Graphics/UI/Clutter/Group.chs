@@ -24,11 +24,24 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Group (
-                                  groupNew,
-                                  groupRemoveAll,
-                                  groupGetNChildren,
-                                  groupGetNthChild
-                                 ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Actor'
+-- |               +----'Group'
+-- |                     +----'Stage'
+-- @
+
+-- * Constructors
+  groupNew,
+
+-- * Methods
+  groupRemoveAll,
+  groupGetNChildren,
+  groupGetNthChild
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

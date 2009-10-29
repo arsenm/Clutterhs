@@ -26,25 +26,34 @@
 --TODO: Property list of children?
 
 module Graphics.UI.Clutter.Container (
-                                      containerAddActor,
-                                    --containerAddList
-                                      containerRemoveActor,
-                                    --containerRemoveList,
-                                      containerGetChildren,
-                                    --containerForeach,
-                                    --containerForeachWithInternals,
-                                      containerFindChildByName,
-                                      containerRaiseChild,
-                                      containerLowerChild,
-                                      containerSortDepthOrder,
-                                    --containerClassFindChildProperty,
-                                    --containerClassListChildProperties,
-                                    --containerChildSetProperty,
-                                    --containerChildGetProperty,
-                                    --containerChildSet,
-                                    --containerChildGet,
-                                      containerGetChildMeta
-                                   ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GInterface'
+-- |   +----'Container'
+-- @
+
+-- * Methods
+  containerAddActor,
+--containerAddList
+  containerRemoveActor,
+--containerRemoveList,
+  containerGetChildren,
+
+--containerForeach,
+--containerForeachWithInternals,
+  containerFindChildByName,
+  containerRaiseChild,
+  containerLowerChild,
+  containerSortDepthOrder,
+--containerClassFindChildProperty,
+--containerClassListChildProperties,
+--containerChildSetProperty,
+--containerChildGetProperty,
+--containerChildSet,
+--containerChildGet,
+  containerGetChildMeta
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

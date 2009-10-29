@@ -26,37 +26,65 @@
 --TODO: Make it like models in gtk2hs
 
 module Graphics.UI.Clutter.Model (
-                                --modelSetNames,
-                                --modelSetTypes,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Model'
+-- |         +----'ListModel'
+-- @
 
-                                  modelGetColumnName,
-                                  modelGetColumnType,
-                                  modelGetNColumns,
-                                  modelNColumns,
-                                  modelGetNRows,
-                                  modelNRows,
-                                --modelAppend,
-                                --modelPrepend,
-                                --modelInsert,
-                                --modelInsertValue,
-                                  modelRemove,
-                                --modelForeach,
-                                  modelSetSortingColumn,
-                                  modelGetSortingColumn,
-                                  modelSortingColumn,
-                                --modelSetSort,
-                                  modelResort,
-                                --modelSetFilter,
-                                  modelGetFilterSet,
-                                  modelFilterIter,
-                                  modelFilterRow,
-                                  modelGetFirstIter,
-                                  modelGetLastIter,
-                                  modelGetIterAtRow,
+-- * Methods
 
-                             --ListModel
-                                  listModelNew
-                                 ) where
+--modelSetNames,
+--modelSetTypes,
+
+  modelGetColumnName,
+  modelGetColumnType,
+  modelGetNColumns,
+  modelNColumns,
+  modelGetNRows,
+  modelNRows,
+--modelAppend,
+--modelPrepend,
+--modelInsert,
+--modelInsertValue,
+  modelRemove,
+--modelForeach,
+  modelSetSortingColumn,
+  modelGetSortingColumn,
+  modelSortingColumn,
+--modelSetSort,
+  modelResort,
+--modelSetFilter,
+  modelGetFilterSet,
+  modelFilterIter,
+  modelFilterRow,
+  modelGetFirstIter,
+  modelGetLastIter,
+  modelGetIterAtRow,
+
+--TODO: Signals
+-- * Signals
+--onFilterChanged,
+--afterFilterChanged,
+--filterChanged,
+--onRowAdded,
+--afterRowAdded,
+--rowAdded,
+--onRowRemoved,
+--afterRowRemoved,
+--rowRemoved,
+--onSortChanged,
+--afterSortChanged,
+--sortChanged,
+
+--TODO: Move this out of this file
+-- * Constructors
+
+--ListModel
+  listModelNew
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.GValue #}

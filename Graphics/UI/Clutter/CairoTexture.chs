@@ -17,23 +17,41 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface  #-}
 
 #include <clutter/clutter.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.CairoTexture (
-                                         cairoTextureNew,
-                                         cairoTextureSetSurfaceSize,
-                                         cairoTextureGetSurfaceSize,
-                                         cairoTextureSurfaceSize,
-                                         cairoTextureCreate,
-                                         cairoTextureCreateRegion,
-                                         cairoTextureClear,
-                                         cairoSetSourceColor,
-                                         cairoSourceColor
-                                        ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Actor'
+-- |               +----'Texture'
+-- |                     +----'CairoTexture'
+-- @
+
+-- * Constructors
+  cairoTextureNew,
+
+-- * Methods
+  cairoTextureSetSurfaceSize,
+  cairoTextureGetSurfaceSize,
+
+  cairoTextureCreate,
+
+  cairoTextureCreateRegion,
+  cairoTextureClear,
+
+  cairoSetSourceColor,
+
+-- * Attributes
+  cairoTextureSurfaceSize,
+  cairoSourceColor
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}

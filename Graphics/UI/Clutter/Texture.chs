@@ -24,52 +24,67 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Texture (
-                                    textureNew,
-                                    textureNewFromFile,
-                                    textureNewFromActor,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Actor'
+-- |               +----'Texture'
+-- |                     +----'CairoTexture'
+-- @
 
-                                    textureSetFromFile,
-                                  --textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
-                                  --textureSetFromYuvData,
-                                  --textureSetAreaFromRgbData,
-                                    textureGetBaseSize,
-                                    textureBaseSize,
+-- * Constructors
+  textureNew,
+  textureNewFromFile,
+  textureNewFromActor,
 
-                                  --textureGetPixelFormat,
-                                    textureGetMaxTileWaste,
+-- * Methods
 
-                                    textureGetFilterQuality,
-                                    textureSetFilterQuality,
-                                    textureFilterQuality,
+  textureSetFromFile,
+--textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
+--textureSetFromYuvData,
+--textureSetAreaFromRgbData,
+  textureGetBaseSize,
 
-                                  --textureGetCoglTexture,
-                                  --textureSetCoglTexture,
-                                  --textureCoglTexture,
+--textureGetPixelFormat,
+  textureGetMaxTileWaste,
 
-                                  --textureSetCoglMaterial,
-                                  --textureGetCoglMaterial,
-                                  --textureCoglMaterial,
+  textureGetFilterQuality,
+  textureSetFilterQuality,
 
-                                    textureGetSyncSize,
-                                    textureSetSyncSize,
-                                    textureSyncSize,
+--textureGetCoglTexture,
+--textureSetCoglTexture,
 
-                                    textureGetRepeat,
-                                    textureSetRepeat,
-                                    textureRepeat,
+--textureSetCoglMaterial,
+--textureGetCoglMaterial,
 
-                                    textureSetKeepAspectRatio,
-                                    textureGetKeepAspectRatio,
-                                    textureKeepAspectRatio,
+  textureGetSyncSize,
+  textureSetSyncSize,
 
-                                    textureGetLoadAsync,
-                                    textureSetLoadAsync,
-                                    textureLoadAsync,
+  textureGetRepeat,
+  textureSetRepeat,
 
-                                    textureGetLoadDataAsync,
-                                    textureSetLoadDataAsync,
-                                    textureLoadDataAsync
-                                   ) where
+  textureSetKeepAspectRatio,
+  textureGetKeepAspectRatio,
+
+  textureGetLoadAsync,
+  textureSetLoadAsync,
+
+  textureGetLoadDataAsync,
+  textureSetLoadDataAsync,
+
+-- * Attributes
+  textureBaseSize,
+  textureFilterQuality,
+--textureCoglTexture,
+--textureCoglMaterial,
+  textureSyncSize,
+  textureRepeat,
+  textureKeepAspectRatio,
+  textureLoadAsync,
+  textureLoadDataAsync
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}

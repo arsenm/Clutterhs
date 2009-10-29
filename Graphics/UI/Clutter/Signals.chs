@@ -46,13 +46,15 @@ module Graphics.UI.Clutter.Signals (
   connect_PTR__INT,
   connect_BOOL__NONE,
   connect_INT__NONE,
+  connect_WORD__NONE,
   connect_NONE__NONE,
   connect_OBJECT__NONE,
   connect_PTR__NONE,
   connect_PTR_ENUM__NONE,
   connect_CHAR_INT__NONE,
   connect_STRING_INT__NONE,
-
+  connect_STRING_WORD__NONE,
+  
   ) where
 
 import Control.Monad (liftM)
@@ -71,7 +73,7 @@ import System.Glib.GObject
 -- the last one is the user g_pointer. Both are ignored.
 
 
-connect_PTR__BOOL ::
+connect_PTR__BOOL :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (Ptr a -> IO Bool) ->
@@ -83,7 +85,7 @@ connect_PTR__BOOL signal after obj user =
           failOnGError $
           user (castPtr ptr1)
 
-connect_ENUM__BOOL ::
+connect_ENUM__BOOL :: 
   (Enum a, GObjectClass obj) => SignalName ->
   ConnectAfter -> obj ->
   (a -> IO Bool) ->
@@ -95,7 +97,7 @@ connect_ENUM__BOOL signal after obj user =
           failOnGError $
           user (toEnum enum1)
 
-connect_NONE__BOOL ::
+connect_NONE__BOOL :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (IO Bool) ->
@@ -107,7 +109,7 @@ connect_NONE__BOOL signal after obj user =
           failOnGError $
           user
 
-connect_PTR__INT ::
+connect_PTR__INT :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (Ptr a -> IO Int) ->
@@ -119,7 +121,7 @@ connect_PTR__INT signal after obj user =
           failOnGError $
           user (castPtr ptr1)
 
-connect_BOOL__NONE ::
+connect_BOOL__NONE :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (Bool -> IO ()) ->
@@ -131,7 +133,7 @@ connect_BOOL__NONE signal after obj user =
           failOnGError $
           user bool1
 
-connect_INT__NONE ::
+connect_INT__NONE :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (Int -> IO ()) ->
@@ -143,7 +145,19 @@ connect_INT__NONE signal after obj user =
           failOnGError $
           user int1
 
-connect_NONE__NONE ::
+connect_WORD__NONE :: 
+  GObjectClass obj => SignalName ->
+  ConnectAfter -> obj ->
+  (Word -> IO ()) ->
+  IO (ConnectId obj)
+connect_WORD__NONE signal after obj user =
+  connectGeneric signal after obj action
+  where action :: Ptr GObject -> Word -> IO ()
+        action _ int1 =
+          failOnGError $
+          user int1
+
+connect_NONE__NONE :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (IO ()) ->
@@ -155,7 +169,7 @@ connect_NONE__NONE signal after obj user =
           failOnGError $
           user
 
-connect_OBJECT__NONE ::
+connect_OBJECT__NONE :: 
   (GObjectClass a', GObjectClass obj) => SignalName ->
   ConnectAfter -> obj ->
   (a' -> IO ()) ->
@@ -168,7 +182,7 @@ connect_OBJECT__NONE signal after obj user =
           makeNewGObject mkGObject (return obj1) >>= \obj1' ->
           user (unsafeCastGObject obj1')
 
-connect_PTR__NONE ::
+connect_PTR__NONE :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (Ptr a -> IO ()) ->
@@ -180,7 +194,7 @@ connect_PTR__NONE signal after obj user =
           failOnGError $
           user (castPtr ptr1)
 
-connect_PTR_ENUM__NONE ::
+connect_PTR_ENUM__NONE :: 
   (Enum b, GObjectClass obj) => SignalName ->
   ConnectAfter -> obj ->
   (Ptr a -> b -> IO ()) ->
@@ -192,7 +206,7 @@ connect_PTR_ENUM__NONE signal after obj user =
           failOnGError $
           user (castPtr ptr1) (toEnum enum2)
 
-connect_CHAR_INT__NONE ::
+connect_CHAR_INT__NONE :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (Char -> Int -> IO ()) ->
@@ -204,7 +218,7 @@ connect_CHAR_INT__NONE signal after obj user =
           failOnGError $
           user char1 int2
 
-connect_STRING_INT__NONE ::
+connect_STRING_INT__NONE :: 
   GObjectClass obj => SignalName ->
   ConnectAfter -> obj ->
   (String -> Int -> IO ()) ->
@@ -212,6 +226,19 @@ connect_STRING_INT__NONE ::
 connect_STRING_INT__NONE signal after obj user =
   connectGeneric signal after obj action
   where action :: Ptr GObject -> CString -> Int -> IO ()
+        action _ str1 int2 =
+          failOnGError $
+          peekUTFString str1 >>= \str1' ->
+          user str1' int2
+
+connect_STRING_WORD__NONE :: 
+  GObjectClass obj => SignalName ->
+  ConnectAfter -> obj ->
+  (String -> Word -> IO ()) ->
+  IO (ConnectId obj)
+connect_STRING_WORD__NONE signal after obj user =
+  connectGeneric signal after obj action
+  where action :: Ptr GObject -> CString -> Word -> IO ()
         action _ str1 int2 =
           failOnGError $
           peekUTFString str1 >>= \str1' ->

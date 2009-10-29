@@ -24,33 +24,33 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Rectangle (
-                                     -- * Class Hierarchy
-                                     -- |
-                                     -- @
-                                     -- |  'GObject'
-                                     -- |   +----'GInitiallyUnowned'
-                                     -- |         +----'Actor'
-                                     -- |               +----'Rectangle'
-                                     -- @
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Actor'
+-- |               +----'Rectangle'
+-- @
 
-                                      -- * Constructors
-                                      rectangleNew,
-                                      rectangleNewWithColor,
+-- * Constructors
+  rectangleNew,
+  rectangleNewWithColor,
 
-                                      -- * Methods
-                                      rectangleGetColor,
-                                      rectangleSetColor,
+-- * Methods
+  rectangleGetColor,
+  rectangleSetColor,
 
-                                      rectangleGetBorderColor,
-                                      rectangleSetBorderColor,
-                                      rectangleGetBorderWidth,
-                                      rectangleSetBorderWidth,
+  rectangleGetBorderColor,
+  rectangleSetBorderColor,
+  rectangleGetBorderWidth,
+  rectangleSetBorderWidth,
 
-                                      -- * Attributes
-                                      rectangleColor,
-                                      rectangleBorderColor,
-                                      rectangleBorderWidth
-                                     ) where
+-- * Attributes
+  rectangleColor,
+  rectangleBorderColor,
+  rectangleBorderWidth
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

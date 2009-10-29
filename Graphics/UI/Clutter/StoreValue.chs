@@ -68,7 +68,7 @@ import Control.Exception (bracket)
 
 import System.Glib.FFI
 import System.Glib.GValue
-import System.Glib.GValueTypes
+import System.Glib.GValueTypes hiding (valueGetChar, valueGetUChar, valueSetUChar, valueSetChar)
 import qualified System.Glib.GTypeConstants as GType
 import System.Glib.Types
 import System.Glib.GType

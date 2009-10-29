@@ -24,19 +24,30 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BindingPool (
-                                        bindingPoolNew,
-                                      --bindingPoolGetForClass,
-                                        bindingPoolFind,
-                                        bindingPoolInstallAction,
-                                      --bindingPoolInstallClosure,
-                                        bindingPoolOverrideAction,
-                                      --bindingPoolOverrideClosure,
-                                        bindingPoolFindAction,
-                                        bindingPoolRemoveAction,
-                                        bindingPoolBlockAction,
-                                        bindingPoolUnblockAction,
-                                        bindingPoolActivate
-                                       ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'BindingPool'
+-- @
+
+-- * Constructors
+
+  bindingPoolNew,
+
+-- * Methods
+--bindingPoolGetForClass,
+  bindingPoolFind,
+  bindingPoolInstallAction,
+--bindingPoolInstallClosure,
+  bindingPoolOverrideAction,
+--bindingPoolOverrideClosure,
+  bindingPoolFindAction,
+  bindingPoolRemoveAction,
+  bindingPoolBlockAction,
+  bindingPoolUnblockAction,
+  bindingPoolActivate
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

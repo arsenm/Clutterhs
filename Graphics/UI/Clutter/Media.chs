@@ -24,31 +24,45 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Media (
-                                  mediaSetUri,
-                                  mediaGetUri,
-                                  mediaUri,
+-- |
+-- @
+-- |  'GInterface'
+-- |   +----'Media'
+-- @
 
-                                  mediaSetPlaying,
-                                  mediaGetPlaying,
-                                  mediaPlaying,
+-- * Methods
+  mediaSetUri,
+  mediaGetUri,
+  mediaSetPlaying,
+  mediaGetPlaying,
+  mediaSetProgress,
+  mediaGetProgress,
+  mediaSetAudioVolume,
+  mediaGetAudioVolume,
+  mediaGetCanSeek,
+  mediaGetBufferFill,
+  mediaGetDuration,
+  mediaSetFilename,
 
-                                  mediaSetProgress,
-                                  mediaGetProgress,
-                                  mediaProgress,
+-- * Attributes
+  mediaUri,
+  mediaPlaying,
+  mediaCanSeek,
+  mediaProgress,
+  mediaAudioVolume,
+  mediaBufferFill,
+  mediaDuration,
+  mediaFilename
 
-                                  mediaSetAudioVolume,
-                                  mediaGetAudioVolume,
-                                  mediaAudioVolume,
-
-                                  mediaGetCanSeek,
-                                  mediaCanSeek,
-                                  mediaGetBufferFill,
-                                  mediaBufferFill,
-                                  mediaGetDuration,
-                                  mediaDuration,
-                                  mediaSetFilename,
-                                  mediaFilename
-                                 ) where
+-- * Signals
+--TODO:Signals
+--onEos,
+--afterEos,
+--eos,
+--onError,
+--afterError,
+--error
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

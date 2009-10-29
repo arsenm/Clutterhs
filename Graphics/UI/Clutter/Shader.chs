@@ -24,12 +24,22 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Shader (
-                                   shaderNew,
-                                   shaderIsCompiled,
-                                   shaderSetIsEnabled,
-                                   shaderGetIsEnabled,
-                                   shaderIsEnabled
-                                  ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Shader'
+-- @
+
+-- * Constructors
+  shaderNew,
+
+-- * Methods
+  shaderIsCompiled,
+  shaderSetIsEnabled,
+  shaderGetIsEnabled,
+  shaderIsEnabled
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

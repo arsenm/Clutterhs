@@ -24,27 +24,37 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Score (
-                                  scoreNew,
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Score'
+-- @
 
-                                  scoreSetLoop,
-                                  scoreGetLoop,
-                                  scoreLoop,
+-- * Constructors
+  scoreNew,
 
-                                  scoreAppend,
-                                  scoreAppendAtMarker,
+-- * Methods
+  scoreSetLoop,
+  scoreGetLoop,
 
-                                  scoreRemove,
-                                  scoreRemoveAll,
+  scoreAppend,
+  scoreAppendAtMarker,
 
-                                  scoreGetTimeline,
-                                  scoreListTimelines,
+  scoreRemove,
+  scoreRemoveAll,
 
-                                  scoreStart,
-                                  scorePause,
-                                  scoreStop,
-                                  scoreIsPlaying,
-                                  scoreRewind
-                                 ) where
+  scoreGetTimeline,
+  scoreListTimelines,
+
+  scoreStart,
+  scorePause,
+  scoreStop,
+  scoreIsPlaying,
+  scoreRewind,
+
+-- * Attributes
+    scoreLoop
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

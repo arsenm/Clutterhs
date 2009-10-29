@@ -24,12 +24,22 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Scriptable (
-                                       scriptableSetId,
-                                       scriptableGetId,
-                                       scriptableId
-                                     --scriptableParseCustomNode,
-                                     --scriptableSetCustomProperty
-                                      ) where
+-- |
+-- @
+-- |  'GInterface'
+-- |   +----'Scriptable'
+-- @
+
+-- * Methods
+  scriptableSetId,
+  scriptableGetId,
+
+--scriptableParseCustomNode,
+--scriptableSetCustomProperty
+
+-- * Attributes
+  scriptableId
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

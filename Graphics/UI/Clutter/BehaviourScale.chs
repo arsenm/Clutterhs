@@ -24,11 +24,25 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.BehaviourScale (
-                                           behaviourScaleNew,
-                                           behaviourScaleSetBounds,
-                                           behaviourScaleGetBounds,
-                                           behaviourScaleBounds
-                                          ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Behaviour'
+-- |         +----'BehaviourScale'
+-- |
+-- @
+
+-- * Constructors
+  behaviourScaleNew,
+
+-- * Methods
+  behaviourScaleSetBounds,
+  behaviourScaleGetBounds,
+
+-- * Attributes
+  behaviourScaleBounds
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}

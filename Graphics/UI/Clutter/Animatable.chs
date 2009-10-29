@@ -24,8 +24,14 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Animatable (
-                                       animatableAnimateProperty
-                                      ) where
+-- |
+-- @
+-- |  'GInterface'
+-- |   +----'Animatable'
+-- @
+
+  animatableAnimateProperty
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

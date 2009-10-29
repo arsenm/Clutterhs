@@ -24,25 +24,42 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Interval (
-                                     intervalNew,
-                                   --intervalNewWithValues,
-                                   --intervalClone,
-                                   --intervalGetValueType,
-                                   --intervalSetInitialValue,
-                                   --intervalGetInitialValue,
-                                   --intervalInitialValue,
-                                   --intervalPeekInitalValue,
-                                   --intervalSetFinalValue,
-                                   --intervalGetFinalValue,
-                                   --intervalFinalValue,
-                                   --intervalPeekFinalValue,
-                                   --intervalSetInterval,
-                                   --intervalGetInterval,
-                                   --intervalInterval,
-                                   --intervalComputeValue,
-                                   --intervalValidate,
-                                   --intervalRegisterProgressFunc
-                                    ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Interval'
+-- @
+
+-- * Constructors
+  intervalNew
+--intervalNewWithValues,
+--intervalClone,
+
+-- * Methods
+
+--intervalGetValueType,
+--intervalSetInitialValue,
+--intervalGetInitialValue,
+
+--intervalPeekInitalValue,
+--intervalSetFinalValue,
+--intervalGetFinalValue,
+
+--intervalPeekFinalValue,
+--intervalSetInterval,
+--intervalGetInterval,
+
+--intervalComputeValue,
+--intervalValidate,
+--intervalRegisterProgressFunc
+
+-- * Attributes
+--intervalInitialValue,
+--intervalFinalValue,
+--intervalInterval,
+) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.GValue #}

@@ -24,21 +24,32 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Script (
-                                   scriptNew,
-                                 --scriptLoadFromData,
-                                 --scriptLoadFromFile,
-                                 --scriptAddSearchPaths,
-                                   scriptLookupFilename,
-                                 --scriptGetObject,
-                                 --scriptGetObjects,
-                                 --scriptUnmergeObjects,
-                                   scriptEnsureObjects,
-                                 --scriptListObjects,
-                                   scriptConnectSignals,
-                                 --scriptConnectSignalsFull,
-                                 --scriptGetTypeFromName,
-                                   getScriptId
-                                  ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Script'
+-- @
+
+-- * Constructors
+  scriptNew,
+
+-- * Methods
+
+--scriptLoadFromData,
+--scriptLoadFromFile,
+--scriptAddSearchPaths,
+  scriptLookupFilename,
+--scriptGetObject,
+--scriptGetObjects,
+--scriptUnmergeObjects,
+  scriptEnsureObjects,
+--scriptListObjects,
+  scriptConnectSignals,
+--scriptConnectSignalsFull,
+--scriptGetTypeFromName,
+  getScriptId
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

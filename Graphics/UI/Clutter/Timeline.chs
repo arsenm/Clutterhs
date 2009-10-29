@@ -24,62 +24,76 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Timeline (
-                                      timelineNew,
-                                      timelineClone,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'Timeline'
+-- @
 
-                                      timelineSetDuration,
-                                      timelineGetDuration,
-                                      timelineDuration,
+-- * Constructors
 
-                                      timelineSetLoop,
-                                      timelineGetLoop,
-                                      timelineLoop,
+  timelineNew,
+  timelineClone,
 
-                                      timelineSetDelay,
-                                      timelineGetDelay,
-                                      timelineDelay,
+-- * Methods
 
-                                      timelineSetDirection,
-                                      timelineGetDirection,
-                                      timelineDirection,
+  timelineSetDuration,
+  timelineGetDuration,
 
-                                      timelineStart,
-                                      timelinePause,
-                                      timelineStop,
-                                      timelineRewind,
-                                      timelineSkip,
-                                      timelineAdvance,
-                                      timelineGetElapsedTime,
-                                      timelineGetDelta,
-                                      timelineGetProgress,
-                                      timelineIsPlaying,
+  timelineSetLoop,
+  timelineGetLoop,
 
-                                      timelineAddMarkerAtTime,
-                                      timelineHasMarker,
-                                      timelineListMarkers,
-                                      timelineRemoveMarker,
-                                      timelineAdvanceToMarker,
+  timelineSetDelay,
+  timelineGetDelay,
 
-                                      onCompleted,
-                                      afterCompleted,
-                                      completed,
+  timelineSetDirection,
+  timelineGetDirection,
 
-                                      onMarkerReached,
-                                      afterMarkerReached,
-                                      markerReached,
+  timelineStart,
+  timelinePause,
+  timelineStop,
+  timelineRewind,
+  timelineSkip,
+  timelineAdvance,
+  timelineGetElapsedTime,
+  timelineGetDelta,
+  timelineGetProgress,
+  timelineIsPlaying,
 
-                                      onNewFrame,
-                                      afterNewFrame,
-                                      newFrame,
+  timelineAddMarkerAtTime,
+  timelineHasMarker,
+  timelineListMarkers,
+  timelineRemoveMarker,
+  timelineAdvanceToMarker,
 
-                                      onPaused,
-                                      afterPaused,
-                                      paused,
+-- * Attributes
+  timelineDuration,
+  timelineLoop,
+  timelineDelay,
+  timelineDirection,
 
-                                      onStarted,
-                                      afterStarted,
-                                      started
-                                     ) where
+-- * Signals
+  onCompleted,
+  afterCompleted,
+  completed,
+
+  onMarkerReached,
+  afterMarkerReached,
+  markerReached,
+
+  onNewFrame,
+  afterNewFrame,
+  newFrame,
+
+  onPaused,
+  afterPaused,
+  paused,
+
+  onStarted,
+  afterStarted,
+  started
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
@@ -91,13 +105,12 @@ import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.Signals
 
---FIXME: GUInt
-{# fun unsafe timeline_new as ^ { `Int' } -> `Timeline' newTimeline* #}
+{# fun unsafe timeline_new as ^ { cIntConv `Word' } -> `Timeline' newTimeline* #}
 {# fun unsafe timeline_clone as ^ { withTimeline* `Timeline'} -> `Timeline' newTimeline* #}
 
-{# fun unsafe timeline_set_duration as ^ { withTimeline* `Timeline', `Int' } -> `()' #}
-{# fun unsafe timeline_get_duration as ^ { withTimeline* `Timeline' } -> `Int' #}
-timelineDuration :: Attr Timeline Int
+{# fun unsafe timeline_set_duration as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
+{# fun unsafe timeline_get_duration as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
+timelineDuration :: Attr Timeline Word
 timelineDuration = newAttr timelineGetDuration timelineSetDuration
 
 {# fun unsafe timeline_set_loop as ^ { withTimeline* `Timeline', `Bool' } -> `()' #}
@@ -105,9 +118,9 @@ timelineDuration = newAttr timelineGetDuration timelineSetDuration
 timelineLoop :: Attr Timeline Bool
 timelineLoop = newAttr timelineGetLoop timelineSetLoop
 
-{# fun unsafe timeline_set_delay as ^ { withTimeline* `Timeline', `Int' } -> `()' #}
-{# fun unsafe timeline_get_delay as ^ { withTimeline* `Timeline' } -> `Int' #}
-timelineDelay :: Attr Timeline Int
+{# fun unsafe timeline_set_delay as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
+{# fun unsafe timeline_get_delay as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
+timelineDelay :: Attr Timeline Word
 timelineDelay = newAttr timelineGetDelay timelineSetDelay
 
 {# fun unsafe timeline_set_direction as ^
@@ -122,19 +135,18 @@ timelineDirection = newAttr timelineGetDirection timelineSetDirection
 {# fun unsafe timeline_stop as ^ { withTimeline* `Timeline' } -> `()' #}
 {# fun unsafe timeline_rewind as ^ { withTimeline* `Timeline' } -> `()' #}
 
---TODO: GUInt
-{# fun unsafe timeline_skip as ^ { withTimeline* `Timeline', `Int' } -> `()' #}
-{# fun unsafe timeline_advance as ^ { withTimeline* `Timeline', `Int' } -> `()' #}
+{# fun unsafe timeline_skip as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
+{# fun unsafe timeline_advance as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
 
-{# fun unsafe timeline_get_elapsed_time as ^ { withTimeline* `Timeline' } -> `Int' #}
-{# fun unsafe timeline_get_delta as ^ { withTimeline* `Timeline' } -> `Int' #}
+{# fun unsafe timeline_get_elapsed_time as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
+{# fun unsafe timeline_get_delta as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
 
 {# fun unsafe timeline_get_progress as ^ { withTimeline* `Timeline' } -> `Double' #}
 
 {# fun unsafe timeline_is_playing as ^ { withTimeline* `Timeline' } -> `Bool' #}
 
 {# fun unsafe timeline_add_marker_at_time as ^
-       { withTimeline* `Timeline', `String', `Int' } -> `()' #}
+       { withTimeline* `Timeline', `String', cIntConv `Word' } -> `()' #}
 
 {# fun unsafe timeline_has_marker as ^ { withTimeline* `Timeline', `String' } -> `Bool' #}
 
@@ -161,14 +173,12 @@ afterCompleted = connect_NONE__NONE "completed" True
 completed :: Signal Timeline (IO ())
 completed = Signal (connect_NONE__NONE "completed")
 
+onMarkerReached, afterMarkerReached :: Timeline -> (String -> Word -> IO ()) -> IO (ConnectId Timeline)
+onMarkerReached = connect_STRING_WORD__NONE "marker-reached" False
+afterMarkerReached = connect_STRING_WORD__NONE "marker-reached" True
 
-onMarkerReached, afterMarkerReached :: Timeline -> (String -> Int -> IO ()) -> IO (ConnectId Timeline)
-onMarkerReached = connect_STRING_INT__NONE "marker-reached" False
-afterMarkerReached = connect_STRING_INT__NONE "marker-reached" True
-
-markerReached :: Signal Timeline (String -> Int -> IO ())
-markerReached = Signal (connect_STRING_INT__NONE "marker-reached")
-
+markerReached :: Signal Timeline (String -> Word -> IO ())
+markerReached = Signal (connect_STRING_WORD__NONE "marker-reached")
 
 onNewFrame, afterNewFrame :: Timeline -> (Int -> IO ()) -> IO (ConnectId Timeline)
 onNewFrame = connect_INT__NONE "new-frame" False
@@ -184,7 +194,6 @@ afterPaused = connect_NONE__NONE "paused" True
 
 paused :: Signal Timeline (IO ())
 paused = Signal (connect_NONE__NONE "paused")
-
 
 onStarted, afterStarted :: Timeline -> IO () -> IO (ConnectId Timeline)
 onStarted = connect_NONE__NONE "started" False

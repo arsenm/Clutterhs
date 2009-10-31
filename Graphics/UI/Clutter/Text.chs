@@ -158,9 +158,21 @@ module Graphics.UI.Clutter.Text (
   textCursorPosition,
   textCursorVisible,
   textCursorSize,
+
+-- * Signals
+  onActivate,
+  afterActivate,
+  activate,
+--onCursorEvent,
+--afterCursorEvent,
+--cursorEvent,
+  onTextChanged,
+  afterTextChanged,
+  textChanged
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import System.Glib.GObject
@@ -375,4 +387,28 @@ textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_p
                                                    pStr <- makeNewPangoString str
                                                    withAttrList pStr pattrs $ \attrPtr ->
                                                      func txtPtr strPtr attrPtr (cIntConv cpos)
+
+onActivate, afterActivate :: Text -> IO () -> IO (ConnectId Text)
+onActivate = connect_NONE__NONE "activate" False
+afterActivate = connect_NONE__NONE "activate" True
+
+activate :: Signal Text (IO ())
+activate = Signal (connect_NONE__NONE "activate")
+
+--TODO: How to use Geometry here?
+{-
+onCursorEvent, afterCursorEvent :: Text -> (Geometry -> IO ()) -> IO (ConnectId Text)
+onCursorEvent = connect_PTR__NONE "cursor-event" False
+afterCursorEvent = connect_PTR__NONE "cursor-event" True
+-}
+
+cursorEvent :: Signal Text (IO ())
+cursorEvent = Signal (connect_NONE__NONE "cursor-event")
+
+onTextChanged, afterTextChanged :: Text -> IO () -> IO (ConnectId Text)
+onTextChanged = connect_NONE__NONE "text-changed" False
+afterTextChanged = connect_NONE__NONE "text-changed" True
+
+textChanged :: Signal Text (IO ())
+textChanged = Signal (connect_NONE__NONE "text-changed")
 

@@ -68,7 +68,6 @@ module Graphics.UI.Clutter.Score (
   afterStarted,
   started,
 
-
   onTimelineCompleted,
   afterTimelineCompleted,
   timelineCompleted,

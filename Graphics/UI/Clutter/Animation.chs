@@ -88,6 +88,7 @@ module Graphics.UI.Clutter.Animation (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.StoreValue #}
 
 import C2HS
@@ -291,4 +292,21 @@ instance AnimateArg (String, Word8) where
 --that seems bad...
 instance (GObjectClass obj) => AnimateArg (String, obj) where
     toAnimateArg = second (GVobject . toGObject)
+
+
+
+onCompleted, afterCompleted :: Animation -> IO () -> IO (ConnectId Animation)
+onCompleted = connect_NONE__NONE "completed" False
+afterCompleted = connect_NONE__NONE "completed" True
+
+completed :: Signal Animation (IO ())
+completed = Signal (connect_NONE__NONE "completed")
+
+
+onStarted, afterStarted :: Animation -> IO () -> IO (ConnectId Animation)
+onStarted = connect_NONE__NONE "started" False
+afterStarted = connect_NONE__NONE "started" True
+
+started :: Signal Animation (IO ())
+started = Signal (connect_NONE__NONE "started")
 

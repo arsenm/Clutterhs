@@ -290,7 +290,11 @@ module Graphics.UI.Clutter.Types (
 
                                   Callback,
                                   CCallback,
-                                  newCallback
+                                  newCallback,
+
+                                  ModelForeachFunc,
+                                  CModelForeachFunc,
+                                  newModelForeachFunc
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -303,7 +307,7 @@ import System.Glib.GValue (GValue(GValue))
 import System.Glib.GList
 import System.Glib.Flags
 import System.Glib.FFI
-import Control.Monad (when)
+import Control.Monad (when, liftM2, join)
 import Control.Exception (bracket)
 
 --GTK uses the floating reference stuff
@@ -1315,5 +1319,20 @@ newCallback userfunc = mkCallback (newCallback' userfunc)
 
 foreign import ccall "wrapper"
     mkCallback :: (Ptr Actor -> IO ()) -> IO CCallback
+
+
+-- *** ModelForeachFunc
+
+type ModelForeachFunc = Model -> ModelIter -> IO Bool
+type CModelForeachFunc = FunPtr (Ptr Model -> Ptr ModelIter -> Ptr () -> IO CInt)
+
+newModelForeachFunc :: ModelForeachFunc -> IO CModelForeachFunc
+newModelForeachFunc userfunc = mkModelForeachFunc (newModelForeachFunc' userfunc)
+    where
+      newModelForeachFunc' :: ModelForeachFunc -> Ptr Model -> Ptr ModelIter -> IO Bool
+      newModelForeachFunc' userfunc modPtr miPtr = join $ liftM2 userfunc (newModel modPtr) (newModelIter miPtr)
+
+foreign import ccall "wrapper"
+    mkModelForeachFunc :: (Ptr Model -> Ptr ModelIter -> IO Bool) -> IO CModelForeachFunc
 
 

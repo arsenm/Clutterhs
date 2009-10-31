@@ -50,7 +50,7 @@ module Graphics.UI.Clutter.Model (
 --modelInsert,
 --modelInsertValue,
   modelRemove,
---modelForeach,
+  modelForeach,
   modelSetSortingColumn,
   modelGetSortingColumn,
   modelSortingColumn,
@@ -66,18 +66,18 @@ module Graphics.UI.Clutter.Model (
 
 --TODO: Signals
 -- * Signals
---onFilterChanged,
---afterFilterChanged,
---filterChanged,
---onRowAdded,
---afterRowAdded,
---rowAdded,
---onRowRemoved,
---afterRowRemoved,
---rowRemoved,
---onSortChanged,
---afterSortChanged,
---sortChanged,
+  onFilterChanged,
+  afterFilterChanged,
+  filterChanged,
+  onRowAdded,
+  afterRowAdded,
+  rowAdded,
+  onRowRemoved,
+  afterRowRemoved,
+  rowRemoved,
+  onSortChanged,
+  afterSortChanged,
+  sortChanged,
 
 --TODO: Move this out of this file
 -- * Constructors
@@ -87,6 +87,7 @@ module Graphics.UI.Clutter.Model (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
@@ -125,6 +126,15 @@ modelSortingColumn = newAttr modelGetSortingColumn modelSetSortingColumn
 --CHECKME: unsafe?
 {# fun unsafe model_remove as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `()' #}
+
+
+modelForeach :: (ModelClass b) => b -> ModelForeachFunc -> IO ()
+modelForeach b func = withModelClass b $ \mptr -> do
+                        funcPtr <- newModelForeachFunc func
+                        {# call unsafe model_foreach #} mptr funcPtr nullPtr
+                        freeHaskellFunPtr funcPtr
+                      --CHECKME: unsafe?
+
 
 {# fun unsafe model_resort as ^
        `(ModelClass model)' => { withModelClass* `model' } -> `()' #}
@@ -166,4 +176,44 @@ listModelNew lst = let (types, names) = unzip lst
                        withArray types $ \typesPtr ->
                           newListModel =<< {# call unsafe list_model_newv #} (cIntConv len) typesPtr namesPtr
 
+
+
+onFilterChanged, afterFilterChanged :: Model -> IO () -> IO (ConnectId Model)
+onFilterChanged = connect_NONE__NONE "filter_changed" False
+afterFilterChanged = connect_NONE__NONE "filter_changed" True
+
+filterChanged :: Signal Model (IO ())
+filterChanged = Signal (connect_NONE__NONE "filter_changed")
+
+
+onRowAdded, afterRowAdded :: Model -> (ModelIter -> IO ()) -> IO (ConnectId Model)
+onRowAdded = connect_OBJECT__NONE "row_added" False
+afterRowAdded = connect_OBJECT__NONE "row_added" True
+
+rowAdded :: Signal Model (ModelIter ->IO ())
+rowAdded = Signal (connect_OBJECT__NONE "row_added")
+
+
+onRowChanged, afterRowChanged :: Model -> (ModelIter -> IO ()) -> IO (ConnectId Model)
+onRowChanged = connect_OBJECT__NONE "row_changed" False
+afterRowChanged = connect_OBJECT__NONE "row_changed" True
+
+rowChanged :: Signal Model (ModelIter ->IO ())
+rowChanged = Signal (connect_OBJECT__NONE "row_changed")
+
+
+onRowRemoved, afterRowRemoved :: Model -> (ModelIter -> IO ()) -> IO (ConnectId Model)
+onRowRemoved = connect_OBJECT__NONE "row_removed" False
+afterRowRemoved = connect_OBJECT__NONE "row_removed" True
+
+rowRemoved :: Signal Model (ModelIter ->IO ())
+rowRemoved = Signal (connect_OBJECT__NONE "row_removed")
+
+
+onSortChanged, afterSortChanged :: Model -> IO () -> IO (ConnectId Model)
+onSortChanged = connect_NONE__NONE "sort_changed" False
+afterSortChanged = connect_NONE__NONE "sort_changed" True
+
+sortChanged :: Signal Model (ModelIter ->IO ())
+sortChanged = Signal (connect_OBJECT__NONE "sort_changed")
 

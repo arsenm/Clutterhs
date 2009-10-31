@@ -132,6 +132,7 @@ module Graphics.UI.Clutter.Text (
 
                                  textActivate,
                                  textPositionToCoords,
+                                 textSetPreeditString,
 
                                  --TODO: Export more of Pango?
                                  PangoLayout,
@@ -153,6 +154,7 @@ import Data.IORef
 import Graphics.UI.Gtk.Types (mkPangoLayoutRaw, toPangoLayoutRaw, unPangoLayoutRaw)
 import Graphics.UI.Gtk.Pango.Types
 import Graphics.UI.Gtk.Pango.Layout
+import Graphics.UI.Gtk.Pango.Attributes
 import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 --CHECKME: Is LayoutWrapMode/LayoutAlignment the wrap mode we want?
@@ -330,4 +332,14 @@ textCursorSize = newAttr textGetCursorSize textSetCursorSize
          alloca- `Float' peekFloatConv*,
          alloca- `Float' peekFloatConv*,
          alloca- `Float' peekFloatConv*} -> `Bool' #}
+
+--CHECKME: I've never used Pango, and not really sure if this is good
+--also it seems weird.
+textSetPreeditString :: Text -> String -> [PangoAttribute] -> Word -> IO ()
+textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_preedit_string #}
+                                            in withText text $ \txtPtr ->
+                                                 withUTFString str $ \strPtr -> do
+                                                   pStr <- makeNewPangoString str
+                                                   withAttrList pStr pattrs $ \attrPtr ->
+                                                     func txtPtr strPtr attrPtr (cIntConv cpos)
 

@@ -53,16 +53,39 @@ module Graphics.UI.Clutter.Score (
   scoreRewind,
 
 -- * Attributes
-    scoreLoop
+  scoreLoop,
+
+-- * Signals
+{-
+--FIXME: Export name conflict
+  onCompleted,
+  afterCompleted,
+  completed,
+  onPaused,
+  afterPaused,
+  paused,
+  onStarted,
+  afterStarted,
+  started,
+
+
+  onTimelineCompleted,
+  afterTimelineCompleted,
+  timelineCompleted,
+  onTimelineStarted,
+  afterTimelineStarted,
+  timelineStarted
+ -}
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
-{# fun unsafe score_new as ^ {} -> `Score' newScore* #}
+{# fun unsafe score_new as ^ { } -> `Score' newScore* #}
 
 {# fun unsafe score_set_loop as ^ { withScore* `Score', `Bool' } -> `()' #}
 {# fun unsafe score_get_loop as ^ { withScore* `Score' } -> `Bool' #}
@@ -93,4 +116,45 @@ scoreLoop = newAttr scoreGetLoop scoreSetLoop
 {# fun unsafe score_is_playing as ^ { withScore* `Score' } -> `Bool' #}
 
 {# fun unsafe score_rewind as ^ { withScore* `Score' } -> `()' #}
+
+
+onCompleted, afterCompleted :: Score -> IO () -> IO (ConnectId Score)
+onCompleted = connect_NONE__NONE "completed" False
+afterCompleted = connect_NONE__NONE "completed" True
+
+completed :: Signal Score (IO ())
+completed = Signal (connect_NONE__NONE "completed")
+
+
+onPaused, afterPaused :: Score -> IO () -> IO (ConnectId Score)
+onPaused = connect_NONE__NONE "paused" False
+afterPaused = connect_NONE__NONE "paused" True
+
+paused :: Signal Score (IO ())
+paused = Signal (connect_NONE__NONE "paused")
+
+
+onStarted, afterStarted :: Score -> IO () -> IO (ConnectId Score)
+onStarted = connect_NONE__NONE "started" False
+afterStarted = connect_NONE__NONE "started" True
+
+started :: Signal Score (IO ())
+started = Signal (connect_NONE__NONE "started")
+
+
+onTimelineCompleted, afterTimelineCompleted :: Score -> (Timeline -> IO ()) -> IO (ConnectId Score)
+onTimelineCompleted = connect_OBJECT__NONE "timeline_completed" False
+afterTimelineCompleted = connect_OBJECT__NONE "timeline_completed" True
+
+timelineCompleted :: Signal Score (Timeline -> IO ())
+timelineCompleted = Signal (connect_OBJECT__NONE "timeline_completed")
+
+
+onTimelineStarted, afterTimelineStarted :: Score -> (Timeline -> IO ()) -> IO (ConnectId Score)
+onTimelineStarted = connect_OBJECT__NONE "timeline_started" False
+afterTimelineStarted = connect_OBJECT__NONE "timeline_started" True
+
+timelineStarted :: Signal Score (Timeline -> IO ())
+timelineStarted = Signal (connect_OBJECT__NONE "timeline_started")
+
 

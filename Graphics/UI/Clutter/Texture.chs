@@ -83,10 +83,24 @@ module Graphics.UI.Clutter.Texture (
   textureRepeat,
   textureKeepAspectRatio,
   textureLoadAsync,
-  textureLoadDataAsync
+  textureLoadDataAsync,
+
+-- * Signals
+--onLoadFinished,
+--afterLoadFinished,
+--loadFinished,
+
+  onPixbufChange,
+  afterPixbufChange,
+  pixbufChange,
+
+  onSizeChange,
+  afterSizeChange,
+  sizeChange
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
@@ -209,4 +223,30 @@ textureLoadAsync = newAttr textureGetLoadAsync textureSetLoadAsync
 {# fun unsafe texture_set_load_data_async as ^ { withTexture* `Texture', `Bool'} -> `()' #}
 textureLoadDataAsync :: Attr Texture Bool
 textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
+
+{-
+--TODO: Also needs GError
+onLoadFinished, afterLoadFinished :: Texture -> IO () -> IO (ConnectId Texture)
+onLoadFinished = connect_NONE__NONE "load-finished" False
+afterLoadFinished = connect_NONE__NONE "load-finished" True
+
+loadFinished :: Signal Texture (IO ())
+loadFinished = Signal (connect_NONE__NONE "load-finished")
+
+-}
+
+onPixbufChange, afterPixbufChange :: Texture -> IO () -> IO (ConnectId Texture)
+onPixbufChange = connect_NONE__NONE "pixbuf-change" False
+afterPixbufChange = connect_NONE__NONE "pixbuf-change" True
+
+pixbufChange :: Signal Texture (IO ())
+pixbufChange = Signal (connect_NONE__NONE "pixbuf-change")
+
+
+onSizeChange, afterSizeChange :: Texture -> (Int -> Int -> IO ()) -> IO (ConnectId Texture)
+onSizeChange = connect_INT_INT__NONE "size-change" False
+afterSizeChange = connect_INT_INT__NONE "size-change" True
+
+sizeChange :: Signal Texture (Int -> Int -> IO ())
+sizeChange = Signal (connect_INT_INT__NONE "size-change")
 

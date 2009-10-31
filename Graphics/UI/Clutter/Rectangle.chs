@@ -23,6 +23,7 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | 'Rectangle' — An actor that displays a simple rectangle.
 module Graphics.UI.Clutter.Rectangle (
 -- * Class Hierarchy
 -- |
@@ -58,12 +59,11 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 
--- | Creates a new ClutterActor with a rectangular shape.
+-- | Creates a new actor with a rectangular shape.
 {# fun unsafe rectangle_new as ^ { } -> `Rectangle' newRectangle* #}
 
--- | Creates a new ClutterActor with a rectangular shape and of the given /color/
---
-{# fun unsafe rectangle_new_with_color as ^ { withColor* `Color' } -> `Rectangle' newRectangle* #}
+-- | Creates a new actor with a rectangular shape and of the given /color/
+{# fun unsafe rectangle_new_with_color as ^ { withColor* `Color'} -> `Rectangle' newRectangle* #}
 
 -- | Retrieves the color of rectangle
 {# fun unsafe rectangle_get_color as ^ { withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}

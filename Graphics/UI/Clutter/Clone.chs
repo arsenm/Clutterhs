@@ -23,6 +23,7 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | ClutterClone — An actor that displays a clone of a source actor
 module Graphics.UI.Clutter.Clone (
                                   cloneNew,
                                   cloneSetSource,
@@ -35,9 +36,13 @@ module Graphics.UI.Clutter.Clone (
 import C2HS
 import System.Glib.Attributes
 
+-- | Creates a new 'Actor' which clones 'source'
 {# fun unsafe clone_new as ^ `(ActorClass a)' => { withActorClass* `a' } -> `Clone' newClone* #}
 
+-- | Retrieves the source 'Actor' being cloned by clone
 {# fun unsafe clone_get_source as ^ { withClone* `Clone' } -> `Actor' newActor* #}
+
+-- | Sets source as the source actor to be cloned by clone.
 {# fun unsafe clone_set_source as ^ `(ActorClass a)' => { withClone* `Clone', withActorClass* `a' } -> `()' #}
 
 --Attribute is unhappy, class Actor vs. ActorClass.

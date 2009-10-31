@@ -52,4 +52,3 @@ import C2HS
 {# fun unsafe group_get_n_children as ^ { withGroup* `Group' } -> `Int' #}
 {# fun unsafe group_get_nth_child as ^ { withGroup* `Group', `Int' } -> `Actor' newActor* #}
 
-

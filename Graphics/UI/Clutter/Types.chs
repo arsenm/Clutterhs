@@ -287,7 +287,11 @@ module Graphics.UI.Clutter.Types (
                                   Animatable,
                                   AnimatableClass,
                                   withAnimatable,
-                                  withAnimatableClass
+                                  withAnimatableClass,
+
+                                  Callback,
+                                  CCallback,
+                                  newCallback
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
@@ -1300,4 +1304,19 @@ instance AnimatableClass Animatable
 instance GObjectClass Animatable where
   toGObject (Animatable a) = mkGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Animatable (castForeignPtr o)
+
+-- *** Callback
+
+type Callback = Actor -> IO ()
+type CCallback = FunPtr (Ptr Actor -> Ptr () -> IO ())
+
+newCallback :: Callback -> IO CCallback
+newCallback userfunc = mkCallback (newCallback' userfunc)
+    where
+      newCallback' :: (Actor -> IO ()) -> Ptr Actor -> IO ()
+      newCallback' userfunc aptr = newActor aptr >>= userfunc
+
+foreign import ccall "wrapper"
+    mkCallback :: (Ptr Actor -> IO ()) -> IO CCallback
+
 

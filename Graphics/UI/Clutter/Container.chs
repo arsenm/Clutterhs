@@ -40,8 +40,8 @@ module Graphics.UI.Clutter.Container (
 --containerRemoveList,
   containerGetChildren,
 
---containerForeach,
---containerForeachWithInternals,
+  containerForeach,
+  containerForeachWithInternals,
   containerFindChildByName,
   containerRaiseChild,
   containerLowerChild,
@@ -73,22 +73,22 @@ import System.Glib.GObject
 {# fun unsafe container_get_children as ^
        `(ContainerClass container)' => { withContainerClass* `container' } -> `[Actor]' newActorList* #}
 
-{-
+
 containerForeach :: (ContainerClass c) => c -> Callback -> IO ()
-containerForeach c func = withBehaviourClass c $ \cptr -> do
-                            funcPtr <- newBehaviourForeachFunc func
+containerForeach c func = withContainerClass c $ \cptr -> do
+                            funcPtr <- newCallback func
                             {# call container_foreach #} cptr funcPtr nullPtr
                             freeHaskellFunPtr funcPtr
                             --CHECKME: unsafe?
 
 containerForeachWithInternals :: (ContainerClass c) => c -> Callback -> IO ()
-containerForeachWithInternals c func = withBehaviourClass c $ \cptr -> do
-                                         funcPtr <- newBehaviourForeachFunc func
+containerForeachWithInternals c func = withContainerClass c $ \cptr -> do
+                                         funcPtr <- newCallback func
                                          {# call container_foreach #} cptr funcPtr nullPtr
                                          freeHaskellFunPtr funcPtr
                                        --CHECKME: unsafe?
 
--}
+
 
 {# fun unsafe container_find_child_by_name as ^
        `(ContainerClass container)' => { withContainerClass* `container', `String' } -> `Actor' newActor* #}

@@ -50,6 +50,7 @@ module Graphics.UI.Clutter.Signals (
   connect_NONE__NONE,
   connect_OBJECT__NONE,
   connect_PTR__NONE,
+  connect_BOXED__NONE,
   connect_PTR_ENUM__NONE,
   connect_CHAR_INT__NONE,
   connect_STRING_INT__NONE,
@@ -194,6 +195,20 @@ connect_PTR__NONE signal after obj user =
         action _ ptr1 =
           failOnGError $
           user (castPtr ptr1)
+
+connect_BOXED__NONE :: 
+  GObjectClass obj => SignalName ->
+  (Ptr a' -> IO a) -> 
+  ConnectAfter -> obj ->
+  (a -> IO ()) ->
+  IO (ConnectId obj)
+connect_BOXED__NONE signal boxedPre1 after obj user =
+  connectGeneric signal after obj action
+  where action :: Ptr GObject -> Ptr () -> IO ()
+        action _ box1 =
+          failOnGError $
+          boxedPre1 (castPtr box1) >>= \box1' ->
+          user box1'
 
 connect_PTR_ENUM__NONE :: 
   (Enum b, GObjectClass obj) => SignalName ->

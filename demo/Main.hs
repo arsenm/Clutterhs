@@ -1,6 +1,6 @@
 module Main where
 
-import Graphics.UI.Clutter hiding (show)
+import Graphics.UI.Clutter hiding (show, error)
 import qualified Graphics.UI.Clutter as C
 import System.Glib.Attributes
 import System.Glib.Signals (on, after)

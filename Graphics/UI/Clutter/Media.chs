@@ -55,19 +55,20 @@ module Graphics.UI.Clutter.Media (
   mediaFilename,
 
 -- * Signals
---TODO:Signals
   onEos,
   afterEos,
-  eos
---onError,
---afterError,
---error
+  eos,
+  onError,
+  afterError,
+  error
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
 
+import Prelude hiding (error)
 import C2HS
+import System.Glib.GError
 import System.Glib.Attributes
 
 {# fun unsafe media_set_uri as ^ `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
@@ -120,11 +121,11 @@ afterEos = connect_NONE__NONE "eos" True
 eos :: (MediaClass media) => Signal media (IO ())
 eos = Signal (connect_NONE__NONE "eos")
 
---TODO: How to GError here? Same issue as Geometry for Text
---onError, afterError :: Timeline -> IO () -> IO (ConnectId Timeline)
---onError = connect_NONE__NONE "error" False
---afterError = connect_NONE__NONE "error" True
+--CHECKME:checky
+onError, afterError :: Timeline -> (GError -> IO ()) -> IO (ConnectId Timeline)
+onError = connect_BOXED__NONE "error" peek False
+afterError = connect_BOXED__NONE "error" peek True
 
---error :: Signal Timeline (GError -> IO ())
---error = Signal (connect_NONE__NONE "error")
+error :: Signal Timeline (GError -> IO ())
+error = Signal (connect_BOXED__NONE "error" peek)
 

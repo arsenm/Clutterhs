@@ -86,9 +86,9 @@ module Graphics.UI.Clutter.Texture (
   textureLoadDataAsync,
 
 -- * Signals
---onLoadFinished,
---afterLoadFinished,
---loadFinished,
+  onLoadFinished,
+  afterLoadFinished,
+  loadFinished,
 
   onPixbufChange,
   afterPixbufChange,
@@ -224,16 +224,14 @@ textureLoadAsync = newAttr textureGetLoadAsync textureSetLoadAsync
 textureLoadDataAsync :: Attr Texture Bool
 textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
 
-{-
---TODO: Also needs GError
-onLoadFinished, afterLoadFinished :: Texture -> IO () -> IO (ConnectId Texture)
-onLoadFinished = connect_NONE__NONE "load-finished" False
-afterLoadFinished = connect_NONE__NONE "load-finished" True
+--CHECKME: Does this GError stuff work?
+onLoadFinished, afterLoadFinished :: Texture -> (GError -> IO ()) -> IO (ConnectId Texture)
+onLoadFinished = connect_BOXED__NONE "load-finished" peek False
+afterLoadFinished = connect_BOXED__NONE "load-finished" peek True
 
-loadFinished :: Signal Texture (IO ())
-loadFinished = Signal (connect_NONE__NONE "load-finished")
+loadFinished :: Signal Texture (GError -> IO ())
+loadFinished = Signal (connect_BOXED__NONE "load-finished" peek)
 
--}
 
 onPixbufChange, afterPixbufChange :: Texture -> IO () -> IO (ConnectId Texture)
 onPixbufChange = connect_NONE__NONE "pixbuf-change" False

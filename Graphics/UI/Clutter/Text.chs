@@ -166,9 +166,9 @@ module Graphics.UI.Clutter.Text (
   onActivate,
   afterActivate,
   activate,
---onCursorEvent,
---afterCursorEvent,
---cursorEvent,
+  onCursorEvent,
+  afterCursorEvent,
+  cursorEvent,
   onTextChanged,
   afterTextChanged,
   textChanged
@@ -400,20 +400,19 @@ afterActivate = connect_NONE__NONE "activate" True
 activate :: Signal Text (IO ())
 activate = Signal (connect_NONE__NONE "activate")
 
---TODO: How to use Geometry here?
-{-
+--CHECKME: Do I work?
 onCursorEvent, afterCursorEvent :: Text -> (Geometry -> IO ()) -> IO (ConnectId Text)
-onCursorEvent = connect_PTR__NONE "cursor-event" False
-afterCursorEvent = connect_PTR__NONE "cursor-event" True
--}
+onCursorEvent = connect_BOXED__NONE "cursor_event" peek False
+afterCursorEvent = connect_BOXED__NONE "cursor_event" peek True
 
-cursorEvent :: Signal Text (IO ())
-cursorEvent = Signal (connect_NONE__NONE "cursor-event")
+cursorEvent :: Signal Text (Geometry -> IO ())
+cursorEvent = Signal (connect_BOXED__NONE "cursor_event" peek)
+
 
 onTextChanged, afterTextChanged :: Text -> IO () -> IO (ConnectId Text)
-onTextChanged = connect_NONE__NONE "text-changed" False
-afterTextChanged = connect_NONE__NONE "text-changed" True
+onTextChanged = connect_NONE__NONE "text_changed" False
+afterTextChanged = connect_NONE__NONE "text_changed" True
 
 textChanged :: Signal Text (IO ())
-textChanged = Signal (connect_NONE__NONE "text-changed")
+textChanged = Signal (connect_NONE__NONE "text_changed")
 

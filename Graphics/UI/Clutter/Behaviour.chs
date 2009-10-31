@@ -51,10 +51,19 @@ module Graphics.UI.Clutter.Behaviour (
 
 -- * Attributes
   behaviourActors,
-  behaviourAlpha
+  behaviourAlpha,
+
+-- * Signals
+  onApplied,
+  afterApplied,
+  applied,
+  onRemoved,
+  afterRemoved,
+  removed
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import System.Glib.Attributes
@@ -96,4 +105,20 @@ behaviourNActors = readAttr behaviourGetNActors
        `(BehaviourClass b)' => { withBehaviourClass* `b', withAlpha* `Alpha' } -> `()' #}
 behaviourAlpha :: (BehaviourClass b) => Attr b Alpha
 behaviourAlpha = newAttr behaviourGetAlpha behaviourSetAlpha
+
+
+onApplied, afterApplied :: Behaviour -> (Actor -> IO ()) -> IO (ConnectId Behaviour)
+onApplied = connect_OBJECT__NONE "applied" False
+afterApplied = connect_OBJECT__NONE "applied" True
+
+applied :: Signal Behaviour (Actor ->IO ())
+applied = Signal (connect_OBJECT__NONE "applied")
+
+
+onRemoved, afterRemoved :: Behaviour -> (Actor -> IO ()) -> IO (ConnectId Behaviour)
+onRemoved = connect_OBJECT__NONE "removed" False
+afterRemoved = connect_OBJECT__NONE "removed" True
+
+removed :: Signal Behaviour (Actor ->IO ())
+removed = Signal (connect_OBJECT__NONE "removed")
 

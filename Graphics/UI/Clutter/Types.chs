@@ -32,7 +32,6 @@ module Graphics.UI.Clutter.Types (
 
                                   GSSize,
                                   GUnichar,
-                                  GUInt,
                                   Word,
 
                                   Color(Color),
@@ -350,8 +349,6 @@ withGValue (GValue gval) = castPtr gval
 type GFloat = {# type gfloat #}
 type GSSize = {# type gssize #}
 type GUnichar = {# type gunichar #}
-type GUInt = {# type guint #}
---type GUInt8 = {# type guint8 #}
 
 -- *** Misc
 

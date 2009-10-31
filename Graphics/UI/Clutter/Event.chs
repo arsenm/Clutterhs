@@ -82,7 +82,6 @@ import Data.Maybe (catMaybes)
 import qualified Prelude as P
 
 import C2HS
-import System.Glib.GObject
 import System.Glib.Signals
 import System.Glib.Flags
 import Control.Monad (liftM)
@@ -261,13 +260,12 @@ eventButton :: EventM EButton Word32
 eventButton = ask >>= \ptr ->
               liftIO $ liftM cIntConv ({# get ClutterButtonEvent->button #} ptr)
 
-eventClickCount :: EventM EButton Word32
+eventClickCount :: EventM EButton Word
 eventClickCount = ask >>= \ptr ->
                   liftIO $ liftM cIntConv ({# get ClutterButtonEvent->click_count #} ptr)
 
 
---TODO: guint vs. Word32, also conversion
-eventKeySymbol :: EventM EButton Word32
+eventKeySymbol :: EventM EButton Word
 eventKeySymbol = ask >>= \ptr ->
                  liftIO $ liftM cIntConv ({# get ClutterKeyEvent->keyval #} ptr)
 
@@ -315,20 +313,21 @@ eM allModifs = do
       else error ("eventModifiers: none for event type "++show ty)
 -}
 
---TODO: Should this happen automatically?. Also guint
-{# fun unsafe keysym_to_unicode as ^ { `Int' } -> `Word32' #}
+--TODO: Should this happen automatically? unicode char?
+{# fun unsafe keysym_to_unicode as ^ { `Int' } -> `Word' cIntConv #}
+
 
 {-
 {# fun unsafe get_input_device_for_id as ^ { `Int' } -> `InputDevice' #}
 
-TODO: The Device stuff I don't think is useful without first looking
-at some of the backend specific stuff
+--TODO: The Device stuff I don't think is useful without first looking
+--at some of the backend specific stuff
 
 eventDevice :: EventM t InputDevice
 eventDevice = ask >>= \ptr ->
-                 liftIO $ liftM cIntConv ({# get ClutterAnyEvent->device #} ptr)
-
+                 liftIO $ newInputDevice =<< {# call unsafe event_get_device #} ptr
 -}
+
 --TODO: DeviceID type? Silly structiness?
 --I also don't understand why the cast is needed
 eventDeviceId :: EventM any Int
@@ -341,5 +340,4 @@ eventDeviceType = ask >>= \ptr ->
                 liftIO $ liftM cToEnum $ {# call unsafe event_get_device_type #} (castPtr ptr)
 
 {# fun unsafe get_current_event_time as ^ { } -> `Timestamp' cIntConv #}
-
 

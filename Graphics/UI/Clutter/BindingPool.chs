@@ -54,8 +54,7 @@ module Graphics.UI.Clutter.BindingPool (
 import C2HS
 import System.Glib.GObject
 
---TODO: GUInt, also move to Types and possibly rename
-type KeyVal = Word64
+type KeyVal = Word
 
 {# fun unsafe binding_pool_new as ^ { `String' } -> `BindingPool' newBindingPool* #}
 

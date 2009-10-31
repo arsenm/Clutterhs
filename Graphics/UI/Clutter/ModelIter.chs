@@ -62,7 +62,7 @@ import qualified System.Glib.GTypeConstants as GType
 modelIterModel :: ReadAttr ModelIter Model
 modelIterModel = readAttr modelIterGetModel
 
-{# fun unsafe model_iter_get_row as ^ { withModelIter* `ModelIter' } -> `GUInt' cIntConv #}
-modelIterRow :: ReadAttr ModelIter GUInt
+{# fun unsafe model_iter_get_row as ^ { withModelIter* `ModelIter' } -> `Word' cIntConv #}
+modelIterRow :: ReadAttr ModelIter Word
 modelIterRow = readAttr modelIterGetRow
 

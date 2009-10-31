@@ -289,7 +289,7 @@ textEditable = newAttr textGetEditable textSetEditable
 {# fun unsafe text_insert_text as ^ { withText* `Text', `String', cIntConv `GSSize' } -> `()' #}
 
 {# fun unsafe text_insert_unichar as ^ { withText* `Text', cIntConv `GUnichar' } -> `()' #}
-{# fun unsafe text_delete_chars as ^ { withText* `Text', cIntConv `GUInt' } -> `()' #}
+{# fun unsafe text_delete_chars as ^ { withText* `Text', cIntConv `Word' } -> `()' #}
 
 {# fun unsafe text_delete_text as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 

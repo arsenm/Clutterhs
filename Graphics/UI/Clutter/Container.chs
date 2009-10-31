@@ -106,9 +106,8 @@ containerForeachWithInternals c func = withContainerClass c $ \cptr -> do
 {# fun unsafe container_class_find_child_property as ^
        `(GObjectClass gobj)' => { withGObjectClass* `gobj', `String' } -> `GParamSpec' #}
 
---FIXME: guint
 {# fun unsafe container_class_list_child_properties as ^
-       `(GObjectClass gobj)' => { withGObjectClass* `gobj', `Word32' } -> `[GParamSpec]' #}
+       `(GObjectClass gobj)' => { withGObjectClass* `gobj', `Word' } -> `[GParamSpec]' #}
 -}
 --container_child_set_property
 --container_child_get_property

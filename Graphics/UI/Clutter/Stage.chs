@@ -24,63 +24,96 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Stage (
-                                  -- * Constructors
-                                  stageGetDefault,
-                                  stageNew,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Actor'
+-- |               +----'Group'
+-- |                     +----'Stage'
+-- @
 
-                                  -- * Methods,
-                                  stageIsDefault,
+-- * Constructors
+  stageGetDefault,
+  stageNew,
 
-                                  stageSetColor,
-                                  stageGetColor,
-                                  stageColor,
+  -- * Methods,
+  stageIsDefault,
 
-                                  stageSetFullscreen,
-                                  stageGetFullscreen,
-                                  stageFullscreen,
+  stageSetColor,
+  stageGetColor,
 
-                                  stageShowCursor,
-                                  stageHideCursor,
+  stageSetFullscreen,
+  stageGetFullscreen,
 
-                                  stageGetActorAtPos,
+  stageShowCursor,
+  stageHideCursor,
 
-                                  stageEnsureCurrent,
-                                  stageEnsureViewport,
-                                  stageEnsureRedraw,
-                                  stageQueueRedraw,
+  stageGetActorAtPos,
 
-                                --stageEvent,
-                                  stageSetKeyFocus,
-                                  stageGetKeyFocus,
-                                --stageKeyFocus,
-                                --stageReadPixels,
+  stageEnsureCurrent,
+  stageEnsureViewport,
 
-                                  stageSetThrottleMotionEvents,
-                                  stageGetThrottleMotionEvents,
-                                  stageThrottleMotionEvents,
+  stageEnsureRedraw,
+  stageQueueRedraw,
 
-                                  stageSetPerspective,
-                                  stageGetPerspective,
-                                  stagePerspective,
+  --stageEvent,
+  stageSetKeyFocus,
+  stageGetKeyFocus,
+  --stageKeyFocus,
+  --stageReadPixels,
 
-                                  stageSetTitle,
-                                  stageGetTitle,
-                                  stageTitle,
+  stageSetThrottleMotionEvents,
+  stageGetThrottleMotionEvents,
 
-                                  stageSetUserResizable,
-                                  stageGetUserResizable,
-                                  stageUserResizable,
+  stageSetPerspective,
+  stageGetPerspective,
 
-                                  stageSetUseFog,
-                                  stageGetUseFog,
-                                  stageUseFog,
+  stageSetTitle,
+  stageGetTitle,
 
-                                  stageSetFog,
-                                  stageGetFog,
-                                  stageFog
-                                 ) where
+  stageSetUserResizable,
+  stageGetUserResizable,
+
+  stageSetUseFog,
+  stageGetUseFog,
+
+  stageSetFog,
+  stageGetFog,
+
+-- * Attributes
+  stageColor,
+  stageFullscreen,
+  stageThrottleMotionEvents,
+  stagePerspective,
+  stageTitle,
+  stageUserResizable,
+
+  stageUseFog,
+  stageFog,
+
+-- * Signals
+--FIXME: Export conflicts with Text's signals and probably other signals
+--onActivate,
+--afterActivate,
+--activate,
+
+  onDeactivate,
+  afterDeactivate,
+  deactivate,
+
+  onFullscreen,
+  afterFullscreen,
+  fullscreen,
+
+  onUnfullscreen,
+  afterUnfullscreen,
+  unfullscreen
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -158,4 +191,36 @@ stageUseFog = newAttr stageGetUseFog stageSetUseFog
 {# fun unsafe stage_get_fog as ^ { withStage* `Stage', alloca- `Fog' peek* } -> `()' #}
 stageFog :: Attr Stage Fog
 stageFog = newAttr stageGetFog stageSetFog
+
+
+onActivate, afterActivate :: Stage -> IO () -> IO (ConnectId Stage)
+onActivate = connect_NONE__NONE "activate" False
+afterActivate = connect_NONE__NONE "activate" True
+
+activate :: Signal Stage (IO ())
+activate = Signal (connect_NONE__NONE "activate")
+
+
+onDeactivate, afterDeactivate :: Stage -> IO () -> IO (ConnectId Stage)
+onDeactivate = connect_NONE__NONE "deactivate" False
+afterDeactivate = connect_NONE__NONE "deactivate" True
+
+deactivate :: Signal Stage (IO ())
+deactivate = Signal (connect_NONE__NONE "deactivate")
+
+
+onFullscreen, afterFullscreen :: Stage -> IO () -> IO (ConnectId Stage)
+onFullscreen = connect_NONE__NONE "fullscreen" False
+afterFullscreen = connect_NONE__NONE "fullscreen" True
+
+fullscreen :: Signal Stage (IO ())
+fullscreen = Signal (connect_NONE__NONE "fullscreen")
+
+
+onUnfullscreen, afterUnfullscreen :: Stage -> IO () -> IO (ConnectId Stage)
+onUnfullscreen = connect_NONE__NONE "unfullscreen" False
+afterUnfullscreen = connect_NONE__NONE "unfullscreen" True
+
+unfullscreen :: Signal Stage (IO ())
+unfullscreen = Signal (connect_NONE__NONE "unfullscreen")
 

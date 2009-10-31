@@ -26,120 +26,139 @@
 {# context lib="pango" prefix="pango" #}
 
 module Graphics.UI.Clutter.Text (
-                                 textNew,
-                                 textNewFull,
-                                 textNewWithText,
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |   +----'GInitiallyUnowned'
+-- |         +----'Actor'
+-- |               +----'Text'
+-- @
 
-                                 textGetText,
-                                 textSetText,
-                                 textText,
+-- * Constructors
+  textNew,
+  textNewFull,
+  textNewWithText,
 
-                                 textGetActivatable,
-                                 textSetActivatable,
-                                 textActivatable,
+-- * Methods
+  textGetText,
+  textSetText,
 
-                                 textGetColor,
-                                 textSetColor,
-                                 textColor,
+  textGetActivatable,
+  textSetActivatable,
 
-                                 textGetEllipsize,
-                                 textSetEllipsize,
-                                 textEllipsize,
+  textSetAttributes,
+  textGetAttributes,
 
-                                 textGetFontName,
-                                 textSetFontName,
-                                 textFontName,
+  textGetColor,
+  textSetColor,
 
-                                 textSetPasswordChar,
-                                 textGetPasswordChar,
-                                 textPasswordChar,
+  textGetEllipsize,
+  textSetEllipsize,
 
-                                 textGetJustify,
-                                 textSetJustify,
-                                 textJustify,
+  textGetFontName,
+  textSetFontName,
 
-                                 textGetLayout,
-                                 textLayout,
+  textSetPasswordChar,
+  textGetPasswordChar,
 
-                                 textSetLineAlignment,
-                                 textGetLineAlignment,
-                                 textLineAlignment,
+  textGetJustify,
+  textSetJustify,
 
-                                 textGetLineWrap,
-                                 textSetLineWrap,
-                                 textLineWrap,
+  textGetLayout,
 
-                                 textSetLineWrapMode,
-                                 textGetLineWrapMode,
-                                 textLineWrapMode,
+  textSetLineAlignment,
+  textGetLineAlignment,
 
-                                 textSetMaxLength,
-                                 textGetMaxLength,
-                                 textMaxLength,
+  textGetLineWrap,
+  textSetLineWrap,
 
-                                 textSetSelectable,
-                                 textGetSelectable,
-                                 textSelectable,
+  textSetLineWrapMode,
+  textGetLineWrapMode,
 
-                                 textSetSelection,
-                                 textGetSelection,
-                               --textSelection,
+  textSetMaxLength,
+  textGetMaxLength,
 
-                                 textGetSelectionBound,
-                                 textSetSelectionBound,
-                                 textSelectionBound,
+  textSetSelectable,
+  textGetSelectable,
 
-                                 textSetSingleLineMode,
-                                 textGetSingleLineMode,
-                                 textSingleLineMode,
+  textSetSelection,
+  textGetSelection,
 
-                                 textSetUseMarkup,
-                                 textGetUseMarkup,
-                                 textUseMarkup,
+  textGetSelectionBound,
+  textSetSelectionBound,
 
-                                 textSetEditable,
-                                 textGetEditable,
-                                 textEditable,
+  textSetSingleLineMode,
+  textGetSingleLineMode,
 
-                                 textInsertText,
-                                 textInsertUnichar,
+  textSetUseMarkup,
+  textGetUseMarkup,
 
-                                 textDeleteChars,
-                                 textDeleteText,
+  textSetEditable,
+  textGetEditable,
 
-                                 textDeleteSelection,
-                                 textGetChars,
+  textInsertText,
+  textInsertUnichar,
 
-                                 textGetCursorColor,
-                                 textSetCursorColor,
-                                 textCursorColor,
+  textDeleteChars,
+  textDeleteText,
 
-                                 textGetSelectionColor,
-                                 textSetSelectionColor,
-                                 textSelectionColor,
+  textDeleteSelection,
+  textGetChars,
 
-                                 textSetCursorPosition,
-                                 textGetCursorPosition,
-                                 textCursorPosition,
+  textGetCursorColor,
+  textSetCursorColor,
 
-                                 textSetCursorVisible,
-                                 textGetCursorVisible,
-                                 textCursorVisible,
+  textGetSelectionColor,
+  textSetSelectionColor,
 
-                                 textSetCursorSize,
-                                 textGetCursorSize,
-                                 textCursorSize,
+  textSetCursorPosition,
+  textGetCursorPosition,
 
-                                 textActivate,
-                                 textPositionToCoords,
-                                 textSetPreeditString,
+  textSetCursorVisible,
+  textGetCursorVisible,
 
-                                 --TODO: Export more of Pango?
-                                 PangoLayout,
-                                 LayoutWrapMode,
-                                 LayoutAlignment,
-                                 EllipsizeMode,
-                                ) where
+  textSetCursorSize,
+  textGetCursorSize,
+
+  textActivate,
+  textPositionToCoords,
+  textSetPreeditString,
+
+--TODO: Title for this
+-- * Related Types
+  --TODO: Export more of Pango?
+  PangoLayout,
+  LayoutWrapMode,
+  LayoutAlignment,
+  EllipsizeMode,
+
+-- * Attributes
+  textText,
+  textActivatable,
+--textAttributes,
+  textColor,
+  textEllipsize,
+  textFontName,
+  textPasswordChar,
+  textJustify,
+  textLayout,
+  textLineWrap,
+  textLineAlignment,
+  textLineWrapMode,
+  textMaxLength,
+  textSelectable,
+--textSelection,
+  textSelectionBound,
+  textSingleLineMode,
+  textUseMarkup,
+  textEditable,
+  textCursorColor,
+  textSelectionColor,
+  textCursorPosition,
+  textCursorVisible,
+  textCursorSize,
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
@@ -175,12 +194,26 @@ textText = newAttr textGetText textSetText
 textActivatable :: Attr Text Bool
 textActivatable = newAttr textGetActivatable textSetActivatable
 
-{-
-{# fun unsafe text_get_attributes as ^ { withText* `Text' } -> `PangoAttrList' #}
-{# fun unsafe text_set_attributes as ^ { withText* `Text', `PangoAttrList' } -> `()' #}
-textAttributes :: Attr Text PangoAttrList
-textAttributes = newAttr textGetAttributes textSetAttributes
--}
+--CHECKME: Something seems unsafe about this, also stupid get text out for correction
+textSetAttributes :: Text -> [PangoAttribute] -> IO ()
+textSetAttributes txt pattrs = let func = {# call unsafe text_set_attributes #}
+                               in withText txt $ \txtPtr -> do
+                                    pStr <- makeNewPangoString =<< textGetText txt
+                                    withAttrList pStr pattrs $ \attrPtr ->
+                                      func txtPtr attrPtr
+
+--getting text out seems convoluted and avoidable
+--also why [[PA]]? and not [PA]?
+textGetAttributes :: Text -> IO [[PangoAttribute]]
+textGetAttributes text = withText text $ \txtPtr -> do
+                           attrPtr <- {# call unsafe text_get_attributes #} txtPtr
+                           correct <- liftM genUTFOfs (textGetText text)  --TODO: silly
+                           fromAttrList correct attrPtr
+
+
+--textAttributes :: Attr Text [PangoAttribute]
+--textAttributes = newAttr textGetAttributes textSetAttributes
+
 
 {# fun unsafe text_get_color as ^ {withText* `Text', alloca- `Color' peek* } -> `()' #}
 {# fun unsafe text_set_color as ^ {withText* `Text', withColor* `Color' } -> `()' #}

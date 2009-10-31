@@ -123,7 +123,10 @@ module Graphics.UI.Clutter.Text (
 
   textActivate,
   textPositionToCoords,
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
   textSetPreeditString,
+#endif
 
 --TODO: Title for this
 -- * Related Types
@@ -378,6 +381,7 @@ textCursorSize = newAttr textGetCursorSize textSetCursorSize
          alloca- `Float' peekFloatConv*,
          alloca- `Float' peekFloatConv*} -> `Bool' #}
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
 --CHECKME: I've never used Pango, and not really sure if this is good
 --also it seems weird.
 textSetPreeditString :: Text -> String -> [PangoAttribute] -> Word -> IO ()
@@ -387,6 +391,7 @@ textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_p
                                                    pStr <- makeNewPangoString str
                                                    withAttrList pStr pattrs $ \attrPtr ->
                                                      func txtPtr strPtr attrPtr (cIntConv cpos)
+#endif
 
 onActivate, afterActivate :: Text -> IO () -> IO (ConnectId Text)
 onActivate = connect_NONE__NONE "activate" False

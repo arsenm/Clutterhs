@@ -34,6 +34,9 @@ module Graphics.UI.Clutter.Utility (
                                     newCairo,
                                     withCairo,
                                     withCairoPath,
+
+                                    peekNFree,
+                                    peekNFreeString
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -68,4 +71,15 @@ newCairo = Cairo . castPtr
 withCairoPath = castPtr . Cairo.unPath
 withCairo = castPtr . unCairo
 
+peekNFree :: (Storable a) => Ptr a -> IO a
+peekNFree p = do
+          ret <- peek p
+          free p
+          return ret
+
+peekNFreeString :: Ptr CChar -> IO String
+peekNFreeString p = do
+                ret <- peekCString p
+                free p
+                return ret
 

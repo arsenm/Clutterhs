@@ -385,12 +385,7 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --
 -- * Since 1.0
 --
-pathGetDescription path = withPath path $ \pathPtr -> do
-                          res <- {# call unsafe path_get_description #} pathPtr
-                          hsRes <- peekCString res
-                          free res
-                          return hsRes
--- {# fun unsafe path_get_description as ^ { withPath* `Path' } -> `String' #}
+{# fun unsafe path_get_description as ^ { withPath* `Path' } -> `String' peekNFreeString* #}
 
 -- | Replaces all of the nodes in the path with nodes described by
 --  str. See 'pathAddString' for details of the format.

@@ -24,58 +24,112 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | X11 Specific Support — X11 specific API
 module Graphics.UI.Clutter.X11 (
-                              --x11SetDisplay,
-                                x11DisableEventRetrieval,
-                                x11HasEventRetrieval,
-                              --x11GetStageFromWindow,
-                              --x11HandleEvent,
-                              --x11GetDefaultDisplay,
-                              --x11GetDefaultScreen,
-                              --x11GetRootWindow,
-                              --x11GetStageVisual,
-                              --x11GetStageWindow,
-                              --x11GetStageForeign,
-                              --x11SetStageForeign,
-                              --x11StageForeign,
-                                x11TrapXErrors,
-                                x11UntrapXErrors,
-                                x11HasCompositeExtension,
-                              --x11GetCurrentEventTime,
-                              --x11AddFilter,
-                              --x11RemoveFilter,
-                              --x11GetInputDevices,
-                                x11HasXinput,
-                                x11EnableXinput,
-                              --x11TexturePixmapNew,
-                              --x11TexturePixmapNewWithPixmap,
-                              --x11TexturePixmapNewWithWindow,
-                              --xllTexturePixmapSetPixmap,
-                              --xllTexturePixmapSetWindow,
-                              --x11TexturePixmapSyncWindow,
-                              --x11TexturePixmapUpdateArea,
-                              --x11TexturePixmapSetAutomatic,
-                                X11FilterReturn(..),
-                              --X11FilterFunc,
-                                X11XInputEventTypes(..)
-                              --X11TexturePixmap,
-                              --X11TexturePixmapClass
-                               ) where
+--x11SetDisplay,
+  x11DisableEventRetrieval,
+  x11HasEventRetrieval,
+--x11GetStageFromWindow,
+--x11HandleEvent,
+--x11GetDefaultDisplay,
+--x11GetDefaultScreen,
+--x11GetRootWindow,
+--x11GetStageVisual,
+--x11GetStageWindow,
+--x11GetStageForeign,
+--x11SetStageForeign,
+--x11StageForeign,
+  x11TrapXErrors,
+  x11UntrapXErrors,
+  x11HasCompositeExtension,
+--x11GetCurrentEventTime,
+--x11AddFilter,
+--x11RemoveFilter,
+--x11GetInputDevices,
+  x11HasXinput,
+  x11EnableXinput,
+--x11TexturePixmapNew,
+--x11TexturePixmapNewWithPixmap,
+--x11TexturePixmapNewWithWindow,
+--xllTexturePixmapSetPixmap,
+--xllTexturePixmapSetWindow,
+--x11TexturePixmapSyncWindow,
+--x11TexturePixmapUpdateArea,
+--x11TexturePixmapSetAutomatic,
+  X11FilterReturn(..),
+--X11FilterFunc,
+  X11XInputEventTypes(..)
+--X11TexturePixmap,
+--X11TexturePixmapClass
+) where
 
 import C2HS
 
 {# enum ClutterX11FilterReturn as X11FilterReturn {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterX11XInputEventTypes as X11XInputEventTypes {underscoreToCase} deriving (Show, Eq) #}
 
+-- | Disables retrieval of X events in the main loop. Use to create
+--   event-less canvas or in conjunction with
+--   'x11HandleEvent'.
+--
+--  This function can only be called before calling 'clutterInit'.
+--
+-- * Since 0.8
+--
 {# fun unsafe x11_disable_event_retrieval as ^ { } -> `()' #}
+
+-- | Queries the X11 backend to check if event collection has been disabled.
+--
+-- [@Returns@]: @True@ if event retrival has been disabled. @False@ otherwise.
+--
+-- * Since 0.8
+--
 {# fun unsafe x11_has_event_retrieval as ^ { } -> `Bool' #}
 
+
+-- | Traps every X error until 'x11UntrapXErrors' is called.
+--
+-- * Since 0.6
+--
 {# fun unsafe x11_trap_x_errors as ^ { } -> `()' #}
-{# fun unsafe x11_untrap_x_errors as ^ { } -> `()' #}
+
+-- | Removes the X error trap and returns the current status.
+--
+-- [@Returns@] the trapped error code, or 0 for success
+--
+-- * Since 0.4
+--
+{# fun unsafe x11_untrap_x_errors as ^ { } -> `Int' #}
+
 {# fun unsafe x11_has_composite_extension as ^ { } -> `Bool' #}
+
+-- | Retrieves the timestamp of the last X11 event processed by
+--  Clutter. This might be different from the timestamp returned by
+--  'getCurrentEventTime', as Clutter may synthesize or
+--  throttle  events.
+--
+-- * Since 1.0
+--
 --{# fun unsafe x11_get_current_event_time as ^ { } -> `Time' #}
 
+-- | Gets whether Clutter has XInput support.
+--
+-- [@Returns@] @True@ if Clutter was compiled with XInput support and XInput support is
+--  available at run time.
+--
+-- * Since 0.8
+--
 {# fun unsafe x11_has_xinput as ^ { } -> `Bool' #}
+
+-- | Enables the use of the XInput extension if present on connected
+--   XServer and support built into Clutter. XInput allows for
+--   multiple pointing devices to be used. This must be called before
+--  'clutterInit'.
+--
+-- You should use 'x11HasXinput' to see if support was enabled.
+--
+-- * Since 0.8
+--
 {# fun unsafe x11_enable_xinput as ^ { } -> `()' #}
 
 

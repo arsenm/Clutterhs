@@ -77,13 +77,7 @@ module Graphics.UI.Clutter.Model (
   rowRemoved,
   onSortChanged,
   afterSortChanged,
-  sortChanged,
-
---TODO: Move this out of this file
--- * Constructors
-
---ListModel
-  listModelNew
+  sortChanged
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -164,18 +158,6 @@ modelSetFilter model filterFunc = withModelClass model $ \mdlPtr -> do
        `(ModelClass model)' => { withModelClass* `model' } -> `ModelIter' newModelIter* #}
 {# fun unsafe model_get_iter_at_row as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `ModelIter' newModelIter* #}
-
-
-
---List Model
-
-listModelNew :: [(GType, String)] -> IO ListModel
-listModelNew lst = let (types, names) = unzip lst
-                   in withMany withCString names $ \cstrs ->
-                       withArrayLen cstrs $ \len namesPtr ->
-                       withArray types $ \typesPtr ->
-                          newListModel =<< {# call unsafe list_model_newv #} (cIntConv len) typesPtr namesPtr
-
 
 
 onFilterChanged, afterFilterChanged :: Model -> IO () -> IO (ConnectId Model)

@@ -41,6 +41,8 @@ main = do
 
   putStrLn "Nodes: "
   mapM_ print nodes
+  descr <- pathGetDescription path
+  putStrLn ("Description: " ++ descr)
 
   actorShowAll stage
 

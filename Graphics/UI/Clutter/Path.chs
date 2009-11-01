@@ -376,7 +376,7 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 
 
 --FIXME: Attribute with the returning of bool from set description for success I think won't work
---FIXME: Free the string not magically happening
+
 -- | Returns a string describing the path in the same format as used by 'pathAddString'
 --
 -- [@path@] a 'Path'
@@ -385,7 +385,12 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe path_get_description as ^ { withPath* `Path' } -> `String' #}
+pathGetDescription path = withPath path $ \pathPtr -> do
+                          res <- {# call unsafe path_get_description #} pathPtr
+                          hsRes <- peekCString res
+                          free res
+                          return hsRes
+-- {# fun unsafe path_get_description as ^ { withPath* `Path' } -> `String' #}
 
 -- | Replaces all of the nodes in the path with nodes described by
 --  str. See 'pathAddString' for details of the format.

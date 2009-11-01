@@ -73,7 +73,7 @@ module Graphics.UI.Clutter (
   module Graphics.UI.Clutter.General,
   module Graphics.UI.Clutter.Shader,
   module Graphics.UI.Clutter.Units,
---module Graphics.UI.Clutter.Utilities,
+  module Graphics.UI.Clutter.Utilities,
 --module Graphics.UI.Clutter.Versioning,
 
 -- ** User interface definition
@@ -131,5 +131,7 @@ import Graphics.UI.Clutter.Units
 import Graphics.UI.Clutter.Scriptable
 import Graphics.UI.Clutter.BindingPool
 import Graphics.UI.Clutter.X11
+import Graphics.UI.Clutter.Utilities
 import Graphics.UI.Clutter.ListModel
+
 

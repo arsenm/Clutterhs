@@ -922,6 +922,9 @@ class GObjectClass o => PathClass o
 toPath :: PathClass o => o -> Path
 toPath = unsafeCastGObject . toGObject
 
+--CHECKME: Path has a floating reference, but I don't remember
+-- which one you use and I'm really lazy so I'm not going to check now
+
 newPath a = makeNewObject Path $ return (castPtr a)
 
 instance PathClass Path

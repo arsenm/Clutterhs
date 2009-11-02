@@ -1342,36 +1342,145 @@ actorGetStage self = withActorClass self $ \aPtr -> do
 --   `(ActorClass child)' => { withActorClass* `child' } -> `Stage' newStage* #}
 
 
-
-
+-- | Retrieves the depth of /self/.
+--
+-- [@self@] an Actor
+--
+-- [@Returns@] the depth of the actor
+--
 {# fun unsafe actor_get_depth as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
+
+-- | Sets the Z coordinate of self to depth.
+--
+-- The unit used by depth is dependant on the perspective setup. See
+-- also 'stageSetPerspective'.
+--
+-- [@self@] an Actor
+--
+-- [@depth@] Z co-ord
+--
 {# fun unsafe actor_set_depth as ^
    `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
+
 actorDepth :: (ActorClass self) => Attr self Float
 actorDepth = newAttr actorGetDepth actorSetDepth
 
+-- | Scales an actor with the given factors. The scaling is relative
+--   to the scale center and the anchor point. The scale center is
+--   unchanged by this function and defaults to 0,0.
+--
+-- [@self@] An Actor
+--
+-- [@scale_x@] factor to scale actor by horizontally.
+--
+-- [@scale_y@] factor to scale actor by vertically.
+--
+-- * Since 0.2
+--
 {# fun unsafe actor_set_scale as ^
    `(ActorClass self)' => { withActorClass* `self', `Double', `Double'} -> `()' #}
+
+-- | Scales an actor with the given factors around the given center
+--   point. The center point is specified in pixels relative to the
+--   anchor point (usually the top left corner of the actor).
+--
+-- [@self@] An Actor
+--
+-- [@scale_x@] factor to scale actor by horizontally.
+--
+-- [@scale_y@] factor to scale actor by vertically.
+--
+-- [@center_x@] X coordinate of the center of the scale.
+--
+-- [@center_y@] Y coordinate of the center of the scale
+--
+-- * Since 1.0
+--
 {# fun unsafe actor_set_scale_full as ^
    `(ActorClass self)' => { withActorClass* `self', `Double', `Double', `Float', `Float' } -> `()' #}
+
+-- | Scales an actor with the given factors around the given center
+-- point. The center point is specified as one of the compass
+-- directions in 'Gravity'. For example, setting it to north will
+-- cause the top of the actor to remain unchanged and the rest of the
+-- actor to expand left, right and downwards.
+--
+-- [@self@] An Actor
+--
+-- [@scale_x@] factor to scale actor by horizontally.
+--
+-- [@scale_y@] factor to scale actor by vertically.
+--
+-- [@gravity@] the location of the scale center expressed as a compass direction.
+--
+-- * Since 1.0
+--
 {# fun unsafe actor_set_scale_with_gravity as ^
    `(ActorClass self)' => { withActorClass* `self', `Double', `Double', cFromEnum `Gravity'} -> `()' #}
+
+-- | Retrieves an actors scale factors.
+--
+-- * Since 0.2
+--
 {# fun unsafe actor_get_scale as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Double' peekFloatConv*,
                             alloca- `Double' peekFloatConv* } -> `()' #}
 
+
+-- | Retrieves the scale center coordinate in pixels relative to the top
+-- left corner of the actor. If the scale center was specified using a
+-- 'Gravity' this will calculate the pixel offset using the
+-- current size of the actor.
+--
+-- [@self@] an Actor
+--
+-- [@Returns@] (center_x, center_y)
+--
+-- * Since 0.2
+--
 {# fun unsafe actor_get_scale_center as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Double' peekFloatConv*,
                             alloca- `Double' peekFloatConv* } -> `()' #}
 
+-- | Retrieves the scale center as a compass direction. If the scale
+--   center was specified in pixels or units this will return
+--   'GravityNone'.
+--
+-- [@self@] An Actor
+--
+-- [@Returns@] the scale gravity
+--
+-- * Since 1.0
+--
 {# fun unsafe actor_get_scale_gravity as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Gravity' cToEnum #}
+
+-- | Checks whether the actor is scaled in either dimension.
+--
+-- [@self@] an Actor
+--
+-- [@Returns@] @True@ if the actor is scaled.
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_is_scaled as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Bool' #}
 
+-- | Transforms point in coordinates relative to the actor into
+--   screen-relative coordinates with the current actor transformation
+--   (i.e. scale, rotation, etc)
+--
+-- [@self@] An Actor
+--
+-- [@point@] A point as 'Vertex'
+--
+-- [@Returns@] The translated 'Vertex'
+--
+-- * Since 0.4
+--
 {# fun unsafe actor_apply_transform_to_point as ^
    `(ActorClass self)' => { withActorClass* `self',
                             withVertex* `Vertex',
@@ -1380,6 +1489,35 @@ actorDepth = newAttr actorGetDepth actorSetDepth
 
 
 --CHECKME: unsafe?
+
+-- | This function translates screen coordinates (x, y) to coordinates
+-- relative to the actor. For example, it can be used to translate
+-- screen events from global screen coordinates into actor-local
+-- coordinates.
+--
+-- The conversion can fail, notably if the transform stack results in
+-- the actor being projected on the screen as a mere line.
+--
+-- The conversion should not be expected to be pixel-perfect due to
+-- the nature of the operation. In general the error grows when the
+-- skewing of the actor rectangle on screen increases.
+--
+-- Note: This function is fairly computationally intensive.
+--
+-- Note: This function only works when the allocation is up-to-date,
+-- i.e. inside of paint()
+--
+-- [@self@] An Actor
+--
+-- [@x@] x screen coordinate of the point to unproject.
+--
+-- [@y@] y screen coordinate of the point to unproject.
+--
+-- [@Returns@] (@True@ if conversion was successful, unprojected x
+-- coordinance, unprojected y coordinance)
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_transform_stage_point as ^
    `(ActorClass a)' => { withActorClass* `a',
                          `Float',
@@ -1425,30 +1563,117 @@ actorApplyRelativeTransformToPoint self ancestor point =
                                                  alloca- `Vertex' peek*
                                                } -> `()' #}
 -}
+
+
+-- | Gets the absolute position of an actor, in pixels relative to the
+--   stage.
+--
+-- [@self@] An Actor
+--
+-- [@Returns@] (x coordinate, y coordinate)
+--
+-- * Since 0.8
+--
 {# fun unsafe actor_get_transformed_position as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Float' peekFloatConv*,
                             alloca- `Float' peekFloatConv*
                           } -> `()' #}
 
+
+--TODO: Properly format "Note" in doc
+-- | Gets the absolute size of an actor in pixels, taking into account
+--   the scaling factors.
+--
+-- If the actor has a valid allocation, the allocated size will be
+-- used. If the actor has not a valid allocation then the preferred
+-- size will be transformed and returned.
+--
+-- If you want the transformed allocation, see
+-- 'actorGetAbsAllocationVertices' instead.
+--
+-- * Note
+--
+-- When the actor (or one of its ancestors) is rotated around the X or
+-- Y axis, it no longer appears as on the stage as a rectangle, but as
+-- a generic quadrangle; in that case this function returns the size
+-- of the smallest rectangle that encapsulates the entire quad. Please
+-- note that in this case no assumptions can be made about the
+-- relative position of this envelope to the absolute position of the
+-- actor, as returned by 'actorGetTransformedPosition'; if you need
+-- this information, you need to use 'actorGetAbsAllocationVertices'
+-- to get the coords of the actual quadrangle.
+--
+-- [@self@] An Actor
+--
+-- [@Returns@] (width, height)
+--
+-- * Since 0.8
+--
 {# fun unsafe actor_get_transformed_size as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Double' peekFloatConv*,
                             alloca- `Double' peekFloatConv* } -> `()' #}
+
 actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
 actorTransformedSize = readAttr actorGetTransformedSize
 
+
+-- | Retrieves the absolute opacity of the actor, as it appears on the
+--   stage.
+--
+-- This function traverses the hierarchy chain and composites the
+-- opacity of the actor with that of its parents.
+--
+-- This function is intended for subclasses to use in the paint
+-- virtual function, to paint themselves with the correct opacity.
+--
+-- [@self@] An Actor
+--
+-- [@Returns@] The actor opacity value.
+--
+-- * Since 0.8
+--
 {# fun unsafe actor_get_paint_opacity as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Word8' #}
+
+
 actorPaintOpacity :: (ActorClass self) => ReadAttr self Word8
 actorPaintOpacity = readAttr actorGetPaintOpacity
 
+-- | Retrieves the 'paint' visibility of an actor recursively checking
+--   for non visible parents.
+--
+-- This is by definition the same as 'actorIsMapped'.
+--
+-- [@self@] An Actor
+--
+-- [@Returns@] @True@ if the actor is visibile and will be painted.
+--
+-- * Since 0.8.4
+--
 {# fun unsafe actor_get_paint_visibility as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+
 actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
 actorPaintVisibility = readAttr actorGetPaintVisibility
 
 
+--TODO: Update to field of Vector in doc
+-- | Calculates the transformed screen coordinates of the four corners
+--   of the actor; the returned vertices relate to the 'ActorBox'
+--   coordinates as follows:
+--
+-- v[0] contains (x1, y1)
+--
+-- v[1] contains (x2, y1)
+--
+-- v[2] contains (x1, y2)
+--
+-- v[3] contains (x2, y2)
+--
+-- * Since 0.4
+--
 actorGetAbsAllocationVertices  :: (ActorClass self) => self -> IO [Vertex]
 actorGetAbsAllocationVertices self = let func = {# call unsafe actor_get_abs_allocation_vertices #}
                                      in
@@ -1457,17 +1682,49 @@ actorGetAbsAllocationVertices self = let func = {# call unsafe actor_get_abs_all
                                              func selfPtr vsPtr
                                              peekArray 4 vsPtr
 
+{-
+{# fun unsafe actor_get_transformation_matrix as ^ `(ActorClass self)' =>
+{ withActorClass* `self', CoglMatrix } -> `()' #}
+-}
+
+
+-- | Sets actor as reactive. Reactive actors will receive events.
+--
+-- [@actor@] an Actor
+--
+-- [@reactive@] whether the actor should be reactive to events
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_set_reactive as ^
    `(ActorClass self)' => { withActorClass* `self', `Bool' } -> `()' #}
+
+
+-- | Checks whether actor is marked as reactive.
+--
+-- [@actor@] an Actor
+--
+-- [@Returns@] @True@ if the actor is reactive
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_get_reactive as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+
 actorReactive :: (ActorClass self) => Attr self Bool
 actorReactive = newAttr actorGetReactive actorSetReactive
 
+--TODO: Set shader to null to unset -> Nothing
 {# fun unsafe actor_set_shader as ^
    `(ActorClass self)' => { withActorClass* `self', withShader* `Shader' } -> `()' #}
+
+-- | Queries the currently set ClutterShader on self.
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_get_shader as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Shader' newShader* #}
+
 actorShader :: (ActorClass self) => Attr self Shader
 actorShader = newAttr actorGetShader actorSetShader
 
@@ -1477,6 +1734,10 @@ actorShader = newAttr actorGetShader actorSetShader
 
 
 --CHECKME: unsafe?
+-- | Sets the key focus of the 'Stage' including self to this Actor.
+--
+-- * Since 1.0
+--
 {# fun unsafe actor_grab_key_focus as ^
    `(ActorClass a)' => { withActorClass* `a' } -> `()' #}
 
@@ -1490,12 +1751,47 @@ actorShader = newAttr actorGetShader actorSetShader
    `(ActorClass a)' => { withActorClass* `a', `String' } -> `PangoLayout' newPangoLayout* #}
 -}
 
+
+-- | Checks whether self is being currently painted by a 'Clone'
+--
+-- This function is useful only inside the ::paint virtual function
+-- implementations or within handlers for the "paint" signal
+--
+-- This function should not be used by applications
+--
+-- [@self@] an Actor
+--
+-- [@Returns@] @True@ if the Actor is currently being painted by a 'Clone', and @False@ otherwise
+--
+-- * Since 1.0
+--
 {# fun unsafe actor_is_in_clone_paint as ^
        `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 
-
+-- | Sets an anchor point for self. The anchor point is a point in the
+--   coordinate space of an actor to which the actor position within
+--   its parent is relative; the default is (0, 0), i.e. the top-left
+--   corner of the actor.
+--
+-- [@self@] an Actor
+--
+-- [@anchor_x@] X coordinate of the anchor point
+--
+-- [@anchor_y@] Y coordinate of the anchor point
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_set_anchor_point as ^
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+
+-- | Gets the current anchor point of the actor in pixels.
+--
+-- [@self@] an Actor
+--
+-- [@Returns@] (X coordinate of the anchor point, Y coordinate of the anchor point)
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_get_anchor_point as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Float' peekFloatConv*,
@@ -1504,16 +1800,72 @@ actorShader = newAttr actorGetShader actorSetShader
 actorAnchorPoint :: (ActorClass self) => Attr self (Float, Float)
 actorAnchorPoint = newAttr actorGetAnchorPoint (tup2ToF actorSetAnchorPoint)
 
+
+-- | Sets an anchor point on the actor, based on the given gravity
+--   (this is a convenience function wrapping 'actorSetAnchorPoint').
+--
+-- Since version 1.0 the anchor point will be stored as a gravity so
+-- that if the actor changes size then the anchor point will move. For
+-- example, if you set the anchor point to 'GravitySouthEast' and
+-- later double the size of the actor, the anchor point will move to
+-- the bottom right.
+--
+-- [@self@] an Actor
+--
+-- [@gravity@] 'Gravity'.
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_set_anchor_point_from_gravity as ^
    `(ActorClass self)' => { withActorClass* `self', cFromEnum `Gravity' } -> `()' #}
+
+-- | Retrieves the anchor position expressed as a 'Gravity'. If the
+--   anchor point was specified using pixels or units this will return
+--   'GravityNone'.
+--
+-- [@self@] a Actor
+--
+-- [@Returns@] the 'Gravity' used by the anchor point
+--
+-- * Since 1.0
+--
 {# fun unsafe actor_get_anchor_point_gravity as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Gravity' cToEnum #}
 
 actorAnchorPointGravity :: (ActorClass self) => Attr self Gravity
 actorAnchorPointGravity = newAttr actorGetAnchorPointGravity actorSetAnchorPointFromGravity
 
+-- | Sets an anchor point for the actor, and adjusts the actor postion
+--   so that the relative position of the actor toward its parent
+--   remains the same.
+--
+-- [@self@] an Actor
+--
+-- [@anchor_x@] X coordinate of the anchor point
+--
+-- [@anchor_y@] Y coordinate of the anchor point
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_move_anchor_point as ^
    `(ActorClass self)' => { withActorClass* `self', `Float', `Float' } -> `()' #}
+
+-- | Sets an anchor point on the actor based on the given gravity,
+--   adjusting the actor postion so that its relative position within
+--   its parent remains unchanged.
+--
+-- Since version 1.0 the anchor point will be stored as a gravity so
+-- that if the actor changes size then the anchor point will move. For
+-- example, if you set the anchor point to 'GravitySouthEast' and
+-- later double the size of the actor, the anchor point will move to
+-- the bottom right.
+--
+-- [@self@] an Actor
+--
+-- [@gravity@] 'Gravity'.
+--
+-- * Since 0.6
+--
 {# fun unsafe actor_move_anchor_point_from_gravity as ^
    `(ActorClass self)' => { withActorClass* `self', cFromEnum `Gravity' } -> `()' #}
 
@@ -1556,13 +1908,20 @@ onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onDestroy = connect_NONE__NONE "destroy" False
 afterDestroy = connect_NONE__NONE "destroy" True
 
+-- | The \"destroy\" signal is emitted when an actor is destroyed,
+--   either by direct invocation of 'actorDestroy' or when the 'Group'
+--   that contains the actor is destroyed.
 destroy :: ActorClass self => Signal self (IO ())
 destroy = Signal (connect_NONE__NONE "destroy")
+
 
 onHide, afterHide :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onHide = connect_NONE__NONE "hide" False
 afterHide = connect_NONE__NONE "hide" True
 
+
+-- | The \"hide\" signal is emitted when an actor is no longer
+--   rendered on the stage.
 hide :: ActorClass self => Signal self (IO ())
 hide = Signal (connect_NONE__NONE "hide")
 
@@ -1571,6 +1930,10 @@ onKeyFocusIn, afterKeyFocusIn :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onKeyFocusIn = connect_NONE__NONE "key_focus_in" False
 afterKeyFocusIn = connect_NONE__NONE "key_focus_in" True
 
+-- | The \"key-focus-in\" signal is emitted when actor recieves key focus.
+--
+-- * Since 0.6
+--
 keyFocusIn :: ActorClass self => Signal self (IO ())
 keyFocusIn = Signal (connect_NONE__NONE "key_focus_in")
 
@@ -1579,6 +1942,10 @@ onKeyFocusOut, afterKeyFocusOut :: ActorClass a => a -> IO () -> IO (ConnectId a
 onKeyFocusOut = connect_NONE__NONE "key_focus_out" False
 afterKeyFocusOut = connect_NONE__NONE "key_focus_out" True
 
+-- | The \"key-focus-out\" signal is emitted when actor loses key focus.
+--
+-- * Since 0.6
+--
 keyFocusOut :: ActorClass self => Signal self (IO ())
 keyFocusOut = Signal (connect_NONE__NONE "key_focus_out")
 
@@ -1587,6 +1954,16 @@ onPaint, afterPaint :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onPaint = connect_NONE__NONE "paint" False
 afterPaint = connect_NONE__NONE "paint" True
 
+-- | The \"paint\" signal is emitted each time an actor is being
+--   painted.
+--
+-- Subclasses of Actor should override the class signal handler and paint themselves in that function.
+--
+--
+-- It is possible to connect a handler to the \"paint\" signal in order to set up some custom aspect of a paint.
+--
+-- * Since 0.8
+--
 paint :: ActorClass self => Signal self (IO ())
 paint = Signal (connect_NONE__NONE "paint")
 
@@ -1595,6 +1972,17 @@ onParentSet, afterParentSet :: ActorClass a => a -> (Actor -> IO ()) -> IO (Conn
 onParentSet = connect_OBJECT__NONE "parent_set" False
 afterParentSet = connect_OBJECT__NONE "parent_set" True
 
+--FIXME: old_parent can be null
+-- | This signal is emitted when the parent of the actor changes.
+--
+-- [@actor@] :
+--
+-- the object which received the signal
+--
+-- [@old_parent@] the previous parent of the actor, or NULL
+--
+-- * Since 0.2
+--
 parentSet :: ActorClass self => Signal self (Actor -> IO ())
 parentSet = Signal (connect_OBJECT__NONE "parent")
 
@@ -1603,6 +1991,24 @@ onPick, afterPick :: ActorClass a => a -> (Color -> IO ()) -> IO (ConnectId a)
 onPick = connect_BOXED__NONE "pick" peek False
 afterPick = connect_BOXED__NONE "pick" peek True
 
+
+-- | The ::pick signal is emitted each time an actor is being painted
+--   in "pick mode". The pick mode is used to identify the actor
+--   during the event handling phase, or by 'stageGetActorAtPos'. The
+--   actor should paint its shape using the passed pick_color.
+--
+--   Subclasses of ClutterActor should override the class signal handler
+--   and paint themselves in that function.
+--
+--   It is possible to connect a handler to the ::pick signal in order
+--   to set up some custom aspect of a paint in pick mode.
+--
+-- [@actor@] the Actor that received the signal
+--
+-- [@color@] the 'Color' to be used when picking
+--
+-- * Since 1.0
+--
 pick :: ActorClass self => Signal self (Color -> IO ())
 pick = Signal (connect_BOXED__NONE "pick" peek)
 
@@ -1619,6 +2025,12 @@ onRealize, afterRealize :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onRealize = connect_NONE__NONE "realize" False
 afterRealize = connect_NONE__NONE "realize" True
 
+
+-- | The \"realize\" signal is emitted each time an actor is being
+--   realized.
+--
+-- * Since 0.8
+--
 realize :: ActorClass self => Signal self (IO ())
 realize = Signal (connect_NONE__NONE "realize")
 
@@ -1626,6 +2038,12 @@ onShow, afterShow :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onShow = connect_NONE__NONE "show" False
 afterShow = connect_NONE__NONE "show" True
 
+
+-- | The \"show\" signal is emitted when an actor is visible and
+--   rendered on the stage.
+--
+-- * Since 0.2
+--
 show :: ActorClass self => Signal self (IO ())
 show = Signal (connect_NONE__NONE "show")
 
@@ -1633,6 +2051,12 @@ onUnrealize, afterUnrealize :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onUnrealize = connect_NONE__NONE "unrealize" False
 afterUnrealize = connect_NONE__NONE "unrealize" True
 
+
+-- | The \"unrealize\" signal is emitted each time an actor is being
+--   unrealized.
+--
+-- * Since 0.8
+--
 unrealize :: ActorClass self => Signal self (IO ())
 unrealize = Signal (connect_NONE__NONE "unrealize")
 

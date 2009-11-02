@@ -52,6 +52,7 @@ module Graphics.UI.Clutter.Script (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -62,7 +63,7 @@ import System.Glib.Attributes
 
 {# fun unsafe script_new as ^ { } -> `Script' newScript* #}
 
-{# fun unsafe script_lookup_filename as ^ { withScript* `Script', `String' } -> `String' #}
+{# fun unsafe script_lookup_filename as ^ { withScript* `Script', `String' } -> `String' peekNFreeString* #}
 
 {# fun unsafe script_unmerge_objects as ^ { withScript* `Script', cIntConv `Word' } -> `()' #}
 {# fun unsafe script_ensure_objects as ^ { withScript* `Script' } -> `()' #}

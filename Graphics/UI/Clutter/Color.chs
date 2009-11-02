@@ -43,6 +43,7 @@ module Graphics.UI.Clutter.Color (
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Data.Word
@@ -55,7 +56,7 @@ colorFromString name = unsafePerformIO $ withCString name $ \cstr ->
                          then peek colptr >>= return . Just
                          else return Prelude.Nothing
 
-{# fun pure unsafe color_to_string as ^ { withColor* `Color' } -> `String' #}
+{# fun pure unsafe color_to_string as ^ { withColor* `Color' } -> `String' peekNFreeString* #}
 
 {# fun pure unsafe color_from_hls as ^
        { alloca- `Color' peek*, `Float', `Float', `Float' } -> `()' #}

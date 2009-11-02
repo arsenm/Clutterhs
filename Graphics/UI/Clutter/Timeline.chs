@@ -160,6 +160,7 @@ timelineListMarkers tml time = withTimeline tml $ \tmlptr ->
                                num <- peek intptr
                                strPtrList <- peekArray (cIntConv num) strArrayPtr
                                mapM peekCString strPtrList
+                             --mapM peekNFreeString strPtrList
 
 {# fun unsafe timeline_remove_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}
 {# fun unsafe timeline_advance_to_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}

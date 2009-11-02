@@ -64,6 +64,7 @@ module Graphics.UI.Clutter.Media (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
 
 import Prelude hiding (error)
@@ -72,7 +73,8 @@ import System.Glib.GError
 import System.Glib.Attributes
 
 {# fun unsafe media_set_uri as ^ `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
-{# fun unsafe media_get_uri as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `String' #}
+{# fun unsafe media_get_uri as ^
+       `(MediaClass m)' => { withMediaClass* `m' } -> `String' peekNFreeString* #}
 mediaUri :: (MediaClass media) => Attr media String
 mediaUri = newAttr mediaGetUri mediaSetUri
 

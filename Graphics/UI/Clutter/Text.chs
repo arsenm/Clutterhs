@@ -175,6 +175,7 @@ module Graphics.UI.Clutter.Text (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
@@ -305,7 +306,7 @@ textSelectable :: Attr Text Bool
 textSelectable = newAttr textGetSelectable textSetSelectable
 
 
-{# fun unsafe text_get_selection as ^ { withText* `Text' } -> `String' #}
+{# fun unsafe text_get_selection as ^ { withText* `Text' } -> `String' peekNFreeString* #}
 {# fun unsafe text_set_selection as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 --this won't work
 --textSelection :: Attr Text Int
@@ -344,7 +345,7 @@ textEditable = newAttr textGetEditable textSetEditable
 {# fun unsafe text_delete_text as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 
 {# fun unsafe text_delete_selection as ^ { withText* `Text' } -> `()' #}
-{# fun unsafe text_get_chars as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
+{# fun unsafe text_get_chars as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `String' peekNFreeString* #}
 
 {# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
 {# fun unsafe text_set_cursor_color as ^ { withText* `Text', withColor* `Color' } -> `()' #}

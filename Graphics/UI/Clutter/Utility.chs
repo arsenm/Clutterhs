@@ -36,7 +36,8 @@ module Graphics.UI.Clutter.Utility (
                                     withCairoPath,
 
                                     peekNFree,
-                                    peekNFreeString
+                                    peekNFreeString,
+                                    maybeNullString
                                    ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -82,4 +83,20 @@ peekNFreeString p = do
                 ret <- peekCString p
                 free p
                 return ret
+
+
+maybeNullString :: Ptr CChar -> IO (Maybe String)
+maybeNullString ptr =
+    if ptr == nullPtr
+      then return Prelude.Nothing
+      else peekCString ptr >>= return . Just
+
+--maybeNullString :: (IO (Ptr CChar) -> IO a) -> IO (Ptr CChar) -> IO (Maybe String)
+{-
+maybeNullString marshal genPtr = do
+  ptr <- genPtr
+  if ptr == nullPtr
+    then return Prelude.Nothing
+    else marshal (return ptr) >>= return . Just
+-}
 

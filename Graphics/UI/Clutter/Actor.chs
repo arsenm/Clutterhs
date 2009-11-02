@@ -1327,12 +1327,21 @@ actorGid = readAttr actorGetGid
 --
 -- [@Returns@]
 --
--- the stage containing the actor, or NULL. transfer none.
+-- the @Just@ stage containing the actor, or @Nothing@.
 --
 -- * Since 0.8
 --
-{# fun unsafe actor_get_stage as ^
-   `(ActorClass child)' => { withActorClass* `child' } -> `Stage' newStage* #}
+actorGetStage :: (ActorClass self) => self -> IO (Maybe Stage)
+actorGetStage self = withActorClass self $ \aPtr -> do
+                       stgPtr <- {# call unsafe actor_get_stage #} aPtr
+                       if stgPtr == nullPtr
+                         then return Prelude.Nothing
+                         else newStage stgPtr >>= return . Just
+
+-- {# fun unsafe actor_get_stage as ^
+--   `(ActorClass child)' => { withActorClass* `child' } -> `Stage' newStage* #}
+
+
 
 
 {# fun unsafe actor_get_depth as ^

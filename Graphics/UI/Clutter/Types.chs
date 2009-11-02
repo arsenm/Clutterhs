@@ -1338,4 +1338,7 @@ newModelForeachFunc userfunc = mkModelForeachFunc (newModelForeachFunc' userfunc
 foreign import ccall "wrapper"
     mkModelForeachFunc :: (Ptr Model -> Ptr ModelIter -> IO Bool) -> IO CModelForeachFunc
 
+-- *** TimeoutPool
+
+{# pointer *ClutterTimeoutPool as TimeoutPool foreign newtype #}
 

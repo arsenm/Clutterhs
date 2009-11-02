@@ -205,17 +205,17 @@ module Graphics.UI.Clutter.Actor (
                                   afterPaint,
                                   paint,
 
-                                --onParentSet,
-                                --afterParentSet,
-                                --parentSet,
+                                  onParentSet,
+                                  afterParentSet,
+                                  parentSet,
 
-                                --onPick,
-                                --afterPick,
-                                --pick,
+                                  onPick,
+                                  afterPick,
+                                  pick,
 
-                                --onQueueRedraw,
-                                --afterQueueRedraw,
-                                --queueRedraw,
+                                  onQueueRedraw,
+                                  afterQueueRedraw,
+                                  queueRedraw,
 
                                   onRealize,
                                   afterRealize,
@@ -225,9 +225,9 @@ module Graphics.UI.Clutter.Actor (
                                   afterShow,
                                   show,
 
-                                --onUnrealize,
-                                --afterUnrealize,
-                                --unrealize
+                                  onUnrealize,
+                                  afterUnrealize,
+                                  unrealize
                                  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -646,6 +646,18 @@ actorAnchorPointGravity = newAttr actorGetAnchorPointGravity actorSetAnchorPoint
                                                   withArray* `[Vertex]'
                                                 } -> `()' #}
 
+{-
+--CHECKME/FIXME: allocation flags enum magic maybe break things, need flags thing to happen
+onAllocationChanged, afterAllocationChanged :: ActorClass a => a
+                                            -> (ActorBox -> AllocationFlags -> IO ())
+                                            -> IO (ConnectId a)
+onAllocationChanged = connect_BOXED_ENUM__NONE "allocation_changed" False
+afterAllocationChanged = connect_BOXED_ENUM__NONE "allocation_changed" True
+
+allocationChanged :: ActorClass self => Signal self (ActorBox -> AllocationFlags -> IO ())
+allocationChanged = Signal (connect_BOXED_ENUM__NONE "destroy")
+-}
+
 onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onDestroy = connect_NONE__NONE "destroy" False
 afterDestroy = connect_NONE__NONE "destroy" True
@@ -685,6 +697,30 @@ paint :: ActorClass self => Signal self (IO ())
 paint = Signal (connect_NONE__NONE "paint")
 
 
+onParentSet, afterParentSet :: ActorClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
+onParentSet = connect_OBJECT__NONE "parent_set" False
+afterParentSet = connect_OBJECT__NONE "parent_set" True
+
+parentSet :: ActorClass self => Signal self (Actor -> IO ())
+parentSet = Signal (connect_OBJECT__NONE "parent")
+
+
+onPick, afterPick :: ActorClass a => a -> (Color -> IO ()) -> IO (ConnectId a)
+onPick = connect_BOXED__NONE "pick" peek False
+afterPick = connect_BOXED__NONE "pick" peek True
+
+pick :: ActorClass self => Signal self (Color -> IO ())
+pick = Signal (connect_BOXED__NONE "pick" peek)
+
+
+onQueueRedraw, afterQueueRedraw :: ActorClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
+onQueueRedraw = connect_OBJECT__NONE "queue_redraw" False
+afterQueueRedraw = connect_OBJECT__NONE "queue_redraw" True
+
+queueRedraw :: ActorClass self => Signal self (Color -> IO ())
+queueRedraw = Signal (connect_BOXED__NONE "queue_redraw" peek)
+
+
 onRealize, afterRealize :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onRealize = connect_NONE__NONE "realize" False
 afterRealize = connect_NONE__NONE "realize" True
@@ -698,4 +734,12 @@ afterShow = connect_NONE__NONE "show" True
 
 show :: ActorClass self => Signal self (IO ())
 show = Signal (connect_NONE__NONE "show")
+
+onUnrealize, afterUnrealize :: ActorClass a => a -> IO () -> IO (ConnectId a)
+onUnrealize = connect_NONE__NONE "unrealize" False
+afterUnrealize = connect_NONE__NONE "unrealize" True
+
+unrealize :: ActorClass self => Signal self (IO ())
+unrealize = Signal (connect_NONE__NONE "unrealize")
+
 

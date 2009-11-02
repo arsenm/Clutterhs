@@ -1389,13 +1389,42 @@ actorDepth = newAttr actorGetDepth actorSetDepth
                          `Bool' #}
 
 
+
+
+-- | Transforms point in coordinates relative to the actor into
+--   ancestor-relative coordinates using the relevant transform stack
+--   (i.e. scale, rotation, etc).
+--
+-- If ancestor is @Nothing@ the ancestor will be the Stage. In this case,
+-- the coordinates returned will be the coordinates on the stage
+-- before the projection is applied. This is different from the
+-- behaviour of 'actorApplyTransformToPoint'.
+--
+-- * Since 0.6
+--
+actorApplyRelativeTransformToPoint :: (ActorClass self, ActorClass ancestor) =>
+                                      self          -- ^ An Actor
+                                   -> Maybe ancestor
+                                   -> Vertex        -- ^ A point as a 'Vertex'
+                                   -> IO Vertex     -- ^ The translated 'Vertex'
+actorApplyRelativeTransformToPoint self ancestor point =
+    let func = {# call unsafe actor_apply_relative_transform_to_point #}
+    in withActorClass self $ \selfPtr ->
+         withVertex point $ \ptPtr -> do
+           alloca $ \newVertPtr ->
+             case ancestor of
+               Prelude.Nothing -> func selfPtr nullPtr ptPtr newVertPtr >> peek newVertPtr
+               Just ancActor -> withActorClass ancActor $ \ancPtr ->
+                                      func selfPtr ancPtr ptPtr newVertPtr >> peek newVertPtr
+
+{-
 {# fun unsafe actor_apply_relative_transform_to_point as ^
    `(ActorClass self, ActorClass ancestor)' => { withActorClass* `self',
                                                  withActorClass* `ancestor',
                                                  withVertex* `Vertex',
                                                  alloca- `Vertex' peek*
                                                } -> `()' #}
-
+-}
 {# fun unsafe actor_get_transformed_position as ^
    `(ActorClass self)' => { withActorClass* `self',
                             alloca- `Float' peekFloatConv*,

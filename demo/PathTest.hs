@@ -3,6 +3,7 @@
 import Prelude
 import qualified Prelude as P
 import Graphics.UI.Clutter
+import System.Glib.Signals
 import Control.Monad (when)
 import System.IO
 
@@ -116,6 +117,8 @@ main = do
   actorShowAll stage
 
   timelineStart tml
+
+  on tml completed clutterMainQuit
 
   clutterMain
 

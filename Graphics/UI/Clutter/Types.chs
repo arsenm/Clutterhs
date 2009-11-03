@@ -1163,7 +1163,6 @@ toBindingPool = unsafeCastGObject . toGObject
 newBindingPool a = makeNewGObject BindingPool $ return (castPtr a)
 
 instance BindingPoolClass BindingPool
-instance ActorClass BindingPool
 instance GObjectClass BindingPool where
   toGObject (BindingPool i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BindingPool (castForeignPtr o)

@@ -1,5 +1,7 @@
 -- This tests Path and BehaviourPath
 
+import Prelude
+import qualified Prelude as P
 import Graphics.UI.Clutter
 import Control.Monad (when)
 import System.IO
@@ -47,10 +49,10 @@ main = do
   len1 <- pathGetLength path1
   --CHECKME: This list is supposed to be freed but I don't remember if I made that happen
   nodes1 <- pathGetNodes path1
-  putStrLn $ "Path1: Number of nodes: " ++ Prelude.show n1
-  putStrLn $ "Path1:  length: " ++ Prelude.show len1
+  putStrLn $ "Path1: Number of nodes: " ++ P.show n1
+  putStrLn $ "Path1:  length: " ++ P.show len1
   pos1 <- pathGetPosition path1 0.5
-  putStrLn $ "Path1: pathGetPosition: pos = " ++ Prelude.show pos1
+  putStrLn $ "Path1: pathGetPosition: pos = " ++ P.show pos1
   putStrLn "Path1 Nodes: "
   mapM_ print nodes1
   descr <- pathGetDescription path1      -- see if the string description is correct
@@ -108,6 +110,8 @@ main = do
   behaviourApply behav3 rect3
   behaviourApply behav4 rect4
   behaviourApply behav5 rect5
+
+  onKnotReached behav5 $ \n -> putStrLn ("Path5: Knot " ++ P.show n ++ " reached")
 
   actorShowAll stage
 

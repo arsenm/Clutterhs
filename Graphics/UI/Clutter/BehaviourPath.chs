@@ -45,12 +45,18 @@ module Graphics.UI.Clutter.BehaviourPath (
 -- * Attributes
   behaviourPathPath,
 
+-- * Signals
+  onKnotReached,
+  afterKnotReached,
+  knotReached
+
 --knotCopy, --not needed
 --knotFree,
 --knotEqual
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import System.Glib.Attributes
@@ -74,4 +80,20 @@ behaviourPathNewWithKnots alp knots = let func = {# call unsafe behaviour_path_n
        { withBehaviourPath* `BehaviourPath' } -> `Path' newPath* #}
 behaviourPathPath :: Attr BehaviourPath Path
 behaviourPathPath = newAttr behaviourPathGetPath behaviourPathSetPath
+
+
+onKnotReached, afterKnotReached :: BehaviourPath -> (Word -> IO ()) -> IO (ConnectId BehaviourPath)
+onKnotReached = connect_WORD__NONE "knot_reached" False
+afterKnotReached = connect_WORD__NONE "knot_reached" True
+
+
+-- | This signal is emitted each time a node defined inside the path
+--   is reached.
+--
+--  [@knot_num@] the index of the 'PathKnot' reached
+--
+-- * Since 0.2
+--
+knotReached :: Signal BehaviourPath (Word -> IO ())
+knotReached = Signal (connect_WORD__NONE "knot_reached")
 

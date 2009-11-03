@@ -130,13 +130,13 @@ timelineDelay = newAttr timelineGetDelay timelineSetDelay
 timelineDirection :: Attr Timeline TimelineDirection
 timelineDirection = newAttr timelineGetDirection timelineSetDirection
 
-{# fun unsafe timeline_start as ^ { withTimeline* `Timeline' } -> `()' #}
-{# fun unsafe timeline_pause as ^ { withTimeline* `Timeline' } -> `()' #}
-{# fun unsafe timeline_stop as ^ { withTimeline* `Timeline' } -> `()' #}
-{# fun unsafe timeline_rewind as ^ { withTimeline* `Timeline' } -> `()' #}
+{# fun timeline_start as ^ { withTimeline* `Timeline' } -> `()' #}
+{# fun timeline_pause as ^ { withTimeline* `Timeline' } -> `()' #}
+{# fun timeline_stop as ^ { withTimeline* `Timeline' } -> `()' #}
+{# fun timeline_rewind as ^ { withTimeline* `Timeline' } -> `()' #}
 
-{# fun unsafe timeline_skip as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
-{# fun unsafe timeline_advance as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
+{# fun timeline_skip as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
+{# fun timeline_advance as ^ { withTimeline* `Timeline', cIntConv `Word' } -> `()' #}
 
 {# fun unsafe timeline_get_elapsed_time as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
 {# fun unsafe timeline_get_delta as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}

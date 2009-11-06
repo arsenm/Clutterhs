@@ -24,22 +24,24 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Utility (
-                                    tup2ToF,
-                                    tup3ToF,
-                                    tup4ToF,
+  tup2ToF,
+  tup3ToF,
+  tup4ToF,
 
-                                    cFromFlags,
-                                    cToFlags,
+  cFromFlags,
+  cToFlags,
 
-                                    newCairo,
-                                    withCairo,
-                                    withCairoPath,
+  newCairo,
+  withCairo,
+  withCairoPath,
 
-                                    peekNFree,
-                                    peekNFreeString,
-                                    maybeString,
-                                    withMaybeString
-                                   ) where
+  peekNFree,
+  peekNFreeString,
+  maybeString,
+  withMaybeString,
+  maybeNullNew
+
+ ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
@@ -84,6 +86,17 @@ peekNFreeString p = do
                 ret <- peekCString p
                 free p
                 return ret
+
+
+
+-- e.g. maybeNewRectangle = maybeNullNew newRectangle
+maybeNullNew :: (Ptr a -> IO b) -> Ptr a -> IO (Maybe b)
+maybeNullNew marshal ptr = do
+  if ptr == nullPtr
+    then return Prelude.Nothing
+    else marshal ptr >>= return . Just
+
+
 
 maybeString :: Ptr CChar -> IO (Maybe String)
 maybeString ptr = do

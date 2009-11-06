@@ -26,7 +26,8 @@
 --TODO: need [ModifierType] -> CInt
 module Graphics.UI.Clutter.BindingPool (
 -- * Description
--- | ClutterBindingPool is a data structure holding a
+{-
+-- | BindingPool is a data structure holding a
 -- set of key bindings. Each key binding associates a key symbol
 -- (eventually with modifiers) to an action. A callback function is
 -- associated to each action.
@@ -91,7 +92,7 @@ module Graphics.UI.Clutter.BindingPool (
 --
 -- 'BindingPool' is available since Clutter 1.0
 --
-
+-}
 -- * Class Hierarchy
 -- |
 -- @

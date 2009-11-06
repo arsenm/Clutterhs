@@ -23,7 +23,14 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | BehaviourDepth — A behaviour controlling the Z position
 module Graphics.UI.Clutter.BehaviourDepth (
+-- * Description
+-- | 'BehaviourDepth' is a simple 'Behaviour' controlling the depth of a
+--   set of actors between a start and end depth.
+--
+-- 'BehaviourDepth' is available since Clutter 0.4.
+
 -- * Class Hierarchy
 -- |
 -- @
@@ -50,12 +57,48 @@ module Graphics.UI.Clutter.BehaviourDepth (
 import C2HS
 import System.Glib.Attributes
 
-{# fun unsafe behaviour_depth_new as ^
-       { withAlpha* `Alpha', `Int', `Int' } -> `BehaviourDepth' newBehaviourDepth* #}
+maybeBehaviourDepth = maybeNullNew
+withMaybeAlpha = maybeWith withAlpha
 
+-- | Creates a new 'BehaviourDepth' which can be used to control
+--   the 'Actor':depth property of a set of Actors.
+--
+-- [@alpha@]  @Just@ an Alpha or @Nothing@
+--
+-- [@depth_start@] : initial value of the depth
+--
+-- [@depth_end@] final value of the depth
+--
+-- [@Returns@] the newly created behaviour
+--
+-- * Since 0.4
+--
+{# fun unsafe behaviour_depth_new as ^
+       { withMaybeAlpha* `Maybe Alpha', `Int', `Int' } -> `BehaviourDepth' newBehaviourDepth* #}
+
+
+-- | Sets the boundaries of the behaviour.
+--
+-- [@behaviour@] a 'BehaviourDepth'
+--
+-- [@depth_start@] initial value of the depth
+--
+-- [@depth_end@] final value of the depth
+--
+-- * Since 0.6
+--
 {# fun unsafe behaviour_depth_set_bounds as ^
        { withBehaviourDepth* `BehaviourDepth', `Int', `Int' } -> `()' #}
 
+
+-- | Gets the boundaries of the behaviour
+--
+-- [@behaviour@] a 'BehaviourDepth'
+--
+-- [@Returns@] (depth_start, depth_end)
+--
+-- * Since 0.6
+--
 {# fun unsafe behaviour_depth_get_bounds as ^
        { withBehaviourDepth* `BehaviourDepth',
          alloca- `Int' peekIntConv*,

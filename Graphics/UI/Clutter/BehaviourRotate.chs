@@ -23,7 +23,17 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+
+-- | BehaviourRotate — A behaviour controlling rotation
 module Graphics.UI.Clutter.BehaviourRotate (
+-- * Description
+-- | A 'BehaviourRotate' rotate actors between a starting and ending
+--   angle on a given axis.
+--
+-- 'BehaviourRotate' is available since version 0.4.
+--
+
+-- * Class Hierarchy
 -- |
 -- @
 -- |  'GObject'
@@ -61,6 +71,27 @@ module Graphics.UI.Clutter.BehaviourRotate (
 import C2HS
 import System.Glib.Attributes
 
+
+-- | Creates a new 'BehaviourRotate'. This behaviour will rotate
+--   actors bound to it on axis, following direction, between
+--   angle_start and angle_end. Angles >= 360 degrees will be clamped
+--   to the canonical interval <0, 360), if angle_start == angle_end,
+--   the behaviour will carry out a single rotation of 360 degrees.
+--
+-- [@alpha@] @Just@ an 'Alpha', or @Nothing@
+--
+-- [@axis@] the rotation axis
+--
+-- [@direction@] the rotation direction
+--
+-- [@angle_start@] the starting angle in degrees, between 0 and 360.
+--
+-- [@angle_end@] the final angle in degrees, between 0 and 360.
+--
+-- [@Returns@] the newly created 'BehaviourRotate'.
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_new as ^
        { withAlpha* `Alpha',
          cFromEnum `RotateAxis',

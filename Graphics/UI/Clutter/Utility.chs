@@ -40,7 +40,6 @@ module Graphics.UI.Clutter.Utility (
   maybeString,
   withMaybeString,
   maybeNullNew
-
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -107,7 +106,5 @@ maybeString ptr = do
 withMaybeString :: Maybe String -> (Ptr CChar -> IO a) -> IO a
 withMaybeString Prelude.Nothing act = act nullPtr
 withMaybeString (Just str) act = withCString str act
-
-
 
 

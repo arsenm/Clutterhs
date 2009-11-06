@@ -93,7 +93,7 @@ import System.Glib.Attributes
 -- * Since 0.4
 --
 {# fun unsafe behaviour_rotate_new as ^
-       { withAlpha* `Alpha',
+       { withMaybeAlpha* `Maybe Alpha',
          cFromEnum `RotateAxis',
          cFromEnum `RotateDirection',
          `Double',

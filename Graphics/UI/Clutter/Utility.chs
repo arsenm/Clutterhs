@@ -39,7 +39,10 @@ module Graphics.UI.Clutter.Utility (
   peekNFreeString,
   maybeString,
   withMaybeString,
-  maybeNullNew
+  maybeNullNew,
+
+
+  withMaybeAlpha
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -107,4 +110,5 @@ withMaybeString :: Maybe String -> (Ptr CChar -> IO a) -> IO a
 withMaybeString Prelude.Nothing act = act nullPtr
 withMaybeString (Just str) act = withCString str act
 
+withMaybeAlpha = maybeWith withAlpha
 

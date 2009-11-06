@@ -50,12 +50,49 @@ module Graphics.UI.Clutter.BehaviourOpacity (
 import C2HS
 import System.Glib.Attributes
 
-{# fun unsafe behaviour_opacity_new as ^
-       { withAlpha* `Alpha', `Word8', `Word8'} -> `BehaviourOpacity' newBehaviourOpacity* #}
 
+
+-- | Creates a new 'BehaviourOpacity' object, driven by alpha which
+--   controls the opacity property of every actor, making it change in
+--   the interval between opacity_start and opacity_end.
+--
+-- [@alpha@] @Just@ an 'Alpha' or @Nothing@
+--
+-- [@opacity_start@] minimum level of opacity
+--
+-- [@opacity_end@] maximum level of opacity
+--
+-- [@Returns@] the newly created 'BehaviourOpacity'
+--
+-- * Since 0.2
+--
+{# fun unsafe behaviour_opacity_new as ^
+       { withMaybeAlpha* `Maybe Alpha', `Word8', `Word8'} -> `BehaviourOpacity' newBehaviourOpacity* #}
+
+
+-- | Sets the initial and final levels of the opacity applied by
+--   behaviour on each actor it controls.
+--
+-- [@behaviour@] a 'BehaviourOpacity'
+--
+-- [@opacity_start@] minimum level of opacity
+--
+-- [@opacity_end@] maximum level of opacity
+--
+-- * Since 0.6
+--
 {# fun unsafe behaviour_opacity_set_bounds as ^
        { withBehaviourOpacity* `BehaviourOpacity', `Word8', `Word8'} -> `()' #}
 
+-- | Gets the initial and final levels of the opacity applied by
+--   behaviour on each actor it controls.
+--
+-- [@behaviour@] a 'BehaviourOpacity'
+--
+-- [@Returns@] (minimum level of opacity, maximum level of opacity)
+--
+-- * Since 0.6
+--
 {# fun unsafe behaviour_opacity_get_bounds as ^
        { withBehaviourOpacity* `BehaviourOpacity',
          alloca- `Word8' peekIntConv*,

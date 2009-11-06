@@ -58,7 +58,6 @@ import C2HS
 import System.Glib.Attributes
 
 maybeBehaviourDepth = maybeNullNew
-withMaybeAlpha = maybeWith withAlpha
 
 -- | Creates a new 'BehaviourDepth' which can be used to control
 --   the 'Actor':depth property of a set of Actors.

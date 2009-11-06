@@ -44,7 +44,9 @@ module Graphics.UI.Clutter.Utility (
   maybeNullNew,
 
 
-  withMaybeAlpha
+  withMaybeAlpha,
+  maybeNewActor,
+  maybeNewAlpha
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -90,6 +92,12 @@ peekNFreeString p = do
                 free p
                 return ret
 
+
+maybeNewActor :: Ptr Actor -> IO (Maybe Actor)
+maybeNewActor = maybeNullNew newActor
+
+maybeNewAlpha :: Ptr Alpha -> IO (Maybe Alpha)
+maybeNewAlpha = maybeNullNew newAlpha
 
 
 -- e.g. maybeNewRectangle = maybeNullNew newRectangle

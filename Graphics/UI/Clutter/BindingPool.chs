@@ -50,6 +50,7 @@ module Graphics.UI.Clutter.BindingPool (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import System.Glib.GObject
@@ -88,7 +89,7 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
                                                   func bpPtr kc mod gcbPtr nullPtr gdestroy
 
 {# fun unsafe binding_pool_find_action as ^
-       { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromEnum `ModifierType' } -> `String' #}
+       { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromEnum `ModifierType' } -> `Maybe String' maybeString* #}
 
 {# fun unsafe binding_pool_remove_action as ^
        { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromEnum `ModifierType' } -> `()' #}

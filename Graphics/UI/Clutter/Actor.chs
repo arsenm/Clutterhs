@@ -1146,20 +1146,14 @@ actorOpacity = newAttr actorGetOpacity actorSetOpacity
 
 --CHECKME: setname, Bother passing in maybe, or just use String?
 --CHECKME: OK to pass null?
---{# fun unsafe actor_set_name as ^
---   `(ActorClass self)' => { withActorClass* `self', `Maybe String' } -> `()' #}
 -- | Sets the given name to self. The name can be used to identify an Actor.
 --
 -- [@self@] An Actor
 --
 -- [@name@] Textual tag to apply to actor
 --
-actorSetName :: (ActorClass self) => self -> Maybe String -> IO ()
-actorSetName self mstr = let func = {# call unsafe actor_set_name #}
-                         in withActorClass self $ \aPtr ->
-                             case mstr of
-                              Just str -> withCString str $ \strPtr -> func (castPtr aPtr) strPtr
-                              Prelude.Nothing -> func (castPtr aPtr) nullPtr
+{# fun unsafe actor_set_name as ^
+    `(ActorClass self)' => { withActorClass* `self', withMaybeString* `Maybe String' } -> `()' #}
 
 -- | Retrieves the name of self.
 --
@@ -1167,10 +1161,8 @@ actorSetName self mstr = let func = {# call unsafe actor_set_name #}
 --
 -- [@Returns@] @Just@ the name of the actor, or @Nothing@
 --
-actorGetName :: (ActorClass self) => self -> IO (Maybe String)
-actorGetName self = let func = {# call unsafe actor_get_name #}
-                    in withActorClass self $ \aPtr ->
-                        func aPtr >>= maybeNullString
+{# fun unsafe actor_get_name as ^ `(ActorClass self)' =>
+    { withActorClass* `self' } -> `Maybe String' maybeString* #}
 
 actorName :: (ActorClass self) => Attr self (Maybe String)
 actorName = newAttr actorGetName actorSetName

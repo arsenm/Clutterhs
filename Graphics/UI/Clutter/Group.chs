@@ -23,7 +23,19 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | Group — Actor class containing multiple children. actors.
 module Graphics.UI.Clutter.Group (
+-- * Description
+
+-- | A 'Group' is an Actor which contains multiple child actors
+--   positioned relative to the ClutterGroup position. Other
+--   operations such as scaling, rotating and clipping of the group
+--   will apply to the child actors.
+--
+--  A 'Group'\'s size is defined by the size and position of its
+--  children. Resize requests via the Actor API will be ignored.
+--
+
 -- * Class Hierarchy
 -- |
 -- @
@@ -47,8 +59,39 @@ module Graphics.UI.Clutter.Group (
 
 import C2HS
 
+
+-- | Create a new 'Group'.
+--
+-- [@Returns@] the newly created 'Group' actor
+--
 {# fun unsafe group_new as ^ {} -> `Group' newGroup* #}
+
+
+-- | Removes all children actors from the 'Group'.
+--
+-- [@group@] A 'Group'
+--
 {# fun unsafe group_remove_all as ^ { withGroup* `Group' } -> `()' #}
+
+-- | Gets the number of actors held in the group.
+--
+-- [@self@] A 'Group'
+--
+-- [@Returns@] The number of child actors held in the group.
+--
+-- * Since 0.2
+--
 {# fun unsafe group_get_n_children as ^ { withGroup* `Group' } -> `Int' #}
+
+-- | Gets a groups child held at index in stack.
+--
+-- [@self@] A 'Group'
+--
+-- [@index@] the position of the requested actor.
+--
+-- [@Returns@] transfer none. transfer none.
+--
+-- * Since 0.2
+--
 {# fun unsafe group_get_nth_child as ^ { withGroup* `Group', `Int' } -> `Actor' newActor* #}
 

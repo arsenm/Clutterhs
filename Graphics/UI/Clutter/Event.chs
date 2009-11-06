@@ -75,10 +75,10 @@ module Graphics.UI.Clutter.Event (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.Utility #}
 
 --FIXME: Conflict with EventType Nothing
 import Prelude hiding (Nothing, catch)
-import Data.Maybe (catMaybes)
 import qualified Prelude as P
 
 import C2HS
@@ -214,35 +214,6 @@ scrollEvent = Signal (eventM "scroll_event")
 
 motionNotifyEvent :: ActorClass self => Signal self (EventM EMotion Bool)
 motionNotifyEvent = Signal (eventM "motion_event")
-
-
---The normal one from gtk2hs does not work here. there is a
---discontinuity in the enum of unused bits and also an internally used
---bit, therefore minBound .. maxBound fails, so do this shitty listing
---of all options
-toModFlags :: Int -> [ModifierType]
-toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
-                            then Just flag
-                            else P.Nothing
-                          | flag <- [ShiftMask,
-                                     LockMask,
-                                     ControlMask,
-                                     Mod1Mask,
-                                     Mod2Mask,
-                                     Mod3Mask,
-                                     Mod4Mask,
-                                     Mod5Mask,
-                                     Button1Mask,
-                                     Button2Mask,
-                                     Button3Mask,
-                                     Button4Mask,
-                                     Button5Mask,
-                                     SuperMask,
-                                     HyperMask,
-                                     MetaMask,
-                                     ReleaseMask,
-                                     ModifierMask]
-                         ]
 
 eventState :: HasModifierType t => EventM t [ModifierType]
 eventState = do

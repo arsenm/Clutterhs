@@ -23,7 +23,6 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
---TODO: need [ModifierType] -> CInt
 module Graphics.UI.Clutter.BindingPool (
 -- * Description
 {-
@@ -107,15 +106,15 @@ module Graphics.UI.Clutter.BindingPool (
 -- * Methods
 --bindingPoolGetForClass,
   bindingPoolFind,
---bindingPoolInstallAction,
+  bindingPoolInstallAction,
 --bindingPoolInstallClosure,
---bindingPoolOverrideAction,
+  bindingPoolOverrideAction,
 --bindingPoolOverrideClosure,
---bindingPoolFindAction,
---bindingPoolRemoveAction,
+  bindingPoolFindAction,
+  bindingPoolRemoveAction,
   bindingPoolBlockAction,
   bindingPoolUnblockAction,
---bindingPoolActivate
+  bindingPoolActivate
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -151,13 +150,13 @@ maybeBindingPool = maybeNullNew newBindingPool
 
 
 {# fun unsafe binding_pool_find as ^ { `String' } -> `Maybe BindingPool' maybeBindingPool* #}
-{-
+
 bindingPoolInstallAction :: BindingPool -> String -> KeyVal -> [ModifierType] -> GCallback -> IO ()
 bindingPoolInstallAction bp name keyval modif gCB = withBindingPool bp $ \bpPtr ->
                                                     withCString name $ \namePtr ->
                                                     --CHECKME: unsafe? Most likely safe, callback
                                                     let func = {# call binding_pool_install_action #}
-                                                        mod = cFromEnum modif
+                                                        mod = cFromModFlags modif
                                                         kc = cIntConv keyval
                                                     in do
                                                       gcbPtr <- newGCallback gCB
@@ -169,7 +168,7 @@ bindingPoolOverrideAction :: BindingPool -> KeyVal -> [ModifierType] -> GCallbac
 bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
                                                 --CHECKME: unsafe? Most likely safe, callback
                                                 let func = {# call binding_pool_override_action #}
-                                                    mod = cFromEnum modif
+                                                    mod = cFromModFlags modif
                                                     kc = cIntConv keyval
                                                 in do
                                                   gcbPtr <- newGCallback gCB
@@ -177,7 +176,7 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
                                                   func bpPtr kc mod gcbPtr nullPtr gdestroy
 
 {# fun unsafe binding_pool_find_action as ^
-       { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromEnum `[ModifierType]' } -> `Maybe String' maybeString* #}
+       { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromModFlags `[ModifierType]' } -> `Maybe String' maybeString* #}
 
 
 --FIXME: make list of modifiers, cFromFlags won't work since Flags instance won't work for ModifierType
@@ -193,9 +192,9 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
 -- * Since 1.0
 --
 
---{# fun unsafe binding_pool_remove_action as ^
---       { withBindingPool* `BindingPool', cIntConv `KeyVal', fromModFlags `[ModifierType]' } -> `()' #}
--}
+{# fun unsafe binding_pool_remove_action as ^
+       { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromModFlags `[ModifierType]' } -> `()' #}
+
 -- | Blocks all the actions with name action_name inside pool.
 --
 -- [@pool@] a 'BindingPool'
@@ -206,7 +205,6 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
 --
 {# fun unsafe binding_pool_block_action as ^
        { withBindingPool* `BindingPool', `String' } -> `()' #}
-
 
 
 -- | Unblocks all the actions with name action_name inside pool.
@@ -257,11 +255,11 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
 --
 -- * Since 1.0
 --
-{-
+
 {# fun unsafe binding_pool_activate as ^ `(GObjectClass gobject)' =>
        { withBindingPool* `BindingPool',
          cIntConv `KeyVal',
-         cFromEnum `[ModifierType]',
+         cFromModFlags `[ModifierType]',
          withGObject* `gobject' } -> `Bool' #}
--}
+
 

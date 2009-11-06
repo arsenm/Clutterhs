@@ -30,6 +30,8 @@ module Graphics.UI.Clutter.Utility (
 
   cFromFlags,
   cToFlags,
+  toModFlags,
+  cFromModFlags,
 
   newCairo,
   withCairo,
@@ -48,10 +50,9 @@ module Graphics.UI.Clutter.Utility (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
-import System.Glib.Attributes
+import Data.Maybe (catMaybes)
+
 import System.Glib.Flags
-import Graphics.Rendering.Cairo
 import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 
@@ -111,4 +112,44 @@ withMaybeString Prelude.Nothing act = act nullPtr
 withMaybeString (Just str) act = withCString str act
 
 withMaybeAlpha = maybeWith withAlpha
+
+
+cFromModFlags :: [ModifierType] -> CInt
+cFromModFlags = cIntConv . fromModFlags
+
+--can't just make instance of flags for this, since toModFlags must be different
+fromModFlags :: [ModifierType] -> Int
+fromModFlags is = cIntConv (orNum 0 is)
+  where orNum n []     = n
+        orNum n (i:is) = orNum (n .|. fromEnum i) is
+
+
+--The normal one from gtk2hs does not work here. there is a
+--discontinuity in the enum of unused bits and also an internally used
+--bit, therefore minBound .. maxBound fails, so do this shitty listing
+--of all options
+toModFlags :: Int -> [ModifierType]
+toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
+                            then Just flag
+                            else Prelude.Nothing
+                          | flag <- [ShiftMask,
+                                     LockMask,
+                                     ControlMask,
+                                     Mod1Mask,
+                                     Mod2Mask,
+                                     Mod3Mask,
+                                     Mod4Mask,
+                                     Mod5Mask,
+                                     Button1Mask,
+                                     Button2Mask,
+                                     Button3Mask,
+                                     Button4Mask,
+                                     Button5Mask,
+                                     SuperMask,
+                                     HyperMask,
+                                     MetaMask,
+                                     ReleaseMask,
+                                     ModifierMask]
+                         ]
+
 

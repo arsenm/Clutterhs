@@ -100,23 +100,81 @@ import System.Glib.Attributes
          `Double' } ->
        `BehaviourRotate' newBehaviourRotate* #}
 
+
+-- | Sets the axis used by the rotate behaviour.
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@axis@] a 'RotateAxis'
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_set_axis as ^
        { withBehaviourRotate* `BehaviourRotate', cFromEnum `RotateAxis'} -> `()' #}
+
+-- | Retrieves the 'RotateAxis' used by the rotate behaviour.
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@Returns@] the rotation axis
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_get_axis as ^
        { withBehaviourRotate* `BehaviourRotate' } -> `RotateAxis' cToEnum #}
+
 behaviourRotateAxis :: Attr BehaviourRotate RotateAxis
 behaviourRotateAxis = newAttr behaviourRotateGetAxis behaviourRotateSetAxis
 
+
+-- | Sets the rotation direction used by the rotate behaviour.
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@direction@] the rotation direction
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_set_direction as ^
        { withBehaviourRotate* `BehaviourRotate', cFromEnum `RotateDirection'} -> `()' #}
+
+-- | Retrieves the 'RotateDirection' used by the rotate behaviour.
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@Returns@] the rotation direction
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_get_direction as ^
        { withBehaviourRotate* `BehaviourRotate' } -> `RotateDirection' cToEnum #}
+
 behaviourRotateDirection :: Attr BehaviourRotate RotateDirection
 behaviourRotateDirection = newAttr behaviourRotateGetDirection behaviourRotateSetDirection
 
+-- | Sets the initial and final angles of a rotation behaviour; angles
+--   \>= 360 degrees get clamped to the canonical interval <0, 360).
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@angle_start@] initial angle in degrees, between 0 and 360.
+--
+-- [@angle_end@] final angle in degrees, between 0 and 360.
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_set_bounds as ^
        { withBehaviourRotate* `BehaviourRotate', `Double', `Double'} -> `()' #}
 
+
+-- | Retrieves the rotation boundaries of the rotate behaviour.
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@Returns@] (angle_start, angle_end)
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_get_bounds as ^
        { withBehaviourRotate* `BehaviourRotate',
          alloca- `Double' peekFloatConv*,
@@ -125,9 +183,33 @@ behaviourRotateDirection = newAttr behaviourRotateGetDirection behaviourRotateSe
 behaviourRotateBounds :: Attr BehaviourRotate (Double, Double)
 behaviourRotateBounds = newAttr behaviourRotateGetBounds (tup2ToF behaviourRotateSetBounds)
 
+
+-- | Sets the center of rotation. The coordinates are relative to the
+--   plane normal to the rotation axis set with
+--   'behaviourRotateSetAxis'.
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@x@] X axis center of rotation
+--
+-- [@y@] Y axis center of rotation
+--
+-- [@z@] Z axis center of rotation
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_set_center as ^
        { withBehaviourRotate* `BehaviourRotate', `Int', `Int', `Int'} -> `()' #}
 
+-- | Retrieves the center of rotation set using
+--   'behaviourRotateSetCenter'.
+--
+-- [@rotate@] a 'BehaviourRotate'
+--
+-- [@Returns@] (X center of rotation, Y center of rotation, Z center of rotation)
+--
+-- * Since 0.4
+--
 {# fun unsafe behaviour_rotate_get_center as ^
        { withBehaviourRotate* `BehaviourRotate',
          alloca- `Int' peekIntConv*,

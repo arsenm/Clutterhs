@@ -97,6 +97,7 @@ module Graphics.UI.Clutter.Timeline (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -374,8 +375,7 @@ timelineListMarkers tml time = withTimeline tml $ \tmlptr ->
                                strArrayPtr <- {# call unsafe timeline_list_markers #} tmlptr (cIntConv time) intptr
                                num <- peek intptr
                                strPtrList <- peekArray (cIntConv num) strArrayPtr
-                               mapM peekCString strPtrList
-                             --mapM peekNFreeString strPtrList
+                               mapM peekNFreeString strPtrList
 
 -- | Removes marker_name, if found, from timeline.
 --

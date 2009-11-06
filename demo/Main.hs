@@ -135,7 +135,7 @@ main = do
   performGC
 
   -- try behaviours
-  behav <- behaviourRotateNew alphaParticle XAxis RotateCw 0 360
+  behav <- behaviourRotateNew (Just alphaParticle) XAxis RotateCw 0 360
   behaviourRotateSetCenter behav 0 50 15
   behaviourApply behav rec2
 
@@ -152,7 +152,7 @@ main = do
   ka <- alphaNewWithFunc tl kirkAlpha
 
   --CHECKME: Doesn't work with RotateCcw but does with RotateCw??
-  kirkBehav1 <- behaviourRotateNew ka ZAxis RotateCw 0 360
+  kirkBehav1 <- behaviourRotateNew (Just ka) ZAxis RotateCw 0 360
   behaviourRotateSetCenter kirkBehav1 100 100 100
   kirkBehav2 <- behaviourScaleNew ka 0.1 0.1 1 1
 

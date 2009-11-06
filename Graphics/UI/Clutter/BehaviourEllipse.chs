@@ -116,7 +116,7 @@ import System.Glib.Attributes
          cFromEnum `RotateDirection',
          `Double',
          `Double'
-         } -> `BehaviourDepth' newBehaviourDepth* #}
+         } -> `BehaviourEllipse' newBehaviourEllipse* #}
 
 -- | Sets the center of the elliptical path to the point represented by knot.
 --

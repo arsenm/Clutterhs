@@ -1,6 +1,6 @@
 #!/bin/bash
-unset CPATH
 
-runghc Setup.hs configure
+runghc Setup.hs configure --user
 runghc Setup.hs build
+runghc Setup.hs register --inplace --user
 

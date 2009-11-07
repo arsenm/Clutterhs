@@ -158,11 +158,11 @@ instance HasModifierType EScroll
 
 eventFlags :: EventM t [EventFlags]
 eventFlags = ask >>= \ptr ->
-             liftIO $ liftM (toFlags . cIntConv) ({# get ClutterAnyEvent->flags #} ptr)
+             liftIO $ liftM cToFlags ({# get ClutterAnyEvent->flags #} ptr)
 
 eventStage :: EventM t Stage
 eventStage = ask >>= \ptr ->
-             liftIO $ newStage . castPtr =<< {# get ClutterAnyEvent->stage #} ptr
+             liftIO $ newStage =<< {# get ClutterAnyEvent->stage #} ptr
 
 eventSource :: EventM t Actor
 eventSource = ask >>= \ptr ->

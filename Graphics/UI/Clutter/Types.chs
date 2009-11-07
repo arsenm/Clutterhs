@@ -535,7 +535,8 @@ class GroupClass o => StageClass o
 toStage :: StageClass o => o -> Stage
 toStage = unsafeCastGObject . toGObject
 
-newStage :: Ptr Actor -> IO Stage
+--Actor class?
+newStage :: (ActorClass actor) => Ptr actor -> IO Stage
 newStage a = makeNewObject Stage $ return (castPtr a)
 
 instance StageClass Stage

@@ -65,7 +65,6 @@ import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 
 import Graphics.UI.Gtk.Types (PangoContext, mkPangoContext, unPangoLayoutRaw)
-import Graphics.UI.Gtk.Pango.Layout
 
 --There's Probably a better way to do this I'm using this for related
 --attributes that you might want to set at once rather than

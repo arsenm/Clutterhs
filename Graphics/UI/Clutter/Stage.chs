@@ -139,6 +139,7 @@ module Graphics.UI.Clutter.Stage (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -159,13 +160,13 @@ import System.Glib.Attributes
 --   'stageGetDefault' will always return the same instance,
 --   you will have to keep a pointer to any ClutterStage returned by
 --   stageNew.
-
+--
 --   The ability to support multiple stages depends on the current
 --   backend. Use 'clutterFeatureAvailable' and
 --   CLUTTER_FEATURE_STAGE_MULTIPLE to check at runtime whether a backend
 --   supports multiple stages.
-
---  Returns :
+--
+--  [@Returns@]
 --   a new stage, or NULL if the default backend does not support
 --   multiple stages. Use clutter_actor_destroy() to programmatically
 --   close the returned stage.
@@ -250,8 +251,31 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 
 --CHECKME this might fall under the category of low level event stuff we're not dealing with
 --{# fun unsafe stage_event as ^ { withStage* `Stage', withEvent* `Event' } -> `Bool' #}
-{# fun unsafe stage_set_key_focus as ^ `(ActorClass actor)' => { withStage* `Stage', withActorClass* `actor' } -> `()' #}
+
+
+-- | Sets the key focus on actor. An actor with key focus will receive
+--   all the key events. If actor is @Nothing@, the stage will receive
+--   focus.
+--
+-- [@stage@] the 'Stage'
+--
+-- [@actor@] @Just@ the actor to set key focus to, or @Nothing@
+--
+-- * Since 0.6
+--
+{# fun unsafe stage_set_key_focus as ^ `(ActorClass actor)' =>
+       { withStage* `Stage', withMaybeActorClass* `Maybe actor' } -> `()' #}
+
+-- | Retrieves the actor that is currently under key focus.
+--
+-- [@stage@] the 'Stage'
+--
+-- [@Returns@] the actor with key focus, or the stage. transfer none.
+--
+-- * Since 0.6
+--
 {# fun unsafe stage_get_key_focus as ^ { withStage* `Stage' } -> `Actor' newActor* #}
+
 --TODO: Same problem as other places, setting and getting ActorClass is unhappy
 --stageKeyFocus :: (ActorClass actor) => Attr Stage actor
 --stageKeyFocus = newAttr stageGetKeyFocus stageSetKeyFocus
@@ -259,8 +283,6 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 --TODO: all those types, namely guchar* out = what?
 --Returns some kind of image buffer, what do I do with it?
 --{# fun unsafe stage_read_pixels as ^ { withStage* `Stage', `Int', `Int', `Int', `Int' } -> `Ptr ()' #}
-
-
 
 -- | Sets whether motion events received between redraws should be
 -- throttled or not. If motion events are throttled, those events

@@ -97,7 +97,7 @@ Executable arst
 
 Executable pathtest
   Main-Is:         PathTest.hs
-Other-Modules:   Graphics.UI.Clutter
+  Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   Hs-Source-Dirs: demo
 
@@ -106,14 +106,14 @@ Other-Modules:   Graphics.UI.Clutter
 
 Executable timelinetest
   Main-Is:         TimelineTest.hs
-Other-Modules:   Graphics.UI.Clutter
+  Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   Hs-Source-Dirs:  demo
   Build-Depends: base, glib
 
 Executable behaviourellipsetest
   Main-Is:         BehaviourEllipseTest.hs
-Other-Modules:   Graphics.UI.Clutter
+  Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   Hs-Source-Dirs: demo
 
@@ -122,7 +122,7 @@ Other-Modules:   Graphics.UI.Clutter
 
 Executable rectangletest
   Main-Is:         RectangleTest.hs
-Other-Modules:   Graphics.UI.Clutter
+  Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   Hs-Source-Dirs:  demo
   Build-Depends: base, glib

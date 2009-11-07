@@ -45,6 +45,7 @@ module Graphics.UI.Clutter.Utility (
 
 
   withMaybeAlpha,
+  withMaybeTimeline,
   maybeNewActor,
   maybeNewAlpha
  ) where
@@ -120,6 +121,7 @@ withMaybeString Prelude.Nothing act = act nullPtr
 withMaybeString (Just str) act = withCString str act
 
 withMaybeAlpha = maybeWith withAlpha
+withMaybeTimeline = maybeWith withTimeline
 
 
 cFromModFlags :: [ModifierType] -> CInt

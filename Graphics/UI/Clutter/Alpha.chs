@@ -31,27 +31,27 @@ module Graphics.UI.Clutter.Alpha (
 --
 -- A 'Alpha' binds a 'Timeline' to a progress function which
 -- translates the time T into an adimensional factor alpha. The factor
--- can then be used to drive a 'Behaviour', which will translate
--- the alpha value into something meaningful for a 'Actor'.
+-- can then be used to drive a 'Behaviour', which will translate the
+-- alpha value into something meaningful for a 'Actor'.
 --
--- You should provide a 'Timeline' and bind it to the
--- 'Alpha' instance using 'alphaSetTimeline'. You
--- should also set an \"animation mode\", either by using the
--- ClutterAnimationMode values that Clutter itself provides or by
--- registering custom functions using 'alphaRegisterFunc'.
+-- You should provide a 'Timeline' and bind it to the 'Alpha' instance
+-- using 'alphaSetTimeline'. You should also set an \"animation
+-- mode\", either by using the ClutterAnimationMode values that
+-- Clutter itself provides or by registering custom functions using
+-- 'alphaRegisterFunc'.
 --
--- Instead of a 'AnimationMode' you may provide a function
--- returning the alpha value depending on the progress of the
--- timeline, using 'alphaSetFunc'. The alpha function will be executed
--- each time a new frame in the 'Timeline' is reached.
+-- Instead of a 'AnimationMode' you may provide a function returning
+-- the alpha value depending on the progress of the timeline, using
+-- 'alphaSetFunc'. The alpha function will be executed each time a new
+-- frame in the 'Timeline' is reached.
 --
 -- Since the alpha function is controlled by the timeline instance,
--- you can pause, stop or resume the 'Alpha' from calling the
--- alpha function by using the appropriate functions of the
--- 'Timeline' object.
+-- you can pause, stop or resume the 'Alpha' from calling the alpha
+-- function by using the appropriate functions of the 'Timeline'
+-- object.
 --
--- 'Alpha' is used to \"drive\" a Behaviour instance, and it
--- is internally used by the Animation API.
+-- 'Alpha' is used to \"drive\" a Behaviour instance, and it is
+-- internally used by the Animation API.
 --
 -- * Figure 3. Easing modes provided by Clutter
 -- <<file:///home/matt/src/clutterhs/doc/easing-modes.png>>

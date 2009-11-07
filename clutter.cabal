@@ -11,7 +11,7 @@ Description: Clutter bindings
 build-depends: base, glib
 Build-Type: Simple
 
-Cabal-Version: >= 1.2
+Cabal-Version: >= 1.8
 
 Flag Debug
   Description: Enable debug support
@@ -91,16 +91,14 @@ Executable arst
   Main-Is:         Main.hs
   Other-Modules: Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
-  Hs-Source-Dirs: demo
-  Build-Depends: base, glib
-
+  Hs-Source-Dirs: .,demo
+  Build-Depends: base, glib, mtl, haskell98
 
 Executable pathtest
   Main-Is:         PathTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
-  Hs-Source-Dirs: demo
-
+  Hs-Source-Dirs: .,demo
   Build-Depends: base, glib
 
 
@@ -108,15 +106,14 @@ Executable timelinetest
   Main-Is:         TimelineTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
-  Hs-Source-Dirs:  demo
+  Hs-Source-Dirs:  .,demo
   Build-Depends: base, glib
 
 Executable behaviourellipsetest
   Main-Is:         BehaviourEllipseTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
-  Hs-Source-Dirs: demo
-
+  Hs-Source-Dirs: ., demo
   Build-Depends: base, glib
 
 
@@ -124,7 +121,7 @@ Executable rectangletest
   Main-Is:         RectangleTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
-  Hs-Source-Dirs:  demo
+  Hs-Source-Dirs:  ., demo
   Build-Depends: base, glib
 
 
@@ -132,8 +129,7 @@ Executable cluttergame
   Main-Is:         ClutterGame.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
-  Hs-Source-Dirs:  demo
-
+  Hs-Source-Dirs:  ., demo
   Build-Depends: base, glib
 
 

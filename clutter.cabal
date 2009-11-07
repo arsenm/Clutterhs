@@ -182,6 +182,17 @@ Executable timelinetest
 
   Build-Depends: base, glib
 
+
+Executable scoretest
+  Main-Is:         ScoreTest.hs
+  Other-Modules:   Graphics.UI.Clutter
+  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  Hs-Source-Dirs:  .,
+                   demo
+                   dist/build
+
+  Build-Depends: base, glib
+
 Executable behaviourellipsetest
   Main-Is:         BehaviourEllipseTest.hs
   Other-Modules:   Graphics.UI.Clutter
@@ -224,3 +235,4 @@ Executable cluttergame
   Build-Depends: base, glib
 
 
+p

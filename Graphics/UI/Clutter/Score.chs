@@ -110,14 +110,14 @@ module Graphics.UI.Clutter.Score (
   onStarted,
   afterStarted,
   started,
-
+-}
   onTimelineCompleted,
   afterTimelineCompleted,
   timelineCompleted,
   onTimelineStarted,
   afterTimelineStarted,
   timelineStarted
- -}
+
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -258,19 +258,19 @@ scoreLoop = newAttr scoreGetLoop scoreSetLoop
 --
 -- * Since 0.6
 --
-{# fun unsafe score_start as ^ { withScore* `Score' } -> `()' #}
+{# fun score_start as ^ { withScore* `Score' } -> `()' #}
 
 -- | Pauses a playing score score.
 --
 -- * Since 0.6
 --
-{# fun unsafe score_pause as ^ { withScore* `Score' } -> `()' #}
+{# fun score_pause as ^ { withScore* `Score' } -> `()' #}
 
 -- | Stops and rewinds a playing 'Score' instance.
 --
 -- * Since 0.6
 --
-{# fun unsafe score_stop as ^ { withScore* `Score' } -> `()' #}
+{# fun score_stop as ^ { withScore* `Score' } -> `()' #}
 
 --TODO: ReadOnly Attr?
 -- | Query state of a 'Score' instance.

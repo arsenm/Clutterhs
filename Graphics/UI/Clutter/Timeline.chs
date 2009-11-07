@@ -23,7 +23,12 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | Timeline — A class for time-based events
 module Graphics.UI.Clutter.Timeline (
+-- * Description
+-- | 'Timeline' is a base class for managing time based events such as animations.
+--
+
 -- * Class Hierarchy
 -- |
 -- @

@@ -57,14 +57,12 @@ module Graphics.UI.Clutter.BehaviourDepth (
 import C2HS
 import System.Glib.Attributes
 
-maybeBehaviourDepth = maybeNullNew
-
 -- | Creates a new 'BehaviourDepth' which can be used to control
 --   the 'Actor':depth property of a set of Actors.
 --
 -- [@alpha@]  @Just@ an Alpha or @Nothing@
 --
--- [@depth_start@] : initial value of the depth
+-- [@depth_start@] initial value of the depth
 --
 -- [@depth_end@] final value of the depth
 --
@@ -104,6 +102,10 @@ maybeBehaviourDepth = maybeNullNew
          alloca- `Int' peekIntConv*
        } -> `()' #}
 
+-- | Start and end depth level to apply to the actors
+--
+-- * Since 0.4
+--
 behaviourDepthBounds :: Attr BehaviourDepth (Int, Int)
 behaviourDepthBounds = newAttr behaviourDepthGetBounds (tup2ToF behaviourDepthSetBounds)
 

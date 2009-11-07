@@ -216,6 +216,10 @@ behaviourRotateBounds = newAttr behaviourRotateGetBounds (tup2ToF behaviourRotat
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
 
+-- | The coordinates of the center of rotation
+--
+-- * Since 0.4
+--
 behaviourRotateCenter :: Attr BehaviourRotate (Int, Int, Int)
 behaviourRotateCenter = newAttr behaviourRotateGetCenter (tup3ToF behaviourRotateSetCenter)
 

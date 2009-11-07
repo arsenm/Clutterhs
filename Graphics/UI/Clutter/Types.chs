@@ -29,6 +29,8 @@ module Graphics.UI.Clutter.Types (
                                 --withGObjectClass,
                                   newGObject,
                                   withGValue,
+                                  --TODO: Exports need organizing and stuff
+                                  makeNewObject,
 
                                   GSSize,
                                   GUnichar,

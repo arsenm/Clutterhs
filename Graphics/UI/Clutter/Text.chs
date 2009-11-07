@@ -186,7 +186,7 @@ import System.Glib.UTFString
 import Control.Monad (liftM)
 import Data.IORef
 
-import Graphics.UI.Gtk.Types (mkPangoLayoutRaw, toPangoLayoutRaw, unPangoLayoutRaw)
+import Graphics.UI.Gtk.Types (PangoLayoutRaw, mkPangoLayoutRaw)
 import Graphics.UI.Gtk.Pango.Types
 import Graphics.UI.Gtk.Pango.Layout
 import Graphics.UI.Gtk.Pango.Attributes
@@ -260,7 +260,7 @@ textPasswordChar = newAttr textGetPasswordChar textSetPasswordChar
 textJustify :: Attr Text Bool
 textJustify = newAttr textGetJustify textSetJustify
 
-withPangoLayoutRaw = withForeignPtr . unPangoLayoutRaw
+
 --CHECKME: I have no idea if this is right or makes sense.
 --particularly the getting the text from the layoutraw and putting it
 --in PangoLayout, the newGObject followed by the with, and really just

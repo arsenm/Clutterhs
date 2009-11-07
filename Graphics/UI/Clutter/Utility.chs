@@ -28,6 +28,9 @@ module Graphics.UI.Clutter.Utility (
   tup3ToF,
   tup4ToF,
 
+  newPangoContext,
+  newPangoLayout,
+
   cFromFlags,
   cToFlags,
   toModFlags,
@@ -36,6 +39,7 @@ module Graphics.UI.Clutter.Utility (
   newCairo,
   withCairo,
   withCairoPath,
+  withPangoLayoutRaw,
 
   peekNFree,
   peekNFreeString,
@@ -60,6 +64,8 @@ import System.Glib.Flags
 import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 
+import Graphics.UI.Gtk.Types (PangoContext, mkPangoContext, unPangoLayoutRaw)
+import Graphics.UI.Gtk.Pango.Layout
 
 --There's Probably a better way to do this I'm using this for related
 --attributes that you might want to set at once rather than
@@ -166,4 +172,13 @@ toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
                                      ModifierMask]
                          ]
 
+
+withPangoLayoutRaw = withForeignPtr . unPangoLayoutRaw
+
+newPangoContext :: Ptr PangoContext -> IO PangoContext
+newPangoContext p = makeNewObject mkPangoContext (return p)
+
+newPangoLayout :: Ptr PangoLayout -> IO PangoLayout
+--newPangoLayout p = makeNewObject mkPangoLayout (return p)
+newPangoLayout p = undefined
 

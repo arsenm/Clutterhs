@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -151,9 +151,9 @@ module Graphics.UI.Clutter.Actor (
 --actorSetShaderParamFloat,
 --actorSetShaderParamInt,
   actorGrabKeyFocus,
---actorGetPangoContext,
---actorCreatePangoContext,
---actorCreatePangoLayout,
+  actorGetPangoContext,
+  actorCreatePangoContext,
+  actorCreatePangoLayout,
   actorIsInClonePaint,
 
 --actorBoxNew,
@@ -254,10 +254,18 @@ import Prelude hiding (show)
 import C2HS
 import Foreign
 import Foreign.Ptr
+import Data.IORef
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.Signals
+
+--TODO: Export pango from types so you don't need this
+import Graphics.UI.Gtk.Types (PangoContext, PangoLayoutRaw, mkPangoLayoutRaw)
+import Graphics.UI.Gtk.Pango.Types
+import Graphics.UI.Gtk.Pango.Layout
+import Graphics.UI.Gtk.Pango.Attributes
+import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 --FIXME: A lot of these need to be marked as safe, not unsafe for callbacks to work
 
@@ -1733,15 +1741,28 @@ actorShader = newAttr actorGetShader actorSetShader
 {# fun unsafe actor_grab_key_focus as ^
    `(ActorClass a)' => { withActorClass* `a' } -> `()' #}
 
-{-
+--register PangoContext as ptr for c2hs to be happy and not need casts
+{#pointer *PangoContext as PangoContextPtr foreign -> PangoContext nocode #}
+{#pointer *PangoLayout as PangoLayoutPtr foreign -> PangoLayoutRaw nocode #}
+
 --TODO: I think I figured out the pango stuff in Text
 {# fun unsafe actor_get_pango_context as ^
    `(ActorClass a)' => { withActorClass* `a' } -> `PangoContext' newPangoContext* #}
 {# fun unsafe actor_create_pango_context as ^
    `(ActorClass a)' => { withActorClass* `a' } -> `PangoContext' newPangoContext* #}
-{# fun unsafe actor_create_pango_layout as ^
-   `(ActorClass a)' => { withActorClass* `a', `String' } -> `PangoLayout' newPangoLayout* #}
--}
+
+--CHECKME: This madness with the pango stuff is probably wrong, as well as in Text
+--the string business
+actorCreatePangoLayout :: (ActorClass self) => self -> String -> IO PangoLayout
+actorCreatePangoLayout act str = let func = {# call unsafe actor_create_pango_layout #}
+                                 in withActorClass act $ \actPtr ->
+                                     withCString str $ \strPtr -> do
+                                       pl <- constructNewGObject mkPangoLayoutRaw (func actPtr strPtr)
+                                       withPangoLayoutRaw pl $ \plptr -> do
+                                         ps <- makeNewPangoString str
+                                         psRef <- newIORef ps
+                                         return (PangoLayout psRef pl)
+
 
 
 -- | Checks whether self is being currently painted by a 'Clone'

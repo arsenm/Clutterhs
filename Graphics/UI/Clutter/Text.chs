@@ -194,7 +194,6 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 --CHECKME: Is LayoutWrapMode/LayoutAlignment the wrap mode we want?
 
-
 {# fun unsafe text_new as ^ {} -> `Text' newText* #}
 {# fun unsafe text_new_full as ^ { `String', `String', withColor* `Color' } -> `Text' newText* #}
 {# fun unsafe text_new_with_text as ^ { `String', `String' } -> `Text' newText* #}

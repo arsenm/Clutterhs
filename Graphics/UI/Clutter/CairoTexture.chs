@@ -60,6 +60,10 @@ import C2HS
 import System.Glib.Attributes
 import Graphics.Rendering.Cairo.Types (Cairo)
 
+-- stop c2hs complaining about Ptr () not being Ptr Cairo
+{# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
+
+
 {# fun unsafe cairo_texture_new as ^ { `Int', `Int' } -> `CairoTexture' newCairoTexture* #}
 
 {# fun unsafe cairo_texture_set_surface_size as ^

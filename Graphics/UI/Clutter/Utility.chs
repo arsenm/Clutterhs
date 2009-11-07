@@ -29,13 +29,13 @@ module Graphics.UI.Clutter.Utility (
   tup4ToF,
 
   newPangoContext,
-  newPangoLayout,
 
   cFromFlags,
   cToFlags,
   toModFlags,
   cFromModFlags,
 
+--TODO: Move some of this stuff to types
   newCairo,
   withCairo,
   withCairoPath,
@@ -83,8 +83,12 @@ cToFlags = toFlags . cIntConv
 cFromFlags :: (Flags a) => [a] -> CInt
 cFromFlags = cIntConv . fromFlags
 
+{# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
+
 --convenient marshalling not provided by gtk2hs
-newCairo = Cairo . castPtr
+newCairo :: Ptr Cairo -> Cairo
+newCairo = Cairo
+
 withCairoPath = castPtr . Cairo.unPath
 withCairo = castPtr . unCairo
 
@@ -177,8 +181,4 @@ withPangoLayoutRaw = withForeignPtr . unPangoLayoutRaw
 
 newPangoContext :: Ptr PangoContext -> IO PangoContext
 newPangoContext p = makeNewObject mkPangoContext (return p)
-
-newPangoLayout :: Ptr PangoLayout -> IO PangoLayout
---newPangoLayout p = makeNewObject mkPangoLayout (return p)
-newPangoLayout p = undefined
 

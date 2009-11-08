@@ -777,6 +777,7 @@ newClone a = makeNewObject Clone $ return (castPtr a)
 
 instance CloneClass Clone
 instance ScriptableClass Clone
+instance ActorClass Clone
 instance GObjectClass Clone where
   toGObject (Clone i) = mkGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Clone (castForeignPtr o)

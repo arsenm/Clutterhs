@@ -139,7 +139,7 @@ main = do
   behaviourRotateSetCenter behav 0 50 15
   behaviourApply behav rec2
 
-  texture <- fmap fromJust $ textureNewFromFile "khaaaaaaan.jpg"
+  texture <- textureNewFromFile "khaaaaaaan.jpg"
   set texture [textureKeepAspectRatio := True]
   containerAddActor stg texture
   actorSetPosition texture 200 200

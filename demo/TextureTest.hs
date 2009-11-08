@@ -23,7 +23,8 @@ main = do
   putStrLn "Trying to get nonexistant file"
 --  texture <- textureNewFromFile "ThisFileDoesNotExist"
 
-  failedTexture <- catchGError (textureNewFromFile "ThisFileDoesNotExist") (\_ -> putStrLn "Handle" >> return P.Nothing)
+  failedTexture <- catchGError (fmap Just $ textureNewFromFile "ThisFileDoesNotExist")
+                               (\_ -> putStrLn "Handle" >> return P.Nothing)
 
 
   actorShowAll stage

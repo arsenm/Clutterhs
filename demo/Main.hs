@@ -6,7 +6,7 @@ import System.Glib.Attributes
 import System.Glib.Signals (on, after)
 import System.Mem
 import Control.Monad.Trans (liftIO)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, fromJust)
 
 import Random
 
@@ -139,7 +139,7 @@ main = do
   behaviourRotateSetCenter behav 0 50 15
   behaviourApply behav rec2
 
-  texture <- textureNewFromFile "khaaaaaaan.jpg"
+  texture <- fmap fromJust $ textureNewFromFile "khaaaaaaan.jpg"
   set texture [textureKeepAspectRatio := True]
   containerAddActor stg texture
   actorSetPosition texture 200 200

@@ -1,6 +1,7 @@
 
 import Prelude
 import qualified Prelude as P
+import Control.Monad (forM_)
 
 import Graphics.UI.Clutter
 import System.Glib.Signals
@@ -40,8 +41,8 @@ main = do
 
   tmlList <- scoreListTimelines score
 
-  mapM_ (\tml -> do d <- timelineGetDuration tml
-                    putStrLn ("Listing timeline of duration: " ++ P.show d)) tmlList
+  forM_ tmlList (\tml -> do d <- timelineGetDuration tml
+                            putStrLn ("Listing timeline of duration: " ++ P.show d))
 
 --on score completed $ putStrLn "Score completed" >> clutterMainQuit
 

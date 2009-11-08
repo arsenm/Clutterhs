@@ -52,7 +52,8 @@ module Graphics.UI.Clutter.Utility (
   withMaybeTimeline,
   withMaybeActorClass,
   maybeNewActor,
-  maybeNewAlpha
+  maybeNewAlpha,
+  maybeNewTexture
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -109,6 +110,10 @@ maybeNewActor = maybeNullNew newActor
 
 maybeNewAlpha :: Ptr Alpha -> IO (Maybe Alpha)
 maybeNewAlpha = maybeNullNew newAlpha
+
+
+maybeNewTexture :: Ptr Actor -> IO (Maybe Texture)
+maybeNewTexture = maybeNullNew newTexture
 
 
 -- e.g. maybeNewRectangle = maybeNullNew newRectangle

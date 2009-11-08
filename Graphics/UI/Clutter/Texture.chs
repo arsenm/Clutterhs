@@ -110,20 +110,21 @@ import System.Glib.GError
 
 {# fun unsafe texture_new as ^ { } -> `Texture' newTexture* #}
 
-textureNewFromFile :: String -> IO Texture
+textureNewFromFile :: String -> IO (Maybe Texture)
 textureNewFromFile filename = let func = {# call unsafe texture_new_from_file #}
-                              in withCString filename $ \cstr ->
-                                   propagateGError $ \gerrorPtr ->
-                                       func cstr (castPtr gerrorPtr) >>= newTexture
+                              in maybeNewTexture =<< (propagateGError $ \gerrorPtr ->
+                                   withCString filename $ \cstr -> do
+                                     func cstr gerrorPtr)
+
 
 {# fun unsafe texture_new_from_actor as ^
-       `(ActorClass a)' => { withActorClass* `a'} -> `Texture' newTexture* #}
+       `(ActorClass a)' => { withActorClass* `a'} -> `Maybe Texture' maybeNewTexture* #}
 
 textureSetFromFile :: Texture -> String -> IO Bool
 textureSetFromFile txt fname = let func = {# call unsafe texture_set_from_file #}
-                               in liftM cToBool $ withTexture txt $ \txtptr ->
-                                    withCString fname $ \cstr ->
-                                      propagateGError $ \gerrorPtr ->
+                               in liftM cToBool $ propagateGError $ \gerrorPtr ->
+                                    withTexture txt $ \txtptr ->
+                                      withCString fname $ \cstr ->
                                         func txtptr cstr (castPtr gerrorPtr)
 {-
 --CHECKME: Rgb or RGB?

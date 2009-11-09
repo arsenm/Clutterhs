@@ -44,10 +44,9 @@ module Graphics.UI.Clutter.StoreValue (
                                        AnimType(..),
                                        GenericValue(..),
                                        GenericValuePtr,
-                                       valueSetGenericValue,
-                                       valueGetGenericValue,
-                                       GenericValueClass,
-                                       toGenericValue,
+                                       --valueSetGenericValue,
+                                       --valueGetGenericValue,
+                                       GenericValueClass(..),
                                        withGenericValue,
                                        unGValue,  --I don't remember why this is here.
                                        unsetGValue,

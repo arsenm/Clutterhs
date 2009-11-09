@@ -36,11 +36,7 @@ module Graphics.UI.Clutter.Types (
                                   GUnichar,
                                   Word,
 
-                                  Color(Color),
-                                  red,
-                                  green,
-                                  blue,
-                                  alpha,
+                                  Color(..),
                                   ColorPtr,
                                   withColor,
 
@@ -76,13 +72,9 @@ module Graphics.UI.Clutter.Types (
                                   withContainer,
                                   withContainerClass,
 
-                                  Perspective(Perspective),
+                                  Perspective(..),
                                   PerspectivePtr,
                                   withPerspective,
-                                  perspectiveFovy,
-                                  perspectiveAspect,
-                                  perspectiveZNear,
-                                  perspectiveZFar,
                                   PickMode(..),
                                   Gravity(..),
                                   RequestMode(..),

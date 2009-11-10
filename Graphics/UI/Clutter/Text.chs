@@ -405,6 +405,7 @@ onCursorEvent, afterCursorEvent :: Text -> (Geometry -> IO ()) -> IO (ConnectId 
 onCursorEvent = connect_BOXED__NONE "cursor_event" peek False
 afterCursorEvent = connect_BOXED__NONE "cursor_event" peek True
 
+--CHECKME: Event?
 cursorEvent :: Signal Text (Geometry -> IO ())
 cursorEvent = Signal (connect_BOXED__NONE "cursor_event" peek)
 

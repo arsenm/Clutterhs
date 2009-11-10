@@ -22,8 +22,26 @@ main = do
   set pwText [ textPasswordChar := 12 ]
   set pwText [ actorPosition := (50, 300) ]
 
+
+
+  textEdit <- textNewFull "San 12" "Edit me" black
+  set textEdit [ actorPosition := (400, 350),
+                 actorReactive := True,
+                 textCursorColor := Color 123 210 231 230,
+                 textCursorSize := 3,
+                 textEditable := True ]
+
+  coords <- textPositionToCoords textEdit 4
+  putStrLn ("textPositionToCoords: " ++ P.show coords)
+
+  on textEdit activate (putStrLn "I'm activated")
+  on textEdit cursorEvent (\geom -> putStrLn $ "Geom: " ++ P.show geom)
+  on textEdit textChanged (get textEdit textText >>= putStrLn)
+
+
   containerAddActor stage text
   containerAddActor stage pwText
+  containerAddActor stage textEdit
 
   actorShowAll stage
 

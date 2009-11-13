@@ -17,3 +17,17 @@ Graphics/UI/Clutter/General.chs.h
 Graphics/UI/Clutter/General.hs
 Graphics/UI/Clutter/Types.chi
 
+demo/behaviourellipsetest
+demo/cluttergame
+demo/pathtest
+demo/rectangletest
+demo/scoretest
+demo/texttest
+demo/texturetest
+demo/timelinetest
+
+callbackGen/HookGenerator.o
+callbackGen/HookGenerator.hi
+callbackGen/HookGenerator
+
+

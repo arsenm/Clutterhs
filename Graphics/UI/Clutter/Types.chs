@@ -18,7 +18,11 @@
 --  Lesser General Public License for more details.
 --
 
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface,
+             TypeSynonymInstances,
+             MultiParamTypeClasses,
+             ScopedTypeVariables,
+             FlexibleInstances #-}
 
 #include <clutter/clutter.h>
 
@@ -194,6 +198,8 @@ module Graphics.UI.Clutter.Types (
                                   newTexture,
                                   withTexture,
 
+                                  TextureFlags(..),
+
                                   Shader,
                                   ShaderClass,
                                   withShader,
@@ -288,12 +294,26 @@ module Graphics.UI.Clutter.Types (
 
                                   ModelForeachFunc,
                                   CModelForeachFunc,
-                                  newModelForeachFunc
+                                  newModelForeachFunc,
+
+                                  RGBData,
+                                  mkRGBData,
+                                  rgbDataHasAlpha,
+                                  rgbDataData
+
                                  ) where
 
 --FIXME: Conflict with EventType Nothing
 import Prelude hiding (Nothing)
 import Data.Word
+
+--RGBData stuff
+import Data.Ix
+-- internal module of GHC
+import Data.Array.Base ( MArray, newArray, newArray_, unsafeRead, unsafeWrite,
+			 getBounds,
+			 getNumElements
+                       )
 
 import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
@@ -1336,4 +1356,42 @@ foreign import ccall "wrapper"
 -- *** TimeoutPool
 
 {# pointer *ClutterTimeoutPool as TimeoutPool foreign newtype #}
+
+
+-- *** RGBData
+
+--FIXME/CHECKME: Not really sure best way to deal with this
+--This is basically PixbufData without the pixbuf.
+-- | An array that stored the raw pixel data in RGB Format.
+--
+data Ix i => RGBData i e = RGBData {-# UNPACK #-} !(ForeignPtr e)
+                                                  !Bool
+                                                  !(i,i)
+                                   {-# UNPACK #-} !Int
+
+rgbDataHasAlpha :: (Storable e, Ix i) => RGBData i e -> Bool
+rgbDataHasAlpha (RGBData _ hasA _ _) = hasA
+
+--FIXME: Bad bad bad
+rgbDataData (RGBData ptr _ _ _) = ptr
+
+mkRGBData :: Storable e => ForeignPtr e -> Bool -> Int -> RGBData Int e
+mkRGBData (ptr :: ForeignPtr e) hasA size =
+  RGBData ptr hasA (0, count) count
+  where count = fromIntegral (size `div` sizeOf (undefined :: e))
+
+--CHECKME: Touching things?
+-- | 'RGBData' is a mutable array.
+instance Storable e => MArray RGBData e IO where
+  newArray (l,u) e = error "Clutter.Texture.RGBData.newArray: not implemented"
+  newArray_ (l,u)  = error "Clutter.Texture.RGBData.newArray_: not implemented"
+  {-# INLINE unsafeRead #-}
+  unsafeRead (RGBData pixPtr _ _ _) idx = withForeignPtr pixPtr (flip peekElemOff idx)
+  {-# INLINE unsafeWrite #-}
+  unsafeWrite (RGBData pixPtr _ _ _) idx elem = withForeignPtr pixPtr (\p -> pokeElemOff p idx elem)
+  {-# INLINE getBounds #-}
+  getBounds (RGBData _ _ bd _) = return bd
+  {-# INLINE getNumElements #-}
+  getNumElements (RGBData _ _ _ count) = return count
+
 

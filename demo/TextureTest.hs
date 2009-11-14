@@ -15,16 +15,20 @@ main = do
   actorSetSize stage 800 800
 
   rec1 <- rectangleNewWithColor (Color 255 0 0 0)
+  rec2 <- rectangleNewWithColor (Color 0 255 0 0)
 
   actorSetPosition rec1 200 300
   actorSetSize rec1 50 50
+
+  actorSetPosition rec2 150 400
+  actorSetSize rec1 100 50
 
   txtrFail <- textureNewFromActor rec1
   case txtrFail of
     P.Nothing -> putStrLn "textureNewFromActor failed"
     _ -> putStrLn "new from actor worked"
 
-  putStrLn "Trying to get nonexistant file"
+  putStrLn "Trying to get nonexistent file"
 --  texture <- textureNewFromFile "ThisFileDoesNotExist"
 
   failedTexture2 <- catchGError (fmap Just $ textureNewFromFile "ThisFileDoesNotExist")
@@ -54,6 +58,20 @@ but this ends in assertion failures
   sfClone <- cloneNew squirrelfish
   set sfClone [ actorWidth := 50,
                 actorPosition := (400, 400)]
+
+  putStrLn "Attempting to read pixels"
+  pixels <- fmap (fromMaybe (P.error "stageReadPixels failed"))
+                 (stageReadPixels stage 2 2 10 10)
+             --  (stageReadPixels stage 130 380 200 200)
+
+
+  pixTx <- textureNew
+  putStrLn "Attempting to set from rgb data"
+  success <- catchGError (textureSetFromRgbData pixTx pixels [TextureNone])
+                         (\(GError a b c ) -> P.error $ P.show a ++ " " ++ P.show b ++ " " ++ P.show c)
+  putStrLn $ "Set from rgb sucess: " ++ P.show success
+
+  containerAddActor stage pixTx
 
   containerAddActor stage sfClone
   actorShowAll stage

@@ -8,7 +8,7 @@ homepage: http://example.com
 category: Graphics
 Synopsis: Clutter bindings
 Description: Clutter bindings
-build-depends: base, glib
+build-depends: base, glib, array
 Build-Type: Simple
 
 Cabal-Version: >= 1.2
@@ -32,7 +32,7 @@ Library
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
 
   if flag(X11Support)
-    Build-Depends: base, glib, gtk, haskell98, mtl, cairo, X11
+    Build-Depends: base, glib, gtk, haskell98, mtl, cairo, X11, array
 --I'm not sure that GValue should be exposed. Utility definitely not
     Exposed-modules: Graphics.UI.Clutter.Types,
                      Graphics.UI.Clutter.GValue,
@@ -83,7 +83,7 @@ Library
                      Graphics.UI.Clutter.Utilities,
                      Graphics.UI.Clutter
   else
-      Build-Depends: base, glib, gtk, haskell98, mtl, cairo
+      Build-Depends: base, glib, gtk, haskell98, mtl, cairo, array
 --I'm not sure that GValue should be exposed. Utility definitely not
       Exposed-modules: Graphics.UI.Clutter.Types,
                        Graphics.UI.Clutter.GValue,

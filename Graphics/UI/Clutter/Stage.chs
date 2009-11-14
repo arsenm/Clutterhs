@@ -20,6 +20,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
+#include <glib.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
@@ -87,7 +88,7 @@ module Graphics.UI.Clutter.Stage (
   stageSetKeyFocus,
   stageGetKeyFocus,
   --stageKeyFocus,
-  --stageReadPixels,
+  stageReadPixels,
 
   stageSetThrottleMotionEvents,
   stageGetThrottleMotionEvents,
@@ -138,12 +139,14 @@ module Graphics.UI.Clutter.Stage (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Actor #}
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.FFI (maybeNull)
 
 -- | Returns the main stage. The default 'Stage' is a singleton, so
 --   the stage will be created the first time this function is called
@@ -283,6 +286,30 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 --TODO: all those types, namely guchar* out = what?
 --Returns some kind of image buffer, what do I do with it?
 --{# fun unsafe stage_read_pixels as ^ { withStage* `Stage', `Int', `Int', `Int', `Int' } -> `Ptr ()' #}
+--Why is this scattered around in many places in gtk2hs?
+foreign import ccall unsafe "&g_free"
+  finalizerGFree :: FinalizerPtr a
+
+
+stageReadPixels :: Stage -> Int -> Int -> Int -> Int -> IO (Maybe (RGBData Int Word8))
+stageReadPixels stage x y w h = let cx = cIntConv x
+                                    cy = cIntConv y
+                                    cw = cIntConv w
+                                    ch = cIntConv h
+                                in withStage stage $ \stgPtr -> do
+                                  sizeW <- if w == -1
+                                              then liftM floor (actorGetWidth stage)
+                                              else return w
+                                  sizeH <- if h == -1
+                                              then liftM floor (actorGetHeight stage)
+                                              else return h
+                                  let size = sizeW * sizeH * 4
+                                  ptr <- {# call unsafe stage_read_pixels #} stgPtr cx cy cw ch
+                                  if ptr == nullPtr
+                                     then return Prelude.Nothing
+                                     else newForeignPtr finalizerGFree ptr >>= \fptr ->
+                                            return $ Just (mkRGBData (castForeignPtr fptr) True size)
+
 
 -- | Sets whether motion events received between redraws should be
 -- throttled or not. If motion events are throttled, those events

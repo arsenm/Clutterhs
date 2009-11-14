@@ -42,7 +42,7 @@ module Graphics.UI.Clutter.Texture (
 -- * Methods
 
   textureSetFromFile,
---textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
+  textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
 --textureSetFromYuvData,
 --textureSetAreaFromRgbData,
   textureGetBaseSize,
@@ -103,11 +103,12 @@ module Graphics.UI.Clutter.Texture (
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}
 
+import Data.Array.Base (getBounds)
+
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.GError
-
 
 
 -- | Creates a new empty 'Texture' object.
@@ -225,34 +226,41 @@ textureSetFromFile txt fname = let func = {# call unsafe texture_set_from_file #
                                     withTexture txt $ \txtptr ->
                                       withCString fname $ \cstr ->
                                         func txtptr cstr (castPtr gerrorPtr)
-{-
+
+
+
+
+--CHECKME: Generalized RGBData
 --CHECKME: Rgb or RGB?
---Um..how to deal with random pointer? Not possible?
+--FIXME: Proper rowstride
 textureSetFromRgbData :: Texture ->
-                         ?? ->
-                         Bool ->
-                         Int ->
-                         Int ->
-                         Int ->
-                         Int ->
+                         RGBData Int Word8 ->
                          [TextureFlags] ->
                          IO Bool
-textureSetFromRgbData txt dat hasA width height rowstride bpp flags =
+textureSetFromRgbData txt dat flags =
     let func = {# call unsafe texture_set_from_rgb_data #}
+        hasA = rgbDataHasAlpha dat
+        bpp = if hasA then 4 else 3
+        datPtr = rgbDataData dat
     in withTexture txt $ \txtptr ->
-        propagateGError $ \gerrorPtr ->
+        propagateGError $ \gerrorPtr -> do
+          (w, h) <- getBounds dat
+          putStrLn $ "W: " ++ Prelude.show w ++ " H: " ++ Prelude.show h
+          let rowstride = w * 4 -- FIXME
+          liftM cToBool $ withForeignPtr datPtr $ \fPtr ->
             func txtptr
-                 dat
+                 (castPtr fPtr)
                  (cFromBool hasA)
-                 (cIntConv width)
-                 (cIntConv height)
+                 (cIntConv w)
+                 (cIntConv h)
                  (cIntConv rowstride)
-                 (cIntConv dpp)
+                 (cIntConv bpp)
                  (cFromFlags flags)
                  (castPtr gerrorPtr)
 
-tetxure_set_from_yuv_data
-tetxure_set_area_from_rgb_data
+{-
+texture_set_from_yuv_data
+texture_set_area_from_rgb_data
 -}
 
 

@@ -96,7 +96,6 @@ module Graphics.UI.Clutter.Actor (
   actorSetName,
   actorGetName,
 
-
   actorGetGid,
 
   actorSetClip,
@@ -1174,9 +1173,9 @@ actorName = newAttr actorGetName actorSetName
 -- Since 0.6
 --
 {# fun unsafe actor_get_gid as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `Word32' #}
+   `(ActorClass self)' => { withActorClass* `self' } -> `GID' cIntConv #}
 
-actorGid :: (ActorClass self) => ReadAttr self Word32
+actorGid :: (ActorClass self) => ReadAttr self GID
 actorGid = readAttr actorGetGid
 
 -- | Sets clip area for self. The clip area is always computed from the

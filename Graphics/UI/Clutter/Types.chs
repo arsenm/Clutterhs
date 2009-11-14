@@ -39,6 +39,7 @@ module Graphics.UI.Clutter.Types (
                                   GSSize,
                                   GUnichar,
                                   Word,
+                                  GID,
 
                                   Color(..),
                                   ColorPtr,
@@ -399,6 +400,9 @@ instance Flags ActorFlags
 instance Flags TextureFlags
 instance Flags AllocationFlags
 instance Flags FontFlags
+
+
+type GID = Word32
 
 --CHECKME: I'm not sure how to deal with this opaque type
 -- {# pointer *ClutterUnits as Units newtype #}

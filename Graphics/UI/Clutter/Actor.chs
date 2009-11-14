@@ -148,8 +148,8 @@ module Graphics.UI.Clutter.Actor (
   actorGetShader,
 
 --actorSetShaderParam,
---actorSetShaderParamFloat,
---actorSetShaderParamInt,
+  actorSetShaderParamFloat,
+  actorSetShaderParamInt,
   actorGrabKeyFocus,
   actorGetPangoContext,
   actorCreatePangoContext,
@@ -268,8 +268,6 @@ import Graphics.UI.Gtk.Pango.Attributes
 import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 --FIXME: A lot of these need to be marked as safe, not unsafe for callbacks to work
-
---TODO: Accept a list of the flags and add them and stuff.
 
 -- | Sets flags on self
 --
@@ -608,18 +606,11 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
                               } -> `()' #}
 
 
---TODO Fields of the VertexBox type instead of verts[n]
 -- | Calculates the transformed coordinates of the four corners of the
 --   actor in the plane of ancestor. The returned vertices relate to
 --   the 'ActorBox' coordinates as follows:
 --
--- * verts[0] contains (x1, y1)
---
--- * verts[1] contains (x2, y1)
---
--- * verts[2] contains (x1, y2)
---
--- * verts[3] contains (x2, y2)
+-- * [(x1, y1), (x2, y1), (x1, y2),  (x2, y2)]
 --
 -- If ancestor is NULL the ancestor will be the 'Stage'. In this
 -- case, the coordinates returned will be the coordinates on the stage
@@ -664,10 +655,9 @@ actorGetAllocationVertices self ancestor = let func = {# call unsafe actor_get_a
                             alloca- `Float' peekFloatConv*,
                             alloca- `Float' peekFloatConv*
                           } -> `()' #}
---TODO: Do I want this? Others take another param, would be inconsisent to have just this one
---actorPreferredSize :: (ActorClass self) => ReadAttr self (Float, Float, Float, Float)
---actorPreferredSize = readAttr actorGetPreferredSize
 
+actorPreferredSize :: (ActorClass self) => ReadAttr self (Float, Float, Float, Float)
+actorPreferredSize = readAttr actorGetPreferredSize
 
 
 
@@ -1320,7 +1310,6 @@ actorGid = readAttr actorGetGid
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
 
---TODO: Make Maybe, since can be null
 -- | Retrieves the Stage where an actor is contained.
 --
 -- [@actor@]  an Actor
@@ -1331,15 +1320,8 @@ actorGid = readAttr actorGetGid
 --
 -- * Since 0.8
 --
-actorGetStage :: (ActorClass self) => self -> IO (Maybe Stage)
-actorGetStage self = withActorClass self $ \aPtr -> do
-                       stgPtr <- {# call unsafe actor_get_stage #} aPtr
-                       if stgPtr == nullPtr
-                         then return Prelude.Nothing
-                         else newStage stgPtr >>= return . Just
-
--- {# fun unsafe actor_get_stage as ^
---   `(ActorClass child)' => { withActorClass* `child' } -> `Stage' newStage* #}
+{# fun unsafe actor_get_stage as ^
+   `(ActorClass self)' => { withActorClass* `self' } -> `Maybe Stage' maybeNewStage* #}
 
 
 -- | Retrieves the depth of /self/.
@@ -1659,28 +1641,20 @@ actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
 actorPaintVisibility = readAttr actorGetPaintVisibility
 
 
---TODO: Update to field of Vector in doc
 -- | Calculates the transformed screen coordinates of the four corners
 --   of the actor; the returned vertices relate to the 'ActorBox'
 --   coordinates as follows:
 --
--- v[0] contains (x1, y1)
---
--- v[1] contains (x2, y1)
---
--- v[2] contains (x1, y2)
---
--- v[3] contains (x2, y2)
+--  [(x1, y1), (x2, y1),  (x1, y2),  (x2, y2)]
 --
 -- * Since 0.4
 --
 actorGetAbsAllocationVertices  :: (ActorClass self) => self -> IO [Vertex]
 actorGetAbsAllocationVertices self = let func = {# call unsafe actor_get_abs_allocation_vertices #}
-                                     in
-                                       withActorClass self $ \selfPtr ->
-                                           allocaArray 4 $ \vsPtr -> do
-                                             func selfPtr vsPtr
-                                             peekArray 4 vsPtr
+                                     in withActorClass self $ \selfPtr ->
+                                          allocaArray 4 $ \vsPtr -> do
+                                            func selfPtr vsPtr
+                                            peekArray 4 vsPtr
 
 {-
 {# fun unsafe actor_get_transformation_matrix as ^ `(ActorClass self)' =>
@@ -1714,24 +1688,50 @@ actorGetAbsAllocationVertices self = let func = {# call unsafe actor_get_abs_all
 actorReactive :: (ActorClass self) => Attr self Bool
 actorReactive = newAttr actorGetReactive actorSetReactive
 
---TODO: Set shader to null to unset -> Nothing
 {# fun unsafe actor_set_shader as ^
-   `(ActorClass self)' => { withActorClass* `self', withShader* `Shader' } -> `()' #}
+   `(ActorClass self)' => { withActorClass* `self', withMaybeShader* `Maybe Shader' } -> `()' #}
 
+--CHECKME: Clutter doc doesn't say returns null, but since you can set null, I assume this works
 -- | Queries the currently set ClutterShader on self.
 --
 -- * Since 0.6
 --
 {# fun unsafe actor_get_shader as ^
-   `(ActorClass self)' => { withActorClass* `self' } -> `Shader' newShader* #}
+   `(ActorClass self)' => { withActorClass* `self' } -> `Maybe Shader' maybeNewShader* #}
 
-actorShader :: (ActorClass self) => Attr self Shader
+actorShader :: (ActorClass self) => Attr self (Maybe Shader)
 actorShader = newAttr actorGetShader actorSetShader
 
 --{# fun unsafe actor_set_shader_param as ^
---{# fun unsafe actor_set_shader_param_float as ^
---{# fun unsafe actor_set_shader_param_int as ^
 
+
+-- | Sets the value for a named float parameter of the shader applied
+--   to actor.
+--
+-- [@self@] an Actor
+--
+-- [@param@] the name of the parameter
+--
+-- [@value@] the value of the parameter
+--
+-- * Since 0.8
+--
+{# fun unsafe actor_set_shader_param_float as ^
+   `(ActorClass self)' => { withActorClass* `self', `String', `Float' } -> `()' #}
+
+-- | Sets the value for a named int parameter of the shader applied to
+--   actor.
+--
+-- [@self@] an Actor
+--
+-- [@param@] the name of the parameter
+--
+-- [@value@] the value of the parameter
+--
+-- * Since 0.8
+--
+{# fun unsafe actor_set_shader_param_int as ^
+   `(ActorClass self)' => { withActorClass* `self', `String', `Int' } -> `()' #}
 
 --CHECKME: unsafe?
 -- | Sets the key focus of the 'Stage' including self to this Actor.
@@ -2027,11 +2027,11 @@ pick = Signal (connect_BOXED__NONE "pick" peek)
 
 
 onQueueRedraw, afterQueueRedraw :: ActorClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
-onQueueRedraw = connect_OBJECT__NONE "queue_redraw" False
-afterQueueRedraw = connect_OBJECT__NONE "queue_redraw" True
+onQueueRedraw = connect_OBJECT__NONE "queue-redraw" False
+afterQueueRedraw = connect_OBJECT__NONE "queue-redraw" True
 
 queueRedraw :: ActorClass self => Signal self (Color -> IO ())
-queueRedraw = Signal (connect_BOXED__NONE "queue_redraw" peek)
+queueRedraw = Signal (connect_BOXED__NONE "queue-redraw" peek)
 
 
 onRealize, afterRealize :: ActorClass a => a -> IO () -> IO (ConnectId a)

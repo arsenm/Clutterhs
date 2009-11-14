@@ -162,8 +162,6 @@ import System.Glib.Attributes
 scoreLoop :: Attr Score Bool
 scoreLoop = newAttr scoreGetLoop scoreSetLoop
 
---TODO: GULong. Also type alias for the id whatsit
-
 
 -- | Appends a timeline to another one existing in the score; the
 --   newly appended timeline will be started when parent is complete.

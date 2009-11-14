@@ -36,7 +36,6 @@ module Graphics.UI.Clutter.Animation (
 -- @
 
 -- * Constructors
-
   animate,
   animateWithAlpha,
   animateWithTimeline,
@@ -177,8 +176,6 @@ animationLoop = newAttr animationGetLoop animationSetLoop
        `(ActorClass a)' => { withActorClass* `a' } -> `Animation' newAnimation* #}
 actorAnimation :: (ActorClass actor) => ReadAttr actor Animation
 actorAnimation = readAttr actorGetAnimation
-
---FIXME/TODO: Type for Duration, type Duration = UInt or whatever
 
 animate :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int -> r
 animate actor mode duration = runAnim actor mode duration []

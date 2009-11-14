@@ -50,10 +50,13 @@ module Graphics.UI.Clutter.Utility (
 
   withMaybeAlpha,
   withMaybeTimeline,
+  withMaybeShader,
   withMaybeActorClass,
   maybeNewActor,
+  maybeNewStage,
   maybeNewAlpha,
-  maybeNewTexture
+  maybeNewTexture,
+  maybeNewShader
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -108,12 +111,19 @@ peekNFreeString p = do
 maybeNewActor :: Ptr Actor -> IO (Maybe Actor)
 maybeNewActor = maybeNullNew newActor
 
+maybeNewStage :: Ptr Actor -> IO (Maybe Stage)
+maybeNewStage = maybeNullNew newStage
+
+
 maybeNewAlpha :: Ptr Alpha -> IO (Maybe Alpha)
 maybeNewAlpha = maybeNullNew newAlpha
 
 
 maybeNewTexture :: Ptr Actor -> IO (Maybe Texture)
 maybeNewTexture = maybeNullNew newTexture
+
+maybeNewShader :: Ptr Shader -> IO (Maybe Shader)
+maybeNewShader = maybeNullNew newShader
 
 
 -- e.g. maybeNewRectangle = maybeNullNew newRectangle
@@ -137,6 +147,7 @@ withMaybeString (Just str) act = withCString str act
 
 withMaybeAlpha = maybeWith withAlpha
 withMaybeTimeline = maybeWith withTimeline
+withMaybeShader = maybeWith withShader
 
 withMaybeActorClass :: (ActorClass a) => Maybe a -> (Ptr Actor -> IO b) -> IO b
 withMaybeActorClass = maybeWith withActorClass

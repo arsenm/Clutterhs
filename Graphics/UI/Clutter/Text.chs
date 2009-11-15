@@ -402,18 +402,18 @@ activate = Signal (connect_NONE__NONE "activate")
 
 --CHECKME: Do I work?
 onCursorEvent, afterCursorEvent :: Text -> (Geometry -> IO ()) -> IO (ConnectId Text)
-onCursorEvent = connect_BOXED__NONE "cursor_event" peek False
-afterCursorEvent = connect_BOXED__NONE "cursor_event" peek True
+onCursorEvent = connect_BOXED__NONE "cursor-event" peek False
+afterCursorEvent = connect_BOXED__NONE "cursor-event" peek True
 
 --CHECKME: Event?
 cursorEvent :: Signal Text (Geometry -> IO ())
-cursorEvent = Signal (connect_BOXED__NONE "cursor_event" peek)
+cursorEvent = Signal (connect_BOXED__NONE "cursor-event" peek)
 
 
 onTextChanged, afterTextChanged :: Text -> IO () -> IO (ConnectId Text)
-onTextChanged = connect_NONE__NONE "text_changed" False
-afterTextChanged = connect_NONE__NONE "text_changed" True
+onTextChanged = connect_NONE__NONE "text-changed" False
+afterTextChanged = connect_NONE__NONE "text-changed" True
 
 textChanged :: Signal Text (IO ())
-textChanged = Signal (connect_NONE__NONE "text_changed")
+textChanged = Signal (connect_NONE__NONE "text-changed")
 

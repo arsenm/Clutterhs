@@ -74,11 +74,9 @@ clutterInit = do
 {# fun unsafe get_debug_enabled as ^ { } -> `Bool' #}
 {# fun unsafe get_show_fps as ^ { } -> `Bool' #}
 
---CHECKME: GULong
-{# fun unsafe get_timestamp as ^ { } -> `Word' cIntConv #}
+{# fun unsafe get_timestamp as ^ { } -> `Timestamp' cIntConv #}
 
---TODO: GID type
-{# fun unsafe get_actor_by_gid as ^ { `Word32' } -> `Actor' newActor* #}
+{# fun unsafe get_actor_by_gid as ^ { cIntConv `GID' } -> `Actor' newActor* #}
 
 {# fun unsafe set_default_frame_rate as ^ { cIntConv `Word' } -> `()' #}
 {# fun unsafe get_default_frame_rate as ^ { } -> `Word' cIntConv #}
@@ -93,8 +91,6 @@ clutterInit = do
 --TODO: A bunch of functions here
 --{# fun unsafe get_font_map as ^ { } -> `FontMap' #}
 --{# threads_set_lock_functions
-
-
 
 
 {# fun unsafe get_keyboard_grab as ^ { } -> `Actor' newActor* #}

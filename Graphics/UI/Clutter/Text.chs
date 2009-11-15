@@ -924,37 +924,180 @@ textEditable = newAttr textGetEditable textSetEditable
 --
 {# fun unsafe text_get_chars as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `String' peekNFreeString* #}
 
---TODO: What do you get when not set? Nothing or the matched color of the text?
---withMaybeColor
-{# fun unsafe text_set_cursor_color as ^ { withText* `Text', withColor* `Color' } -> `()' #}
-{# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
 
-textCursorColor :: Attr Text Color
+--CHECKME: This can be set to Nothing, but you can't get Nothing back.
+--so with the attribute, make Maybe or not?
+--
+-- | Sets the color of the cursor of a 'Text' actor.
+--
+-- If color is @Nothing@, the cursor color will be the same as the
+-- text color.
+--
+-- [@self@] a 'Text'
+--
+-- [@color@] the color of the cursor, or @Nothing@ to unset it
+--
+-- * Since 1.0
+--
+{# fun unsafe text_set_cursor_color as ^ { withText* `Text', withMaybeColor* `Maybe Color' } -> `()' #}
+
+
+-- | Retrieves the color of the cursor of a 'Text' actor.
+--
+-- [@self@] a 'Text'
+--
+-- [@color@] @Just@ a 'Color'
+--
+-- * Since 1.0
+--
+{# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Maybe Color' maybeNullPeek* } -> `()' #}
+
+--{# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
+
+-- | Sets the color of the cursor of a 'Text' actor.
+--
+-- If set to @Nothing@, the cursor color will be the same as the text
+-- color. Note that reading this attribute will never be nothing, and
+-- will return the color of the text if set to @Nothing@.
+--
+-- * Since 1.0
+--
+textCursorColor :: Attr Text (Maybe Color)
 textCursorColor = newAttr textGetCursorColor textSetCursorColor
 
-{# fun unsafe text_get_selection_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
+
 {# fun unsafe text_set_selection_color as ^ { withText* `Text', withColor* `Color' } -> `()' #}
+
+-- | Retrieves the color of the selection of a 'Text' actor.
+--
+-- [@self@] a 'Text'
+--
+-- [@color@] a 'Color'
+--
+-- * Since 1.0
+--
+{# fun unsafe text_get_selection_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
+
 textSelectionColor :: Attr Text Color
 textSelectionColor = newAttr textGetSelectionColor textSetSelectionColor
 
 
-{# fun unsafe text_get_cursor_position as ^ { withText* `Text' } -> `Int' #}
+-- | Sets the cursor of a 'Text' actor at position.
+--
+-- The position is expressed in characters, not in bytes.
+--
+-- [@self@] a 'Text'
+--
+-- [@position@] the new cursor position, in characters
+--
+-- * Since 1.0
+--
 {# fun unsafe text_set_cursor_position as ^ { withText* `Text', `Int' } -> `()' #}
+
+-- | Retrieves the cursor position.
+--
+-- [@self@] a 'Text'
+--
+-- [@Returns@] the cursor position, in characters
+--
+-- * Since 1.0
+--
+{# fun unsafe text_get_cursor_position as ^ { withText* `Text' } -> `Int' #}
+
 textCursorPosition :: Attr Text Int
 textCursorPosition = newAttr textGetCursorPosition textSetCursorPosition
 
-{# fun unsafe text_get_cursor_visible as ^ { withText* `Text' } -> `Bool' #}
+
+
+-- | Sets whether the cursor of a 'Text' actor should be visible or
+--   not.
+--
+-- The color of the cursor will be the same as the text color unless
+-- 'textSetCursorColor' has been called.
+--
+-- The size of the cursor can be set using 'textSetCursorSize'.
+--
+-- The position of the cursor can be changed programmatically using
+-- 'textSetCursorPosition'.
+--
+-- [@self@] a 'Text'
+--
+-- [@cursor_visible@] whether the cursor should be visible
+--
+-- * Since 1.0
+--
 {# fun unsafe text_set_cursor_visible as ^ { withText* `Text', `Bool' } -> `()' #}
+
+-- | Retrieves whether the cursor of a 'Text' actor is visible.
+--
+-- [@self@] a 'Text'
+--
+-- [@Returns@] @True@ if the cursor is visible
+--
+-- * Since 1.0
+--
+{# fun unsafe text_get_cursor_visible as ^ { withText* `Text' } -> `Bool' #}
+
 textCursorVisible :: Attr Text Bool
 textCursorVisible = newAttr textGetCursorVisible textSetCursorVisible
 
-{# fun unsafe text_get_cursor_size as ^ { withText* `Text' } -> `Int' #}
+
+
+-- | Sets the size of the cursor of a 'Text'. The cursor will only be
+--   visible if the "cursor-visible" property is set to @True@.
+--
+-- [@self@] a 'Text'
+--
+-- [@size] the size of the cursor, in pixels, or -1 to use the default
+-- value
+--
+-- * Since 1.0
+--
 {# fun unsafe text_set_cursor_size as ^ { withText* `Text', `Int' } -> `()' #}
+
+
+-- | Retrieves the size of the cursor of a 'Text actor.
+--
+-- [@self@] a 'Text'
+--
+-- [@Returns@] the size of the cursor, in pixels
+--
+-- * Since 1.0
+--
+{# fun unsafe text_get_cursor_size as ^ { withText* `Text' } -> `Int' #}
+
 textCursorSize :: Attr Text Int
 textCursorSize = newAttr textGetCursorSize textSetCursorSize
 
-{# fun unsafe text_activate as ^ { withText* `Text' } -> `Bool' #}
 
+-- | Emits the "activate" signal, if self has been set as activatable
+--   using 'textSetActivatable'.
+--
+-- This function can be used to emit the ::activate signal inside a
+-- "captured-event" or "key-press-event" signal handlers before the
+-- default signal handler for the 'Text' is invoked.
+--
+-- [@self@] a 'Text'
+--
+-- [@Returns@] @True@ if the ::activate signal has been emitted, and
+-- @False@ otherwise
+--
+-- * Since 1.0
+--
+{# fun text_activate as ^ { withText* `Text' } -> `Bool' #}
+
+
+--TODO: This return type is messy
+-- | Retrieves the coordinates of the given position.
+--
+-- [@self@] a 'Text'
+--
+-- [@position@] position in characters
+--
+-- [@Returns@] (X coordinate, Y coordinate, line_height, @True@ if the conversion was successful)
+--
+-- * Since 1.0
+--
 {# fun unsafe text_position_to_coords as ^
        { withText* `Text',
          `Int',

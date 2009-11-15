@@ -221,7 +221,7 @@ textureNewFromFile filename = let func = {# call unsafe texture_new_from_file #}
 -- * Since 0.8
 --
 textureSetFromFile :: Texture -> String -> IO Bool
-textureSetFromFile txt fname = let func = {# call unsafe texture_set_from_file #}
+textureSetFromFile txt fname = let func = {# call texture_set_from_file #}
                                in liftM cToBool $ propagateGError $ \gerrorPtr ->
                                     withTexture txt $ \txtptr ->
                                       withCString fname $ \cstr ->
@@ -238,7 +238,7 @@ textureSetFromRgbData :: Texture ->
                          [TextureFlags] ->
                          IO Bool
 textureSetFromRgbData txt dat flags =
-    let func = {# call unsafe texture_set_from_rgb_data #}
+    let func = {# call texture_set_from_rgb_data #}
         hasA = rgbDataHasAlpha dat
         bpp = if hasA then 4 else 3
         datPtr = rgbDataData dat

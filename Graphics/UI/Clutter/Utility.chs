@@ -49,8 +49,10 @@ module Graphics.UI.Clutter.Utility (
   maybeNullPeek,
 
   withMaybeAlpha,
+  withMaybeText,
   withMaybeTimeline,
   withMaybeShader,
+  withMaybeColor,
   withMaybeActorClass,
   maybeNewActor,
   maybeNewStage,
@@ -148,8 +150,10 @@ withMaybeString Prelude.Nothing act = act nullPtr
 withMaybeString (Just str) act = withCString str act
 
 withMaybeAlpha = maybeWith withAlpha
+withMaybeText = maybeWith withText
 withMaybeTimeline = maybeWith withTimeline
 withMaybeShader = maybeWith withShader
+withMaybeColor = maybeWith withColor
 
 withMaybeActorClass :: (ActorClass a) => Maybe a -> (Ptr Actor -> IO b) -> IO b
 withMaybeActorClass = maybeWith withActorClass

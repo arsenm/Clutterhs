@@ -39,8 +39,6 @@ module Graphics.UI.Clutter.Event (
                                   EStageState,
                                   ECrossing,
 
-                                  Timestamp,
-
                                   eventM,
                                   tryEvent,
 
@@ -94,8 +92,7 @@ import Control.Exception (Handler(..),
                           throw)
 import System.IO.Error (isUserError, ioeGetErrorString)
 
---TODO: Move this, also others like KeyVal?
-type Timestamp = Word32
+--TODO: Move keyval
 
 --Taken almost straight from Gtk. Should I try something else?
 

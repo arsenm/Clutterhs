@@ -34,6 +34,16 @@ main = do
   failedTexture2 <- catchGError (fmap Just $ textureNewFromFile "ThisFileDoesNotExist")
                                 (\_ -> putStrLn "It did indeed fail" >> return P.Nothing)
 
+--CHECKME: Exception in handler?
+  emptyTexture <- textureNew
+  onLoadFinished emptyTexture (\err -> case err of
+                                         P.Nothing -> putStrLn "Load ok!"
+                                         Just (GError a b c) -> putStrLn $ "Load finished Failure: "
+                                                                  ++ P.show a ++ " "
+                                                                  ++ P.show b ++ " " ++ P.show c)
+
+--  textureSetFromFile emptyTexture "ThisFileDoesn'tExist"
+  textureSetFromFile emptyTexture "khaaaaaaan.jpg"
 
   squirrelfish <- textureNewFromFile "SquirrelFish.svg"
 

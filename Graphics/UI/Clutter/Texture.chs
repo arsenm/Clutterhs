@@ -109,6 +109,7 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.GError
+import System.Glib.FFI
 
 
 -- | Creates a new empty 'Texture' object.
@@ -489,11 +490,11 @@ textureLoadAsync = newAttr textureGetLoadAsync textureSetLoadAsync
 textureLoadDataAsync :: Attr Texture Bool
 textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
 
---FIXME: Make maybe error
---CHECKME: Does this GError stuff work?
-onLoadFinished, afterLoadFinished :: Texture -> (GError -> IO ()) -> IO (ConnectId Texture)
-onLoadFinished = connect_BOXED__NONE "load-finished" peek False
-afterLoadFinished = connect_BOXED__NONE "load-finished" peek True
+
+--CHECKME: Exception in handler?
+onLoadFinished, afterLoadFinished :: Texture -> (Maybe GError -> IO ()) -> IO (ConnectId Texture)
+onLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek False
+afterLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek True
 
 loadFinished :: Signal Texture (GError -> IO ())
 loadFinished = Signal (connect_BOXED__NONE "load-finished" peek)

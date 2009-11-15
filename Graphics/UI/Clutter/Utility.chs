@@ -46,7 +46,7 @@ module Graphics.UI.Clutter.Utility (
   maybeString,
   withMaybeString,
   maybeNullNew,
-
+  maybeNullPeek,
 
   withMaybeAlpha,
   withMaybeTimeline,
@@ -133,6 +133,8 @@ maybeNullNew marshal ptr = do
     then return Prelude.Nothing
     else marshal ptr >>= return . Just
 
+maybeNullPeek :: (Storable a) => Ptr a -> IO (Maybe a)
+maybeNullPeek = maybeNullNew peek
 
 
 maybeString :: Ptr CChar -> IO (Maybe String)

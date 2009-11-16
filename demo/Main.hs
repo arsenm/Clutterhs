@@ -37,7 +37,7 @@ main = do
 
   rec <- rectangleNewWithColor c
   rec2 <- rectangleNewWithColor blue
-  stg <- stageNew
+  stg <- stageGetDefault
   txt <- textNewWithText "sans" "CLUTTER HASKELL LOL"
 
   performGC

@@ -154,8 +154,6 @@ import System.Glib.FFI (maybeNull)
 --   Clutter guarantess the existence of the default stage.
 {# fun unsafe stage_get_default as ^ { } -> `Stage' newStage* #}
 
---CHECKME: Description says can return Null, but I don't check for that
---Also talking about pointer = no
 -- | Creates a new, non-default stage. A non-default stage is a new
 --   top-level actor which can be used as another container. It works
 --   exactly like the default stage, but while
@@ -169,10 +167,10 @@ import System.Glib.FFI (maybeNull)
 --   supports multiple stages.
 --
 --  [@Returns@]
---   a new stage, or NULL if the default backend does not support
---   multiple stages. Use clutter_actor_destroy() to programmatically
+--   @Just@ a new stage, or @Nothing@ if the default backend does not support
+--   multiple stages. Use 'actorDestroy' to programmatically
 --   close the returned stage.
-{# fun unsafe stage_new as ^ { } -> `Stage' newStage* #}
+{# fun unsafe stage_new as ^ { } -> `Maybe Stage' maybeNewStage* #}
 
 -- | Checks if stage is the default stage, or an instance created using
 --  'stageNew' but internally using the same implementation.

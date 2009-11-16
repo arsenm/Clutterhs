@@ -116,10 +116,8 @@ maybeNewActor = maybeNullNew newActor
 maybeNewStage :: Ptr Actor -> IO (Maybe Stage)
 maybeNewStage = maybeNullNew newStage
 
-
 maybeNewAlpha :: Ptr Alpha -> IO (Maybe Alpha)
 maybeNewAlpha = maybeNullNew newAlpha
-
 
 maybeNewTexture :: Ptr Actor -> IO (Maybe Texture)
 maybeNewTexture = maybeNullNew newTexture

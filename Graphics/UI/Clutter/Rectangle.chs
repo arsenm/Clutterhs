@@ -49,14 +49,17 @@ module Graphics.UI.Clutter.Rectangle (
 -- * Attributes
   rectangleColor,
   rectangleBorderColor,
-  rectangleBorderWidth
+  rectangleBorderWidth,
+  rectangleHasBorder
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
 import Control.Monad (liftM)
+import System.Glib.Properties
 import System.Glib.Attributes
+
 
 -- | Creates a new actor with a rectangular shape.
 {# fun unsafe rectangle_new as ^ { } -> `Rectangle' newRectangle* #}
@@ -69,26 +72,74 @@ import System.Glib.Attributes
 -- | Sets the color of a rectangle
 {# fun unsafe rectangle_set_color as ^ { withRectangle* `Rectangle', withColor* `Color' } -> `()' #}
 
--- | The color of the rectangle.
-rectangleColor :: Attr Rectangle Color
-rectangleColor = newAttr rectangleGetColor rectangleSetColor
-
 -- | Gets the color of the border used by rectangle
+--
+-- [@rectangle@] a 'Rectangle'
+--
+-- [@color@] The color of the rectangle's border
+--
+-- * Since 0.2
+---
 {# fun unsafe rectangle_get_border_color as ^ { withRectangle* `Rectangle', alloca- `Color' peek* } -> `()' #}
+
+
 -- | Sets the color of the border used by rectangle using color
+--
+-- [@rectangle@] a 'Rectangle'
+--
+-- [@color@] the color of the border
+--
 {# fun unsafe rectangle_set_border_color as ^ { withRectangle* `Rectangle', withColor* `Color'} -> `()' #}
 
--- | The color of the border of the rectangle.
-rectangleBorderColor :: Attr Rectangle Color
-rectangleBorderColor = newAttr rectangleGetBorderColor rectangleSetBorderColor
-
 -- | Gets the width (in pixels) of the border used by rectangle
+--
+-- [@rectangle@] a 'Rectangle'
+--
+-- [@Returns@] the border's width
+--
+-- * Since 0.2
+--
 {# fun unsafe rectangle_get_border_width as ^ { withRectangle* `Rectangle' } -> `Word' cIntConv #}
 
 -- | Sets the width (in pixel) of the border used by rectangle. A width of 0 will unset the border
+--
+-- [@rectangle@] a 'Rectangle'
+--
+-- [@width@] the width of the border
+--
+-- * Since 0.2
+--
 {# fun unsafe rectangle_set_border_width as ^ { withRectangle* `Rectangle', cIntConv `Word' } -> `()' #}
 
+-- | The color of the rectangle.
+--
+-- * Since 0.2
+--
+rectangleColor :: Attr Rectangle Color
+rectangleColor = newNamedAttr "color" rectangleGetColor rectangleSetColor
+
+-- | The color of the border of the rectangle.
+rectangleBorderColor :: Attr Rectangle Color
+rectangleBorderColor = newNamedAttr "border-color" rectangleGetBorderColor rectangleSetBorderColor
+
 -- | The width of the border of the rectangle, in pixels.
+--
+-- Default value: 0
+--
+-- * Since 0.2
+--
 rectangleBorderWidth :: Attr Rectangle Word
-rectangleBorderWidth = newAttr rectangleGetBorderWidth rectangleSetBorderWidth
+rectangleBorderWidth = newNamedAttr "border-width" rectangleGetBorderWidth rectangleSetBorderWidth
+
+--CHECKME: One random property without special function in clutter?
+
+
+-- | Whether the 'Rectangle' should be displayed with a border.
+--
+-- Default value: @False@
+--
+-- * Since 0.2
+--
+rectangleHasBorder :: Attr Rectangle Bool
+rectangleHasBorder = newAttrFromBoolProperty "has-border"
 

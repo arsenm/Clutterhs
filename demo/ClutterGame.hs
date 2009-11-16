@@ -82,7 +82,7 @@ main = do
   --TODO: Can do animations with signals in name
   --FIXME: This takes...2 arguments....function in your gvalue...triple...this...requires making work.
   (Just finAnim, recs, _) <- foldM (createRectangles stage size) (Nothing, [], 0) colors
-  tml <- get finAnim animationTimeline
+  tml <- fmap fromJust $ get finAnim animationTimeline
 
   on tml completed (completedAnimation stage >> mapM_ (scatterRectangle height width) recs)
 

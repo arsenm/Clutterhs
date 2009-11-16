@@ -49,7 +49,7 @@ main = do
   anim <- animate rec Linear 3000 ("x", 400::Float)
                                   ("y", 500::Float)
 
-  animtml <- animationGetTimeline anim
+  animtml <- fmap fromJust (animationGetTimeline anim)
   timelineStart animtml
 
   on stg hide (clutterMainQuit)

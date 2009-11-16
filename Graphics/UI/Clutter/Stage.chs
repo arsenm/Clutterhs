@@ -174,15 +174,19 @@ import System.Glib.FFI (maybeNull)
 --   close the returned stage.
 {# fun unsafe stage_new as ^ { } -> `Stage' newStage* #}
 
--- |Checks if stage is the default stage, or an instance created using
+-- | Checks if stage is the default stage, or an instance created using
 --  'stageNew' but internally using the same implementation.
-{# fun unsafe stage_is_default as ^ { withStage* `Stage' } -> `Bool' #}
+{# fun unsafe stage_is_default as ^ `(StageClass stage)' =>
+    { withStageClass* `stage' } -> `Bool' #}
 
 -- | Sets the stage color.
-{# fun unsafe stage_set_color as ^ { withStage* `Stage', withColor* `Color' } -> `()' #}
+{# fun unsafe stage_set_color as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', withColor* `Color' } -> `()' #}
 -- | Retrieves the stage color.
-{# fun unsafe stage_get_color as ^ { withStage* `Stage', alloca- `Color' peek*} -> `()' #}
-stageColor :: Attr Stage Color
+{# fun unsafe stage_get_color as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', alloca- `Color' peek*} -> `()' #}
+
+stageColor :: (StageClass stage) => Attr stage Color
 stageColor = newAttr stageGetColor stageSetColor
 
 
@@ -199,30 +203,32 @@ stageColor = newAttr stageGetColor stageSetColor
 --  If you want to receive notification of the fullscreen state you should
 --  either use the "fullscreen" and "unfullscreen" signals, or use the
 --  notify signal for the "fullscreen-set" property
-{# fun unsafe stage_set_fullscreen as ^ { withStage* `Stage', `Bool'} -> `()' #}
+{# fun unsafe stage_set_fullscreen as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', `Bool'} -> `()' #}
 -- | Retrieves whether the stage is full screen or not
-{# fun unsafe stage_get_fullscreen as ^ { withStage* `Stage' } -> `Bool' #}
-stageFullscreen :: Attr Stage Bool
+{# fun unsafe stage_get_fullscreen as ^ `(StageClass stage)' =>
+    { withStageClass* `stage' } -> `Bool' #}
+
+stageFullscreen :: (StageClass stage) => Attr stage Bool
 stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 
---TODO: Property??
 -- | Shows the cursor on the stage window
-{# fun unsafe stage_show_cursor as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_show_cursor as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 -- | Makes the cursor invisible on the stage window
-{# fun unsafe stage_hide_cursor as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_hide_cursor as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 
 --CHECKME: Should I even include non-application functions?
 
 -- | Checks the scene at the coordinates x and y and returns a pointer to the 'Actor' at those coordinates.
 --
 --  By using pick_mode it is possible to control which actors will be painted and thus available.
-{# fun unsafe stage_get_actor_at_pos as ^
-       { withStage* `Stage', cFromEnum `PickMode', `Int', `Int'} -> `Actor' newActor* #}
+{# fun unsafe stage_get_actor_at_pos as ^ `(StageClass stage)' =>
+       { withStageClass* `stage', cFromEnum `PickMode', `Int', `Int'} -> `Actor' newActor* #}
 
 -- | This function essentially makes sure the right GL context is
--- | current for the passed stage. It is not intended to be used by
--- | applications.
-{# fun unsafe stage_ensure_current as ^ { withStage* `Stage' } -> `()' #}
+--   current for the passed stage. It is not intended to be used by
+--   applications.
+{# fun unsafe stage_ensure_current as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 
 -- | Ensures that the GL viewport is updated with the current stage
 --   window size.
@@ -232,14 +238,14 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 -- This function should not be called by applications; it is used when
 -- embedding a ClutterStage into a toolkit with another windowing
 -- system, like GTK+.
-{# fun unsafe stage_ensure_viewport as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_ensure_viewport as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 
 -- | Ensures that stage is redrawn
 --
 -- This function should not be called by applications: it is used when
 -- embedding a 'Stage' into a toolkit with another windowing
 -- system, like GTK+.
-{# fun unsafe stage_ensure_redraw as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_ensure_redraw as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 
 -- | Queues a redraw for the passed stage.
 --
@@ -249,10 +255,10 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 -- Note
 --
 -- This function is just a wrapper for 'actorQueueRedraw' and should probably go away.
-{# fun unsafe stage_queue_redraw as ^ { withStage* `Stage' } -> `()' #}
+{# fun unsafe stage_queue_redraw as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 
 --CHECKME this might fall under the category of low level event stuff we're not dealing with
---{# fun unsafe stage_event as ^ { withStage* `Stage', withEvent* `Event' } -> `Bool' #}
+--{# fun unsafe stage_event as ^ `(StageClass stage)' => { withStageClass* `stage', withEvent* `Event' } -> `Bool' #}
 
 
 -- | Sets the key focus on actor. An actor with key focus will receive
@@ -265,8 +271,8 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 --
 -- * Since 0.6
 --
-{# fun unsafe stage_set_key_focus as ^ `(ActorClass actor)' =>
-       { withStage* `Stage', withMaybeActorClass* `Maybe actor' } -> `()' #}
+{# fun unsafe stage_set_key_focus as ^ `(StageClass stage, ActorClass actor)' =>
+       { withStageClass* `stage', withMaybeActorClass* `Maybe actor' } -> `()' #}
 
 -- | Retrieves the actor that is currently under key focus.
 --
@@ -276,26 +282,32 @@ stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 --
 -- * Since 0.6
 --
-{# fun unsafe stage_get_key_focus as ^ { withStage* `Stage' } -> `Actor' newActor* #}
+{# fun unsafe stage_get_key_focus as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `Actor' newActor* #}
 
 --TODO: Same problem as other places, setting and getting ActorClass is unhappy
---stageKeyFocus :: (ActorClass actor) => Attr Stage actor
+--stageKeyFocus :: (StageClass stage, ActorClass actor) => Attr stage actor
 --stageKeyFocus = newAttr stageGetKeyFocus stageSetKeyFocus
 
 --TODO: all those types, namely guchar* out = what?
 --Returns some kind of image buffer, what do I do with it?
---{# fun unsafe stage_read_pixels as ^ { withStage* `Stage', `Int', `Int', `Int', `Int' } -> `Ptr ()' #}
+--{# fun unsafe stage_read_pixels as ^ `(StageClass stage)' => { withStageClass* `stage', `Int', `Int', `Int', `Int' } -> `Ptr ()' #}
 --Why is this scattered around in many places in gtk2hs?
 foreign import ccall unsafe "&g_free"
   finalizerGFree :: FinalizerPtr a
 
 
-stageReadPixels :: Stage -> Int -> Int -> Int -> Int -> IO (Maybe (RGBData Int Word8))
+stageReadPixels :: (StageClass stage) =>
+                   stage
+                   -> Int
+                   -> Int
+                   -> Int
+                   -> Int
+                   -> IO (Maybe (RGBData Int Word8))
 stageReadPixels stage x y w h = let cx = cIntConv x
                                     cy = cIntConv y
                                     cw = cIntConv w
                                     ch = cIntConv h
-                                in withStage stage $ \stgPtr -> do
+                                in withStageClass stage $ \stgPtr -> do
                                   sizeW <- if w == -1
                                               then liftM floor (actorGetWidth stage)
                                               else return w
@@ -316,34 +328,46 @@ stageReadPixels stage x y w h = let cx = cIntConv x
 -- so that only the last event will be propagated to the stage and its
 -- actors.  This function should only be used if you want to have all
 -- the motion events delivered to your application code.
-{# fun unsafe stage_set_throttle_motion_events as ^ { withStage* `Stage', `Bool' } -> `()' #}
+{# fun unsafe stage_set_throttle_motion_events as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', `Bool' } -> `()' #}
 
 -- | Retrieves the value set with 'stageSetThrottleMotionEvents'
-{# fun unsafe stage_get_throttle_motion_events as ^ { withStage* `Stage' } -> `Bool' #}
-stageThrottleMotionEvents :: Attr Stage Bool
+{# fun unsafe stage_get_throttle_motion_events as ^ `(StageClass stage)' =>
+    { withStageClass* `stage' } -> `Bool' #}
+
+stageThrottleMotionEvents :: (StageClass stage) => Attr stage Bool
 stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottleMotionEvents
 
 -- | Retrieves the stage perspective.
-{# fun unsafe stage_get_perspective as ^ { withStage* `Stage', alloca- `Perspective' peek* } -> `()' #}
+{# fun unsafe stage_get_perspective as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', alloca- `Perspective' peek* } -> `()' #}
 -- | Sets the stage perspective.
-{# fun unsafe stage_set_perspective as ^ { withStage* `Stage', withPerspective* `Perspective'} -> `()' #}
-stagePerspective :: Attr Stage Perspective
+{# fun unsafe stage_set_perspective as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', withPerspective* `Perspective'} -> `()' #}
+
+
+stagePerspective :: (StageClass stage) => Attr stage Perspective
 stagePerspective = newAttr stageGetPerspective stageSetPerspective
 
 
 --TODO: Unicode???
 -- | Sets the stage title.
-{# fun unsafe stage_set_title as ^ { withStage* `Stage', `String' } -> `()' #}
+{# fun unsafe stage_set_title as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', `String' } -> `()' #}
 -- | Gets the stage title.
-{# fun unsafe stage_get_title as ^ { withStage* `Stage' } -> `String' #}
-stageTitle :: Attr Stage String
+{# fun unsafe stage_get_title as ^ `(StageClass stage)' =>
+    { withStageClass* `stage' } -> `String' #}
+stageTitle :: (StageClass stage) => Attr stage String
 stageTitle = newAttr stageGetTitle stageSetTitle
 
 -- | Sets if the stage is resizable by user interaction (e.g. via window manager controls)
-{# fun unsafe stage_set_user_resizable as ^ { withStage* `Stage', `Bool' } -> `()' #}
+{# fun unsafe stage_set_user_resizable as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', `Bool' } -> `()' #}
 -- | Retrieves the value set with 'stageSetUserResizable'.
-{# fun unsafe stage_get_user_resizable as ^ { withStage* `Stage' } -> `Bool' #}
-stageUserResizable :: Attr Stage Bool
+{# fun unsafe stage_get_user_resizable as ^ `(StageClass stage)' =>
+    { withStageClass* `stage' } -> `Bool' #}
+
+stageUserResizable :: (StageClass stage) => Attr stage Bool
 stageUserResizable = newAttr stageGetUserResizable stageSetUserResizable
 
 
@@ -354,11 +378,13 @@ stageUserResizable = newAttr stageGetUserResizable stageSetUserResizable
 --   color.
 --
 -- The parameters of the GL fog used can be changed using the 'stageSetFog' function.
-{# fun unsafe stage_set_use_fog as ^ { withStage* `Stage', `Bool' } -> `()' #}
+{# fun unsafe stage_set_use_fog as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', `Bool' } -> `()' #}
 
 -- | Gets whether the depth cueing effect is enabled on stage.
-{# fun unsafe stage_get_use_fog as ^ { withStage* `Stage' } -> `Bool' #}
-stageUseFog :: Attr Stage Bool
+{# fun unsafe stage_get_use_fog as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `Bool' #}
+
+stageUseFog :: (StageClass stage) => Attr stage Bool
 stageUseFog = newAttr stageGetUseFog stageSetUseFog
 
 -- | Sets the fog (also known as "depth cueing") settings for the stage.
@@ -380,47 +406,49 @@ stageUseFog = newAttr stageGetUseFog stageSetUseFog
 --
 -- We can look to improve this in the future when we can depend on
 --  fragment shaders.
-{# fun unsafe stage_set_fog as ^ { withStage* `Stage', withFog* `Fog' } -> `()' #}
+{# fun unsafe stage_set_fog as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', withFog* `Fog' } -> `()' #}
 
 -- | Retrieves the current depth cueing settings from the stage.
-{# fun unsafe stage_get_fog as ^ { withStage* `Stage', alloca- `Fog' peek* } -> `()' #}
-stageFog :: Attr Stage Fog
+{# fun unsafe stage_get_fog as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', alloca- `Fog' peek* } -> `()' #}
+
+stageFog :: (StageClass stage) => Attr stage Fog
 stageFog = newAttr stageGetFog stageSetFog
 
-
-
-onActivate, afterActivate :: Stage -> IO () -> IO (ConnectId Stage)
+onActivate, afterActivate :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
 onActivate = connect_NONE__NONE "activate" False
 afterActivate = connect_NONE__NONE "activate" True
 
 -- | The 'activate' signal is emitted when the stage receives key focus from the underlying window system.
-activate :: Signal Stage (IO ())
+activate :: (StageClass stage) => Signal stage (IO ())
 activate = Signal (connect_NONE__NONE "activate")
 
 
-onDeactivate, afterDeactivate :: Stage -> IO () -> IO (ConnectId Stage)
+onDeactivate, afterDeactivate :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
 onDeactivate = connect_NONE__NONE "deactivate" False
 afterDeactivate = connect_NONE__NONE "deactivate" True
 
--- | The 'deactivate' signal is emitted when the stage loses key focus from the underlying window system.
-deactivate :: Signal Stage (IO ())
+-- | The 'deactivate' signal is emitted when the stage loses key focus
+--   from the underlying window system.
+deactivate :: (StageClass stage) => Signal stage (IO ())
 deactivate = Signal (connect_NONE__NONE "deactivate")
 
 
-onFullscreen, afterFullscreen :: Stage -> IO () -> IO (ConnectId Stage)
+onFullscreen, afterFullscreen :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
 onFullscreen = connect_NONE__NONE "fullscreen" False
 afterFullscreen = connect_NONE__NONE "fullscreen" True
 
 -- | The 'fullscreen' signal is emitted when the stage is made fullscreen.
-fullscreen :: Signal Stage (IO ())
+fullscreen :: (StageClass stage) => Signal stage (IO ())
 fullscreen = Signal (connect_NONE__NONE "fullscreen")
 
 
-onUnfullscreen, afterUnfullscreen :: Stage -> IO () -> IO (ConnectId Stage)
+onUnfullscreen, afterUnfullscreen :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
 onUnfullscreen = connect_NONE__NONE "unfullscreen" False
 afterUnfullscreen = connect_NONE__NONE "unfullscreen" True
 
 -- | The 'unfullscreen' signal is emitted when the stage leaves a fullscreen state.
-unfullscreen :: Signal Stage (IO ())
+unfullscreen :: (StageClass stage) => Signal stage (IO ())
 unfullscreen = Signal (connect_NONE__NONE "unfullscreen")
 

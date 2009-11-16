@@ -69,6 +69,7 @@ module Graphics.UI.Clutter.Types (
                                   Stage,
                                   StageClass,
                                   withStage,
+                                  withStageClass,
                                   newStage,
 
                                   Container,
@@ -552,6 +553,10 @@ instance GObjectClass Container where
 class GroupClass o => StageClass o
 toStage :: StageClass o => o -> Stage
 toStage = unsafeCastGObject . toGObject
+
+withStageClass::StageClass o => o -> (Ptr Stage -> IO b) -> IO b
+withStageClass o = (withStage . toStage) o
+
 
 --Actor class?
 newStage :: (ActorClass actor) => Ptr actor -> IO Stage

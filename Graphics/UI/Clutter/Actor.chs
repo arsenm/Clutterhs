@@ -28,8 +28,12 @@ module Graphics.UI.Clutter.Actor (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Actor'
+-- |    +----'Actor'
+-- |           +----'Group'
+-- |           +----'Rectangle'
+-- |           +----'Texture'
+-- |           +----'Clone'
+-- |           +----'Text'
 -- @
 
 -- * Methods

@@ -61,8 +61,7 @@ module Graphics.UI.Clutter.Alpha (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Alpha'
+-- |    +----'Alpha'
 -- @
 
 -- * Constructors

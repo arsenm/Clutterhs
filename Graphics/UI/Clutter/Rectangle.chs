@@ -29,9 +29,8 @@ module Graphics.UI.Clutter.Rectangle (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Actor'
--- |               +----'Rectangle'
+-- |    +----'Actor'
+-- |           +----'Rectangle'
 -- @
 
 -- * Constructors

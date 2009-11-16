@@ -40,10 +40,9 @@ module Graphics.UI.Clutter.Group (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Actor'
--- |               +----'Group'
--- |                     +----'Stage'
+-- |    +----'Actor'
+-- |           +----'Group'
+-- |                  +----'Stage'
 -- @
 
 -- * Constructors
@@ -64,7 +63,7 @@ import C2HS
 --
 -- [@Returns@] the newly created 'Group' actor
 --
-{# fun unsafe group_new as ^ {} -> `Group' newGroup* #}
+{# fun unsafe group_new as ^ { } -> `Group' newGroup* #}
 
 
 -- | Removes all children actors from the 'Group'.

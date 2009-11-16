@@ -28,8 +28,7 @@ module Graphics.UI.Clutter.Interval (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Interval'
+-- |    +----'Interval'
 -- @
 
 -- * Constructors

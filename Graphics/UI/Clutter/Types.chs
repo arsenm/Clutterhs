@@ -751,7 +751,6 @@ instance GObjectClass CairoTexture where
 
 -- *** Media
 
---FIXME: Doesn't derive from GObject just GInterface??
 {# pointer *ClutterMedia as Media foreign newtype #}
 
 withMediaClass::MediaClass o => o -> (Ptr Media -> IO b) -> IO b
@@ -1158,8 +1157,6 @@ newParamSpecUnits gsl = (fromGSList gsl :: IO [ParamSpecUnitsPtr]) >>= mapM peek
 
 -- *** Scriptable
 
---TODO: How to do GInterface properly. This seems wrong
-
 {# pointer *ClutterScriptable as Scriptable foreign newtype #}
 
 class GObjectClass o => ScriptableClass o
@@ -1224,7 +1221,7 @@ instance Storable Geometry where
       {# set ClutterGeometry->width #} p (cIntConv width)
       {# set ClutterGeometry->height #} p (cIntConv height)
 
---This seems not right. But it seems to work.
+
 mkGeometry :: Geometry -> IO GeometryPtr
 mkGeometry pst = do pptr <- (malloc :: IO GeometryPtr)
                     poke pptr pst
@@ -1234,8 +1231,6 @@ withGeometry :: Geometry -> (GeometryPtr -> IO a) -> IO a
 withGeometry pst = bracket (mkGeometry pst) free
 
 -- *** Vertex
-
---CHECKME: Do I want to use a simple tuple instead?
 
 data Vertex = Vertex {
       vertexX :: !Float,
@@ -1260,7 +1255,6 @@ instance Storable Vertex where
       {# set ClutterVertex->z #} p (cFloatConv z)
 
 
---This seems not right. But it seems to work.
 mkVertex :: Vertex -> IO VertexPtr
 mkVertex pst = do pptr <- (malloc :: IO VertexPtr)
                   poke pptr pst
@@ -1270,8 +1264,6 @@ withVertex :: Vertex -> (VertexPtr -> IO a) -> IO a
 withVertex pst = bracket (mkVertex pst) free
 
 -- *** ActorBox
-
---CHECKME: Do I want to use a simple tuple instead?
 
 data ActorBox = ActorBox {
       actorBoxX1 :: !Float,
@@ -1311,8 +1303,7 @@ withActorBox pst = bracket (mkActorBox pst) free
 -- *** Animatable
 
 {# pointer *ClutterAnimatable as Animatable foreign newtype #}
---CHECKME: I'm assuming everything that uses it is a gobject. I think
---this is correct, but maybe not
+
 class GObjectClass o => AnimatableClass o
 toAnimatable::AnimatableClass o => o -> Animatable
 toAnimatable = unsafeCastGObject . toGObject

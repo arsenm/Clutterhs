@@ -31,9 +31,8 @@ module Graphics.UI.Clutter.Text (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Actor'
--- |               +----'Text'
+-- |    +----'Actor'
+-- |           +----'Text'
 -- @
 
 -- * Constructors
@@ -1042,14 +1041,13 @@ textCursorVisible :: Attr Text Bool
 textCursorVisible = newAttr textGetCursorVisible textSetCursorVisible
 
 
-
 -- | Sets the size of the cursor of a 'Text'. The cursor will only be
 --   visible if the "cursor-visible" property is set to @True@.
 --
 -- [@self@] a 'Text'
 --
--- [@size] the size of the cursor, in pixels, or -1 to use the default
--- value
+-- [@size@] the size of the cursor, in pixels, or -1 to use the
+--   default value
 --
 -- * Since 1.0
 --

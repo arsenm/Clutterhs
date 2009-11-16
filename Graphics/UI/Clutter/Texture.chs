@@ -28,10 +28,9 @@ module Graphics.UI.Clutter.Texture (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Actor'
--- |               +----'Texture'
--- |                     +----'CairoTexture'
+-- |    +----'Actor'
+-- |           +----'Texture'
+-- |                  +----'CairoTexture'
 -- @
 
 -- * Constructors

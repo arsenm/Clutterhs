@@ -73,8 +73,7 @@ module Graphics.UI.Clutter.Path (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Path'
+-- |    +----'Path'
 -- @
 
 -- * Constructors
@@ -106,9 +105,6 @@ module Graphics.UI.Clutter.Path (
   pathClear,
   pathGetPosition,
   pathGetLength
---pathCopy,
---pathFree,
---pathEqual
 -- * Attributes
 --pathDescription,
   ) where
@@ -400,6 +396,7 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 -- * Since 1.0
 --
 {# fun unsafe path_set_description as ^ { withPath* `Path', `String' } -> `Bool' #}
+
 --pathDescription :: Attr Path String
 --pathDescription = newAttr pathGetDescription pathSetDescription
 
@@ -455,9 +452,4 @@ pathGetPosition path progress = withPath path $ \pathptr ->
 -- * Since 1.0
 --
 {# fun unsafe path_get_length as ^ { withPath* `Path' } -> `Word' cIntConv #}
-
---these unnecessary
---{# fun unsafe path_node_copy as ^ { withPathNode* `PathNode' } -> `PathNode' #}
---{# fun unsafe path_node_free as ^ { withPathNode* `PathNode' } -> `()' #}
---{# fun unsafe path_node_equal as ^ { withPathNode* `PathNode', withPathNode* `PathNode' } -> `()' #}
 

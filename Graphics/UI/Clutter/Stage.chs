@@ -54,10 +54,9 @@ module Graphics.UI.Clutter.Stage (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'GInitiallyUnowned'
--- |         +----'Actor'
--- |               +----'Group'
--- |                     +----'Stage'
+-- |    +----'Actor'
+-- |          +----'Group'
+-- |                 +----'Stage'
 -- @
 
 -- * Constructors

@@ -270,7 +270,6 @@ scoreLoop = newAttr scoreGetLoop scoreSetLoop
 --
 {# fun score_stop as ^ { withScore* `Score' } -> `()' #}
 
---TODO: ReadOnly Attr?
 -- | Query state of a 'Score' instance.
 --
 -- [@score@] A 'Score'

@@ -161,41 +161,41 @@ modelSetFilter model filterFunc = withModelClass model $ \mdlPtr -> do
 
 
 onFilterChanged, afterFilterChanged :: Model -> IO () -> IO (ConnectId Model)
-onFilterChanged = connect_NONE__NONE "filter_changed" False
-afterFilterChanged = connect_NONE__NONE "filter_changed" True
+onFilterChanged = connect_NONE__NONE "filter-changed" False
+afterFilterChanged = connect_NONE__NONE "filter-changed" True
 
 filterChanged :: Signal Model (IO ())
-filterChanged = Signal (connect_NONE__NONE "filter_changed")
+filterChanged = Signal (connect_NONE__NONE "filter-changed")
 
 
 onRowAdded, afterRowAdded :: Model -> (ModelIter -> IO ()) -> IO (ConnectId Model)
-onRowAdded = connect_OBJECT__NONE "row_added" False
-afterRowAdded = connect_OBJECT__NONE "row_added" True
+onRowAdded = connect_OBJECT__NONE "row-added" False
+afterRowAdded = connect_OBJECT__NONE "row-added" True
 
 rowAdded :: Signal Model (ModelIter ->IO ())
-rowAdded = Signal (connect_OBJECT__NONE "row_added")
+rowAdded = Signal (connect_OBJECT__NONE "row-added")
 
 
 onRowChanged, afterRowChanged :: Model -> (ModelIter -> IO ()) -> IO (ConnectId Model)
-onRowChanged = connect_OBJECT__NONE "row_changed" False
-afterRowChanged = connect_OBJECT__NONE "row_changed" True
+onRowChanged = connect_OBJECT__NONE "row-changed" False
+afterRowChanged = connect_OBJECT__NONE "row-changed" True
 
 rowChanged :: Signal Model (ModelIter ->IO ())
-rowChanged = Signal (connect_OBJECT__NONE "row_changed")
+rowChanged = Signal (connect_OBJECT__NONE "row-changed")
 
 
 onRowRemoved, afterRowRemoved :: Model -> (ModelIter -> IO ()) -> IO (ConnectId Model)
-onRowRemoved = connect_OBJECT__NONE "row_removed" False
-afterRowRemoved = connect_OBJECT__NONE "row_removed" True
+onRowRemoved = connect_OBJECT__NONE "row-removed" False
+afterRowRemoved = connect_OBJECT__NONE "row-removed" True
 
 rowRemoved :: Signal Model (ModelIter ->IO ())
-rowRemoved = Signal (connect_OBJECT__NONE "row_removed")
+rowRemoved = Signal (connect_OBJECT__NONE "row-removed")
 
 
 onSortChanged, afterSortChanged :: Model -> IO () -> IO (ConnectId Model)
-onSortChanged = connect_NONE__NONE "sort_changed" False
-afterSortChanged = connect_NONE__NONE "sort_changed" True
+onSortChanged = connect_NONE__NONE "sort-changed" False
+afterSortChanged = connect_NONE__NONE "sort-changed" True
 
 sortChanged :: Signal Model (ModelIter ->IO ())
-sortChanged = Signal (connect_OBJECT__NONE "sort_changed")
+sortChanged = Signal (connect_OBJECT__NONE "sort-changed")
 

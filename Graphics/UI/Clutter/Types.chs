@@ -302,7 +302,9 @@ module Graphics.UI.Clutter.Types (
                                   RGBData,
                                   mkRGBData,
                                   rgbDataHasAlpha,
-                                  rgbDataData
+                                  rgbDataData,
+
+                                  Activatable(..)
 
                                  ) where
 
@@ -320,6 +322,7 @@ import Data.Array.Base ( MArray, newArray, newArray_, unsafeRead, unsafeWrite,
 
 import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
+import System.Glib.Signals
 import System.Glib.GValue (GValue(GValue))
 import System.Glib.GList
 import System.Glib.Flags
@@ -1395,5 +1398,31 @@ instance Storable e => MArray RGBData e IO where
   getBounds (RGBData _ _ bd _) = return bd
   {-# INLINE getNumElements #-}
   getNumElements (RGBData _ _ _ count) = return count
+
+
+-- Since some things have the same signal names, classes for them. Not
+-- sure if I want to fix things this way Alternatively, rename things
+-- to include the name such as timelineActivate and scoreActivate or
+-- whatever
+--
+-- CHECKME: There are multiple
+-- actors which have the "activate" signal. They all can't be exported
+-- from the one Clutter module. I don't really want to require
+-- qualified importing of the different modules and such
+-- (e.g. Timeline and Score).
+--
+-- Also everything deals with the *Class, e.g. StageClass, however you
+-- can't instance (StageClass stage) => Activatable stage without
+-- undecidable instances which is bad, so I'm just doing instance
+-- Activatable Stage. I think this would only be an issue if there was
+-- a subclass of Stage (which doesn't exist as far as I know.) If
+-- there were one to exist, there would have to be this instance for
+-- it (which actually isn't much of a problem, just something to
+-- remember if such a class existed). I don't think this is an issue,
+-- but I don't know what I'm doing.
+class Activatable a where
+  onActivate :: a -> IO () -> IO (ConnectId a)
+  afterActivate :: a -> IO () -> IO (ConnectId a)
+  activate :: Signal a (IO ())
 
 

@@ -1115,12 +1115,11 @@ textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_p
                                                      func txtPtr strPtr attrPtr (cIntConv cpos)
 #endif
 
-onActivate, afterActivate :: Text -> IO () -> IO (ConnectId Text)
-onActivate = connect_NONE__NONE "activate" False
-afterActivate = connect_NONE__NONE "activate" True
-
-activate :: Signal Text (IO ())
-activate = Signal (connect_NONE__NONE "activate")
+--See note in Types of Activatable
+instance Activatable Text where
+  onActivate = connect_NONE__NONE "activate" False
+  afterActivate = connect_NONE__NONE "activate" True
+  activate = Signal (connect_NONE__NONE "activate")
 
 --CHECKME: Do I work?
 onCursorEvent, afterCursorEvent :: Text -> (Geometry -> IO ()) -> IO (ConnectId Text)

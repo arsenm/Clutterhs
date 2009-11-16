@@ -120,9 +120,9 @@ module Graphics.UI.Clutter.Stage (
 
 -- * Signals
 --FIXME: Export conflicts with Text's signals and probably other signals
---onActivate,
---afterActivate,
---activate,
+  onActivate,
+  afterActivate,
+  activate,
 
   onDeactivate,
   afterDeactivate,
@@ -156,30 +156,31 @@ import System.Glib.FFI (maybeNull)
 
 -- | Creates a new, non-default stage. A non-default stage is a new
 --   top-level actor which can be used as another container. It works
---   exactly like the default stage, but while
---   'stageGetDefault' will always return the same instance,
---   you will have to keep a pointer to any ClutterStage returned by
---   stageNew.
+--   exactly like the default stage, but while 'stageGetDefault' will
+--   always return the same instance, you will have to keep any
+--   'Stage' returned by 'stageNew'.
 --
 --   The ability to support multiple stages depends on the current
 --   backend. Use 'clutterFeatureAvailable' and
---   CLUTTER_FEATURE_STAGE_MULTIPLE to check at runtime whether a backend
---   supports multiple stages.
+--   CLUTTER_FEATURE_STAGE_MULTIPLE to check at runtime whether a
+--   backend supports multiple stages.
 --
---  [@Returns@]
---   @Just@ a new stage, or @Nothing@ if the default backend does not support
---   multiple stages. Use 'actorDestroy' to programmatically
---   close the returned stage.
+--  [@Returns@] @Just@ a new stage, or @Nothing@ if the default
+--   backend does not support multiple stages. Use 'actorDestroy' to
+--   programmatically close the returned stage.
+--
 {# fun unsafe stage_new as ^ { } -> `Maybe Stage' maybeNewStage* #}
 
 -- | Checks if stage is the default stage, or an instance created using
 --  'stageNew' but internally using the same implementation.
+--
 {# fun unsafe stage_is_default as ^ `(StageClass stage)' =>
     { withStageClass* `stage' } -> `Bool' #}
 
 -- | Sets the stage color.
 {# fun unsafe stage_set_color as ^ `(StageClass stage)' =>
     { withStageClass* `stage', withColor* `Color' } -> `()' #}
+
 -- | Retrieves the stage color.
 {# fun unsafe stage_get_color as ^ `(StageClass stage)' =>
     { withStageClass* `stage', alloca- `Color' peek*} -> `()' #}
@@ -414,14 +415,12 @@ stageUseFog = newAttr stageGetUseFog stageSetUseFog
 stageFog :: (StageClass stage) => Attr stage Fog
 stageFog = newAttr stageGetFog stageSetFog
 
-onActivate, afterActivate :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
-onActivate = connect_NONE__NONE "activate" False
-afterActivate = connect_NONE__NONE "activate" True
-
+--See note in Types of Activatable
 -- | The 'activate' signal is emitted when the stage receives key focus from the underlying window system.
-activate :: (StageClass stage) => Signal stage (IO ())
-activate = Signal (connect_NONE__NONE "activate")
-
+instance Activatable Stage where
+  onActivate = connect_NONE__NONE "activate" False
+  afterActivate = connect_NONE__NONE "activate" True
+  activate = Signal (connect_NONE__NONE "activate")
 
 onDeactivate, afterDeactivate :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
 onDeactivate = connect_NONE__NONE "deactivate" False

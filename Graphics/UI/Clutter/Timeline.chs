@@ -158,16 +158,6 @@ import System.Glib.Signals
 {# fun unsafe timeline_get_duration as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
 
 
--- | Duration of the timeline in milliseconds, depending on the
---   'Timeline':fps value.
---
--- Default value: 1000
---
--- * Since 0.6
---
-timelineDuration :: Attr Timeline Word
-timelineDuration = newAttr timelineGetDuration timelineSetDuration
-
 -- | Sets whether timeline should loop.
 --
 -- [@timeline@] a 'Timeline'
@@ -184,13 +174,6 @@ timelineDuration = newAttr timelineGetDuration timelineSetDuration
 -- [@Returns@] @True@ if the timeline is looping
 --
 {# fun unsafe timeline_get_loop as ^ { withTimeline* `Timeline' } -> `Bool' #}
-
--- | Whether the timeline should automatically rewind and restart.
---
--- Default value: @False@
---
-timelineLoop :: Attr Timeline Bool
-timelineLoop = newAttr timelineGetLoop timelineSetLoop
 
 -- | Sets the delay, in milliseconds, before timeline should start.
 --
@@ -211,11 +194,6 @@ timelineLoop = newAttr timelineGetLoop timelineSetLoop
 -- * Since 0.4
 --
 {# fun unsafe timeline_get_delay as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
-
-
-timelineDelay :: Attr Timeline Word
-timelineDelay = newAttr timelineGetDelay timelineSetDelay
-
 
 -- | Sets the direction of timeline, either TimelineForward or
 --   TimelineBackward.
@@ -240,9 +218,6 @@ timelineDelay = newAttr timelineGetDelay timelineSetDelay
 --
 {# fun unsafe timeline_get_direction as ^
        { withTimeline* `Timeline' } -> `TimelineDirection' cToEnum #}
-
-timelineDirection :: Attr Timeline TimelineDirection
-timelineDirection = newAttr timelineGetDirection timelineSetDirection
 
 -- | Starts the 'Timeline' playing.
 {# fun timeline_start as ^ { withTimeline* `Timeline' } -> `()' #}
@@ -407,6 +382,49 @@ timelineListMarkers tml time = withTimeline tml $ \tmlptr ->
 -- * Since 0.8
 --
 {# fun unsafe timeline_advance_to_marker as ^ { withTimeline* `Timeline', `String' } -> `()' #}
+
+
+-- | Duration of the timeline in milliseconds, depending on the
+--   'Timeline':fps value.
+--
+-- Default value: 1000
+--
+-- * Since 0.6
+--
+timelineDuration :: Attr Timeline Word
+timelineDuration = newNamedAttr "duration" timelineGetDuration timelineSetDuration
+
+
+-- | Whether the timeline should automatically rewind and restart.
+--
+-- Default value: @False@
+--
+timelineLoop :: Attr Timeline Bool
+timelineLoop = newNamedAttr "loop" timelineGetLoop timelineSetLoop
+
+
+-- | A delay, in milliseconds, that should be observed by the timeline
+--   before actually starting.
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+timelineDelay :: Attr Timeline Word
+timelineDelay = newNamedAttr "delay" timelineGetDelay timelineSetDelay
+
+
+-- | The direction of the timeline, either TimelineForward
+--   or TimelineBackward.
+--
+-- Default value: TimelineForward
+--
+-- * Since 0.6
+--
+timelineDirection :: Attr Timeline TimelineDirection
+timelineDirection = newNamedAttr "direction" timelineGetDirection timelineSetDirection
+
+
 
 --TODO: Check these
 

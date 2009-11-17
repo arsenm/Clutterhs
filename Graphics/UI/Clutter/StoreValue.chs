@@ -62,7 +62,6 @@ import Control.OldException (throw, Exception(AssertionFailed))
 import Control.Exception (bracket)
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.External #}
 {# import Graphics.UI.Clutter.GValue #} (color, valueSetColor, valueGetColor)
 
 import System.Glib.FFI

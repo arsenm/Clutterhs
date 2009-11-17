@@ -37,7 +37,8 @@ createRectangles stage size (_, recs, i) col = do
             actorY := i*size + size/2 ]
 
   width <- get stage actorWidth
-  anim <- animate rec Linear 5000 ("x", width/2) ("rotation-angle-z", 500::Double)
+  anim <- animate rec Linear 5000 [actorX :-> width/2, actorRotationAngleZ :-> 500]
+
   return (Just anim, rec:recs, i+1)
 
 scatterRectangle :: Float -> Float -> Rectangle -> IO ()

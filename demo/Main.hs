@@ -45,9 +45,7 @@ main = do
   tml <- timelineNew 9000
   alpha <- alphaNewFull tml Linear
 
- --FIXME: almost always end up needing to specify type for this
-  anim <- animate rec Linear 3000 ("x", 400::Float)
-                                  ("y", 500::Float)
+  anim <- animate rec Linear 3000 [actorX :-> 400, actorY :-> 500]
 
   animtml <- fmap fromJust (animationGetTimeline anim)
   timelineStart animtml
@@ -128,8 +126,7 @@ main = do
   alphaParticle <- alphaNewWithFunc tl cetiAlpha5
   performGC
 
-  --wtf is this needing :: IO (type)
-  khanAnim <- (animateWithAlpha khan alphaParticle ("x", 300::Float) ("y", 300::Float)) :: IO Animation
+  khanAnim <- animateWithAlpha khan alphaParticle [actorX :-> 300, actorY :-> 300]
   timelineStart tl
 
   performGC
@@ -157,8 +154,6 @@ main = do
   kirkBehav2 <- behaviourScaleNew ka 0.1 0.1 1 1
 
   performGC
-
-  print $ newanimate rec [rectangleHasBorder :-> True, actorHeight :-> 50, actorX :-> 100]
 
   behaviourApply kirkBehav1 texture
   behaviourApply kirkBehav2 texture

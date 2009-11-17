@@ -24,16 +24,11 @@
              OverlappingInstances #-}
 {-# OPTIONS_HADDOCK prune #-}
 
---TODO: I don't think I will need OverlappingInstances or
---FlexibleInstances anymore
-
 #include <glib.h>
 #include <clutter/clutter.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
---TODO/FIXME/IMUSTSLEEP/IMADEAHUGEMISTAKE
---basically redo this to not use the string property BS
 module Graphics.UI.Clutter.Animation (
 -- * Class Hierarchy
 -- |
@@ -41,6 +36,9 @@ module Graphics.UI.Clutter.Animation (
 -- |  'GObject'
 -- |   +----'Animation'
 -- @
+
+-- * Types
+  AnimOp(..),
 
 -- * Constructors
   animate,
@@ -81,10 +79,7 @@ module Graphics.UI.Clutter.Animation (
   animationDuration,
   animationLoop,
   animationTimeline,
-  animationAlpha,
-
-  newanimate,
-  AnimOp(..)
+  animationAlpha
 
 
 --TODO: Signals, also name conflicts with timeline
@@ -384,120 +379,6 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 actorAnimation :: (ActorClass actor) => ReadAttr actor (Maybe Animation)
 actorAnimation = readAttr actorGetAnimation
 
-animate :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Int -> r
-animate actor mode duration = runAnim actor mode duration []
-
-animateWithAlpha :: (ActorClass actor, AnimateType r) => actor -> Alpha -> r
-animateWithAlpha actor alpha = runAnimWithAlpha actor alpha []
-
-animateWithTimeline :: (ActorClass actor, AnimateType r) => actor -> AnimationMode -> Timeline -> r
-animateWithTimeline actor mode tml = runAnimWithTimeline actor mode tml []
-
-
-class AnimateType t where
-    runAnim :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GenericValue)] -> t
-    runAnimWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GenericValue)] -> t
-    runAnimWithTimeline :: (ActorClass actor) =>
-                           actor ->
-                           AnimationMode ->
-                           Timeline ->
-                           [(String, GenericValue)] ->
-                           t
-
--- Multiple return types isn't useful. We only want IO Animation.
--- This breaks things if you remove the instance for ().
--- Also type inference not working in many cases. maybe find a better way
-instance AnimateType (IO Animation) where
-    runAnim actor mode duration args = uanimate actor mode duration args
-    runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args
-    runAnimWithTimeline actor mode tml args = uanimateWithTimeline actor mode tml args
-
-instance AnimateType (IO ()) where
-    runAnim actor mode duration args = uanimate actor mode duration args >> return ()
-    runAnimWithAlpha actor alpha args = uanimateWithAlpha actor alpha args >> return ()
-    runAnimWithTimeline actor mode tml args = uanimateWithTimeline actor mode tml args >> return ()
-
-instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
-    runAnim actor mode duration args = \a -> runAnim actor mode duration (toAnimateArg a : args)
-    runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toAnimateArg a : args)
-    runAnimWithTimeline actor mode tml args = \a -> runAnimWithTimeline actor mode tml (toAnimateArg a : args)
-
-
-uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GenericValue)] -> IO Animation
-uanimate _ _ _ [] = error "Need arguments to animate"
-uanimate actor mode duration us =
-    let (names, gvals) = unzip us
-        animatev = {# call unsafe actor_animatev #}  --CHECKME: unsafe?
-        cmode = cFromEnum mode
-        cdur = cIntConv duration
-    in
-    withMany withCString names $ \cstrs ->
-      withArrayLen cstrs $ \len strptr ->
-         withActorClass actor $ \actptr ->
-           withArray gvals $ \gvPtr -> do
-               ret <- animatev actptr cmode cdur (cIntConv len) strptr gvPtr
-               foldM_ unsetOneGVal gvPtr gvals
-               newAnimation ret
-
-uanimateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [(String, GenericValue)] -> IO Animation
-uanimateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
-uanimateWithAlpha actor alpha us =
-    let (names, gvals) = unzip us
-        animatev = {# call unsafe actor_animate_with_alphav #}    --CHECKME: unsafe?
-    in
-    withMany withCString names $ \cstrs ->
-      withArrayLen cstrs $ \len strptr ->
-        withActorClass actor $ \actptr ->
-          withAlpha alpha $ \alphptr ->
-            withArray gvals $ \gvPtr -> do
-              ret <- animatev actptr alphptr (cIntConv len) strptr gvPtr
-              foldM_ unsetOneGVal gvPtr gvals
-              newAnimation ret
-
-
-uanimateWithTimeline :: (ActorClass actor) =>
-                        actor ->
-                        AnimationMode ->
-                        Timeline ->
-                        [(String, GenericValue)] ->
-                        IO Animation
-uanimateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
-uanimateWithTimeline actor mode tml us =
-    let (names, gvals) = unzip us
-        animatev = {# call unsafe actor_animate_with_timelinev #}    --CHECKME: unsafe?
-        cmode = cFromEnum mode
-    in
-    withMany withCString names $ \cstrs ->
-      withArrayLen cstrs $ \len strptr ->
-        withActorClass actor $ \actptr ->
-          withTimeline tml $ \tmlptr ->
-            withArray gvals $ \gvPtr -> do
-              ret <- animatev actptr cmode tmlptr (cIntConv len) strptr gvPtr
-              foldM_ unsetOneGVal gvPtr gvals
-              newAnimation ret
-
-class AnimateArg a where
-    toAnimateArg :: a -> (String, GenericValue)
-
-instance AnimateArg (String, String) where
-    toAnimateArg = second (GVstring . Just)
-instance AnimateArg (String, Int) where
-    toAnimateArg = second toGenericValue
-instance AnimateArg (String, Float) where
-    toAnimateArg = second GVfloat
-instance AnimateArg (String, Color) where
-    toAnimateArg = second GVcolor
-instance AnimateArg (String, Double) where
-    toAnimateArg = second GVdouble
-instance AnimateArg (String, Word8) where
-    toAnimateArg = second GVuchar
-
---CHECKME: OverlappingInstances
---TODO: Maybe just list all known gobjects we want to allow?
---that seems bad...
-instance (GObjectClass obj) => AnimateArg (String, obj) where
-    toAnimateArg = second (GVobject . toGObject)
-
 
 onCompleted, afterCompleted :: Animation -> IO () -> IO (ConnectId Animation)
 onCompleted = connect_NONE__NONE "completed" False
@@ -536,12 +417,60 @@ data AnimOp o = forall a b. (GenericValueClass b) => ReadWriteAttr o a b :-> b
 
 infixr 0 :->
 
-toListAnim :: (ActorClass o) => [AnimOp o] -> [(String, GenericValue)]
-toListAnim = map app
-    where app (attr :-> val) = (show attr, toGenericValue val)
+toListAnim :: (ActorClass o) => [AnimOp o] -> ([String], [GenericValue])
+toListAnim = foldr step ([], [])
+    where step (attr :-> val) (strs, vals) = (show attr:strs, toGenericValue val:vals)
 
-newanimate :: (ActorClass actor) => actor -> [AnimOp actor] -> [String]
-newanimate act attrs = map (show . fst) (toListAnim attrs)
+animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [AnimOp actor] -> IO Animation
+animate _ _ _ [] = error "Need arguments to animate"
+animate actor mode duration us =
+    let (names, gvals) = toListAnim us
+        animatev = {# call unsafe actor_animatev #}  --CHECKME: unsafe?
+        cmode = cFromEnum mode
+        cdur = cIntConv duration
+    in
+    withMany withCString names $ \cstrs ->
+      withArrayLen cstrs $ \len strptr ->
+         withActorClass actor $ \actptr ->
+           withArray gvals $ \gvPtr -> do
+               ret <- animatev actptr cmode cdur (cIntConv len) strptr gvPtr
+               foldM_ unsetOneGVal gvPtr gvals
+               newAnimation ret
+
+animateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [AnimOp actor] -> IO Animation
+animateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
+animateWithAlpha actor alpha us =
+    let (names, gvals) = toListAnim us
+        animatev = {# call unsafe actor_animate_with_alphav #}    --CHECKME: unsafe?
+    in
+    withMany withCString names $ \cstrs ->
+      withArrayLen cstrs $ \len strptr ->
+        withActorClass actor $ \actptr ->
+          withAlpha alpha $ \alphptr ->
+            withArray gvals $ \gvPtr -> do
+              ret <- animatev actptr alphptr (cIntConv len) strptr gvPtr
+              foldM_ unsetOneGVal gvPtr gvals
+              newAnimation ret
 
 
+animateWithTimeline :: (ActorClass actor) =>
+                       actor
+                       -> AnimationMode
+                       -> Timeline
+                       -> [AnimOp actor]
+                       -> IO Animation
+animateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
+animateWithTimeline actor mode tml us =
+    let (names, gvals) = toListAnim us
+        animatev = {# call unsafe actor_animate_with_timelinev #}    --CHECKME: unsafe?
+        cmode = cFromEnum mode
+    in
+    withMany withCString names $ \cstrs ->
+      withArrayLen cstrs $ \len strptr ->
+        withActorClass actor $ \actptr ->
+          withTimeline tml $ \tmlptr ->
+            withArray gvals $ \gvPtr -> do
+              ret <- animatev actptr cmode tmlptr (cIntConv len) strptr gvPtr
+              foldM_ unsetOneGVal gvPtr gvals
+              newAnimation ret
 

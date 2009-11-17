@@ -6,6 +6,7 @@ import Graphics.UI.Clutter
 import System.Glib.Signals
 import System.Glib.Attributes
 import Control.Monad
+import Control.Monad.Trans (liftIO)
 import System.IO
 import Data.Maybe
 
@@ -32,9 +33,16 @@ main = do
   mapM_ (containerAddActor stg) [rec1,rec2,rec3]
   mapM (\a -> actorSetSize a 50 50) [rec1, rec2, rec3]
 
-  set rec1 [actorPosition := (100 , 100)]
-  set rec2 [actorPosition := (200 , 200)]
-  set rec3 [actorPosition := (300 , 300)]
+  set rec1 [actorPosition := (100, 100)]
+  set rec2 [actorPosition := (200, 200)]
+  set rec3 [actorPosition := (300, 300)]
+
+--Damage needs to happen to see the border change
+--Also only visible on one, since others default width to 0
+  mapM_ (\r -> actorSetReactive r True >>
+               (on r buttonPressEvent $
+                 tryEvent $ liftIO $ do
+                   set r [ rectangleHasBorder :~ not ])) [rec1, rec2, rec3]
 
   actorShowAll stg
 

@@ -45,12 +45,12 @@ toClutterEmbed :: ClutterEmbedClass o => o -> ClutterEmbed
 toClutterEmbed = unsafeCastGObject . toGObject
 
 newClutterEmbed :: (WidgetClass actor) => Ptr actor -> IO ClutterEmbed
-newClutterEmbed a = makeNewObject ClutterEmbed $ return (castPtr a)
+newClutterEmbed a = makeNewActor (ClutterEmbed, objectUnref) $ return (castPtr a)
 
 instance ClutterEmbedClass ClutterEmbed
 instance WidgetClass ClutterEmbed
 instance ObjectClass ClutterEmbed
 instance GObjectClass ClutterEmbed where
-  toGObject (ClutterEmbed s) = mkGObject (castForeignPtr s)
+  toGObject (ClutterEmbed s) = constrGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = ClutterEmbed (castForeignPtr o)
 

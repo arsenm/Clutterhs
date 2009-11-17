@@ -26,10 +26,7 @@
 {# context lib="glib" prefix="g" #}
 
 module Graphics.UI.Clutter.External (
-                                     valueSetUChar,
-                                     valueGetUChar,
-                                     valueSetChar,
-                                     valueGetChar
+                                     thisModuleIsNoLongerNeeded
                                     ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -38,6 +35,8 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.GType
 import System.Glib.GValue (GValue(GValue))
+
+thisModuleIsNoLongerNeeded = error "This module is no longer needed and I should remove it"
 
 --This is commented out in c2hs.
 {# fun unsafe value_get_char as ^ { withGValue `GValue' } -> `Char' cToEnum #}

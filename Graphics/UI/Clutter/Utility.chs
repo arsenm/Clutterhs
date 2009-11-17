@@ -69,6 +69,7 @@ import C2HS
 import Data.Maybe (catMaybes)
 
 import System.Glib.Flags
+import System.Glib.GObject (makeNewGObject, objectUnref)
 import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 
@@ -207,5 +208,9 @@ toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
 withPangoLayoutRaw = withForeignPtr . unPangoLayoutRaw
 
 newPangoContext :: Ptr PangoContext -> IO PangoContext
-newPangoContext p = makeNewObject mkPangoContext (return p)
+newPangoContext p = makeNewGObject mkPangoContext (return p)
+
+--FIXME/WTF: this should be this, but for some reason in this file
+--it's getting the old version of makeNewGObject
+--newPangoContext p = makeNewGObject (mkPangoContext, objectUnref) (return p)
 

@@ -28,13 +28,17 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+--CHECKME: gtk2hs change broke everything. I need to double check what
+--they are doing to get the referencing right, but I just want it to
+--compile right now.
+
 module Graphics.UI.Clutter.Types (
                                   withGObject,
-                                --withGObjectClass,
                                   newGObject,
                                   withGValue,
+                                  constrGObject,
+                                  makeNewActor,
                                   --TODO: Exports need organizing and stuff
-                                  makeNewObject,
 
                                   GSSize,
                                   GUnichar,
@@ -75,7 +79,6 @@ module Graphics.UI.Clutter.Types (
                                   Container,
                                   ContainerClass,
                                   toContainer,
-                                  newContainer,
                                   withContainer,
                                   withContainerClass,
 
@@ -330,47 +333,55 @@ import System.Glib.FFI
 import Control.Monad (when, liftM2, join)
 import Control.Exception (bracket)
 
---GTK uses the floating reference stuff
---this function is from gtk2hs, where they use the
---"ObjectClass" which isn't necessary, so I change to GObjectClass
+
+-- gtk2hs changed mkGObject to be a tuple (GObject, objectUnref)
+--TODO: Move this
+constrGObject = fst mkGObject
+
 --also why the flipped newForeignPtr there?
 --from foreign.concurrent or something, and also flipped in System.Glib.FFI
---I don't understand why
---I also don't see the difference between this function, and
---constructNewGObject
---Actually yes I do. This one removes the floating reference, which
---we don't want. Get rid of the floating reference to get a normal reference
---clutter actors and gtk widgets have floating references
---TODO: Actors as objectclass in gtk so we don't have this function duplicated here
---but that's sort of confusing
-makeNewObject :: GObjectClass obj =>
-  (ForeignPtr obj -> obj) -> IO (Ptr obj) -> IO obj
-makeNewObject constr generator = do
+
+
+--The name makeNewActor is unfortunate since Path technically isn't an
+-- actor but has a floating reference
+
+
+-- Get rid of the floating
+-- reference to get a normal reference clutter actors and gtk widgets
+-- have floating references
+
+  -- This is a convenience function to generate a new actor. (not to
+-- be confused with 'newActor'. It adds the finalizer with the method
+-- described under objectSink. It is basically the same thing as
+-- 'makeNewObject' for GtkWidgets, since clutter actors are nearly the
+-- same. The only difference is the class constraint, since Actors, etc.
+-- shouldn't be Gtk's Object.
+--
+-- * The constr argument is the contructor of the specific object.
+--
+makeNewActor :: GObjectClass obj =>
+  (ForeignPtr obj -> obj, FinalizerPtr obj) -> IO (Ptr obj) -> IO obj
+makeNewActor (constr, objectUnref) generator = do
   objPtr <- generator
-  when (objPtr == nullPtr) (fail "makeNewObject: object is NULL")
+  when (objPtr == nullPtr) (fail "makeNewActorObject: object is NULL")
   objectRefSink objPtr
-  obj <- System.Glib.FFI.newForeignPtr objPtr objectUnref
+  obj <- newForeignPtr objPtr objectUnref
   return $! constr obj
 
---withGObjectClass::GObjectClass o => o -> (Ptr GObject -> IO b) -> IO b
---FIXME: Why are things expecting Ptr ()? and not Ptr Type? I thought this was working before
---FIXME: This really should work with (Ptr GObject -> IO b) but it doesn't
---and I don't understand why
 withGObject::GObjectClass o => o -> (Ptr () -> IO b) -> IO b
 withGObject obj act = (withForeignPtr . unGObject . toGObject) obj $ \ptr -> act (castPtr ptr)
 
-newGObject a = makeNewGObject mkGObject $ return (castPtr a)
+newGObject a = makeNewGObject (constrGObject, objectUnref) $ return (castPtr a)
 
 --TODO: Make this castPtr go away
 withGValue (GValue gval) = castPtr gval
 
---this doesn't seem to work since GObjectClass is not here...
+--this doesn't seem to work since GObjectClass is not here
 --I'm not sure if I can work around this. Oh well, I don't think it's that important
 -- {# pointer *GObject newtype nocode #}
 -- {# class GObjectClass GObject #}
 
--- g-types not anywhere??
-type GFloat = {# type gfloat #}
+--TODO: Make this go away.
 type GSSize = {# type gssize #}
 type GUnichar = {# type gunichar #}
 
@@ -462,8 +473,7 @@ withActorClass::ActorClass o => o -> (Ptr Actor -> IO b) -> IO b
 withActorClass o = (withActor . toActor) o
 
 newActor :: (ActorClass actor) =>  Ptr actor -> IO Actor
-newActor a = makeNewObject Actor $ return (castPtr a)
-
+newActor a = makeNewActor (Actor, objectUnref) $ return (castPtr a)
 
 --TODO: this should also go somewhere else??
 --CHECKME: Does this actually work?
@@ -473,7 +483,7 @@ newActorList gsl = (fromGSList gsl :: IO [Ptr Actor]) >>= mapM newActor
 instance ActorClass Actor
 instance ScriptableClass Actor
 instance GObjectClass Actor where
-  toGObject (Actor a) = mkGObject (castForeignPtr a)
+  toGObject (Actor a) = constrGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Actor (castForeignPtr o)
 
 -- *** Rectangle
@@ -485,12 +495,12 @@ toRectangle::RectangleClass o => o -> Rectangle
 toRectangle = unsafeCastGObject . toGObject
 
 newRectangle :: Ptr Actor -> IO Rectangle
-newRectangle a = makeNewObject Rectangle $ return (castPtr a)
+newRectangle a = makeNewActor (Rectangle, objectUnref) $ return (castPtr a)
 
 instance RectangleClass Rectangle
 instance ActorClass Rectangle
 instance GObjectClass Rectangle where
-  toGObject (Rectangle r) = mkGObject (castForeignPtr r)
+  toGObject (Rectangle r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = Rectangle (castForeignPtr o)
 
 -- *** Text
@@ -502,13 +512,13 @@ toText::TextClass o => o -> Text
 toText = unsafeCastGObject . toGObject
 
 newText :: Ptr Actor -> IO Text
-newText a = makeNewObject Text $ return (castPtr a)
+newText a = makeNewActor (Text, objectUnref) $ return (castPtr a)
 
 instance TextClass Text
 instance ActorClass Text
 instance ScriptableClass Text
 instance GObjectClass Text where
-  toGObject (Text a) = mkGObject (castForeignPtr a)
+  toGObject (Text a) = constrGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Text (castForeignPtr o)
 
 -- *** Group
@@ -520,14 +530,14 @@ toGroup :: GroupClass o => o -> Group
 toGroup = unsafeCastGObject . toGObject
 
 newGroup :: Ptr Actor -> IO Group
-newGroup a = makeNewObject Group $ return (castPtr a)
+newGroup a = makeNewActor (Group, objectUnref) $ return (castPtr a)
 
 instance GroupClass Group
 instance ScriptableClass Group
 instance ContainerClass Group
 instance ActorClass Group
 instance GObjectClass Group where
-  toGObject (Group g) = mkGObject (castForeignPtr g)
+  toGObject (Group g) = constrGObject (castForeignPtr g)
   unsafeCastGObject (GObject o) = Group (castForeignPtr o)
 
 -- *** Container
@@ -541,12 +551,9 @@ toContainer = unsafeCastGObject . toGObject
 withContainerClass::ContainerClass o => o -> (Ptr Container -> IO b) -> IO b
 withContainerClass o = (withContainer . toContainer) o
 
-newContainer :: Ptr Actor -> IO Container
-newContainer a = makeNewObject Container $ return (castPtr a)
-
 instance ContainerClass Container
 instance GObjectClass Container where
-  toGObject (Container c) = mkGObject (castForeignPtr c)
+  toGObject (Container c) = constrGObject (castForeignPtr c)
   unsafeCastGObject (GObject o) = Container (castForeignPtr o)
 
 -- *** Stage
@@ -563,7 +570,7 @@ withStageClass o = (withStage . toStage) o
 
 --Actor class?
 newStage :: (ActorClass actor) => Ptr actor -> IO Stage
-newStage a = makeNewObject Stage $ return (castPtr a)
+newStage a = makeNewActor (Stage, objectUnref) $ return (castPtr a)
 
 instance StageClass Stage
 instance ContainerClass Stage
@@ -571,7 +578,7 @@ instance GroupClass Stage
 instance ActorClass Stage
 instance ScriptableClass Stage
 instance GObjectClass Stage where
-  toGObject (Stage s) = mkGObject (castForeignPtr s)
+  toGObject (Stage s) = constrGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = Stage (castForeignPtr o)
 
 -- *** Perspective
@@ -623,11 +630,11 @@ toAnimation :: AnimationClass o => o -> Animation
 toAnimation = unsafeCastGObject . toGObject
 
 newAnimation:: Ptr Animation -> IO Animation
-newAnimation a = makeNewGObject Animation $ return (castPtr a)
+newAnimation a = makeNewGObject (Animation, objectUnref) $ return (castPtr a)
 
 instance AnimationClass Animation
 instance GObjectClass Animation where
-  toGObject (Animation a) = mkGObject (castForeignPtr a)
+  toGObject (Animation a) = constrGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Animation (castForeignPtr o)
 
 -- *** Timeline
@@ -642,14 +649,14 @@ toTimeline :: TimelineClass o => o -> Timeline
 toTimeline = unsafeCastGObject . toGObject
 
 newTimeline:: Ptr Timeline -> IO Timeline
-newTimeline a = makeNewGObject Timeline $ return a
+newTimeline a = makeNewGObject (Timeline, objectUnref) $ return a
 
 newTimelineList :: GSList -> IO [Timeline]
 newTimelineList gsl = (fromGSList gsl :: IO [Ptr Timeline]) >>= mapM newTimeline
 
 instance TimelineClass Timeline
 instance GObjectClass Timeline where
-  toGObject (Timeline t) = mkGObject (castForeignPtr t)
+  toGObject (Timeline t) = constrGObject (castForeignPtr t)
   unsafeCastGObject (GObject o) = Timeline (castForeignPtr o)
 
 -- *** Score
@@ -662,11 +669,11 @@ toScore = unsafeCastGObject . toGObject
 
 --CHECKME: doesn't derive from Actor, so using makeNewGObject
 newScore :: Ptr Score -> IO Score
-newScore a = makeNewGObject Score $ return (castPtr a)
+newScore a = makeNewGObject (Score, objectUnref) $ return (castPtr a)
 
 instance ScoreClass Score
 instance GObjectClass Score where
-  toGObject (Score r) = mkGObject (castForeignPtr r)
+  toGObject (Score r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = Score (castForeignPtr o)
 
 -- *** Alpha
@@ -678,11 +685,11 @@ toAlpha :: AlphaClass o => o -> Alpha
 toAlpha = unsafeCastGObject . toGObject
 
 newAlpha:: Ptr Alpha -> IO Alpha
-newAlpha a = makeNewGObject Alpha $ return a
+newAlpha a = makeNewGObject (Alpha, objectUnref) $ return a
 
 instance AlphaClass Alpha
 instance GObjectClass Alpha where
-  toGObject (Alpha a) = mkGObject (castForeignPtr a)
+  toGObject (Alpha a) = constrGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Alpha (castForeignPtr o)
 
 -- *** AlphaFunc
@@ -707,11 +714,11 @@ class GObjectClass o => IntervalClass o
 toInterval :: IntervalClass o => o -> Interval
 toInterval = unsafeCastGObject . toGObject
 
-newInterval a = makeNewGObject Interval $ return (castPtr a)
+newInterval a = makeNewGObject (Interval, objectUnref) $ return (castPtr a)
 
 instance IntervalClass Interval
 instance GObjectClass Interval where
-  toGObject (Interval i) = mkGObject (castForeignPtr i)
+  toGObject (Interval i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Interval (castForeignPtr o)
 
 -- *** Fog
@@ -750,11 +757,11 @@ class GObjectClass o => CairoTextureClass o
 toCairoTexture :: CairoTextureClass o => o -> CairoTexture
 toCairoTexture = unsafeCastGObject . toGObject
 
-newCairoTexture a = makeNewGObject CairoTexture $ return (castPtr a)
+newCairoTexture a = makeNewGObject (CairoTexture, objectUnref) $ return (castPtr a)
 
 instance CairoTextureClass CairoTexture
 instance GObjectClass CairoTexture where
-  toGObject (CairoTexture i) = mkGObject (castForeignPtr i)
+  toGObject (CairoTexture i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = CairoTexture (castForeignPtr o)
 
 -- *** Media
@@ -768,11 +775,11 @@ class GObjectClass o => MediaClass o
 toMedia :: MediaClass o => o -> Media
 toMedia = unsafeCastGObject . toGObject
 
-newMedia a = makeNewGObject Media $ return (castPtr a)
+newMedia a = makeNewGObject (Media, objectUnref) $ return (castPtr a)
 
 instance MediaClass Media
 instance GObjectClass Media where
-  toGObject (Media i) = mkGObject (castForeignPtr i)
+  toGObject (Media i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Media (castForeignPtr o)
 
 -- *** ChildMeta
@@ -783,11 +790,11 @@ class GObjectClass o => ChildMetaClass o
 toChildMeta :: ChildMetaClass o => o -> Media
 toChildMeta = unsafeCastGObject . toGObject
 
-newChildMeta a = makeNewGObject ChildMeta $ return (castPtr a)
+newChildMeta a = makeNewGObject (ChildMeta, objectUnref) $ return (castPtr a)
 
 instance ChildMetaClass ChildMeta
 instance GObjectClass ChildMeta where
-  toGObject (ChildMeta i) = mkGObject (castForeignPtr i)
+  toGObject (ChildMeta i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ChildMeta (castForeignPtr o)
 
 -- *** Clone
@@ -798,13 +805,13 @@ class GObjectClass o => CloneClass o
 toClone :: CloneClass o => o -> Clone
 toClone = unsafeCastGObject . toGObject
 
-newClone a = makeNewObject Clone $ return (castPtr a)
+newClone a = makeNewActor (Clone, objectUnref) $ return (castPtr a)
 
 instance CloneClass Clone
 instance ScriptableClass Clone
 instance ActorClass Clone
 instance GObjectClass Clone where
-  toGObject (Clone i) = mkGObject (castForeignPtr i)
+  toGObject (Clone i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Clone (castForeignPtr o)
 
 -- *** Behaviour
@@ -818,12 +825,12 @@ toBehaviour = unsafeCastGObject . toGObject
 withBehaviourClass::BehaviourClass o => o -> (Ptr Behaviour -> IO b) -> IO b
 withBehaviourClass o = (withBehaviour . toBehaviour) o
 
-newBehaviour a = makeNewGObject Behaviour $ return (castPtr a)
+newBehaviour a = makeNewGObject (Behaviour, objectUnref) $ return (castPtr a)
 
 instance BehaviourClass Behaviour
 instance ScriptableClass Behaviour
 instance GObjectClass Behaviour where
-  toGObject (Behaviour i) = mkGObject (castForeignPtr i)
+  toGObject (Behaviour i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Behaviour (castForeignPtr o)
 
 -- *** BehaviourForeachFunc
@@ -848,13 +855,13 @@ class GObjectClass o => BehaviourScaleClass o
 toBehaviourScale :: BehaviourScaleClass o => o -> Behaviour
 toBehaviourScale = unsafeCastGObject . toGObject
 
-newBehaviourScale a = makeNewGObject BehaviourScale $ return (castPtr a)
+newBehaviourScale a = makeNewGObject (BehaviourScale, objectUnref) $ return (castPtr a)
 
 instance BehaviourScaleClass BehaviourScale
 instance BehaviourClass BehaviourScale
 instance ScriptableClass BehaviourScale
 instance GObjectClass BehaviourScale where
-  toGObject (BehaviourScale i) = mkGObject (castForeignPtr i)
+  toGObject (BehaviourScale i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourScale (castForeignPtr o)
 
 -- *** BehaviourDepth
@@ -865,13 +872,13 @@ class GObjectClass o => BehaviourDepthClass o
 toBehaviourDepth :: BehaviourDepthClass o => o -> BehaviourDepth
 toBehaviourDepth = unsafeCastGObject . toGObject
 
-newBehaviourDepth a = makeNewGObject BehaviourDepth $ return (castPtr a)
+newBehaviourDepth a = makeNewGObject (BehaviourDepth, objectUnref) $ return (castPtr a)
 
 instance BehaviourDepthClass BehaviourDepth
 instance BehaviourClass BehaviourDepth
 instance ScriptableClass BehaviourDepth
 instance GObjectClass BehaviourDepth where
-  toGObject (BehaviourDepth i) = mkGObject (castForeignPtr i)
+  toGObject (BehaviourDepth i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourDepth (castForeignPtr o)
 
 -- *** BehaviourEllipse
@@ -882,13 +889,13 @@ class GObjectClass o => BehaviourEllipseClass o
 toBehaviourEllipse :: BehaviourEllipseClass o => o -> BehaviourEllipse
 toBehaviourEllipse = unsafeCastGObject . toGObject
 
-newBehaviourEllipse a = makeNewGObject BehaviourEllipse $ return (castPtr a)
+newBehaviourEllipse a = makeNewGObject (BehaviourEllipse, objectUnref) $ return (castPtr a)
 
 instance BehaviourEllipseClass BehaviourEllipse
 instance BehaviourClass BehaviourEllipse
 instance ScriptableClass BehaviourEllipse
 instance GObjectClass BehaviourEllipse where
-  toGObject (BehaviourEllipse i) = mkGObject (castForeignPtr i)
+  toGObject (BehaviourEllipse i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourEllipse (castForeignPtr o)
 
 -- *** BehaviourOpacity
@@ -899,13 +906,13 @@ class GObjectClass o => BehaviourOpacityClass o
 toBehaviourOpacity :: BehaviourOpacityClass o => o -> BehaviourOpacity
 toBehaviourOpacity = unsafeCastGObject . toGObject
 
-newBehaviourOpacity a = makeNewGObject BehaviourOpacity $ return (castPtr a)
+newBehaviourOpacity a = makeNewGObject (BehaviourOpacity, objectUnref) $ return (castPtr a)
 
 instance BehaviourOpacityClass BehaviourOpacity
 instance BehaviourClass BehaviourOpacity
 instance ScriptableClass BehaviourOpacity
 instance GObjectClass BehaviourOpacity where
-  toGObject (BehaviourOpacity i) = mkGObject (castForeignPtr i)
+  toGObject (BehaviourOpacity i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourOpacity (castForeignPtr o)
 
 -- *** BehaviourRotate
@@ -916,13 +923,13 @@ class GObjectClass o => BehaviourRotateClass o
 toBehaviourRotate :: BehaviourRotateClass o => o -> BehaviourRotate
 toBehaviourRotate = unsafeCastGObject . toGObject
 
-newBehaviourRotate a = makeNewGObject BehaviourRotate $ return (castPtr a)
+newBehaviourRotate a = makeNewGObject (BehaviourRotate, objectUnref) $ return (castPtr a)
 
 instance BehaviourRotateClass BehaviourRotate
 instance BehaviourClass BehaviourRotate
 instance ScriptableClass BehaviourRotate
 instance GObjectClass BehaviourRotate where
-  toGObject (BehaviourRotate i) = mkGObject (castForeignPtr i)
+  toGObject (BehaviourRotate i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourRotate (castForeignPtr o)
 
 
@@ -934,13 +941,13 @@ class GObjectClass o => BehaviourPathClass o
 toBehaviourPath :: BehaviourPathClass o => o -> BehaviourPath
 toBehaviourPath = unsafeCastGObject . toGObject
 
-newBehaviourPath a = makeNewGObject BehaviourPath $ return (castPtr a)
+newBehaviourPath a = makeNewGObject (BehaviourPath, objectUnref) $ return (castPtr a)
 
 instance BehaviourPathClass BehaviourPath
 instance BehaviourClass BehaviourPath
 instance ScriptableClass BehaviourPath
 instance GObjectClass BehaviourPath where
-  toGObject (BehaviourPath i) = mkGObject (castForeignPtr i)
+  toGObject (BehaviourPath i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BehaviourPath (castForeignPtr o)
 
 -- *** Path
@@ -954,11 +961,11 @@ toPath = unsafeCastGObject . toGObject
 --CHECKME: Path has a floating reference, but I don't remember
 -- which one you use and I'm really lazy so I'm not going to check now
 
-newPath a = makeNewObject Path $ return (castPtr a)
+newPath a = makeNewActor (Path, objectUnref) $ return (castPtr a)
 
 instance PathClass Path
 instance GObjectClass Path where
-  toGObject (Path i) = mkGObject (castForeignPtr i)
+  toGObject (Path i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Path (castForeignPtr o)
 
 -- *** Texture
@@ -970,13 +977,13 @@ toTexture :: TextureClass o => o -> Texture
 toTexture = unsafeCastGObject . toGObject
 
 newTexture :: Ptr Actor -> IO Texture
-newTexture a = makeNewObject Texture $ return (castPtr a)
+newTexture a = makeNewActor (Texture, objectUnref) $ return (castPtr a)
 
 instance TextureClass Texture
 instance ActorClass Texture
 instance ScriptableClass Texture
 instance GObjectClass Texture where
-  toGObject (Texture i) = mkGObject (castForeignPtr i)
+  toGObject (Texture i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Texture (castForeignPtr o)
 
 -- *** Shader
@@ -987,11 +994,11 @@ class GObjectClass o => ShaderClass o
 toShader :: ShaderClass o => o -> Shader
 toShader = unsafeCastGObject . toGObject
 
-newShader a = makeNewObject Shader $ return (castPtr a)
+newShader a = makeNewGObject (Shader, objectUnref) $ return (castPtr a)
 
 instance ShaderClass Shader
 instance GObjectClass Shader where
-  toGObject (Shader i) = mkGObject (castForeignPtr i)
+  toGObject (Shader i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Shader (castForeignPtr o)
 
 -- *** Model
@@ -1005,11 +1012,11 @@ toModel = unsafeCastGObject . toGObject
 withModelClass::ModelClass o => o -> (Ptr Model -> IO b) -> IO b
 withModelClass o = (withModel . toModel) o
 
-newModel a = makeNewGObject Model $ return (castPtr a)
+newModel a = makeNewGObject (Model, objectUnref) $ return (castPtr a)
 
 instance ModelClass Model
 instance GObjectClass Model where
-  toGObject (Model i) = mkGObject (castForeignPtr i)
+  toGObject (Model i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Model (castForeignPtr o)
 
 -- *** ListModel
@@ -1020,12 +1027,12 @@ class GObjectClass o => ListModelClass o
 toListModel :: ListModelClass o => o -> ListModel
 toListModel = unsafeCastGObject . toGObject
 
-newListModel a = makeNewGObject ListModel $ return (castPtr a)
+newListModel a = makeNewGObject (ListModel, objectUnref) $ return (castPtr a)
 
 instance ModelClass ListModel
 instance ListModelClass ListModel
 instance GObjectClass ListModel where
-  toGObject (ListModel i) = mkGObject (castForeignPtr i)
+  toGObject (ListModel i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ListModel (castForeignPtr o)
 
 -- *** ModelIter
@@ -1036,11 +1043,11 @@ class GObjectClass o => ModelIterClass o
 toModelIter :: ModelIterClass o => o -> ModelIter
 toModelIter = unsafeCastGObject . toGObject
 
-newModelIter a = makeNewGObject ModelIter $ return (castPtr a)
+newModelIter a = makeNewGObject (ModelIter, objectUnref) $ return (castPtr a)
 
 instance ModelIterClass ModelIter
 instance GObjectClass ModelIter where
-  toGObject (ModelIter i) = mkGObject (castForeignPtr i)
+  toGObject (ModelIter i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ModelIter (castForeignPtr o)
 
 -- *** Script
@@ -1054,12 +1061,12 @@ toScript = unsafeCastGObject . toGObject
 withScriptClass::ScriptClass o => o -> (Ptr Script -> IO b) -> IO b
 withScriptClass o = (withScript . toScript) o
 
-newScript a = makeNewObject Script $ return (castPtr a)
+newScript a = makeNewActor (Script, objectUnref) $ return (castPtr a)
 
 instance ScriptClass Script
 instance ActorClass Script
 instance GObjectClass Script where
-  toGObject (Script i) = mkGObject (castForeignPtr i)
+  toGObject (Script i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Script (castForeignPtr o)
 
 -- *** Knot
@@ -1176,7 +1183,7 @@ withScriptableClass o = (withScriptable . toScriptable) o
 
 instance ScriptableClass Scriptable
 instance GObjectClass Scriptable where
-  toGObject (Scriptable i) = mkGObject (castForeignPtr i)
+  toGObject (Scriptable i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Scriptable (castForeignPtr o)
 
 -- *** BindingPool
@@ -1187,11 +1194,11 @@ class GObjectClass o => BindingPoolClass o
 toBindingPool :: BindingPoolClass o => o -> BindingPool
 toBindingPool = unsafeCastGObject . toGObject
 
-newBindingPool a = makeNewGObject BindingPool $ return (castPtr a)
+newBindingPool a = makeNewGObject (BindingPool, objectUnref) $ return (castPtr a)
 
 instance BindingPoolClass BindingPool
 instance GObjectClass BindingPool where
-  toGObject (BindingPool i) = mkGObject (castForeignPtr i)
+  toGObject (BindingPool i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BindingPool (castForeignPtr o)
 
 -- *** GCallback
@@ -1319,14 +1326,14 @@ toAnimatable = unsafeCastGObject . toGObject
 withAnimatableClass::AnimatableClass o => o -> (Ptr Animatable -> IO b) -> IO b
 withAnimatableClass o = (withAnimatable . toAnimatable) o
 
---CHECKME: makeNewObject or makeNewGObject?? Is is always some kind of actor?
---does it always have a floating reference or what?
+--CHECKME: makeNewActor or makeNewGObject? Is is always some kind of
+--actor?  does it always have a floating reference or what?
 newAnimatable :: (AnimatableClass actor) =>  Ptr actor -> IO Animatable
-newAnimatable a = makeNewGObject Animatable $ return (castPtr a)
+newAnimatable a = makeNewGObject (Animatable, objectUnref) $ return (castPtr a)
 
 instance AnimatableClass Animatable
 instance GObjectClass Animatable where
-  toGObject (Animatable a) = mkGObject (castForeignPtr a)
+  toGObject (Animatable a) = constrGObject (castForeignPtr a)
   unsafeCastGObject (GObject o) = Animatable (castForeignPtr o)
 
 -- *** Callback

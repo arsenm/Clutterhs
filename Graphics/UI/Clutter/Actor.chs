@@ -659,11 +659,6 @@ actorGetAllocationVertices self ancestor = let func = {# call unsafe actor_get_a
                             alloca- `Float' peekFloatConv*
                           } -> `()' #}
 
-actorPreferredSize :: (ActorClass self) => ReadAttr self (Float, Float, Float, Float)
-actorPreferredSize = readAttr actorGetPreferredSize
-
-
-
 -- | Computes the requested minimum and natural widths for an actor,
 --   optionally depending on the specified height, or if they are
 --   already computed, returns the cached values.
@@ -743,9 +738,6 @@ actorPreferredSize = readAttr actorGetPreferredSize
 {# fun unsafe actor_get_fixed_position_set as ^
  `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 
-actorFixedPositionSet :: (ActorClass self) => Attr self Bool
-actorFixedPositionSet = newAttr actorGetFixedPositionSet actorSetFixedPositionSet
-
 -- | Gets the size and position of an actor relative to its parent
 --   actor. This is the same as calling 'actorGetPosition'
 --   and 'actorGetSize'. It tries to \"do what you mean\" and
@@ -762,9 +754,6 @@ actorFixedPositionSet = newAttr actorGetFixedPositionSet actorSetFixedPositionSe
 --
 {# fun unsafe actor_set_geometry as ^
        `(ActorClass self)' => { withActorClass* `self', withGeometry* `Geometry' } -> `()' #}
-actorGeometry :: (ActorClass self) => Attr self Geometry
-actorGeometry = newAttr actorGetGeometry actorSetGeometry
-
 
 -- | Sets the actor's size request in pixels. This overrides any
 --   \"normal\" size request the actor would have. For example a text
@@ -802,9 +791,6 @@ actorGeometry = newAttr actorGetGeometry actorSetGeometry
                             alloca- `Float' peekFloatConv*,
                             alloca- `Float' peekFloatConv*} -> `()' #}
 
-actorSize :: (ActorClass self) => Attr self (Float, Float)
-actorSize = newAttr actorGetSize (tup2ToF actorSetSize)
-
 
 -- | Sets the actor's fixed position in pixels relative to any parent actor.
 --
@@ -832,10 +818,6 @@ actorSize = newAttr actorGetSize (tup2ToF actorSetSize)
 --
 {# fun unsafe actor_get_position as ^
    `(ActorClass self)' => { withActorClass* `self', alloca- `Float' peekFloatConv*, alloca- `Float' peekFloatConv*} -> `()' #}
-
-actorPosition :: (ActorClass self) => Attr self (Float, Float)
-actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
-
 
 
 -- | Forces a width on an actor, causing the actor's preferred width
@@ -879,9 +861,6 @@ actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
 {# fun unsafe actor_get_width as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
 
-actorWidth :: (ActorClass self) => Attr self Float
-actorWidth = newAttr actorGetWidth actorSetWidth
-
 -- | Forces a height on an actor, causing the actor's preferred width
 --   and height (if any) to be ignored.
 --
@@ -923,9 +902,6 @@ actorWidth = newAttr actorGetWidth actorSetWidth
 {# fun unsafe actor_get_height as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
 
-actorHeight :: (ActorClass self) => Attr self Float
-actorHeight = newAttr actorGetHeight actorSetHeight
-
 -- | Sets the actor's X coordinate, relative to its parent, in pixels.
 --
 -- Overrides any layout manager and forces a fixed position for the actor.
@@ -963,9 +939,6 @@ actorHeight = newAttr actorGetHeight actorSetHeight
 {# fun unsafe actor_get_x as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
 
-actorX :: (ActorClass self) => Attr self Float
-actorX = newAttr actorGetX actorSetX
-
 
 -- | Sets the actor's Y coordinate, relative to its parent, in
 --   pixels.
@@ -1002,9 +975,6 @@ actorX = newAttr actorGetX actorSetX
 --
 {# fun unsafe actor_get_y as ^
    `(ActorClass self)' => { withActorClass* `self'} -> `Float' #}
-
-actorY :: (ActorClass self) => Attr self Float
-actorY = newAttr actorGetY actorSetY
 
 
 -- | Moves an actor by the specified distance relative to its current
@@ -1142,8 +1112,6 @@ actorY = newAttr actorGetY actorSetY
 --
 {# fun unsafe actor_get_opacity as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Word8' #}
-actorOpacity :: (ActorClass self) => Attr self Word8
-actorOpacity = newAttr actorGetOpacity actorSetOpacity
 
 --CHECKME: setname, Bother passing in maybe, or just use String?
 --CHECKME: OK to pass null?
@@ -1165,9 +1133,6 @@ actorOpacity = newAttr actorGetOpacity actorSetOpacity
 {# fun unsafe actor_get_name as ^ `(ActorClass self)' =>
     { withActorClass* `self' } -> `Maybe String' maybeString* #}
 
-actorName :: (ActorClass self) => Attr self (Maybe String)
-actorName = newAttr actorGetName actorSetName
-
 -- | Retrieves the unique id for self.
 --
 -- [@self@] An Actor
@@ -1178,9 +1143,6 @@ actorName = newAttr actorGetName actorSetName
 --
 {# fun unsafe actor_get_gid as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `GID' cIntConv #}
-
-actorGid :: (ActorClass self) => ReadAttr self GID
-actorGid = readAttr actorGetGid
 
 -- | Sets clip area for self. The clip area is always computed from the
 --   upper left corner of the actor, even if the anchor point is set
@@ -1247,9 +1209,6 @@ actorGid = readAttr actorGetGid
 -- | Retrieves the parent of self.
 {# fun unsafe actor_get_parent as ^
    `(ActorClass child)' => { withActorClass* `child' } -> `Actor' newActor* #}
---actorParent :: (ActorClass self, ActorClass parent) => Attr self parent
---actorParent = newAttr actorGetPartent actorSetParent
-
 
 -- | Removes the parent of self.
 --
@@ -1347,9 +1306,6 @@ actorGid = readAttr actorGetGid
 --
 {# fun unsafe actor_set_depth as ^
    `(ActorClass self)' => { withActorClass* `self', `Float'} -> `()' #}
-
-actorDepth :: (ActorClass self) => Attr self Float
-actorDepth = newAttr actorGetDepth actorSetDepth
 
 -- | Scales an actor with the given factors. The scaling is relative
 --   to the scale center and the anchor point. The scale center is
@@ -1600,9 +1556,6 @@ actorApplyRelativeTransformToPoint self ancestor point =
                             alloca- `Double' peekFloatConv*,
                             alloca- `Double' peekFloatConv* } -> `()' #}
 
-actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
-actorTransformedSize = readAttr actorGetTransformedSize
-
 
 -- | Retrieves the absolute opacity of the actor, as it appears on the
 --   stage.
@@ -1623,9 +1576,6 @@ actorTransformedSize = readAttr actorGetTransformedSize
    `(ActorClass self)' => { withActorClass* `self' } -> `Word8' #}
 
 
-actorPaintOpacity :: (ActorClass self) => ReadAttr self Word8
-actorPaintOpacity = readAttr actorGetPaintOpacity
-
 -- | Retrieves the 'paint' visibility of an actor recursively checking
 --   for non visible parents.
 --
@@ -1639,9 +1589,6 @@ actorPaintOpacity = readAttr actorGetPaintOpacity
 --
 {# fun unsafe actor_get_paint_visibility as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
-
-actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
-actorPaintVisibility = readAttr actorGetPaintVisibility
 
 
 -- | Calculates the transformed screen coordinates of the four corners
@@ -1688,9 +1635,6 @@ actorGetAbsAllocationVertices self = let func = {# call unsafe actor_get_abs_all
 {# fun unsafe actor_get_reactive as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
 
-actorReactive :: (ActorClass self) => Attr self Bool
-actorReactive = newAttr actorGetReactive actorSetReactive
-
 {# fun unsafe actor_set_shader as ^
    `(ActorClass self)' => { withActorClass* `self', withMaybeShader* `Maybe Shader' } -> `()' #}
 
@@ -1701,9 +1645,6 @@ actorReactive = newAttr actorGetReactive actorSetReactive
 --
 {# fun unsafe actor_get_shader as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Maybe Shader' maybeNewShader* #}
-
-actorShader :: (ActorClass self) => Attr self (Maybe Shader)
-actorShader = newAttr actorGetShader actorSetShader
 
 --{# fun unsafe actor_set_shader_param as ^
 
@@ -1813,9 +1754,6 @@ actorCreatePangoLayout act str = let func = {# call unsafe actor_create_pango_la
                             alloca- `Float' peekFloatConv*,
                             alloca- `Float' peekFloatConv*} -> `()' #}
 
-actorAnchorPoint :: (ActorClass self) => Attr self (Float, Float)
-actorAnchorPoint = newAttr actorGetAnchorPoint (tup2ToF actorSetAnchorPoint)
-
 
 -- | Sets an anchor point on the actor, based on the given gravity
 --   (this is a convenience function wrapping 'actorSetAnchorPoint').
@@ -1847,9 +1785,6 @@ actorAnchorPoint = newAttr actorGetAnchorPoint (tup2ToF actorSetAnchorPoint)
 --
 {# fun unsafe actor_get_anchor_point_gravity as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `Gravity' cToEnum #}
-
-actorAnchorPointGravity :: (ActorClass self) => Attr self Gravity
-actorAnchorPointGravity = newAttr actorGetAnchorPointGravity actorSetAnchorPointFromGravity
 
 -- | Sets an anchor point for the actor, and adjusts the actor postion
 --   so that the relative position of the actor toward its parent
@@ -1907,6 +1842,75 @@ actorAnchorPointGravity = newAttr actorGetAnchorPointGravity actorSetAnchorPoint
 {# fun pure unsafe actor_box_from_vertices as ^ { withActorBox* `ActorBox',
                                                   withArray* `[Vertex]'
                                                 } -> `()' #}
+
+
+-- Attributes
+
+actorPreferredSize :: (ActorClass self) => ReadAttr self (Float, Float, Float, Float)
+actorPreferredSize = readAttr actorGetPreferredSize
+
+actorFixedPositionSet :: (ActorClass self) => Attr self Bool
+actorFixedPositionSet = newAttr actorGetFixedPositionSet actorSetFixedPositionSet
+
+actorGeometry :: (ActorClass self) => Attr self Geometry
+actorGeometry = newAttr actorGetGeometry actorSetGeometry
+
+actorSize :: (ActorClass self) => Attr self (Float, Float)
+actorSize = newAttr actorGetSize (tup2ToF actorSetSize)
+
+actorPosition :: (ActorClass self) => Attr self (Float, Float)
+actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
+
+actorWidth :: (ActorClass self) => Attr self Float
+actorWidth = newNamedAttr "width" actorGetWidth actorSetWidth
+
+actorHeight :: (ActorClass self) => Attr self Float
+actorHeight = newNamedAttr "height" actorGetHeight actorSetHeight
+
+actorX :: (ActorClass self) => Attr self Float
+actorX = newNamedAttr "x" actorGetX actorSetX
+
+actorY :: (ActorClass self) => Attr self Float
+actorY = newNamedAttr "y" actorGetY actorSetY
+
+actorOpacity :: (ActorClass self) => Attr self Word8
+actorOpacity = newNamedAttr "opacity" actorGetOpacity actorSetOpacity
+
+actorName :: (ActorClass self) => Attr self (Maybe String)
+actorName = newNamedAttr "name" actorGetName actorSetName
+
+actorGid :: (ActorClass self) => ReadAttr self GID
+actorGid = readAttr actorGetGid
+
+--actorParent :: (ActorClass self, ActorClass parent) => Attr self parent
+--actorParent = newAttr actorGetPartent actorSetParent
+
+actorDepth :: (ActorClass self) => Attr self Float
+actorDepth = newNamedAttr "depth" actorGetDepth actorSetDepth
+
+actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
+actorTransformedSize = readAttr actorGetTransformedSize
+
+actorPaintOpacity :: (ActorClass self) => ReadAttr self Word8
+actorPaintOpacity = readAttr actorGetPaintOpacity
+
+actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
+actorPaintVisibility = readAttr actorGetPaintVisibility
+
+actorReactive :: (ActorClass self) => Attr self Bool
+actorReactive = newNamedAttr "reactive" actorGetReactive actorSetReactive
+
+actorShader :: (ActorClass self) => Attr self (Maybe Shader)
+actorShader = newAttr actorGetShader actorSetShader
+
+actorAnchorPoint :: (ActorClass self) => Attr self (Float, Float)
+actorAnchorPoint = newAttr actorGetAnchorPoint (tup2ToF actorSetAnchorPoint)
+
+actorAnchorPointGravity :: (ActorClass self) => Attr self Gravity
+actorAnchorPointGravity = newNamedAttr "anchor-gravity" actorGetAnchorPointGravity actorSetAnchorPointFromGravity
+
+
+-- Signals
 
 {-
 --CHECKME/FIXME: allocation flags enum magic maybe break things, need flags thing to happen

@@ -19,9 +19,13 @@
 --
 {-# LANGUAGE ForeignFunctionInterface,
              TypeSynonymInstances,
+             ExistentialQuantification,
              FlexibleInstances,
              OverlappingInstances #-}
 {-# OPTIONS_HADDOCK prune #-}
+
+--TODO: I don't think I will need OverlappingInstances or
+--FlexibleInstances anymore
 
 #include <glib.h>
 #include <clutter/clutter.h>
@@ -77,7 +81,11 @@ module Graphics.UI.Clutter.Animation (
   animationDuration,
   animationLoop,
   animationTimeline,
-  animationAlpha
+  animationAlpha,
+
+  newanimate,
+  AnimOp(..)
+
 
 --TODO: Signals, also name conflicts with timeline
 -- * Signals
@@ -414,6 +422,7 @@ instance (AnimateArg a, AnimateType r) => AnimateType (a -> r) where
     runAnimWithAlpha actor alpha args = \a -> runAnimWithAlpha actor alpha (toAnimateArg a : args)
     runAnimWithTimeline actor mode tml args = \a -> runAnimWithTimeline actor mode tml (toAnimateArg a : args)
 
+
 uanimate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [(String, GenericValue)] -> IO Animation
 uanimate _ _ _ [] = error "Need arguments to animate"
 uanimate actor mode duration us =
@@ -518,4 +527,21 @@ afterStarted = connect_NONE__NONE "started" True
 --
 started :: Signal Animation (IO ())
 started = Signal (connect_NONE__NONE "started")
+
+--CHECKME: I don't think it makes sense to allow ReadAttr, but does it
+--make sense to allow WriteAttr?
+--CHECKME: I feel like GenericValueClass can go away
+--data AnimOp o = forall a b. ReadWriteAttr o a b :-> b
+data AnimOp o = forall a b. (GenericValueClass b) => ReadWriteAttr o a b :-> b
+
+infixr 0 :->
+
+toListAnim :: (ActorClass o) => [AnimOp o] -> [(String, GenericValue)]
+toListAnim = map app
+    where app (attr :-> val) = (show attr, toGenericValue val)
+
+newanimate :: (ActorClass actor) => actor -> [AnimOp actor] -> [String]
+newanimate act attrs = map (show . fst) (toListAnim attrs)
+
+
 

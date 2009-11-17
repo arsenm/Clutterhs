@@ -158,6 +158,8 @@ main = do
 
   performGC
 
+  print $ newanimate rec [rectangleHasBorder :-> True, actorHeight :-> 50, actorX :-> 100]
+
   behaviourApply kirkBehav1 texture
   behaviourApply kirkBehav2 texture
 

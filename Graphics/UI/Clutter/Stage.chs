@@ -145,6 +145,7 @@ module Graphics.UI.Clutter.Stage (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.Properties
 import System.Glib.FFI (maybeNull)
 
 -- | Returns the main stage. The default 'Stage' is a singleton, so
@@ -185,11 +186,6 @@ import System.Glib.FFI (maybeNull)
 {# fun unsafe stage_get_color as ^ `(StageClass stage)' =>
     { withStageClass* `stage', alloca- `Color' peek*} -> `()' #}
 
-stageColor :: (StageClass stage) => Attr stage Color
-stageColor = newAttr stageGetColor stageSetColor
-
-
---I don't think I care about using StageClass since stage at the bottom.
 
 -- | Asks to place the stage window in the fullscreen or unfullscreen
 --  states.
@@ -208,8 +204,6 @@ stageColor = newAttr stageGetColor stageSetColor
 {# fun unsafe stage_get_fullscreen as ^ `(StageClass stage)' =>
     { withStageClass* `stage' } -> `Bool' #}
 
-stageFullscreen :: (StageClass stage) => Attr stage Bool
-stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
 
 -- | Shows the cursor on the stage window
 {# fun unsafe stage_show_cursor as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
@@ -334,8 +328,6 @@ stageReadPixels stage x y w h = let cx = cIntConv x
 {# fun unsafe stage_get_throttle_motion_events as ^ `(StageClass stage)' =>
     { withStageClass* `stage' } -> `Bool' #}
 
-stageThrottleMotionEvents :: (StageClass stage) => Attr stage Bool
-stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottleMotionEvents
 
 -- | Retrieves the stage perspective.
 {# fun unsafe stage_get_perspective as ^ `(StageClass stage)' =>
@@ -345,19 +337,14 @@ stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottl
     { withStageClass* `stage', withPerspective* `Perspective'} -> `()' #}
 
 
-stagePerspective :: (StageClass stage) => Attr stage Perspective
-stagePerspective = newAttr stageGetPerspective stageSetPerspective
-
 
 --TODO: Unicode???
 -- | Sets the stage title.
 {# fun unsafe stage_set_title as ^ `(StageClass stage)' =>
-    { withStageClass* `stage', `String' } -> `()' #}
+    { withStageClass* `stage', withMaybeString* `Maybe String' } -> `()' #}
 -- | Gets the stage title.
 {# fun unsafe stage_get_title as ^ `(StageClass stage)' =>
-    { withStageClass* `stage' } -> `String' #}
-stageTitle :: (StageClass stage) => Attr stage String
-stageTitle = newAttr stageGetTitle stageSetTitle
+    { withStageClass* `stage' } -> `Maybe String' maybeString* #}
 
 -- | Sets if the stage is resizable by user interaction (e.g. via window manager controls)
 {# fun unsafe stage_set_user_resizable as ^ `(StageClass stage)' =>
@@ -365,9 +352,6 @@ stageTitle = newAttr stageGetTitle stageSetTitle
 -- | Retrieves the value set with 'stageSetUserResizable'.
 {# fun unsafe stage_get_user_resizable as ^ `(StageClass stage)' =>
     { withStageClass* `stage' } -> `Bool' #}
-
-stageUserResizable :: (StageClass stage) => Attr stage Bool
-stageUserResizable = newAttr stageGetUserResizable stageSetUserResizable
 
 
 -- | Sets whether the depth cueing effect on the stage should be enabled or not.
@@ -383,8 +367,6 @@ stageUserResizable = newAttr stageGetUserResizable stageSetUserResizable
 -- | Gets whether the depth cueing effect is enabled on stage.
 {# fun unsafe stage_get_use_fog as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `Bool' #}
 
-stageUseFog :: (StageClass stage) => Attr stage Bool
-stageUseFog = newAttr stageGetUseFog stageSetUseFog
 
 -- | Sets the fog (also known as "depth cueing") settings for the stage.
 --
@@ -412,8 +394,6 @@ stageUseFog = newAttr stageGetUseFog stageSetUseFog
 {# fun unsafe stage_get_fog as ^ `(StageClass stage)' =>
     { withStageClass* `stage', alloca- `Fog' peek* } -> `()' #}
 
-stageFog :: (StageClass stage) => Attr stage Fog
-stageFog = newAttr stageGetFog stageSetFog
 
 --See note in Types of Activatable
 -- | The 'activate' signal is emitted when the stage receives key focus from the underlying window system.
@@ -448,4 +428,101 @@ afterUnfullscreen = connect_NONE__NONE "unfullscreen" True
 -- | The 'unfullscreen' signal is emitted when the stage leaves a fullscreen state.
 unfullscreen :: (StageClass stage) => Signal stage (IO ())
 unfullscreen = Signal (connect_NONE__NONE "unfullscreen")
+
+
+-- Attributes
+
+
+-- | The color of the main stage.
+stageColor :: (StageClass stage) => Attr stage Color
+stageColor = newNamedAttr "color" stageGetColor stageSetColor
+
+
+-- | Whether the mouse pointer should be visible
+--
+-- Default value: @True@
+--
+stageCursorVisible :: (StageClass stage) => Attr stage Bool
+stageCursorVisible = newAttrFromBoolProperty "cursor-visible"
+
+
+-- | Whether the main stage is fullscreen.
+--
+-- Default value: @False@
+--
+stageFullscreenSet :: (StageClass stage) => ReadAttr stage Bool
+stageFullscreenSet = readAttrFromBoolProperty "fullscreen-set"
+
+--CHECKME: Theres' something I'm missing here about
+--properties. fullscreen vs. fullscreenset and stuff
+
+stageFullscreen :: (StageClass stage) => Attr stage Bool
+stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
+
+
+-- | Whether the stage should be rendered in an offscreen buffer.
+--
+-- * Warning
+--
+-- Not every backend supports redirecting the stage to an offscreen
+-- buffer. This property might not work and it might be deprecated at
+-- any later date.
+--
+-- Default value: @False@
+--
+stageOffscreen :: (StageClass stage) => Attr stage Bool
+stageOffscreen = newAttrFromBoolProperty "offscreen"
+
+
+stageThrottleMotionEvents :: (StageClass stage) => Attr stage Bool
+stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottleMotionEvents
+
+-- | The parameters used for the perspective projection from 3D
+--   coordinates to 2D
+--
+-- Since 0.8.2
+--
+stagePerspective :: (StageClass stage) => Attr stage Perspective
+stagePerspective = newNamedAttr "perspective" stageGetPerspective stageSetPerspective
+
+
+-- | The stage's title - usually displayed in stage windows title
+--   decorations.
+--
+-- Default value: @Nothing@
+--
+-- Since 0.4
+stageTitle :: (StageClass stage) => Attr stage (Maybe String)
+stageTitle = newNamedAttr "title" stageGetTitle stageSetTitle
+
+
+-- | Whether the stage is resizable via user interaction.
+--
+-- Default value: @False@
+--
+-- * Since 0.4
+--
+stageUserResizable :: (StageClass stage) => Attr stage Bool
+stageUserResizable = newNamedAttr "user-resizable" stageGetUserResizable stageSetUserResizable
+
+
+-- | Whether the stage should use a linear GL "fog" in creating the
+--   depth-cueing effect, to enhance the perception of depth by fading
+--   actors farther from the viewpoint.
+--
+-- Default value: @False@
+--
+-- * Since 0.6
+--
+stageUseFog :: (StageClass stage) => Attr stage Bool
+stageUseFog = newNamedAttr "use-fog" stageGetUseFog stageSetUseFog
+
+
+-- | The settings for the GL "fog", used only if "use-fog" is set to
+--   @True@
+--
+-- * Since 1.0
+--
+stageFog :: (StageClass stage) => Attr stage Fog
+stageFog = newNamedAttr "fog" stageGetFog stageSetFog
 

@@ -89,7 +89,6 @@ module Graphics.UI.Clutter.Actor (
   actorSetY,
   actorGetY,
 
-
   actorMoveBy,
   actorSetRotation,
   actorSetZRotationFromGravity,

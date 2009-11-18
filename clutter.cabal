@@ -28,7 +28,8 @@ Flag X11Support
 Library
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   Build-Tools: c2hs
-  Includes: clutter/clutter.h
+  Includes: clutter/clutter.h,
+            csrc/clutter-macros.h
   Extensions: CPP, FlexibleInstances, ForeignFunctionInterface, TypeSynonymInstances
 
   if flag(X11Support)
@@ -130,6 +131,7 @@ Library
 
   Exposed: True
   GHC-options: -W
+  C-Sources: ./csrc/clutter-macros.c
   Hs-Source-Dirs:  .,
                    ./Graphics,
                    ./Graphics/UI,
@@ -141,6 +143,7 @@ Library
                 /usr/lib/glib-2.0/include,
                 /usr/include/pango-1.0/,
                 /usr/include/cairo
+               ./csrc
   if flag(debug)
     CC-Options: "-DDEBUG -O0 -g"
     CPP-Options: -DDEBUG
@@ -150,6 +153,8 @@ Executable arst
   Main-Is:         Main.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
                    Graphics,
@@ -165,6 +170,8 @@ Executable pathtest
   Main-Is:         PathTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    Graphics,
                    demo
@@ -177,6 +184,8 @@ Executable texttest
   Main-Is:         TextTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
                    Graphics/UI,
@@ -189,6 +198,8 @@ Executable timelinetest
   Main-Is:         TimelineTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    Graphics,
                    demo
@@ -203,6 +214,8 @@ Executable scoretest
   Main-Is:         ScoreTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
                    dist/build
@@ -213,6 +226,8 @@ Executable texturetest
   Main-Is:         TextureTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
                    dist/build
@@ -222,6 +237,8 @@ Executable behaviourellipsetest
   Main-Is:         BehaviourEllipseTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    Graphics,
                    demo
@@ -236,6 +253,8 @@ Executable rectangletest
   Main-Is:         RectangleTest.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    Graphics,
                    demo
@@ -250,6 +269,8 @@ Executable rectangletest
 --   Main-Is:         ClutterGame.hs
 --   Other-Modules:   Graphics.UI.Clutter
 --   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+--   C-Sources: ./csrc/clutter-macros.c
+--   Include-dirs:   ./csrc
 --   Hs-Source-Dirs:  .,
 --                    Graphics,
 --                    demo

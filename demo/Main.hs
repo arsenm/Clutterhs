@@ -158,6 +158,8 @@ main = do
   behaviourApply kirkBehav1 texture
   behaviourApply kirkBehav2 texture
 
+  actorIsMapped rec >>= \b -> putStrLn ("rec is mapped: " ++ show b)
+
   performGC
 
   clutterMain

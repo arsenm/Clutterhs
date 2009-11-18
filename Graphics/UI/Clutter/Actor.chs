@@ -18,8 +18,10 @@
 --  Lesser General Public License for more details.
 --
 {-# LANGUAGE ForeignFunctionInterface #-}
+{-# CFILES csrc/clutter-macros.c #-}
 
 #include <clutter/clutter.h>
+#include <clutter-macros.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
@@ -36,7 +38,8 @@ module Graphics.UI.Clutter.Actor (
 -- |           +----'Text'
 -- @
 
--- * Methods
+-- * Methods,
+  actorIsMapped,
   actorSetFlags,
   actorUnsetFlags,
   actorGetFlags,
@@ -69,7 +72,6 @@ module Graphics.UI.Clutter.Actor (
   actorFixedPositionSet,
   actorSetGeometry,
   actorGetGeometry,
-
 
   actorSetSize,
   actorGetSize,
@@ -269,6 +271,10 @@ import Graphics.UI.Gtk.Pango.Types
 import Graphics.UI.Gtk.Pango.Layout
 import Graphics.UI.Gtk.Pango.Attributes
 import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
+
+
+{# fun unsafe actor_is_mapped as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
+
 
 --FIXME: A lot of these need to be marked as safe, not unsafe for callbacks to work
 

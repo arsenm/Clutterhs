@@ -25,16 +25,23 @@
 
 -- | ClutterClone — An actor that displays a clone of a source actor
 module Graphics.UI.Clutter.Clone (
-                                  cloneNew,
-                                  cloneSetSource,
-                                  cloneGetSource,
-                                --cloneSource
-                                 ) where
+-- * Constructors
+  cloneNew,
+-- * Methods
+  cloneSetSource,
+  cloneGetSource,
+-- * Attributes
+  cloneSource
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import System.Glib.Attributes
+import System.Glib.Properties
+
+--TODO: CloneClass
 
 -- | Creates a new 'Actor' which clones 'source'
 {# fun unsafe clone_new as ^ `(ActorClass a)' => { withActorClass* `a' } -> `Clone' newClone* #}
@@ -45,8 +52,8 @@ import System.Glib.Attributes
 -- | Sets source as the source actor to be cloned by clone.
 {# fun unsafe clone_set_source as ^ `(ActorClass a)' => { withClone* `Clone', withActorClass* `a' } -> `()' #}
 
---Attribute is unhappy, class Actor vs. ActorClass.
---cloneSource :: (ActorClass self) => Attr Clone self
---cloneSource = newAttr cloneGetSource cloneSetSource
+--CHECKME: Actor vs. ActorClass. Could get anything back.
+cloneSource :: (ActorClass self) => Attr Clone self
+cloneSource = newAttrFromObjectProperty "source" gTypeActor
 
 

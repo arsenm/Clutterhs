@@ -38,6 +38,7 @@ module Graphics.UI.Clutter.GValue (
                                    gTypeGravity,
                                    gTypeRequestMode,
                                    gTypeGeometry,
+                                   gTypeActor,
                                    valueSetColor,
                                    valueGetColor
                                   ) where
@@ -60,4 +61,5 @@ import System.Glib.GType
 {# fun pure unsafe gravity_get_type as gTypeGravity { } -> `GType' cToEnum #}
 {# fun pure unsafe request_mode_get_type as gTypeRequestMode { } -> `GType' cToEnum #}
 {# fun pure unsafe geometry_get_type as gTypeGeometry { } -> `GType' cToEnum #}
+{# fun pure unsafe actor_get_type as gTypeActor { } -> `GType' cToEnum #}
 

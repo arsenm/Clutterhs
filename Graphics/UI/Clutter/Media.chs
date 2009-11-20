@@ -59,14 +59,13 @@ module Graphics.UI.Clutter.Media (
   mediaSetFilename,
 
 -- * Attributes
-  mediaUri,
-  mediaPlaying,
-  mediaCanSeek,
-  mediaProgress,
   mediaAudioVolume,
   mediaBufferFill,
+  mediaCanSeek,
   mediaDuration,
-  mediaFilename,
+  mediaPlaying,
+  mediaProgress,
+  mediaUri,
 
 -- * Signals
   onEos,
@@ -108,9 +107,6 @@ import System.Glib.Attributes
 {# fun unsafe media_get_uri as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `String' peekNFreeString* #}
 
-mediaUri :: (MediaClass media) => Attr media String
-mediaUri = newAttr mediaGetUri mediaSetUri
-
 
 -- | Starts or stops playing of media.
 --
@@ -131,9 +127,6 @@ mediaUri = newAttr mediaGetUri mediaSetUri
 -- * Since 0.2
 --
 {# fun unsafe media_get_playing as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Bool' #}
-
-mediaPlaying :: (MediaClass media) => Attr media Bool
-mediaPlaying = newAttr mediaGetPlaying mediaSetPlaying
 
 -- | Sets the playback progress of media. The progress is a normalized
 --   value between 0.0 (begin) and 1.0 (end).
@@ -158,9 +151,6 @@ mediaPlaying = newAttr mediaGetPlaying mediaSetPlaying
 {# fun unsafe media_get_progress as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 
-mediaProgress :: (MediaClass media) => Attr media Double
-mediaProgress = newAttr mediaGetProgress mediaSetProgress
-
 
 -- | Sets the playback volume of media to volume.
 --
@@ -183,9 +173,6 @@ mediaProgress = newAttr mediaGetProgress mediaSetProgress
 {# fun unsafe media_get_audio_volume as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 
-mediaAudioVolume :: (MediaClass media) => Attr media Double
-mediaAudioVolume = newAttr mediaGetAudioVolume mediaSetAudioVolume
-
 -- | Retrieves whether media is seekable or not.
 --
 -- [@media@] a Media
@@ -195,9 +182,6 @@ mediaAudioVolume = newAttr mediaGetAudioVolume mediaSetAudioVolume
 -- * Since 0.2
 --
 {# fun unsafe media_get_can_seek as ^ `(MediaClass m)' => { withMediaClass* `m' } -> `Bool' #}
-
-mediaCanSeek :: (MediaClass media) => ReadAttr media Bool
-mediaCanSeek = readAttr mediaGetCanSeek
 
 
 -- | Retrieves the amount of the stream that is buffered.
@@ -211,9 +195,6 @@ mediaCanSeek = readAttr mediaGetCanSeek
 {# fun unsafe media_get_buffer_fill as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
 
-mediaBufferFill :: (MediaClass media) => ReadAttr media Double
-mediaBufferFill = readAttr mediaGetBufferFill
-
 -- | Retrieves the duration of the media stream that media represents.
 --
 -- [@media@] a Media
@@ -224,9 +205,6 @@ mediaBufferFill = readAttr mediaGetBufferFill
 --
 {# fun unsafe media_get_duration as ^
        `(MediaClass m)' => { withMediaClass* `m' } -> `Double' #}
-
-mediaDuration :: (MediaClass media) => ReadAttr media Double
-mediaDuration = readAttr mediaGetDuration
 
 -- | Sets the source of media using a file path.
 --
@@ -239,8 +217,32 @@ mediaDuration = readAttr mediaGetDuration
 {# fun unsafe media_set_filename as ^
        `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
 
-mediaFilename :: (MediaClass media) => WriteAttr media String
-mediaFilename = writeAttr mediaSetFilename
+
+-- attributes
+
+mediaAudioVolume :: (MediaClass media) => Attr media Double
+mediaAudioVolume = newNamedAttr "audio-volume" mediaGetAudioVolume mediaSetAudioVolume
+
+mediaBufferFill :: (MediaClass media) => ReadAttr media Double
+mediaBufferFill = readNamedAttr "buffer-fill" mediaGetBufferFill
+
+mediaCanSeek :: (MediaClass media) => ReadAttr media Bool
+mediaCanSeek = readAttr mediaGetCanSeek
+
+mediaDuration :: (MediaClass media) => ReadAttr media Double
+mediaDuration = readNamedAttr "duration" mediaGetDuration
+
+mediaPlaying :: (MediaClass media) => Attr media Bool
+mediaPlaying = newNamedAttr "playing" mediaGetPlaying mediaSetPlaying
+
+mediaProgress :: (MediaClass media) => Attr media Double
+mediaProgress = newNamedAttr "progress" mediaGetProgress mediaSetProgress
+
+mediaUri :: (MediaClass media) => Attr media String
+mediaUri = newNamedAttr "uri" mediaGetUri mediaSetUri
+
+
+-- signals
 
 onEos, afterEos :: (MediaClass media) => media -> IO () -> IO (ConnectId media)
 onEos = connect_NONE__NONE "eos" False

@@ -180,20 +180,49 @@ module Graphics.UI.Clutter.Actor (
 --vertexEqual
 
 -- * Attributes
---actorGeometry,
-  actorWidth,
+  actorAllocation,
+  actorAnchorGravity,
+  actorAnchorX,
+  actorAnchorY,
+  actorClip,
+  actorClipToAllocation,
+  actorDepth,
+  actorFixedPositionSet,
+  actorFixedX,
+  actorFixedY,
+--actorHasClip,
   actorHeight,
+  actorMapped,
+  actorMinHeight,
+  actorMinHeightSet,
+  actorMinWidth,
+  actorMinWidthSet,
+  actorName,
+  actorNaturalHeight,
+  actorNaturalHeightSet,
+  actorNaturalWidth,
+  actorNaturalWidthSet,
+  actorOpacity,
+  actorReactive,
+  actorRealized,
+  actorRequestMode,
+  actorRotationAngleX,
+  actorRotationAngleY,
+  actorRotationAngleZ,
+  actorRotationCenterX,
+  actorRotationCenterY,
+  actorRotationCenterZ,
+  actorRotationCenterZGravity,
+  actorScaleCenterX,
+  actorScaleCenterY,
+  actorScaleGravity,
+  actorScaleX,
+  actorScaleY,
+  actorShowOnSetParent,
+  actorVisible,
+  actorWidth,
   actorX,
   actorY,
-  actorName,
---actorGid,
---actorPaintVisibility,
---actorParent,
-  actorDepth,
---actorTransformedSize,
---actorPaintOpacity,
-  actorReactive,
---actorShader,
 
 -- * Signals
 
@@ -247,6 +276,7 @@ module Graphics.UI.Clutter.Actor (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.GValue #}
 {# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
 
@@ -1895,13 +1925,12 @@ actorAnchorX = newAttrFromFloatProperty "anchor-x"
 actorAnchorY :: (ActorClass self) => Attr self Float
 actorAnchorY = newAttrFromFloatProperty "anchor-y"
 
---TODO: GType for Geometry
 -- | The clip region for the actor, in actor-relative coordinates
 --
 -- Every part of the actor outside the clip region will not be painted
 --
---actorClip :: (ActorClass self) => Attr self Geometry
---actorClip = newAttrFromBoxedStorableProperty "clip" GTypeGEometry
+actorClip :: (ActorClass self) => Attr self Geometry
+actorClip = newAttrFromBoxedStorableProperty "clip" gTypeGeometry
 
 
 -- | Whether the clip region should track the allocated area of the actor.
@@ -2139,8 +2168,6 @@ actorReactive = newNamedAttr "reactive" actorGetReactive actorSetReactive
 actorRealized :: (ActorClass self) => ReadAttr self Bool
 actorRealized = readNamedAttr "realized" actorIsRealized
 
-
---TODO: GType for RequestMode
 -- | Request mode for the ClutterActor. The request mode determines
 --   the type of geometry management used by the actor, either height
 --   for width (the default) or width for height.
@@ -2166,8 +2193,8 @@ actorRealized = readNamedAttr "realized" actorIsRealized
 --
 -- * Since 0.8
 --
---actorRequestMode :: (ActorClass self) => Attr self RequestMode
---actorRequestMode = newAttrFromEnumProperty "realized"
+actorRequestMode :: (ActorClass self) => Attr self RequestMode
+actorRequestMode = newAttrFromEnumProperty "realized" gTypeRequestMode
 
 -- | The rotation angle on the X axis
 --
@@ -2198,28 +2225,25 @@ actorRotationAngleY = newAttrFromDoubleProperty "rotation-angle-y"
 actorRotationAngleZ :: (ActorClass self) => Attr self Double
 actorRotationAngleZ = newAttrFromDoubleProperty "rotation-angle-z"
 
-{-
---TODO: GType Vertex
+
 actorRotationCenterX :: (ActorClass self) => Attr self Vertex
-actorRotationCenterX = newAttrFromBoxedProperty "rotation-center-x"
+actorRotationCenterX = newAttrFromBoxedStorableProperty "rotation-center-x" gTypeVertex
 
 actorRotationCenterY :: (ActorClass self) => Attr self Vertex
-actorRotationCenterY = newAttrFromBoxedProperty "rotation-center-y"
+actorRotationCenterY = newAttrFromBoxedStorableProperty "rotation-center-y" gTypeVertex
 
 actorRotationCenterZ :: (ActorClass self) => Attr self Vertex
-actorRotationCenterZ = newAttrFromBoxedProperty "rotation-center-z"
--}
+actorRotationCenterZ = newAttrFromBoxedStorableProperty "rotation-center-z" gTypeVertex
 
---TODO: GType gravity
+
 -- | The rotation center on the Z axis expressed as a 'Gravity'.
 --
 -- Default value: 'GravityNone'
 --
 -- * Since 1.0
 --
---actorRotationCenterZGravity :: (ActorClass self) => Attr self Gravity
---actorRotationCenterZGravity = newAttrFromEnumProperty "rotation-center-z-gravity"
-
+actorRotationCenterZGravity :: (ActorClass self) => Attr self Gravity
+actorRotationCenterZGravity = newAttrFromEnumProperty "rotation-center-z-gravity" gTypeGravity
 
 
 -- | The horizontal center point for scaling
@@ -2241,15 +2265,15 @@ actorScaleCenterX = newAttrFromFloatProperty "scale-center-x"
 actorScaleCenterY :: (ActorClass self) => Attr self Float
 actorScaleCenterY = newAttrFromFloatProperty "scale-center-y"
 
---TODO: GTYpe for gravity
+
 -- | The center point for scaling expressed as a 'Gravity'
 --
 -- Default value: 'GravityNone'
 --
 -- * Since 1.0
 --
---actorScaleGravity :: (ActorClass self) => Attr self Gravity
---actorScaleGravity = newAttrFromEnumProperty "scale-gravity"
+actorScaleGravity :: (ActorClass self) => Attr self Gravity
+actorScaleGravity = newAttrFromEnumProperty "scale-gravity" gTypeGravity
 
 
 

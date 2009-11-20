@@ -33,7 +33,11 @@
 --TODO: Merge this with StoreValue, since this is what you actually want
 
 module Graphics.UI.Clutter.GValue (
-                                   color,
+                                   gTypeColor,
+                                   gTypeVertex,
+                                   gTypeGravity,
+                                   gTypeRequestMode,
+                                   gTypeGeometry,
                                    valueSetColor,
                                    valueGetColor
                                   ) where
@@ -49,6 +53,11 @@ import System.Glib.GType
 {# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
 {# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
 
+--TODO: Move these
 --constant
-{# fun pure unsafe color_get_type as color { } -> `GType' cToEnum #}
+{# fun pure unsafe color_get_type as gTypeColor { } -> `GType' cToEnum #}
+{# fun pure unsafe vertex_get_type as gTypeVertex { } -> `GType' cToEnum #}
+{# fun pure unsafe gravity_get_type as gTypeGravity { } -> `GType' cToEnum #}
+{# fun pure unsafe request_mode_get_type as gTypeRequestMode { } -> `GType' cToEnum #}
+{# fun pure unsafe geometry_get_type as gTypeGeometry { } -> `GType' cToEnum #}
 

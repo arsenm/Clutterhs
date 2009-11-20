@@ -42,6 +42,7 @@ module Graphics.UI.Clutter.Actor (
   actorIsRealized,
   actorIsMapped,
   actorIsVisible,
+  actorIsReactive,
   actorSetFlags,
   actorUnsetFlags,
   actorGetFlags,
@@ -71,7 +72,6 @@ module Graphics.UI.Clutter.Actor (
   actorGetPreferredHeight,
   actorSetFixedPositionSet,
   actorGetFixedPositionSet,
-  actorFixedPositionSet,
   actorSetGeometry,
   actorGetGeometry,
 
@@ -99,10 +99,8 @@ module Graphics.UI.Clutter.Actor (
   actorIsRotated,
   actorSetOpacity,
   actorGetOpacity,
-  actorOpacity,
   actorSetName,
   actorGetName,
-
   actorGetGid,
 
   actorSetClip,
@@ -279,6 +277,7 @@ module Graphics.UI.Clutter.Actor (
 {# import Graphics.UI.Clutter.GValue #}
 {# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.CustomSignals #}
 
 --FIXME: should I do something about clutter/prelude conflicts?
 import Prelude hiding (show)
@@ -301,11 +300,9 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 
 {# fun unsafe actor_is_mapped as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
-
 {# fun unsafe actor_is_realized as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
-
-
 {# fun unsafe actor_is_visible as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
+{# fun unsafe actor_is_reactive as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
 
 
 --FIXME: A lot of these need to be marked as safe, not unsafe for callbacks to work
@@ -2454,19 +2451,19 @@ onParentSet, afterParentSet :: ActorClass a => a -> (Actor -> IO ()) -> IO (Conn
 onParentSet = connect_OBJECT__NONE "parent-set" False
 afterParentSet = connect_OBJECT__NONE "parent-set" True
 
---FIXME: old_parent can be null
+--CHECKME: Test if this signals works
 -- | This signal is emitted when the parent of the actor changes.
 --
 -- [@actor@] :
 --
 -- the object which received the signal
 --
--- [@old_parent@] the previous parent of the actor, or NULL
+-- [@old_parent@] @Just@ the previous parent of the actor, or @Nothing@
 --
 -- * Since 0.2
 --
-parentSet :: ActorClass self => Signal self (Actor -> IO ())
-parentSet = Signal (connect_OBJECT__NONE "parent")
+parentSet :: ActorClass self => Signal self (Maybe self -> IO ())
+parentSet = Signal (connect_MAYBEOBJECT__NONE "parent")
 
 
 onPick, afterPick :: ActorClass a => a -> (Color -> IO ()) -> IO (ConnectId a)

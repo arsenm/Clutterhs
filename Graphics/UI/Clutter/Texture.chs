@@ -193,7 +193,7 @@ textureNewFromFile filename = let func = {# call unsafe texture_new_from_file #}
 --   'textureSetFromFile') will destroy the offscreen texture data and
 --   end redirection.
 --
--- * cogl_texture_get_data() with the handle returned by
+-- * 'coglTextureGetData' with the handle returned by
 --   'textureGetCoglTexture' can be used to read the offscreen texture
 --   pixels into a pixbuf.
 --
@@ -225,10 +225,10 @@ textureNewFromFile filename = let func = {# call unsafe texture_new_from_file #}
 --
 -- * Since 0.8
 --
-textureSetFromFile :: Texture -> String -> IO Bool
+textureSetFromFile :: (TextureClass self) => self -> String -> IO Bool
 textureSetFromFile txt fname = let func = {# call texture_set_from_file #}
                                in liftM cToBool $ propagateGError $ \gerrorPtr ->
-                                    withTexture txt $ \txtptr ->
+                                    withTextureClass txt $ \txtptr ->
                                       withCString fname $ \cstr ->
                                         func txtptr cstr (castPtr gerrorPtr)
 
@@ -238,7 +238,7 @@ textureSetFromFile txt fname = let func = {# call texture_set_from_file #}
 --CHECKME: Generalized RGBData
 --CHECKME: Rgb or RGB?
 --FIXME: Proper rowstride
-textureSetFromRgbData :: Texture ->
+textureSetFromRgbData :: (TextureClass self) => self ->
                          RGBData Int Word8 ->
                          [TextureFlags] ->
                          IO Bool
@@ -247,7 +247,7 @@ textureSetFromRgbData txt dat flags =
         hasA = rgbDataHasAlpha dat
         bpp = if hasA then 4 else 3
         datPtr = rgbDataData dat
-    in withTexture txt $ \txtptr ->
+    in withTextureClass txt $ \txtptr ->
         propagateGError $ \gerrorPtr -> do
           (w, h) <- getBounds dat
           putStrLn $ "W: " ++ Prelude.show w ++ " H: " ++ Prelude.show h
@@ -275,8 +275,8 @@ texture_set_area_from_rgb_data
 --
 -- [@Returns@] (width, height)
 --
-{# fun unsafe texture_get_base_size as ^
-       { withTexture* `Texture',
+{# fun unsafe texture_get_base_size as ^ `(TextureClass self)' =>
+       { withTextureClass* `self',
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
 
@@ -296,8 +296,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 0.8
 --
-{# fun unsafe texture_get_max_tile_waste as ^
-       { withTexture* `Texture' } -> `Int' #}
+{# fun unsafe texture_get_max_tile_waste as ^ `(TextureClass self)' =>
+       { withTextureClass* `self' } -> `Int' #}
 
 -- | Gets the filter quality used when scaling a texture.
 --
@@ -307,8 +307,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 0.8
 --
-{# fun unsafe texture_get_filter_quality as ^
-       { withTexture* `Texture' } -> `TextureQuality' cToEnum #}
+{# fun unsafe texture_get_filter_quality as ^ `(TextureClass self)' =>
+       { withTextureClass* `self' } -> `TextureQuality' cToEnum #}
 
 -- | Sets the filter quality when scaling a texture. The quality is an
 --  enumeration currently the following values are supported:
@@ -325,17 +325,17 @@ texture_set_area_from_rgb_data
 --
 -- * Since 0.8
 --
-{# fun unsafe texture_set_filter_quality as ^
-       { withTexture* `Texture', cFromEnum `TextureQuality' } -> `()' #}
+{# fun unsafe texture_set_filter_quality as ^ `(TextureClass self)' =>
+       { withTextureClass* `self', cFromEnum `TextureQuality' } -> `()' #}
 
 {-
-{# fun unsafe texture_get_cogl_texture as ^
+{# fun unsafe texture_get_cogl_texture as ^ `(TextureClass self)' =>
        { withTexture* `Texture' } -> `CoglTexture' newCoglTexture #}
-{# fun unsafe texture_set_cogl_texture as ^
+{# fun unsafe texture_set_cogl_texture as ^ `(TextureClass self)' =>
        { withTexture* `Texture', withCoglTexture `CoglTexture' } -> `()' #}
-{# fun unsafe texture_get_cogl_material as ^
+{# fun unsafe texture_get_cogl_material as ^ `(TextureClass self)' =>
        { withTexture* `Texture' } -> `CoglMaterial' newCoglMaterial #}
-{# fun unsafe texture_set_cogl_material as ^
+{# fun unsafe texture_set_cogl_material as ^ `(TextureClass self)' =>
        { withTexture* `Texture', withCoglMaterial `CoglMaterial' } -> `()' #}
 -}
 
@@ -349,7 +349,7 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_get_sync_size as ^ { withTexture* `Texture' } -> `Bool' #}
+{# fun unsafe texture_get_sync_size as ^ `(TextureClass self)' => { withTextureClass* `self' } -> `Bool' #}
 
 -- | Sets whether texture should have the same preferred size as the
 --   underlying image data.
@@ -361,7 +361,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_set_sync_size as ^ { withTexture* `Texture', `Bool' } -> `()' #}
+{# fun unsafe texture_set_sync_size as ^  `(TextureClass self)' =>
+       { withTextureClass* `self', `Bool' } -> `()' #}
 
 
 -- | Retrieves the horizontal and vertical repeat values set using
@@ -373,8 +374,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_get_repeat as ^
-       { withTexture* `Texture', alloca- `Bool' peekBool*, alloca- `Bool' peekBool* } -> `()' #}
+{# fun unsafe texture_get_repeat as ^ `(TextureClass self)' =>
+       { withTextureClass* `self', alloca- `Bool' peekBool*, alloca- `Bool' peekBool* } -> `()' #}
 
 -- | Sets whether the texture should repeat horizontally or vertically
 --   when the actor size is bigger than the image size
@@ -387,7 +388,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_set_repeat as ^ { withTexture* `Texture', `Bool', `Bool' } -> `()' #}
+{# fun unsafe texture_set_repeat as ^ `(TextureClass self)' =>
+       { withTextureClass* `self', `Bool', `Bool' } -> `()' #}
 
 -- | Retrieves the value set using 'textureGetKeepAspectRatio'
 --
@@ -398,7 +400,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_get_keep_aspect_ratio as ^ { withTexture* `Texture' } -> `Bool' #}
+{# fun unsafe texture_get_keep_aspect_ratio as ^ `(TextureClass self)' =>
+       { withTextureClass* `self' } -> `Bool' #}
 
 -- | Sets whether texture should have a preferred size maintaining the
 --   aspect ratio of the underlying image
@@ -409,7 +412,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_set_keep_aspect_ratio as ^ { withTexture* `Texture', `Bool'} -> `()' #}
+{# fun unsafe texture_set_keep_aspect_ratio as ^ `(TextureClass self)' =>
+    { withTextureClass* `self', `Bool'} -> `()' #}
 
 
 -- | Retrieves the value set using 'textureSetLoadAsync'
@@ -421,14 +425,15 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_get_load_async as ^ { withTexture* `Texture' } -> `Bool' #}
+{# fun unsafe texture_get_load_async as ^ `(TextureClass self)' =>
+       { withTextureClass* `self' } -> `Bool' #}
 
---TODO: load-async link in doc
 -- | Sets whether texture should use a worker thread to load the data
 --   from disk asynchronously. Setting load_async to @True@ will make
 --   'textureSetFromFile' return immediately.
 --
--- See the "load-async" property documentation, and 'textureSetLoadDataAsync'.
+-- See the 'textureLoadAsync' property documentation, and
+-- 'textureSetLoadDataAsync'.
 --
 -- [@texture@] a 'Texture'
 --
@@ -437,7 +442,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_set_load_async as ^ { withTexture* `Texture', `Bool'} -> `()' #}
+{# fun unsafe texture_set_load_async as ^ `(TextureClass self)' =>
+       { withTextureClass* `self', `Bool'} -> `()' #}
 
 
 -- | Retrieves the value set by 'textureSetLoadDataAsync'
@@ -449,7 +455,8 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_get_load_data_async as ^ { withTexture* `Texture' } -> `Bool' #}
+{# fun unsafe texture_get_load_data_async as ^ `(TextureClass self)' =>
+       { withTextureClass* `self' } -> `Bool' #}
 
 -- | Sets whether texture should use a worker thread to load the data
 --   from disk asynchronously. Setting load_async to @True@ will make
@@ -466,17 +473,18 @@ texture_set_area_from_rgb_data
 --
 -- * Since 1.0
 --
-{# fun unsafe texture_set_load_data_async as ^ { withTexture* `Texture', `Bool'} -> `()' #}
+{# fun unsafe texture_set_load_data_async as ^ `(TextureClass self)' =>
+       { withTextureClass* `self', `Bool'} -> `()' #}
 
 
 -- attributes
 
 -- | The underlying COGL material handle used to draw this actor.
---textureCoglMaterial :: Attr Texture CoglMaterial
+--textureCoglMaterial :: (TextureClass self) => Attr self CoglMaterial
 --textureCoglMaterial = newAttr textureGetCoglMaterial textureSetCoglMaterial
 
 -- | The underlying COGL texture handle used to draw this actor.
---textureCoglTexture :: Attr Texture CoglTexture
+--textureCoglTexture :: (TextureClass self) => Attr self CoglTexture
 --textureCoglTexture = newAttr textureGetCoglTexture textureSetCoglTexture
 
 -- | Force the underlying texture to be singlularand not made of of
@@ -484,21 +492,21 @@ texture_set_area_from_rgb_data
 --
 -- Default value: @False@
 --
-textureDisableSlicing :: Attr Texture Bool
+textureDisableSlicing :: (TextureClass self) => Attr self Bool
 textureDisableSlicing = newAttrFromBoolProperty "disable-slicing"
 
 -- | The full path of the file containing the texture.
 --
 -- Default value: @Nothing@
 --
-textureFilename :: WriteAttr Texture (Maybe String)
+textureFilename :: (TextureClass self) => WriteAttr self (Maybe String)
 textureFilename = writeAttrFromMaybeStringProperty "filename"
 
 -- | Rendering quality used when drawing the texture.
 --
 -- Default value: 'TextureQualityMedium'
 --
-textureFilterQuality :: Attr Texture TextureQuality
+textureFilterQuality :: (TextureClass self) => Attr self TextureQuality
 textureFilterQuality = newNamedAttr "filter-quality" textureGetFilterQuality textureSetFilterQuality
 
 -- | Keep the aspect ratio of the texture when requesting the
@@ -506,7 +514,7 @@ textureFilterQuality = newNamedAttr "filter-quality" textureGetFilterQuality tex
 --
 -- Default value: @False@
 --
-textureKeepAspectRatio :: Attr Texture Bool
+textureKeepAspectRatio :: (TextureClass self) => Attr self Bool
 textureKeepAspectRatio = newNamedAttr "keep-aspect-ratio" textureGetKeepAspectRatio textureSetKeepAspectRatio
 
 --CHECKME: Threading stuff
@@ -528,7 +536,7 @@ textureKeepAspectRatio = newNamedAttr "keep-aspect-ratio" textureGetKeepAspectRa
 --
 -- * Since 1.0
 --
-textureLoadAsync :: Attr Texture Bool
+textureLoadAsync :: (TextureClass self) => Attr self Bool
 textureLoadAsync = newNamedAttr "load-async" textureGetLoadAsync textureSetLoadAsync
 
 
@@ -539,14 +547,14 @@ textureLoadAsync = newNamedAttr "load-async" textureGetLoadAsync textureSetLoadA
 --
 -- Since 1.0
 --
-textureLoadDataAsync :: Attr Texture Bool
+textureLoadDataAsync :: (TextureClass self) => Attr self Bool
 textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
 
 -- | CoglPixelFormat to use.
 --
 -- Default value: CoglPixelFormatRgba8888
 --
---textureCoglPixelFormat :: Attr Texture CoglPixelFormat
+--textureCoglPixelFormat :: (TextureClass self) => Attr self CoglPixelFormat
 --textureCoglPixelFormat = newAttr textureGetCoglPixelFormat textureSetCoglPixelFormat
 
 
@@ -554,21 +562,21 @@ textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
 --
 -- Default value: @False@
 --
-textureRepeatX :: Attr Texture Bool
+textureRepeatX :: (TextureClass self) => Attr self Bool
 textureRepeatX = newAttrFromBoolProperty "repeat-x"
 
 -- | Repeat underlying pixbuf rather than scale in y direction.
 --
 -- Default value: @False@
 --
-textureRepeatY :: Attr Texture Bool
+textureRepeatY :: (TextureClass self) => Attr self Bool
 textureRepeatY = newAttrFromBoolProperty "repeat-y"
 
 -- | Auto sync size of actor to underlying pixbuf dimensions.
 --
 -- Default value: @True@
 --
-textureSyncSize :: Attr Texture Bool
+textureSyncSize :: (TextureClass self) => Attr self Bool
 textureSyncSize = newNamedAttr "sync-size" textureGetSyncSize textureSetSyncSize
 
 --CHECKME:
@@ -578,7 +586,7 @@ textureSyncSize = newNamedAttr "sync-size" textureGetSyncSize textureSetSyncSize
 --
 -- Default value: 127
 --
-textureTileWaste :: ReadAttr Texture Int
+textureTileWaste :: (TextureClass self) => ReadAttr self Int
 textureTileWaste = readNamedAttr "tile-waste" textureGetMaxTileWaste
 
 -- signals
@@ -588,7 +596,7 @@ onLoadFinished, afterLoadFinished :: Texture -> (Maybe GError -> IO ()) -> IO (C
 onLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek False
 afterLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek True
 
-loadFinished :: Signal Texture (GError -> IO ())
+loadFinished :: (TextureClass self) => Signal self (GError -> IO ())
 loadFinished = Signal (connect_BOXED__NONE "load-finished" peek)
 
 
@@ -601,7 +609,7 @@ afterPixbufChange = connect_NONE__NONE "pixbuf-change" True
 --
 -- [@texture@] the texture which received the signal
 --
-pixbufChange :: Signal Texture (IO ())
+pixbufChange :: (TextureClass self) => Signal self (IO ())
 pixbufChange = Signal (connect_NONE__NONE "pixbuf-change")
 
 
@@ -620,7 +628,7 @@ afterSizeChange = connect_INT_INT__NONE "size-change" True
 --
 -- [@height@] the height of the new texture
 --
-sizeChange :: Signal Texture (Int -> Int -> IO ())
+sizeChange :: (TextureClass self) => Signal self (Int -> Int -> IO ())
 sizeChange = Signal (connect_INT_INT__NONE "size-change")
 
 

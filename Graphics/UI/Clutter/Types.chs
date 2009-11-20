@@ -203,6 +203,7 @@ module Graphics.UI.Clutter.Types (
                                   TextureClass,
                                   newTexture,
                                   withTexture,
+                                  withTextureClass,
 
                                   TextureFlags(..),
 
@@ -979,6 +980,10 @@ toTexture = unsafeCastGObject . toGObject
 newTexture :: Ptr Actor -> IO Texture
 newTexture a = makeNewActor (Texture, objectUnref) $ return (castPtr a)
 
+withTextureClass :: TextureClass o => o -> (Ptr Texture -> IO b) -> IO b
+withTextureClass o = (withTexture . toTexture) o
+
+
 instance TextureClass Texture
 instance ActorClass Texture
 instance ScriptableClass Texture
@@ -1277,6 +1282,7 @@ mkVertex pst = do pptr <- (malloc :: IO VertexPtr)
 
 withVertex :: Vertex -> (VertexPtr -> IO a) -> IO a
 withVertex pst = bracket (mkVertex pst) free
+
 
 -- *** ActorBox
 

@@ -39,7 +39,9 @@ module Graphics.UI.Clutter.Actor (
 -- @
 
 -- * Methods,
+  actorIsRealized,
   actorIsMapped,
+  actorIsVisible,
   actorSetFlags,
   actorUnsetFlags,
   actorGetFlags,
@@ -136,7 +138,6 @@ module Graphics.UI.Clutter.Actor (
 
   actorGetPaintOpacity,
   actorGetPaintVisibility,
-  actorPaintVisibility,
   actorGetAbsAllocationVertices,
 --actorGetTransformationMatrix,
   actorSetAnchorPoint,
@@ -179,20 +180,20 @@ module Graphics.UI.Clutter.Actor (
 --vertexEqual
 
 -- * Attributes
-  actorGeometry,
+--actorGeometry,
   actorWidth,
   actorHeight,
   actorX,
   actorY,
   actorName,
-  actorGid,
+--actorGid,
+--actorPaintVisibility,
 --actorParent,
   actorDepth,
-  actorTransformedSize,
-  actorPaintOpacity,
-  actorAnchorPointGravity,
+--actorTransformedSize,
+--actorPaintOpacity,
   actorReactive,
-  actorShader,
+--actorShader,
 
 -- * Signals
 
@@ -270,6 +271,11 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 
 {# fun unsafe actor_is_mapped as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
+
+{# fun unsafe actor_is_realized as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
+
+
+{# fun unsafe actor_is_visible as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
 
 
 --FIXME: A lot of these need to be marked as safe, not unsafe for callbacks to work
@@ -587,7 +593,6 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 {# fun unsafe actor_get_allocation_box as ^
        `(ActorClass self)' => { withActorClass* `self',
                                 alloca- `ActorBox' peek* } -> `()' #}
-
 
 
 -- | Gets the layout box an actor has been assigned. The allocation
@@ -1848,57 +1853,500 @@ actorCreatePangoLayout act str = let func = {# call unsafe actor_create_pango_la
 
 -- Attributes
 
-actorFixedPositionSet :: (ActorClass self) => Attr self Bool
-actorFixedPositionSet = newAttr actorGetFixedPositionSet actorSetFixedPositionSet
+--CHECKME: actorGetAllocationBox right?
 
-actorGeometry :: (ActorClass self) => Attr self Geometry
-actorGeometry = newAttr actorGetGeometry actorSetGeometry
+-- | The allocation for the actor, in pixels
+--
+-- This is property is read-only, but you might monitor it to know
+-- when an actor moves or resizes
+--
+-- * Since 0.8
+--
+actorAllocation :: (ActorClass self) => ReadAttr self ActorBox
+actorAllocation = readNamedAttr "allocation" actorGetAllocationBox
+
+-- | The anchor point expressed as a 'Gravity'
+--
+-- Default value: 'GravityNone'
+--
+-- * Since 1.0
+--
+actorAnchorGravity :: (ActorClass self) => Attr self Gravity
+actorAnchorGravity = newNamedAttr "anchor-gravity" actorGetAnchorPointGravity actorSetAnchorPointFromGravity
+
+-- | The X coordinate of an actor's anchor point, relative to the
+--   actor coordinate space, in pixels
+--
+-- * Default value: 0
+--
+-- * Since 0.8
+--
+actorAnchorX :: (ActorClass self) => Attr self Float
+actorAnchorX = newAttrFromFloatProperty "anchor-x"
+
+
+-- | The Y coordinate of an actor's anchor point, relative to the
+--   actor coordinate space, in pixels
+--
+-- Default value: 0
+--
+-- * Since 0.8
+--
+actorAnchorY :: (ActorClass self) => Attr self Float
+actorAnchorY = newAttrFromFloatProperty "anchor-y"
+
+--TODO: GType for Geometry
+-- | The clip region for the actor, in actor-relative coordinates
+--
+-- Every part of the actor outside the clip region will not be painted
+--
+--actorClip :: (ActorClass self) => Attr self Geometry
+--actorClip = newAttrFromBoxedStorableProperty "clip" GTypeGEometry
+
+
+-- | Whether the clip region should track the allocated area of the actor.
+--
+-- This property is ignored if a clip area has been explicitly set
+-- using 'actorSetClip'.
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+actorClipToAllocation :: (ActorClass self) => Attr self Bool
+actorClipToAllocation = newAttrFromBoolProperty "clip-to-allocation"
+
+-- | The position of the actor on the Z axis
+--
+-- Default value: 0
+--
+-- * Since 0.6
+--
+actorDepth :: (ActorClass self) => Attr self Float
+actorDepth = newNamedAttr "depth" actorGetDepth actorSetDepth
+
+
+-- | This flag controls whether the 'actorFixedX' and 'actorFixedY'
+--   properties are used
+--
+-- Default value: @False@
+--
+-- * Since 0.8
+--
+actorFixedPositionSet :: (ActorClass self) => Attr self Bool
+actorFixedPositionSet = newNamedAttr "fixed-position-set" actorGetFixedPositionSet actorSetFixedPositionSet
+
+
+-- | The fixed X position of the actor in pixels.
+--
+-- Writing this property sets 'actorFixedPositionSet' property as
+-- well, as a side effect
+--
+-- Default value: 0
+--
+-- * Since 0.8
+--
+actorFixedX :: (ActorClass self) => Attr self Float
+actorFixedX = newAttrFromFloatProperty "fixed-x"
+
+
+-- | The fixed Y position of the actor in pixels.
+--
+-- Writing this property sets the 'actorFixedPositionSet' property as
+-- well, as a side effect
+--
+-- Default value: 0
+--
+-- * Since 0.8
+--
+actorFixedY :: (ActorClass self) => Attr self Float
+actorFixedY = newAttrFromFloatProperty "fixed-y"
+
+
+-- FIXME: Name conflicts with the actual function.
+-- | Whether the actor has the "clip" property set or not
+--
+-- Default value: @False@
+--
+--actorHasClip :: (ActorClass self) => ReadAttr self Bool
+--actorHasClip = readNamedAttr "has-clip" actorHasClip
+
+
+-- | Height of the actor (in pixels). If written, forces the minimum
+--   and natural size request of the actor to the given height. If
+--   read, returns the allocated height if available, otherwise the
+--   height request.
+--
+-- Allowed values: >= 0
+--
+-- Default value: 0
+--
+actorHeight :: (ActorClass self) => Attr self Float
+actorHeight = newNamedAttr "height" actorGetHeight actorSetHeight
+
+
+-- | Whether the actor is mapped (will be painted when the stage to
+--   which it belongs is mapped)
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+actorMapped :: (ActorClass self) => ReadAttr self Bool
+actorMapped = readNamedAttr "mapped" actorIsMapped
+
+
+-- | A forced minimum height request for the actor, in pixels
+--
+-- Writing this property sets the 'actorMinHeightSet' property as
+-- well, as a side effect. This property overrides the usual height
+-- request of the actor.
+--
+-- Allowed values: >= 0
+--
+-- Default value: 0
+--
+-- * Since 0.8
+--
+actorMinHeight :: (ActorClass self) => Attr self Float
+actorMinHeight = newAttrFromFloatProperty "min-height"
+
+
+-- | This flag controls whether the 'actorMinHeight' property is used
+--
+-- Default value: @False@
+--
+-- Since 0.8
+--
+actorMinHeightSet :: (ActorClass self) => Attr self Bool
+actorMinHeightSet = newAttrFromBoolProperty "min-height-set"
+
+
+-- | A forced minimum width request for the actor, in pixels
+--
+-- Writing this property sets the 'actorMinWidthSet' property as well,
+-- as a side effect.
+--
+-- This property overrides the usual width request of the actor.
+--
+-- Allowed values: >= 0
+--
+-- Default value: 0
+--
+-- * Since 0.8
+--
+actorMinWidth :: (ActorClass self) => Attr self Float
+actorMinWidth = newAttrFromFloatProperty "min-width"
+
+
+-- | This flag controls whether the 'actorMinWidth' property is used
+--
+-- * Default value: @False@
+--
+-- * Since 0.8
+--
+actorMinWidthSet :: (ActorClass self) => Attr self Bool
+actorMinWidthSet = newAttrFromBoolProperty "min-width"
+
+-- | The name of the actor
+--
+-- Default value: @Nothing@
+--
+-- * Since 0.2
+--
+actorName :: (ActorClass self) => Attr self (Maybe String)
+actorName = newNamedAttr "name" actorGetName actorSetName
+
+
+-- | A forced natural height request for the actor, in pixels
+--
+-- Writing this property sets the 'actorNaturalHeightSet' property as
+-- well, as a side effect. This property overrides the usual height
+-- request of the actor
+--
+-- Allowed values: >= 0
+--
+-- Default value: 0
+--
+-- * Since 0.8
+--
+actorNaturalHeight :: (ActorClass self) => Attr self Float
+actorNaturalHeight = newAttrFromFloatProperty "natural-height"
+
+-- | This flag controls whether the 'actorNaturalHeight' property is
+--   used
+--
+-- Default value: @False@
+--
+-- * Since 0.8
+--
+actorNaturalHeightSet :: (ActorClass self) => Attr self Bool
+actorNaturalHeightSet = newAttrFromBoolProperty "natural-height-set"
+
+
+-- | A forced natural width request for the actor, in pixels
+--
+-- Writing this property sets the 'actorNaturalWidthSet' property as
+-- well, as a side effect. This property overrides the usual width
+-- request of the actor
+--
+-- Allowed values: >= 0
+--
+-- Default value: 0
+--
+-- * Since 0.8
+--
+actorNaturalWidth :: (ActorClass self) => Attr self Float
+actorNaturalWidth = newAttrFromFloatProperty "natural-width"
+
+
+-- | This flag controls whether the 'actorNaturalWidth' property is
+--   used
+--
+-- Default value: @False@
+--
+-- * Since 0.8
+--
+actorNaturalWidthSet :: (ActorClass self) => Attr self Bool
+actorNaturalWidthSet = newAttrFromBoolProperty "natural-width-set"
+
+-- | Opacity of the actor, between 0 (fully transparent) and 255
+--   (fully opaque)
+--
+-- Default value: 255
+--
+actorOpacity :: (ActorClass self) => Attr self Word8
+actorOpacity = newNamedAttr "opacity" actorGetOpacity actorSetOpacity
+
+
+-- | Whether the actor is reactive to events or not
+--
+-- Only reactive actors will emit event-related signals
+--
+-- Default value: @False@
+--
+-- * Since 0.6
+--
+actorReactive :: (ActorClass self) => Attr self Bool
+actorReactive = newNamedAttr "reactive" actorGetReactive actorSetReactive
+
+-- | Whether the actor has been realized
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+actorRealized :: (ActorClass self) => ReadAttr self Bool
+actorRealized = readNamedAttr "realized" actorIsRealized
+
+
+--TODO: GType for RequestMode
+-- | Request mode for the ClutterActor. The request mode determines
+--   the type of geometry management used by the actor, either height
+--   for width (the default) or width for height.
+--
+--  For actors implementing height for width, the parent container
+--  should get the preferred width first, and then the preferred
+--  height for that width.
+--
+-- For actors implementing width for height, the parent container
+-- should get the preferred height first, and then the preferred width
+-- for that height.
+--
+-- For instance:
+-- TODO: Example
+--
+-- will retrieve the minimum and natural width and height depending on
+-- the preferred request mode of the ClutterActor "child".
+--
+-- The 'actorGetPreferredSize' function will implement this check for
+-- you.
+--
+-- Default value: 'RequestHeightForWidth'
+--
+-- * Since 0.8
+--
+--actorRequestMode :: (ActorClass self) => Attr self RequestMode
+--actorRequestMode = newAttrFromEnumProperty "realized"
+
+-- | The rotation angle on the X axis
+--
+-- Default value: 0
+--
+-- * Since 0.6
+--
+actorRotationAngleX :: (ActorClass self) => Attr self Double
+actorRotationAngleX = newAttrFromDoubleProperty "rotation-angle-x"
+
+
+-- | The rotation angle on the Y axis
+--
+-- Default value: 0
+--
+-- * Since 0.6
+--
+actorRotationAngleY :: (ActorClass self) => Attr self Double
+actorRotationAngleY = newAttrFromDoubleProperty "rotation-angle-y"
+
+
+-- | The rotation angle on the Z axis
+--
+-- Default value: 0
+--
+-- * Since 0.6
+--
+actorRotationAngleZ :: (ActorClass self) => Attr self Double
+actorRotationAngleZ = newAttrFromDoubleProperty "rotation-angle-z"
+
+{-
+--TODO: GType Vertex
+actorRotationCenterX :: (ActorClass self) => Attr self Vertex
+actorRotationCenterX = newAttrFromBoxedProperty "rotation-center-x"
+
+actorRotationCenterY :: (ActorClass self) => Attr self Vertex
+actorRotationCenterY = newAttrFromBoxedProperty "rotation-center-y"
+
+actorRotationCenterZ :: (ActorClass self) => Attr self Vertex
+actorRotationCenterZ = newAttrFromBoxedProperty "rotation-center-z"
+-}
+
+--TODO: GType gravity
+-- | The rotation center on the Z axis expressed as a 'Gravity'.
+--
+-- Default value: 'GravityNone'
+--
+-- * Since 1.0
+--
+--actorRotationCenterZGravity :: (ActorClass self) => Attr self Gravity
+--actorRotationCenterZGravity = newAttrFromEnumProperty "rotation-center-z-gravity"
+
+
+
+-- | The horizontal center point for scaling
+--
+-- Default value: 0
+--
+-- * Since 1.0
+--
+actorScaleCenterX :: (ActorClass self) => Attr self Float
+actorScaleCenterX = newAttrFromFloatProperty "scale-center-x"
+
+
+-- | The vertical center point for scaling
+--
+-- Default value: 0
+--
+-- * Since 1.0
+--
+actorScaleCenterY :: (ActorClass self) => Attr self Float
+actorScaleCenterY = newAttrFromFloatProperty "scale-center-y"
+
+--TODO: GTYpe for gravity
+-- | The center point for scaling expressed as a 'Gravity'
+--
+-- Default value: 'GravityNone'
+--
+-- * Since 1.0
+--
+--actorScaleGravity :: (ActorClass self) => Attr self Gravity
+--actorScaleGravity = newAttrFromEnumProperty "scale-gravity"
+
+
+
+-- | The horizontal scale of the actor
+--
+-- Allowed values: >= 0
+--
+-- Default value: 1
+--
+-- * Since 0.6
+--
+actorScaleX :: (ActorClass self) => Attr self Double
+actorScaleX = newAttrFromDoubleProperty "scale-x"
+
+
+
+-- | The vertical scale of the actor
+--
+-- Allowed values: >= 0
+--
+-- Default value: 1
+--
+-- * Since 0.6
+--
+actorScaleY :: (ActorClass self) => Attr self Double
+actorScaleY = newAttrFromDoubleProperty "scale-y"
+
+
+
+-- | If @True@, the actor is automatically shown when parented.
+--
+-- Calling 'actorHide' on an actor which has not been parented will
+-- set this property to @False@ as a side effect.
+--
+-- Default value: @True@
+--
+-- * Since 0.8
+--
+actorShowOnSetParent :: (ActorClass self) => Attr self Bool
+actorShowOnSetParent = newAttrFromBoolProperty "show-on-set-parent"
+
+
+-- | Whether the actor is set to be visible or not
+--
+-- See also 'actorMapped'
+--
+-- Default value: @False@
+--
+actorVisible :: (ActorClass self) => Attr self Bool
+actorVisible = newAttrFromBoolProperty "visible"
 
 actorWidth :: (ActorClass self) => Attr self Float
 actorWidth = newNamedAttr "width" actorGetWidth actorSetWidth
 
-actorHeight :: (ActorClass self) => Attr self Float
-actorHeight = newNamedAttr "height" actorGetHeight actorSetHeight
 
+
+
+
+-- | X coordinate of the actor in pixels. If written, forces a fixed
+--   position for the actor. If read, returns the fixed position if
+--   any, otherwise the allocation if available, otherwise 0.
+--
+-- Default value: 0
+--
 actorX :: (ActorClass self) => Attr self Float
 actorX = newNamedAttr "x" actorGetX actorSetX
 
+
+-- | Y coordinate of the actor in pixels. If written, forces a fixed
+--   position for the actor. If read, returns the fixed position if
+--   any, otherwise the allocation if available, otherwise 0.
+--
+-- Default value: 0
+--
 actorY :: (ActorClass self) => Attr self Float
 actorY = newNamedAttr "y" actorGetY actorSetY
 
-actorOpacity :: (ActorClass self) => Attr self Word8
-actorOpacity = newNamedAttr "opacity" actorGetOpacity actorSetOpacity
+--actorGeometry :: (ActorClass self) => Attr self Geometry
+--actorGeometry = newAttr actorGetGeometry actorSetGeometry
 
-actorName :: (ActorClass self) => Attr self (Maybe String)
-actorName = newNamedAttr "name" actorGetName actorSetName
-
-actorGid :: (ActorClass self) => ReadAttr self GID
-actorGid = readAttr actorGetGid
+--actorGid :: (ActorClass self) => ReadAttr self GID
+--actorGid = readAttr actorGetGid
 
 --actorParent :: (ActorClass self, ActorClass parent) => Attr self parent
 --actorParent = newAttr actorGetPartent actorSetParent
 
-actorDepth :: (ActorClass self) => Attr self Float
-actorDepth = newNamedAttr "depth" actorGetDepth actorSetDepth
+--actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
+--actorTransformedSize = readAttr actorGetTransformedSize
 
-actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
-actorTransformedSize = readAttr actorGetTransformedSize
+--actorPaintOpacity :: (ActorClass self) => ReadAttr self Word8
+--actorPaintOpacity = readAttr actorGetPaintOpacity
 
-actorPaintOpacity :: (ActorClass self) => ReadAttr self Word8
-actorPaintOpacity = readAttr actorGetPaintOpacity
+--actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
+--actorPaintVisibility = readAttr actorGetPaintVisibility
 
-actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
-actorPaintVisibility = readAttr actorGetPaintVisibility
-
-actorReactive :: (ActorClass self) => Attr self Bool
-actorReactive = newNamedAttr "reactive" actorGetReactive actorSetReactive
-
-actorShader :: (ActorClass self) => Attr self (Maybe Shader)
-actorShader = newAttr actorGetShader actorSetShader
-
-actorAnchorPointGravity :: (ActorClass self) => Attr self Gravity
-actorAnchorPointGravity = newNamedAttr "anchor-gravity" actorGetAnchorPointGravity actorSetAnchorPointFromGravity
-
+--actorShader :: (ActorClass self) => Attr self (Maybe Shader)
+--actorShader = newAttr actorGetShader actorSetShader
 
 -- Signals
 
@@ -1979,8 +2427,8 @@ paint = Signal (connect_NONE__NONE "paint")
 
 
 onParentSet, afterParentSet :: ActorClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
-onParentSet = connect_OBJECT__NONE "parent_set" False
-afterParentSet = connect_OBJECT__NONE "parent_set" True
+onParentSet = connect_OBJECT__NONE "parent-set" False
+afterParentSet = connect_OBJECT__NONE "parent-set" True
 
 --FIXME: old_parent can be null
 -- | This signal is emitted when the parent of the actor changes.

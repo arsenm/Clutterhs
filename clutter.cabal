@@ -267,19 +267,19 @@ Executable rectangletest
   Build-Depends: base, glib
 
 
--- Executable cluttergame
---   Main-Is:         ClutterGame.hs
---   Other-Modules:   Graphics.UI.Clutter
---   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
---   C-Sources: ./csrc/clutter-macros.c
---   Include-dirs:   ./csrc
---   Hs-Source-Dirs:  .,
---                    Graphics,
---                    demo
---                    Graphics/UI,
---                    Graphics/UI/Clutter,
---                    dist/build
+Executable cluttergame
+  Main-Is:         ClutterGame.hs
+  Other-Modules:   Graphics.UI.Clutter
+  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
+  Hs-Source-Dirs:  .,
+                   Graphics,
+                   demo
+                   Graphics/UI,
+                   Graphics/UI/Clutter,
+                   dist/build
 
---   Build-Depends: base, glib
+  Build-Depends: base, glib
 
 

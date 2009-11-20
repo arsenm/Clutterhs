@@ -139,30 +139,30 @@ module Graphics.UI.Clutter.Text (
   EllipsizeMode,
 
 -- * Attributes
-  textText,
   textActivatable,
 --textAttributes,
   textColor,
+  textCursorColor,
+  textCursorColorSet,
+  textCursorSize,
+  textCursorVisible,
+  textEditable,
   textEllipsize,
---textFontName,
-  textPasswordChar,
+  textFontName,
   textJustify,
-  textLayout,
-  textLineWrap,
   textLineAlignment,
+  textLineWrap,
   textLineWrapMode,
   textMaxLength,
+  textPasswordChar,
+  textPosition,
   textSelectable,
---textSelection,
   textSelectionBound,
-  textSingleLineMode,
-  textUseMarkup,
-  textEditable,
-  textCursorColor,
   textSelectionColor,
-  textCursorPosition,
-  textCursorVisible,
-  textCursorSize,
+  textSelectionColorSet,
+  textSingleLineMode,
+  textText,
+  textUseMarkup,
 
 -- * Signals
   onActivate,
@@ -183,6 +183,7 @@ module Graphics.UI.Clutter.Text (
 import C2HS
 import System.Glib.GObject
 import System.Glib.Attributes
+import System.Glib.Properties
 import System.Glib.UTFString
 
 import Control.Monad (liftM)
@@ -258,9 +259,6 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 {# fun unsafe text_get_text as ^ { withText* `Text' } -> `String' #}
 
-textText :: Attr Text String
-textText = newAttr textGetText textSetText
-
 
 -- | Sets markup as the contents of a 'Text'.
 --
@@ -310,19 +308,6 @@ textText = newAttr textGetText textSetText
 {# fun unsafe text_get_activatable as ^ { withText* `Text' } -> `Bool' #}
 
 
-
-
--- | whether a 'Text actor should be activatable.
---
--- An activatable 'Text 'actor will emit the "activate" signal
--- whenever the 'Enter' (or 'Return') key is pressed; if it is not
--- activatable, a new line will be appended to the current content.
---
--- * Since 1.0
---
-textActivatable :: Attr Text Bool
-textActivatable = newAttr textGetActivatable textSetActivatable
-
 --CHECKME: Something seems unsafe about this, also stupid get text out for correction
 --CHECKME: Empty list unset
 
@@ -362,11 +347,6 @@ textGetAttributes text = withText text $ \txtPtr -> do
                            fromAttrList correct attrPtr
 
 
---textAttributes :: Attr Text [PangoAttribute]
---textAttributes = newAttr textGetAttributes textSetAttributes
-
-
-
 -- | Sets the color of the contents of a 'Text' actor.
 --
 -- The overall opacity of the 'Text' actor will be the result of the
@@ -391,9 +371,6 @@ textGetAttributes text = withText text $ \txtPtr -> do
 -- * Since 1.0
 --
 {# fun unsafe text_get_color as ^ {withText* `Text', alloca- `Color' peek* } -> `()' #}
-
-textColor :: Attr Text Color
-textColor = newAttr textGetColor textSetColor
 
 
 -- | Sets the mode used to ellipsize (add an ellipsis: "...") to the
@@ -420,10 +397,6 @@ textColor = newAttr textGetColor textSetColor
 --
 {# fun unsafe text_get_ellipsize as ^ {withText* `Text' } -> `EllipsizeMode' cToEnum #}
 
-textEllipsize :: Attr Text EllipsizeMode
-textEllipsize = newAttr textGetEllipsize textSetEllipsize
-
-
 --CHECKME: Can set nothing, what do you get back?
 -- | Sets the font used by a 'Text'. The font_name string must either
 --   be @Nothing@, which means that the font name from the default
@@ -444,7 +417,6 @@ textEllipsize = newAttr textGetEllipsize textSetEllipsize
 {# fun unsafe text_set_font_name as ^ { withText* `Text', withMaybeString* `Maybe String' } -> `()' #}
 
 
-
 -- | Retrieves the font name as set by 'textSetFontName'.
 --
 -- [@self@] a 'Text'
@@ -454,10 +426,7 @@ textEllipsize = newAttr textGetEllipsize textSetEllipsize
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_font_name as ^ { withText* `Text' } -> `String' #}
-
---textFontName :: Attr Text String
---textFontName = newAttr textGetFontName textSetFontName
+{# fun unsafe text_get_font_name as ^ { withText* `Text' } -> `Maybe String' maybeString* #}
 
 --TODO: Do something with unicode stuff
 --TODO: Maybe this
@@ -487,9 +456,6 @@ textEllipsize = newAttr textGetEllipsize textSetEllipsize
 --
 {# fun unsafe text_get_password_char as ^ {withText* `Text' } -> `GUnichar' cIntConv #}
 
-textPasswordChar :: Attr Text GUnichar
-textPasswordChar = newAttr textGetPasswordChar textSetPasswordChar
-
 
 -- | Sets whether the text of the 'Text' actor should be justified on
 --   both margins. This setting is ignored if Clutter is compiled
@@ -514,10 +480,6 @@ textPasswordChar = newAttr textGetPasswordChar textSetPasswordChar
 --
 {# fun unsafe text_get_justify as ^ { withText* `Text' } -> `Bool' #}
 
-textJustify :: Attr Text Bool
-textJustify = newAttr textGetJustify textSetJustify
-
-
 --FIXME: Pango doc
 --CHECKME: I have no idea if this is right or makes sense.
 --particularly the getting the text from the layoutraw and putting it
@@ -539,9 +501,6 @@ textGetLayout self = withText self $ \ctextptr -> do
                                                     ps <- makeNewPangoString str
                                                     psRef <- newIORef ps
                                                     return (PangoLayout psRef pl)
-
-textLayout :: ReadAttr Text PangoLayout
-textLayout = readAttr textGetLayout
 
 
 -- | Sets the way that the lines of a wrapped label are aligned with
@@ -570,8 +529,6 @@ textLayout = readAttr textGetLayout
 --
 {# fun unsafe text_get_line_alignment as ^ { withText* `Text' } -> `LayoutAlignment' cToEnum #}
 
-textLineAlignment :: Attr Text LayoutAlignment
-textLineAlignment = newAttr textGetLineAlignment textSetLineAlignment
 
 
 -- | Sets whether the contents of a 'Text' actor should wrap, if they
@@ -595,8 +552,6 @@ textLineAlignment = newAttr textGetLineAlignment textSetLineAlignment
 --
 {# fun unsafe text_get_line_wrap as ^ { withText* `Text' } -> `Bool' #}
 
-textLineWrap :: Attr Text Bool
-textLineWrap = newAttr textGetLineWrap textSetLineWrap
 
 --CHECKME: Link to pango doc
 -- | If line wrapping is enabled (see 'textSetLineWrap') this function
@@ -625,9 +580,6 @@ textLineWrap = newAttr textGetLineWrap textSetLineWrap
 --
 {# fun unsafe text_get_line_wrap_mode as ^ { withText* `Text' } -> `LayoutWrapMode' cToEnum #}
 
-textLineWrapMode :: Attr Text LayoutWrapMode
-textLineWrapMode = newAttr textGetLineWrapMode textSetLineWrapMode
-
 
 -- | Sets the maximum allowed length of the contents of the actor. If
 --   the current contents are longer than the given length, then they
@@ -653,8 +605,6 @@ textLineWrapMode = newAttr textGetLineWrapMode textSetLineWrapMode
 --
 {# fun unsafe text_get_max_length as ^ { withText* `Text' } -> `Int' #}
 
-textMaxLength :: Attr Text Int
-textMaxLength = newAttr textGetMaxLength textSetMaxLength
 
 -- | Sets whether a 'Text' actor should be selectable.
 --
@@ -679,9 +629,6 @@ textMaxLength = newAttr textGetMaxLength textSetMaxLength
 -- * Since 1.0
 --
 {# fun unsafe text_get_selectable as ^ { withText* `Text' } -> `Bool' #}
-
-textSelectable :: Attr Text Bool
-textSelectable = newAttr textGetSelectable textSetSelectable
 
 
 -- | Selects the region of text between start_pos and end_pos.
@@ -735,9 +682,6 @@ textSelectable = newAttr textGetSelectable textSetSelectable
 --
 {# fun unsafe text_get_selection_bound as ^ { withText* `Text' } -> `Int' #}
 
-textSelectionBound :: Attr Text Int
-textSelectionBound = newAttr textGetSelectionBound textSetSelectionBound
-
 --CHECKME: I think these need to be safe
 -- | Sets whether a 'Text' actor should be in single line mode or not.
 --
@@ -768,9 +712,6 @@ textSelectionBound = newAttr textGetSelectionBound textSetSelectionBound
 --
 {# fun text_get_single_line_mode as ^ { withText* `Text' } -> `Bool' #}
 
-textSingleLineMode :: Attr Text Bool
-textSingleLineMode = newAttr textGetSingleLineMode textSetSingleLineMode
-
 
 -- | Sets whether the contents of the 'Text' actor contains markup in
 --   Pango's text markup language.
@@ -797,10 +738,6 @@ textSingleLineMode = newAttr textGetSingleLineMode textSetSingleLineMode
 --
 {# fun unsafe text_get_use_markup as ^ { withText* `Text' } -> `Bool' #}
 
-textUseMarkup :: Attr Text Bool
-textUseMarkup = newAttr textGetUseMarkup textSetUseMarkup
-
-
 
 -- | Sets whether the 'Text' actor should be editable.
 --
@@ -825,10 +762,6 @@ textUseMarkup = newAttr textGetUseMarkup textSetUseMarkup
 -- * Since 1.0
 --
 {# fun unsafe text_get_editable as ^ { withText* `Text' } -> `Bool' #}
-
-textEditable :: Attr Text Bool
-textEditable = newAttr textGetEditable textSetEditable
-
 --Insertions
 
 
@@ -951,35 +884,29 @@ textEditable = newAttr textGetEditable textSetEditable
 --
 {# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Maybe Color' maybeNullPeek* } -> `()' #}
 
---{# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
-
--- | Sets the color of the cursor of a 'Text' actor.
+-- | Sets the color of the selection of a 'Text' actor.
 --
--- If set to @Nothing@, the cursor color will be the same as the text
--- color. Note that reading this attribute will never be nothing, and
--- will return the color of the text if set to @Nothing@.
+-- If color is @Nothing@, the selection color will be the same as the
+-- cursor color, or if no cursor color is set either then it will be
+-- the same as the text color.
+--
+-- [@self@] a 'Text'
+--
+-- [@color@] the color of the selection, or @Nothing@ to unset it
 --
 -- * Since 1.0
 --
-textCursorColor :: Attr Text (Maybe Color)
-textCursorColor = newAttr textGetCursorColor textSetCursorColor
-
-
-{# fun unsafe text_set_selection_color as ^ { withText* `Text', withColor* `Color' } -> `()' #}
+{# fun unsafe text_set_selection_color as ^ { withText* `Text', withMaybeColor* `Maybe Color' } -> `()' #}
 
 -- | Retrieves the color of the selection of a 'Text' actor.
 --
 -- [@self@] a 'Text'
 --
--- [@color@] a 'Color'
+-- [@Returns@] @Just@ a 'Color'
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_selection_color as ^ { withText* `Text', alloca- `Color' peek* } -> `()' #}
-
-textSelectionColor :: Attr Text Color
-textSelectionColor = newAttr textGetSelectionColor textSetSelectionColor
-
+{# fun unsafe text_get_selection_color as ^ { withText* `Text', alloca- `Maybe Color' maybeNullPeek* } -> `()' #}
 
 -- | Sets the cursor of a 'Text' actor at position.
 --
@@ -1002,10 +929,6 @@ textSelectionColor = newAttr textGetSelectionColor textSetSelectionColor
 -- * Since 1.0
 --
 {# fun unsafe text_get_cursor_position as ^ { withText* `Text' } -> `Int' #}
-
-textCursorPosition :: Attr Text Int
-textCursorPosition = newAttr textGetCursorPosition textSetCursorPosition
-
 
 
 -- | Sets whether the cursor of a 'Text' actor should be visible or
@@ -1037,12 +960,9 @@ textCursorPosition = newAttr textGetCursorPosition textSetCursorPosition
 --
 {# fun unsafe text_get_cursor_visible as ^ { withText* `Text' } -> `Bool' #}
 
-textCursorVisible :: Attr Text Bool
-textCursorVisible = newAttr textGetCursorVisible textSetCursorVisible
-
 
 -- | Sets the size of the cursor of a 'Text'. The cursor will only be
---   visible if the "cursor-visible" property is set to @True@.
+--   visible if the 'textCursorVisible' property is set to @True@.
 --
 -- [@self@] a 'Text'
 --
@@ -1063,10 +983,6 @@ textCursorVisible = newAttr textGetCursorVisible textSetCursorVisible
 -- * Since 1.0
 --
 {# fun unsafe text_get_cursor_size as ^ { withText* `Text' } -> `Int' #}
-
-textCursorSize :: Attr Text Int
-textCursorSize = newAttr textGetCursorSize textSetCursorSize
-
 
 -- | Emits the "activate" signal, if self has been set as activatable
 --   using 'textSetActivatable'.
@@ -1115,6 +1031,272 @@ textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_p
                                                      func txtPtr strPtr attrPtr (cIntConv cpos)
 #endif
 
+
+-- Attributes
+
+
+-- | Toggles whether return invokes the activate signal or not.
+--
+-- Default value: @True@
+--
+-- Since 1.0
+--
+textActivatable :: Attr Text Bool
+textActivatable = newNamedAttr "activatable" textGetActivatable textSetActivatable
+
+-- | A list of 'PangoStyleAttributes' to be applied to the contents of
+--   the 'Text' actor.
+--
+-- * Since 1.0
+--
+--textAttributes :: Attr Text [PangoAttribute]
+--textAttributes = newNamedAttr "attributes" textGetAttributes textSetAttributes
+
+
+-- | The color used to render the text.
+--
+-- * Since 1.0
+--
+textColor :: Attr Text Color
+textColor = newNamedAttr "color" textGetColor textSetColor
+
+
+-- | The color of the cursor.
+--
+-- * Since 1.0
+--
+textCursorColor :: Attr Text (Maybe Color)
+textCursorColor = newNamedAttr "cursor-color" textGetCursorColor textSetCursorColor
+
+
+-- | Will be set to @True@ if 'actorCursorColor' has been set.
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+textCursorColorSet :: ReadAttr Text Bool
+textCursorColorSet = readAttrFromBoolProperty "cursor-color-set"
+
+
+
+-- | The size of the cursor, in pixels. If set to -1 the size used
+--   will be the default cursor size of 2 pixels.
+--
+-- Allowed values: >= -1
+--
+-- Default value: 2
+--
+-- * Since 1.0
+--
+textCursorSize :: Attr Text Int
+textCursorSize = newNamedAttr "cursor-size" textGetCursorSize textSetCursorSize
+
+
+-- | Whether the input cursor is visible or not, it will only be
+--   visible if both 'textCursorVisible' and 'textEditable' are set to
+--   @True@.
+--
+-- Default value: @True@
+--
+-- * Since 1.0
+--
+textCursorVisible :: Attr Text Bool
+textCursorVisible = newNamedAttr "cursor-visible" textGetCursorVisible textSetCursorVisible
+
+
+-- | Whether key events delivered to the actor causes editing.
+--
+-- Default value: @True@
+--
+-- * Since 1.0
+--
+textEditable :: Attr Text Bool
+textEditable = newNamedAttr "editable" textGetEditable textSetEditable
+
+
+-- | The preferred place to ellipsize the contents of the 'Text' actor
+--
+-- Default value: 'PangoEllipsizeNone'
+--
+-- * Since 1.0
+--
+textEllipsize :: Attr Text EllipsizeMode
+textEllipsize = newAttr textGetEllipsize textSetEllipsize
+
+-- | The font to be used by the ClutterText, as a string that can be
+--   parsed by pango_font_description_from_string().
+--
+-- Default value: @Nothing@
+--
+-- * Since 1.0
+--
+textFontName :: Attr Text (Maybe String)
+textFontName = newNamedAttr "font-name" textGetFontName textSetFontName
+
+
+-- | Whether the contents of the 'Text' should be justified on both
+--   margins.
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+textJustify :: Attr Text Bool
+textJustify = newNamedAttr "justify" textGetJustify textSetJustify
+
+
+-- | The preferred alignment for the text. This property controls the
+--   alignment of multi-line paragraphs.
+--
+-- Default value: 'PangoAlignLeft'
+--
+-- * Since 1.0
+--
+textLineAlignment :: Attr Text LayoutAlignment
+textLineAlignment = newNamedAttr "line-alignment" textGetLineAlignment textSetLineAlignment
+
+
+-- | Whether to wrap the lines of 'textText' if the contents exceed
+--   the available allocation. The wrapping strategy is controlled by
+--   the 'textLineWrapMode' attribute.
+--
+-- Default value: @False
+--
+textLineWrap :: Attr Text Bool
+textLineWrap = newNamedAttr "line-wrap" textGetLineWrap textSetLineWrap
+
+
+-- | If 'textLineWrap' is set to @True@, this property will control
+--   how the text is wrapped.
+--
+-- Default value: 'PangoWrapWord'
+--
+-- * Since 1.0
+--
+textLineWrapMode :: Attr Text LayoutWrapMode
+textLineWrapMode = newNamedAttr "line-wrap-mode" textGetLineWrapMode textSetLineWrapMode
+
+
+-- | The maximum length of the contents of the 'Text' actor.
+--
+-- * Allowed values: >= -1
+--
+-- Default value: 0
+--
+-- * Since 1.0
+--
+textMaxLength :: Attr Text Int
+textMaxLength = newNamedAttr "max-length" textGetMaxLength textSetMaxLength
+
+
+
+-- | If non-zero, the character that should be used in place of the
+--   actual text in a password text actor.
+--
+-- Default value: 0
+--
+-- * Since 1.0
+--
+textPasswordChar :: Attr Text GUnichar
+textPasswordChar = newNamedAttr "password-char" textGetPasswordChar textSetPasswordChar
+
+-- | The current input cursor position. -1 is taken to be the end of
+--   the text
+--
+-- Allowed values: >= -1
+--
+-- Default value: -1
+--
+-- * Since 1.0
+--
+textPosition :: Attr Text Int
+textPosition = newNamedAttr "position" textGetCursorPosition textSetCursorPosition
+
+
+-- | Whether it is possible to select text, either using the pointer
+--   or the keyboard.
+--
+-- Default value: @True@
+--
+-- * Since 1.0
+--
+textSelectable :: Attr Text Bool
+textSelectable = newNamedAttr "selectable" textGetSelectable textSetSelectable
+
+
+-- | The current input cursor position. -1 is taken to be the end of
+--   the text
+--
+-- Allowed values: >= -1
+--
+-- Default value: -1
+--
+-- * Since 1.0
+--
+textSelectionBound :: Attr Text Int
+textSelectionBound = newNamedAttr "selection-bound" textGetSelectionBound textSetSelectionBound
+
+
+-- | The color of the selection.
+--
+-- * Since 1.0
+--
+textSelectionColor :: Attr Text (Maybe Color)
+textSelectionColor = newNamedAttr "selection-color" textGetSelectionColor textSetSelectionColor
+
+
+-- | Will be set to @True@ if 'textSelectionColor' has been set.
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+textSelectionColorSet :: ReadAttr Text Bool
+textSelectionColorSet = readAttrFromBoolProperty "selection-color-set"
+
+
+
+-- | Whether the 'Text' actor should be in single line mode or not. A
+--   single line 'Text' actor will only contain a single line of text,
+--   scrolling it in case its length is bigger than the allocated
+--   size.
+--
+--  Setting this property will also set the 'textActivatable' property
+--  as a side-effect.
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+textSingleLineMode :: Attr Text Bool
+textSingleLineMode = newNamedAttr "single-line-mode" textGetSingleLineMode textSetSingleLineMode
+
+
+-- | The text to render inside the actor.
+--
+-- Default value: ""
+--
+-- * Since 1.0
+--
+textText :: Attr Text String
+textText = newNamedAttr "text" textGetText textSetText
+
+
+
+-- | Whether the text includes Pango markup. See
+--   pango_layout_set_markup() in the Pango documentation.
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+textUseMarkup :: Attr Text Bool
+textUseMarkup = newNamedAttr "use-markup" textGetUseMarkup textSetUseMarkup
+
+
+-- Signals
+
 --See note in Types of Activatable
 instance Activatable Text where
   onActivate = connect_NONE__NONE "activate" False
@@ -1137,4 +1319,6 @@ afterTextChanged = connect_NONE__NONE "text-changed" True
 
 textChanged :: Signal Text (IO ())
 textChanged = Signal (connect_NONE__NONE "text-changed")
+
+
 

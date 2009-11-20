@@ -74,14 +74,19 @@ module Graphics.UI.Clutter.Texture (
   textureSetLoadDataAsync,
 
 -- * Attributes
-  textureBaseSize,
-  textureFilterQuality,
---textureCoglTexture,
 --textureCoglMaterial,
-  textureSyncSize,
+--textureCoglTexture,
+  textureDisableSlicing,
+  textureFilename,
+  textureFilterQuality,
   textureKeepAspectRatio,
   textureLoadAsync,
   textureLoadDataAsync,
+--texturePixelFormat,
+  textureRepeatX,
+  textureRepeatY,
+  textureSyncSize,
+  textureTileWaste,
 
 -- * Signals
   onLoadFinished,
@@ -106,6 +111,7 @@ import Data.Array.Base (getBounds)
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.Properties
 import System.Glib.GError
 import System.Glib.FFI
 
@@ -274,9 +280,6 @@ texture_set_area_from_rgb_data
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
 
-textureBaseSize :: ReadAttr Texture (Int, Int)
-textureBaseSize = readAttr textureGetBaseSize
-
 {- TODO: Requires cogl
 {# fun unsafe texture_get_pixel_format as ^
        { withTexture* `Texture' } -> `CoglPixelFormat' cToEnum #}
@@ -325,23 +328,15 @@ textureBaseSize = readAttr textureGetBaseSize
 {# fun unsafe texture_set_filter_quality as ^
        { withTexture* `Texture', cFromEnum `TextureQuality' } -> `()' #}
 
-textureFilterQuality :: Attr Texture TextureQuality
-textureFilterQuality = newAttr textureGetFilterQuality textureSetFilterQuality
-
 {-
 {# fun unsafe texture_get_cogl_texture as ^
        { withTexture* `Texture' } -> `CoglTexture' newCoglTexture #}
 {# fun unsafe texture_set_cogl_texture as ^
        { withTexture* `Texture', withCoglTexture `CoglTexture' } -> `()' #}
-textureCoglTexture :: Attr Texture CoglTexture
-textureCoglTexture = newAttr textureGetCoglTexture textureSetCoglTexture
-
 {# fun unsafe texture_get_cogl_material as ^
        { withTexture* `Texture' } -> `CoglMaterial' newCoglMaterial #}
 {# fun unsafe texture_set_cogl_material as ^
        { withTexture* `Texture', withCoglMaterial `CoglMaterial' } -> `()' #}
-textureCoglMaterial :: Attr Texture CoglMaterial
-textureCoglMaterial = newAttr textureGetCoglMaterial textureSetCoglMaterial
 -}
 
 
@@ -367,9 +362,6 @@ textureCoglMaterial = newAttr textureGetCoglMaterial textureSetCoglMaterial
 -- * Since 1.0
 --
 {# fun unsafe texture_set_sync_size as ^ { withTexture* `Texture', `Bool' } -> `()' #}
-
-textureSyncSize :: Attr Texture Bool
-textureSyncSize = newAttr textureGetSyncSize textureSetSyncSize
 
 
 -- | Retrieves the horizontal and vertical repeat values set using
@@ -419,9 +411,6 @@ textureSyncSize = newAttr textureGetSyncSize textureSetSyncSize
 --
 {# fun unsafe texture_set_keep_aspect_ratio as ^ { withTexture* `Texture', `Bool'} -> `()' #}
 
-textureKeepAspectRatio :: Attr Texture Bool
-textureKeepAspectRatio = newAttr textureGetKeepAspectRatio textureSetKeepAspectRatio
-
 
 -- | Retrieves the value set using 'textureSetLoadAsync'
 --
@@ -449,9 +438,6 @@ textureKeepAspectRatio = newAttr textureGetKeepAspectRatio textureSetKeepAspectR
 -- * Since 1.0
 --
 {# fun unsafe texture_set_load_async as ^ { withTexture* `Texture', `Bool'} -> `()' #}
-
-textureLoadAsync :: Attr Texture Bool
-textureLoadAsync = newAttr textureGetLoadAsync textureSetLoadAsync
 
 
 -- | Retrieves the value set by 'textureSetLoadDataAsync'
@@ -482,9 +468,120 @@ textureLoadAsync = newAttr textureGetLoadAsync textureSetLoadAsync
 --
 {# fun unsafe texture_set_load_data_async as ^ { withTexture* `Texture', `Bool'} -> `()' #}
 
+
+-- attributes
+
+-- | The underlying COGL material handle used to draw this actor.
+--textureCoglMaterial :: Attr Texture CoglMaterial
+--textureCoglMaterial = newAttr textureGetCoglMaterial textureSetCoglMaterial
+
+-- | The underlying COGL texture handle used to draw this actor.
+--textureCoglTexture :: Attr Texture CoglTexture
+--textureCoglTexture = newAttr textureGetCoglTexture textureSetCoglTexture
+
+-- | Force the underlying texture to be singlularand not made of of
+--   smaller space saving inidivual textures.
+--
+-- Default value: @False@
+--
+textureDisableSlicing :: Attr Texture Bool
+textureDisableSlicing = newAttrFromBoolProperty "disable-slicing"
+
+-- | The full path of the file containing the texture.
+--
+-- Default value: @Nothing@
+--
+textureFilename :: WriteAttr Texture (Maybe String)
+textureFilename = writeAttrFromMaybeStringProperty "filename"
+
+-- | Rendering quality used when drawing the texture.
+--
+-- Default value: 'TextureQualityMedium'
+--
+textureFilterQuality :: Attr Texture TextureQuality
+textureFilterQuality = newNamedAttr "filter-quality" textureGetFilterQuality textureSetFilterQuality
+
+-- | Keep the aspect ratio of the texture when requesting the
+--   preferred width or height.
+--
+-- Default value: @False@
+--
+textureKeepAspectRatio :: Attr Texture Bool
+textureKeepAspectRatio = newNamedAttr "keep-aspect-ratio" textureGetKeepAspectRatio textureSetKeepAspectRatio
+
+--CHECKME: Threading stuff
+-- | Tries to load a texture from a filename by using a local thread
+--   to perform the read operations. The initially created texture has
+--   dimensions 0x0 when the true size becomes available the
+--   "size-change" signal is emitted and when the image has completed
+--   loading the "load-finished" signal is emitted.
+--
+-- Threading is only enabled if g_thread_init() has been called prior
+-- to clutter_init(), otherwise 'Texture' will use the main loop to
+-- load the image.
+--
+-- The upload of the texture data on the GL pipeline is not
+-- asynchronous, as it must be performed from within the same thread
+-- that called clutter_main().
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+textureLoadAsync :: Attr Texture Bool
+textureLoadAsync = newNamedAttr "load-async" textureGetLoadAsync textureSetLoadAsync
+
+
+-- | Like 'textureLoadAsync' but loads the width and height
+--   synchronously causing some blocking.
+--
+-- Default value: @False@
+--
+-- Since 1.0
+--
 textureLoadDataAsync :: Attr Texture Bool
 textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
 
+-- | CoglPixelFormat to use.
+--
+-- Default value: CoglPixelFormatRgba8888
+--
+--textureCoglPixelFormat :: Attr Texture CoglPixelFormat
+--textureCoglPixelFormat = newAttr textureGetCoglPixelFormat textureSetCoglPixelFormat
+
+
+-- | Repeat underlying pixbuf rather than scale in x direction.
+--
+-- Default value: @False@
+--
+textureRepeatX :: Attr Texture Bool
+textureRepeatX = newAttrFromBoolProperty "repeat-x"
+
+-- | Repeat underlying pixbuf rather than scale in y direction.
+--
+-- Default value: @False@
+--
+textureRepeatY :: Attr Texture Bool
+textureRepeatY = newAttrFromBoolProperty "repeat-y"
+
+-- | Auto sync size of actor to underlying pixbuf dimensions.
+--
+-- Default value: @True@
+--
+textureSyncSize :: Attr Texture Bool
+textureSyncSize = newNamedAttr "sync-size" textureGetSyncSize textureSetSyncSize
+
+--CHECKME:
+-- | Maximum waste area of a sliced texture.
+--
+-- Allowed values: >= -1
+--
+-- Default value: 127
+--
+textureTileWaste :: ReadAttr Texture Int
+textureTileWaste = readNamedAttr "tile-waste" textureGetMaxTileWaste
+
+-- signals
 
 --CHECKME: Exception in handler?
 onLoadFinished, afterLoadFinished :: Texture -> (Maybe GError -> IO ()) -> IO (ConnectId Texture)
@@ -525,4 +622,5 @@ afterSizeChange = connect_INT_INT__NONE "size-change" True
 --
 sizeChange :: Signal Texture (Int -> Int -> IO ())
 sizeChange = Signal (connect_INT_INT__NONE "size-change")
+
 

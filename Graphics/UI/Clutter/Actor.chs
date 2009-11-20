@@ -180,8 +180,6 @@ module Graphics.UI.Clutter.Actor (
 
 -- * Attributes
   actorGeometry,
-  actorSize,
-  actorPosition,
   actorWidth,
   actorHeight,
   actorX,
@@ -192,7 +190,6 @@ module Graphics.UI.Clutter.Actor (
   actorDepth,
   actorTransformedSize,
   actorPaintOpacity,
-  actorAnchorPoint,
   actorAnchorPointGravity,
   actorReactive,
   actorShader,
@@ -1851,20 +1848,11 @@ actorCreatePangoLayout act str = let func = {# call unsafe actor_create_pango_la
 
 -- Attributes
 
-actorPreferredSize :: (ActorClass self) => ReadAttr self (Float, Float, Float, Float)
-actorPreferredSize = readAttr actorGetPreferredSize
-
 actorFixedPositionSet :: (ActorClass self) => Attr self Bool
 actorFixedPositionSet = newAttr actorGetFixedPositionSet actorSetFixedPositionSet
 
 actorGeometry :: (ActorClass self) => Attr self Geometry
 actorGeometry = newAttr actorGetGeometry actorSetGeometry
-
-actorSize :: (ActorClass self) => Attr self (Float, Float)
-actorSize = newAttr actorGetSize (tup2ToF actorSetSize)
-
-actorPosition :: (ActorClass self) => Attr self (Float, Float)
-actorPosition = newAttr actorGetPosition (tup2ToF actorSetPosition)
 
 actorWidth :: (ActorClass self) => Attr self Float
 actorWidth = newNamedAttr "width" actorGetWidth actorSetWidth
@@ -1907,9 +1895,6 @@ actorReactive = newNamedAttr "reactive" actorGetReactive actorSetReactive
 
 actorShader :: (ActorClass self) => Attr self (Maybe Shader)
 actorShader = newAttr actorGetShader actorSetShader
-
-actorAnchorPoint :: (ActorClass self) => Attr self (Float, Float)
-actorAnchorPoint = newAttr actorGetAnchorPoint (tup2ToF actorSetAnchorPoint)
 
 actorAnchorPointGravity :: (ActorClass self) => Attr self Gravity
 actorAnchorPointGravity = newNamedAttr "anchor-gravity" actorGetAnchorPointGravity actorSetAnchorPointFromGravity

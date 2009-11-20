@@ -60,9 +60,7 @@ module Graphics.UI.Clutter.BehaviourRotate (
 
 -- * Attributes
   behaviourRotateAxis,
-  behaviourRotateDirection,
-  behaviourRotateBounds,
-  behaviourRotateCenter
+  behaviourRotateDirection
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -180,9 +178,6 @@ behaviourRotateDirection = newAttr behaviourRotateGetDirection behaviourRotateSe
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv* } -> `()' #}
 
-behaviourRotateBounds :: Attr BehaviourRotate (Double, Double)
-behaviourRotateBounds = newAttr behaviourRotateGetBounds (tup2ToF behaviourRotateSetBounds)
-
 
 -- | Sets the center of rotation. The coordinates are relative to the
 --   plane normal to the rotation axis set with
@@ -215,11 +210,4 @@ behaviourRotateBounds = newAttr behaviourRotateGetBounds (tup2ToF behaviourRotat
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
-
--- | The coordinates of the center of rotation
---
--- * Since 0.4
---
-behaviourRotateCenter :: Attr BehaviourRotate (Int, Int, Int)
-behaviourRotateCenter = newAttr behaviourRotateGetCenter (tup3ToF behaviourRotateSetCenter)
 

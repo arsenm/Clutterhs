@@ -32,8 +32,8 @@ module Graphics.UI.Clutter.BehaviourScale (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Behaviour'
--- |         +----'BehaviourScale'
+-- |    +----'Behaviour'
+-- |           +----'BehaviourScale'
 -- |
 -- @
 
@@ -42,10 +42,8 @@ module Graphics.UI.Clutter.BehaviourScale (
 
 -- * Methods
   behaviourScaleSetBounds,
-  behaviourScaleGetBounds,
+  behaviourScaleGetBounds
 
--- * Attributes
-  behaviourScaleBounds
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -111,7 +109,4 @@ import System.Glib.Attributes
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*} -> `()' #}
-
-behaviourScaleBounds :: Attr BehaviourScale (Double, Double, Double, Double)
-behaviourScaleBounds = newAttr behaviourScaleGetBounds (tup4ToF behaviourScaleSetBounds)
 

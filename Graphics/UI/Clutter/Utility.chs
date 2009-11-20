@@ -24,10 +24,6 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Utility (
-  tup2ToF,
-  tup3ToF,
-  tup4ToF,
-
   newPangoContext,
 
   cFromFlags,
@@ -74,14 +70,6 @@ import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 
 import Graphics.UI.Gtk.Types (PangoContext, mkPangoContext, unPangoLayoutRaw)
-
---There's Probably a better way to do this I'm using this for related
---attributes that you might want to set at once rather than
---separately, e.g. instead of setting X position and Y position, set
---position (X,Y) at the same time
-tup2ToF f item (a,b) = f item a b
-tup3ToF f item (a,b,c) = f item a b c
-tup4ToF f item (a,b,c,d) = f item a b c d
 
 --flag functions from gtk2hs with c int conversion
 

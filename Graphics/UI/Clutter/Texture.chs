@@ -79,7 +79,6 @@ module Graphics.UI.Clutter.Texture (
 --textureCoglTexture,
 --textureCoglMaterial,
   textureSyncSize,
-  textureRepeat,
   textureKeepAspectRatio,
   textureLoadAsync,
   textureLoadDataAsync,
@@ -397,9 +396,6 @@ textureSyncSize = newAttr textureGetSyncSize textureSetSyncSize
 -- * Since 1.0
 --
 {# fun unsafe texture_set_repeat as ^ { withTexture* `Texture', `Bool', `Bool' } -> `()' #}
-
-textureRepeat :: Attr Texture (Bool, Bool)
-textureRepeat = newAttr textureGetRepeat (tup2ToF textureSetRepeat)
 
 -- | Retrieves the value set using 'textureGetKeepAspectRatio'
 --

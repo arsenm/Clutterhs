@@ -62,12 +62,10 @@ module Graphics.UI.Clutter.BehaviourEllipse (
   behaviourEllipseGetDirection,
 
 -- * Attributes
-  behaviourEllipseCenter,
   behaviourEllipseAngleStart,
   behaviourEllipseAngleEnd,
   behaviourEllipseHeight,
   behaviourEllipseWidth,
-  behaviourEllipseTilt,
   behaviourEllipseDirection
   ) where
 
@@ -78,7 +76,6 @@ import C2HS
 import Control.Monad (liftM2)
 import Control.Arrow ((&&&))
 import System.Glib.Attributes
-
 
 -- | Creates a behaviour that drives actors along an elliptical path
 --   with given center, width and height; the movement starts at start
@@ -144,9 +141,6 @@ import System.Glib.Attributes
        { withBehaviourEllipse* `BehaviourEllipse',
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
-
-behaviourEllipseCenter :: Attr BehaviourEllipse (Int, Int)
-behaviourEllipseCenter = newAttr behaviourEllipseGetCenter (tup2ToF behaviourEllipseSetCenter)
 
 
 -- | Sets the angle at which movement starts; angles \>= 360 degress
@@ -325,10 +319,6 @@ behaviourEllipseSize = newAttr
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*
        } -> `()' #}
-
-
-behaviourEllipseTilt :: Attr BehaviourEllipse (Double, Double, Double)
-behaviourEllipseTilt = newAttr behaviourEllipseGetTilt (tup3ToF behaviourEllipseSetTilt)
 
 
 -- | Sets the rotation direction used by the ellipse behaviour.

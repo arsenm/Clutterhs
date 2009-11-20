@@ -13,17 +13,20 @@ main = do
   stage <- stageGetDefault
 
   text <- textNewFull "Webdings 12" "Comic Sans is the best font" (Color 255 0 0 255)
-  set text [ actorPosition := (100, 200) ]
+  set text [ actorX := 100,
+             actorY := 200 ]
 
   let black = fromJust (colorFromString "black")
   pwText <- textNewFull "Sans 10" "This is a secret password" black
 --  set pwText [ textPasswordChar := '*' ]
   --FIXME: Take  a charactor
   set pwText [ textPasswordChar := 0x2665,
-               actorPosition := (50, 300) ]
+               actorX := 50,
+               actorY := 300 ]
 
   textEdit <- textNewFull "San 12" "Edit me" black
-  set textEdit [ actorPosition := (400, 350),
+  set textEdit [ actorX := 400,
+                 actorY := 350,
                  actorReactive := True,
                --textCursorColor := P.Nothing,
                  textCursorColor := Just (Color 123 210 231 230),

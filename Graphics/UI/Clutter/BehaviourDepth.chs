@@ -45,17 +45,13 @@ module Graphics.UI.Clutter.BehaviourDepth (
 
 -- * Methods
   behaviourDepthSetBounds,
-  behaviourDepthGetBounds,
-
--- * Attributes
-  behaviourDepthBounds
+  behaviourDepthGetBounds
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import System.Glib.Attributes
 
 -- | Creates a new 'BehaviourDepth' which can be used to control
 --   the 'Actor':depth property of a set of Actors.
@@ -101,11 +97,4 @@ import System.Glib.Attributes
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv*
        } -> `()' #}
-
--- | Start and end depth level to apply to the actors
---
--- * Since 0.4
---
-behaviourDepthBounds :: Attr BehaviourDepth (Int, Int)
-behaviourDepthBounds = newAttr behaviourDepthGetBounds (tup2ToF behaviourDepthSetBounds)
 

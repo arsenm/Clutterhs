@@ -24,10 +24,11 @@ main = do
   rec4 <- rectangleNewWithColor (Color 123 123 123 225)
   rec5 <- rectangleNewWithColor (Color 255 0 255 225)
 
-  mapM_ (flip set [actorSize := (50,50)] ) [rec, rec2, rec3, rec4, rec5]
-  set rec [actorPosition := (300, 300)]
-  set rec2 [actorPosition := (400, 300)]
-  set rec3 [actorPosition := (500, 300)]
+  mapM_ (flip set [actorWidth := 50,
+                   actorHeight := 50] ) [rec, rec2, rec3, rec4, rec5]
+  set rec  [ actorX := 300, actorY := 300 ]
+  set rec2 [ actorX := 400, actorY := 300 ]
+  set rec3 [ actorX := 500, actorY := 300 ]
 
   --TODO: What does Nothing for an alpha mean? Maybe for Alphas is annoying
   --I'm not sure that this is a useful feature in Clutter

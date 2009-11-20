@@ -38,19 +38,13 @@ module Graphics.UI.Clutter.BehaviourOpacity (
 
 -- * Methods
   behaviourOpacitySetBounds,
-  behaviourOpacityGetBounds,
-
--- * Attributes
-  behaviourOpacityBounds
+  behaviourOpacityGetBounds
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import System.Glib.Attributes
-
-
 
 -- | Creates a new 'BehaviourOpacity' object, driven by alpha which
 --   controls the opacity property of every actor, making it change in
@@ -97,7 +91,4 @@ import System.Glib.Attributes
        { withBehaviourOpacity* `BehaviourOpacity',
          alloca- `Word8' peekIntConv*,
          alloca- `Word8' peekIntConv*} -> `()' #}
-
-behaviourOpacityBounds :: Attr BehaviourOpacity (Word8, Word8)
-behaviourOpacityBounds = newAttr behaviourOpacityGetBounds (tup2ToF behaviourOpacitySetBounds)
 

@@ -409,11 +409,10 @@ afterStarted = connect_NONE__NONE "started" True
 started :: Signal Animation (IO ())
 started = Signal (connect_NONE__NONE "started")
 
---CHECKME: I don't think it makes sense to allow ReadAttr, but does it
---make sense to allow WriteAttr?  Also, Animatable class? Not all
+
+-- CHECKME? allow WriteAttr?  Also, Animatable class? Not all
 --attributes animatable. Especially the convenient ones I added like
 --position and size
---CHECKME: I feel like GenericValueClass can go away
 --data AnimOp o = forall a b. ReadWriteAttr o a b :-> b
 data AnimOp o = forall a b. (GenericValueClass b) => ReadWriteAttr o a b :-> b
 

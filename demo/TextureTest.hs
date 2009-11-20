@@ -48,7 +48,8 @@ main = do
   squirrelfish <- textureNewFromFile "SquirrelFish.svg"
 
   containerAddActor stage squirrelfish
-  set squirrelfish [ actorPosition := (100, 100),
+  set squirrelfish [ actorX := 100,
+                     actorY := 100,
                      textureKeepAspectRatio := True,
                      textureFilterQuality := TextureQualityHigh,
                      actorWidth := 300 ]
@@ -67,7 +68,8 @@ but this ends in assertion failures
 
   sfClone <- cloneNew squirrelfish
   set sfClone [ actorWidth := 50,
-                actorPosition := (400, 400)]
+                actorX := 400,
+                actorY := 400 ]
 
   putStrLn "Attempting to read pixels"
   pixels <- fmap (fromMaybe (P.error "stageReadPixels failed"))

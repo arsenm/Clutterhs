@@ -82,7 +82,6 @@ module Graphics.UI.Clutter.CairoTexture (
   cairoSetSourceColor,
 
 -- * Attributes
-  cairoTextureSurfaceSize,
   cairoSourceColor
   ) where
 
@@ -134,9 +133,6 @@ import Graphics.Rendering.Cairo.Types (Cairo)
 {# fun unsafe cairo_texture_get_surface_size as ^
        { withCairoTexture* `CairoTexture', alloca- `Int' peekIntConv*, alloca- `Int' peekIntConv* } -> `()' #}
 
-
-cairoTextureSurfaceSize :: Attr CairoTexture (Int,Int)
-cairoTextureSurfaceSize = newAttr cairoTextureGetSurfaceSize (tup2ToF cairoTextureSetSurfaceSize)
 
 
 --CHECKME: the cairo_destroy to upload the contents?

@@ -68,6 +68,7 @@ module Graphics.UI.Clutter.Types (
                                   TextClass,
                                   toText,
                                   withText,
+                                  withTextClass,
                                   newText,
 
                                   Stage,
@@ -514,6 +515,10 @@ toText = unsafeCastGObject . toGObject
 
 newText :: Ptr Actor -> IO Text
 newText a = makeNewActor (Text, objectUnref) $ return (castPtr a)
+
+withTextClass::TextClass o => o -> (Ptr Text -> IO b) -> IO b
+withTextClass o = (withText . toText) o
+
 
 instance TextClass Text
 instance ActorClass Text

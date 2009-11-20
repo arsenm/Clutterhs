@@ -255,9 +255,9 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_text as ^ { withText* `Text', `String' } -> `()' #}
+{# fun unsafe text_set_text as ^ `(TextClass self)' => { withTextClass* `self', `String' } -> `()' #}
 
-{# fun unsafe text_get_text as ^ { withText* `Text' } -> `String' #}
+{# fun unsafe text_get_text as ^ `(TextClass self)' => { withTextClass* `self' } -> `String' #}
 
 
 -- | Sets markup as the contents of a 'Text'.
@@ -275,7 +275,7 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_markup as ^ { withText* `Text', `String' } -> `()' #}
+{# fun unsafe text_set_markup as ^ `(TextClass self)' => { withTextClass* `self', `String' } -> `()' #}
 
 
 
@@ -294,7 +294,7 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_activatable as ^ { withText* `Text', `Bool' } -> `()' #}
+{# fun unsafe text_set_activatable as ^ `(TextClass self)' => { withTextClass* `self', `Bool' } -> `()' #}
 
 
 -- | Retrieves whether a 'Text' is activatable or not.
@@ -305,7 +305,7 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_activatable as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_get_activatable as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 
 
 --CHECKME: Something seems unsafe about this, also stupid get text out for correction
@@ -322,9 +322,9 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 --
 -- * Since 1.0
 --
-textSetAttributes :: Text -> [PangoAttribute] -> IO ()
+textSetAttributes :: (TextClass self) => self -> [PangoAttribute] -> IO ()
 textSetAttributes txt pattrs = let func = {# call unsafe text_set_attributes #}
-                               in withText txt $ \txtPtr -> do
+                               in withTextClass txt $ \txtPtr -> do
                                     pStr <- makeNewPangoString =<< textGetText txt
                                     withAttrList pStr pattrs $ \attrPtr ->
                                       func txtPtr attrPtr
@@ -340,8 +340,8 @@ textSetAttributes txt pattrs = let func = {# call unsafe text_set_attributes #}
 --
 -- * Since 1.0
 --
-textGetAttributes :: Text -> IO [[PangoAttribute]]
-textGetAttributes text = withText text $ \txtPtr -> do
+textGetAttributes :: (TextClass self) => self -> IO [[PangoAttribute]]
+textGetAttributes text = withTextClass text $ \txtPtr -> do
                            attrPtr <- {# call unsafe text_get_attributes #} txtPtr
                            correct <- liftM genUTFOfs (textGetText text)  --TODO: silly
                            fromAttrList correct attrPtr
@@ -359,7 +359,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_color as ^ {withText* `Text', withColor* `Color' } -> `()' #}
+{# fun unsafe text_set_color as ^ `(TextClass self)' =>
+    { withTextClass* `self', withColor* `Color' } -> `()' #}
 
 
 -- | Retrieves the text color as set by 'textSetColor'.
@@ -370,7 +371,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_color as ^ {withText* `Text', alloca- `Color' peek* } -> `()' #}
+{# fun unsafe text_get_color as ^ `(TextClass self)' =>
+    { withTextClass* `self', alloca- `Color' peek* } -> `()' #}
 
 
 -- | Sets the mode used to ellipsize (add an ellipsis: "...") to the
@@ -383,7 +385,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_ellipsize as ^ {withText* `Text', cFromEnum `EllipsizeMode' } -> `()' #}
+{# fun unsafe text_set_ellipsize as ^ `(TextClass self)' =>
+    { withTextClass* `self', cFromEnum `EllipsizeMode' } -> `()' #}
 
 
 -- | Returns the ellipsizing position of a 'Text' actor, as set by
@@ -395,7 +398,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_ellipsize as ^ {withText* `Text' } -> `EllipsizeMode' cToEnum #}
+{# fun unsafe text_get_ellipsize as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `EllipsizeMode' cToEnum #}
 
 --CHECKME: Can set nothing, what do you get back?
 -- | Sets the font used by a 'Text'. The font_name string must either
@@ -414,7 +418,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_font_name as ^ { withText* `Text', withMaybeString* `Maybe String' } -> `()' #}
+{# fun unsafe text_set_font_name as ^ `(TextClass self)' =>
+    { withTextClass* `self', withMaybeString* `Maybe String' } -> `()' #}
 
 
 -- | Retrieves the font name as set by 'textSetFontName'.
@@ -426,7 +431,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_font_name as ^ { withText* `Text' } -> `Maybe String' maybeString* #}
+{# fun unsafe text_get_font_name as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `Maybe String' maybeString* #}
 
 --TODO: Do something with unicode stuff
 --TODO: Maybe this
@@ -441,7 +447,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_password_char as ^ {withText* `Text', cIntConv `GUnichar' } -> `()' #}
+{# fun unsafe text_set_password_char as ^ `(TextClass self)' =>
+    {withTextClass* `self', cIntConv `GUnichar' } -> `()' #}
 
 
 -- | Retrieves the character to use in place of the actual text as set
@@ -454,7 +461,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_password_char as ^ {withText* `Text' } -> `GUnichar' cIntConv #}
+{# fun unsafe text_get_password_char as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `GUnichar' cIntConv #}
 
 
 -- | Sets whether the text of the 'Text' actor should be justified on
@@ -467,7 +475,7 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_justify as ^ { withText* `Text', `Bool'} -> `()' #}
+{# fun unsafe text_set_justify as ^ `(TextClass self)' => { withTextClass* `self', `Bool'} -> `()' #}
 
 -- | Retrieves whether the 'Text' actor should justify its contents on
 --   both margins.
@@ -478,7 +486,7 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 0.6
 --
-{# fun unsafe text_get_justify as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_get_justify as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 
 --FIXME: Pango doc
 --CHECKME: I have no idea if this is right or makes sense.
@@ -493,8 +501,8 @@ textGetAttributes text = withText text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-textGetLayout :: Text -> IO PangoLayout
-textGetLayout self = withText self $ \ctextptr -> do
+textGetLayout :: (TextClass self) => self -> IO PangoLayout
+textGetLayout self = withTextClass self $ \ctextptr -> do
                        pl <- constructNewGObject mkPangoLayoutRaw $ liftM castPtr $ {# call unsafe text_get_layout #} ctextptr
                        withPangoLayoutRaw pl $ \plptr -> do
                                                     str <- {#call unsafe layout_get_text#} (castPtr plptr) >>= peekUTFString
@@ -516,7 +524,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_line_alignment as ^ { withText* `Text', cFromEnum `LayoutAlignment'} -> `()' #}
+{# fun unsafe text_set_line_alignment as ^ `(TextClass self)' =>
+    { withTextClass* `self', cFromEnum `LayoutAlignment'} -> `()' #}
 
 -- | Retrieves the alignment of a 'Text', as set by
 --   'textSetLineAlignment'.
@@ -527,7 +536,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_line_alignment as ^ { withText* `Text' } -> `LayoutAlignment' cToEnum #}
+{# fun unsafe text_get_line_alignment as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `LayoutAlignment' cToEnum #}
 
 
 
@@ -540,7 +550,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_line_wrap as ^ { withText* `Text', `Bool'} -> `()' #}
+{# fun unsafe text_set_line_wrap as ^ `(TextClass self)' =>
+    { withTextClass* `self', `Bool'} -> `()' #}
 
 -- | Retrieves the value set using 'textSetLineWrap'.
 --
@@ -550,7 +561,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_line_wrap as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_get_line_wrap as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `Bool' #}
 
 
 --CHECKME: Link to pango doc
@@ -564,8 +576,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_line_wrap_mode as ^ { withText* `Text', cFromEnum `LayoutWrapMode' } -> `()' #}
-
+{# fun unsafe text_set_line_wrap_mode as ^ `(TextClass self)' =>
+    { withTextClass* `self', cFromEnum `LayoutWrapMode' } -> `()' #}
 
 
 -- | Retrieves the line wrap mode used by the 'Text' actor.
@@ -578,7 +590,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_line_wrap_mode as ^ { withText* `Text' } -> `LayoutWrapMode' cToEnum #}
+{# fun unsafe text_get_line_wrap_mode as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `LayoutWrapMode' cToEnum #}
 
 
 -- | Sets the maximum allowed length of the contents of the actor. If
@@ -590,7 +603,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 -- [@max@]  the maximum number of characters allowed in the text actor; 0 to
 -- disable or -1 to set the length of the current string * Since 1.0
 --
-{# fun unsafe text_set_max_length as ^ { withText* `Text', `Int'} -> `()' #}
+{# fun unsafe text_set_max_length as ^ `(TextClass self)' =>
+    { withTextClass* `self', `Int'} -> `()' #}
 
 -- | Gets the maximum length of text that can be set into a text
 --   actor.
@@ -603,7 +617,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_max_length as ^ { withText* `Text' } -> `Int' #}
+{# fun unsafe text_get_max_length as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `Int' #}
 
 
 -- | Sets whether a 'Text' actor should be selectable.
@@ -617,7 +632,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_selectable as ^ { withText* `Text', `Bool'} -> `()' #}
+{# fun unsafe text_set_selectable as ^ `(TextClass self)' =>
+    { withTextClass* `self', `Bool'} -> `()' #}
 
 
 -- | Retrieves whether a 'Text' is selectable or not.
@@ -628,7 +644,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_selectable as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_get_selectable as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `Bool' #}
 
 
 -- | Selects the region of text between start_pos and end_pos.
@@ -644,7 +661,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_selection as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
+{# fun unsafe text_set_selection as ^ `(TextClass self)' =>
+    { withTextClass* `self', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 
 --CHECKME: Return NULL / make Maybe?
 -- | Retrieves the currently selected text.
@@ -655,7 +673,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_selection as ^ { withText* `Text' } -> `String' peekNFreeString* #}
+{# fun unsafe text_get_selection as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `String' peekNFreeString* #}
 
 
 -- | Sets the other end of the selection, starting from the current cursor position.
@@ -669,7 +688,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_selection_bound as ^ { withText* `Text', `Int' } -> `()' #}
+{# fun unsafe text_set_selection_bound as ^ `(TextClass self)' =>
+    { withTextClass* `self', `Int' } -> `()' #}
 
 -- | Retrieves the other end of the selection of a 'Text' actor, in
 --   characters from the current cursor position.
@@ -680,7 +700,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_selection_bound as ^ { withText* `Text' } -> `Int' #}
+{# fun unsafe text_get_selection_bound as ^ `(TextClass self)' => { withTextClass* `self' } -> `Int' #}
 
 --CHECKME: I think these need to be safe
 -- | Sets whether a 'Text' actor should be in single line mode or not.
@@ -700,7 +720,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun text_set_single_line_mode as ^ { withText* `Text', `Bool' } -> `()' #}
+{# fun text_set_single_line_mode as ^ `(TextClass self)' => { withTextClass* `self', `Bool' } -> `()' #}
 
 -- | Retrieves whether the 'Text' actor is in single line mode.
 --
@@ -710,7 +730,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun text_get_single_line_mode as ^ { withText* `Text' } -> `Bool' #}
+{# fun text_get_single_line_mode as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 
 
 -- | Sets whether the contents of the 'Text' actor contains markup in
@@ -725,7 +745,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_use_markup as ^ { withText* `Text', `Bool' } -> `()' #}
+{# fun unsafe text_set_use_markup as ^ `(TextClass self)' => { withTextClass* `self', `Bool' } -> `()' #}
 
 -- | Retrieves whether the contents of the 'Text' actor should be
 --   parsed for the Pango text markup.
@@ -736,7 +756,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_use_markup as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_get_use_markup as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 
 
 -- | Sets whether the 'Text' actor should be editable.
@@ -751,7 +771,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_editable as ^ { withText* `Text', `Bool' } -> `()' #}
+{# fun unsafe text_set_editable as ^ `(TextClass self)' => { withTextClass* `self', `Bool' } -> `()' #}
 
 -- | Retrieves whether a 'Text' is editable or not.
 --
@@ -761,7 +781,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_editable as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_get_editable as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 --Insertions
 
 
@@ -780,7 +800,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_insert_text as ^ { withText* `Text', `String', cIntConv `GSSize' } -> `()' #}
+{# fun unsafe text_insert_text as ^ `(TextClass self)' =>
+    { withTextClass* `self', `String', cIntConv `GSSize' } -> `()' #}
 
 
 --FIXME: Unicode
@@ -792,7 +813,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_insert_unichar as ^ { withText* `Text', cIntConv `GUnichar' } -> `()' #}
+{# fun unsafe text_insert_unichar as ^ `(TextClass self)' =>
+    { withTextClass* `self', cIntConv `GUnichar' } -> `()' #}
 
 -- | Deletes n_chars inside a 'Text' actor, starting from the current
 --   cursor position.
@@ -803,7 +825,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_delete_chars as ^ { withText* `Text', cIntConv `Word' } -> `()' #}
+{# fun unsafe text_delete_chars as ^ `(TextClass self)' =>
+     { withTextClass* `self', cIntConv `Word' } -> `()' #}
 
 -- | Deletes the text inside a 'Text' actor between start_pos and
 --   end_pos.
@@ -819,7 +842,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_delete_text as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
+{# fun unsafe text_delete_text as ^ `(TextClass self)' =>
+    { withTextClass* `self', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
 
 
 --CHECKME: Subclasses it references?
@@ -834,7 +858,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_delete_selection as ^ { withText* `Text' } -> `()' #}
+{# fun unsafe text_delete_selection as ^ `(TextClass self)' =>
+    { withTextClass* `self' } -> `()' #}
 
 
 --TODO: GSSize
@@ -854,7 +879,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_chars as ^ { withText* `Text', cIntConv `GSSize', cIntConv `GSSize' } -> `String' peekNFreeString* #}
+{# fun unsafe text_get_chars as ^ `(TextClass self)' =>
+    { withTextClass* `self', cIntConv `GSSize', cIntConv `GSSize' } -> `String' peekNFreeString* #}
 
 
 --CHECKME: This can be set to Nothing, but you can't get Nothing back.
@@ -871,7 +897,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_cursor_color as ^ { withText* `Text', withMaybeColor* `Maybe Color' } -> `()' #}
+{# fun unsafe text_set_cursor_color as ^ `(TextClass self)' =>
+    { withTextClass* `self', withMaybeColor* `Maybe Color' } -> `()' #}
 
 
 -- | Retrieves the color of the cursor of a 'Text' actor.
@@ -882,7 +909,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_cursor_color as ^ { withText* `Text', alloca- `Maybe Color' maybeNullPeek* } -> `()' #}
+{# fun unsafe text_get_cursor_color as ^ `(TextClass self)' =>
+    { withTextClass* `self', alloca- `Maybe Color' maybeNullPeek* } -> `()' #}
 
 -- | Sets the color of the selection of a 'Text' actor.
 --
@@ -896,7 +924,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_selection_color as ^ { withText* `Text', withMaybeColor* `Maybe Color' } -> `()' #}
+{# fun unsafe text_set_selection_color as ^ `(TextClass self)' =>
+    { withTextClass* `self', withMaybeColor* `Maybe Color' } -> `()' #}
 
 -- | Retrieves the color of the selection of a 'Text' actor.
 --
@@ -906,7 +935,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_selection_color as ^ { withText* `Text', alloca- `Maybe Color' maybeNullPeek* } -> `()' #}
+{# fun unsafe text_get_selection_color as ^ `(TextClass self)' =>
+    { withTextClass* `self', alloca- `Maybe Color' maybeNullPeek* } -> `()' #}
 
 -- | Sets the cursor of a 'Text' actor at position.
 --
@@ -918,7 +948,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_cursor_position as ^ { withText* `Text', `Int' } -> `()' #}
+{# fun unsafe text_set_cursor_position as ^ `(TextClass self)' => { withTextClass* `self', `Int' } -> `()' #}
 
 -- | Retrieves the cursor position.
 --
@@ -928,7 +958,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_cursor_position as ^ { withText* `Text' } -> `Int' #}
+{# fun unsafe text_get_cursor_position as ^ `(TextClass self)' => { withTextClass* `self' } -> `Int' #}
 
 
 -- | Sets whether the cursor of a 'Text' actor should be visible or
@@ -948,7 +978,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_cursor_visible as ^ { withText* `Text', `Bool' } -> `()' #}
+{# fun unsafe text_set_cursor_visible as ^ `(TextClass self)' => { withTextClass* `self', `Bool' } -> `()' #}
 
 -- | Retrieves whether the cursor of a 'Text' actor is visible.
 --
@@ -958,7 +988,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_cursor_visible as ^ { withText* `Text' } -> `Bool' #}
+{# fun unsafe text_get_cursor_visible as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 
 
 -- | Sets the size of the cursor of a 'Text'. The cursor will only be
@@ -971,7 +1001,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_cursor_size as ^ { withText* `Text', `Int' } -> `()' #}
+{# fun unsafe text_set_cursor_size as ^ `(TextClass self)' => { withTextClass* `self', `Int' } -> `()' #}
 
 
 -- | Retrieves the size of the cursor of a 'Text actor.
@@ -982,7 +1012,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_cursor_size as ^ { withText* `Text' } -> `Int' #}
+{# fun unsafe text_get_cursor_size as ^ `(TextClass self)' => { withTextClass* `self' } -> `Int' #}
 
 -- | Emits the "activate" signal, if self has been set as activatable
 --   using 'textSetActivatable'.
@@ -998,7 +1028,7 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun text_activate as ^ { withText* `Text' } -> `Bool' #}
+{# fun text_activate as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 
 
 --TODO: This return type is messy
@@ -1012,8 +1042,8 @@ textGetLayout self = withText self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_position_to_coords as ^
-       { withText* `Text',
+{# fun unsafe text_position_to_coords as ^ `(TextClass self)' =>
+       { withTextClass* `self',
          `Int',
          alloca- `Float' peekFloatConv*,
          alloca- `Float' peekFloatConv*,
@@ -1022,9 +1052,9 @@ textGetLayout self = withText self $ \ctextptr -> do
 #if CLUTTER_CHECK_VERSION(1,2,0)
 --CHECKME: I've never used Pango, and not really sure if this is good
 --also it seems weird.
-textSetPreeditString :: Text -> String -> [PangoAttribute] -> Word -> IO ()
+textSetPreeditString :: (TextClass self) => self -> String -> [PangoAttribute] -> Word -> IO ()
 textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_preedit_string #}
-                                            in withText text $ \txtPtr ->
+                                            in withTextClass text $ \txtPtr ->
                                                  withUTFString str $ \strPtr -> do
                                                    pStr <- makeNewPangoString str
                                                    withAttrList pStr pattrs $ \attrPtr ->
@@ -1041,7 +1071,7 @@ textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_p
 --
 -- Since 1.0
 --
-textActivatable :: Attr Text Bool
+textActivatable :: (TextClass self) => Attr self Bool
 textActivatable = newNamedAttr "activatable" textGetActivatable textSetActivatable
 
 -- | A list of 'PangoStyleAttributes' to be applied to the contents of
@@ -1049,7 +1079,7 @@ textActivatable = newNamedAttr "activatable" textGetActivatable textSetActivatab
 --
 -- * Since 1.0
 --
---textAttributes :: Attr Text [PangoAttribute]
+--textAttributes :: (TextClass self) => Attr self [PangoAttribute]
 --textAttributes = newNamedAttr "attributes" textGetAttributes textSetAttributes
 
 
@@ -1057,7 +1087,7 @@ textActivatable = newNamedAttr "activatable" textGetActivatable textSetActivatab
 --
 -- * Since 1.0
 --
-textColor :: Attr Text Color
+textColor :: (TextClass self) => Attr self Color
 textColor = newNamedAttr "color" textGetColor textSetColor
 
 
@@ -1065,7 +1095,7 @@ textColor = newNamedAttr "color" textGetColor textSetColor
 --
 -- * Since 1.0
 --
-textCursorColor :: Attr Text (Maybe Color)
+textCursorColor :: (TextClass self) => Attr self (Maybe Color)
 textCursorColor = newNamedAttr "cursor-color" textGetCursorColor textSetCursorColor
 
 
@@ -1075,7 +1105,7 @@ textCursorColor = newNamedAttr "cursor-color" textGetCursorColor textSetCursorCo
 --
 -- * Since 1.0
 --
-textCursorColorSet :: ReadAttr Text Bool
+textCursorColorSet :: (TextClass self) => ReadAttr self Bool
 textCursorColorSet = readAttrFromBoolProperty "cursor-color-set"
 
 
@@ -1089,7 +1119,7 @@ textCursorColorSet = readAttrFromBoolProperty "cursor-color-set"
 --
 -- * Since 1.0
 --
-textCursorSize :: Attr Text Int
+textCursorSize :: (TextClass self) => Attr self Int
 textCursorSize = newNamedAttr "cursor-size" textGetCursorSize textSetCursorSize
 
 
@@ -1101,7 +1131,7 @@ textCursorSize = newNamedAttr "cursor-size" textGetCursorSize textSetCursorSize
 --
 -- * Since 1.0
 --
-textCursorVisible :: Attr Text Bool
+textCursorVisible :: (TextClass self) => Attr self Bool
 textCursorVisible = newNamedAttr "cursor-visible" textGetCursorVisible textSetCursorVisible
 
 
@@ -1111,7 +1141,7 @@ textCursorVisible = newNamedAttr "cursor-visible" textGetCursorVisible textSetCu
 --
 -- * Since 1.0
 --
-textEditable :: Attr Text Bool
+textEditable :: (TextClass self) => Attr self Bool
 textEditable = newNamedAttr "editable" textGetEditable textSetEditable
 
 
@@ -1121,7 +1151,7 @@ textEditable = newNamedAttr "editable" textGetEditable textSetEditable
 --
 -- * Since 1.0
 --
-textEllipsize :: Attr Text EllipsizeMode
+textEllipsize :: (TextClass self) => Attr self EllipsizeMode
 textEllipsize = newAttr textGetEllipsize textSetEllipsize
 
 -- | The font to be used by the ClutterText, as a string that can be
@@ -1131,7 +1161,7 @@ textEllipsize = newAttr textGetEllipsize textSetEllipsize
 --
 -- * Since 1.0
 --
-textFontName :: Attr Text (Maybe String)
+textFontName :: (TextClass self) => Attr self (Maybe String)
 textFontName = newNamedAttr "font-name" textGetFontName textSetFontName
 
 
@@ -1142,7 +1172,7 @@ textFontName = newNamedAttr "font-name" textGetFontName textSetFontName
 --
 -- * Since 1.0
 --
-textJustify :: Attr Text Bool
+textJustify :: (TextClass self) => Attr self Bool
 textJustify = newNamedAttr "justify" textGetJustify textSetJustify
 
 
@@ -1153,7 +1183,7 @@ textJustify = newNamedAttr "justify" textGetJustify textSetJustify
 --
 -- * Since 1.0
 --
-textLineAlignment :: Attr Text LayoutAlignment
+textLineAlignment :: (TextClass self) => Attr self LayoutAlignment
 textLineAlignment = newNamedAttr "line-alignment" textGetLineAlignment textSetLineAlignment
 
 
@@ -1163,7 +1193,7 @@ textLineAlignment = newNamedAttr "line-alignment" textGetLineAlignment textSetLi
 --
 -- Default value: @False
 --
-textLineWrap :: Attr Text Bool
+textLineWrap :: (TextClass self) => Attr self Bool
 textLineWrap = newNamedAttr "line-wrap" textGetLineWrap textSetLineWrap
 
 
@@ -1174,7 +1204,7 @@ textLineWrap = newNamedAttr "line-wrap" textGetLineWrap textSetLineWrap
 --
 -- * Since 1.0
 --
-textLineWrapMode :: Attr Text LayoutWrapMode
+textLineWrapMode :: (TextClass self) => Attr self LayoutWrapMode
 textLineWrapMode = newNamedAttr "line-wrap-mode" textGetLineWrapMode textSetLineWrapMode
 
 
@@ -1186,7 +1216,7 @@ textLineWrapMode = newNamedAttr "line-wrap-mode" textGetLineWrapMode textSetLine
 --
 -- * Since 1.0
 --
-textMaxLength :: Attr Text Int
+textMaxLength :: (TextClass self) => Attr self Int
 textMaxLength = newNamedAttr "max-length" textGetMaxLength textSetMaxLength
 
 
@@ -1198,7 +1228,7 @@ textMaxLength = newNamedAttr "max-length" textGetMaxLength textSetMaxLength
 --
 -- * Since 1.0
 --
-textPasswordChar :: Attr Text GUnichar
+textPasswordChar :: (TextClass self) => Attr self GUnichar
 textPasswordChar = newNamedAttr "password-char" textGetPasswordChar textSetPasswordChar
 
 -- | The current input cursor position. -1 is taken to be the end of
@@ -1210,7 +1240,7 @@ textPasswordChar = newNamedAttr "password-char" textGetPasswordChar textSetPassw
 --
 -- * Since 1.0
 --
-textPosition :: Attr Text Int
+textPosition :: (TextClass self) => Attr self Int
 textPosition = newNamedAttr "position" textGetCursorPosition textSetCursorPosition
 
 
@@ -1221,7 +1251,7 @@ textPosition = newNamedAttr "position" textGetCursorPosition textSetCursorPositi
 --
 -- * Since 1.0
 --
-textSelectable :: Attr Text Bool
+textSelectable :: (TextClass self) => Attr self Bool
 textSelectable = newNamedAttr "selectable" textGetSelectable textSetSelectable
 
 
@@ -1234,7 +1264,7 @@ textSelectable = newNamedAttr "selectable" textGetSelectable textSetSelectable
 --
 -- * Since 1.0
 --
-textSelectionBound :: Attr Text Int
+textSelectionBound :: (TextClass self) => Attr self Int
 textSelectionBound = newNamedAttr "selection-bound" textGetSelectionBound textSetSelectionBound
 
 
@@ -1242,7 +1272,7 @@ textSelectionBound = newNamedAttr "selection-bound" textGetSelectionBound textSe
 --
 -- * Since 1.0
 --
-textSelectionColor :: Attr Text (Maybe Color)
+textSelectionColor :: (TextClass self) => Attr self (Maybe Color)
 textSelectionColor = newNamedAttr "selection-color" textGetSelectionColor textSetSelectionColor
 
 
@@ -1252,7 +1282,7 @@ textSelectionColor = newNamedAttr "selection-color" textGetSelectionColor textSe
 --
 -- * Since 1.0
 --
-textSelectionColorSet :: ReadAttr Text Bool
+textSelectionColorSet :: (TextClass self) => ReadAttr self Bool
 textSelectionColorSet = readAttrFromBoolProperty "selection-color-set"
 
 
@@ -1269,7 +1299,7 @@ textSelectionColorSet = readAttrFromBoolProperty "selection-color-set"
 --
 -- * Since 1.0
 --
-textSingleLineMode :: Attr Text Bool
+textSingleLineMode :: (TextClass self) => Attr self Bool
 textSingleLineMode = newNamedAttr "single-line-mode" textGetSingleLineMode textSetSingleLineMode
 
 
@@ -1279,7 +1309,7 @@ textSingleLineMode = newNamedAttr "single-line-mode" textGetSingleLineMode textS
 --
 -- * Since 1.0
 --
-textText :: Attr Text String
+textText :: (TextClass self) => Attr self String
 textText = newNamedAttr "text" textGetText textSetText
 
 
@@ -1291,7 +1321,7 @@ textText = newNamedAttr "text" textGetText textSetText
 --
 -- * Since 1.0
 --
-textUseMarkup :: Attr Text Bool
+textUseMarkup :: (TextClass self) => Attr self Bool
 textUseMarkup = newNamedAttr "use-markup" textGetUseMarkup textSetUseMarkup
 
 

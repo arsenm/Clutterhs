@@ -24,20 +24,22 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.ModelIter (
-                                      modelIterCopy,
-                                    --modelIterGet,
-                                    --modelIterGetValue,
-                                    --modelIterSet,
-                                    --modelIterSetValue,
-                                      modelIterIsFirst,
-                                      modelIterIsLast,
-                                      modelIterNext,
-                                      modelIterPrev,
-                                      modelIterGetModel,
-                                      modelIterModel,
-                                      modelIterGetRow,
-                                      modelIterRow
-                                     ) where
+  modelIterCopy,
+--modelIterGet,
+--modelIterGetValue,
+--modelIterSet,
+--modelIterSetValue,
+  modelIterIsFirst,
+  modelIterIsLast,
+  modelIterNext,
+  modelIterPrev,
+  modelIterGetModel,
+  modelIterGetRow,
+
+-- * Attributes
+  modelIterModel,
+  modelIterRow
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.GValue #}
@@ -45,6 +47,7 @@ module Graphics.UI.Clutter.ModelIter (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.Properties
 import System.Glib.GType
 import qualified System.Glib.GTypeConstants as GType
 
@@ -59,10 +62,31 @@ import qualified System.Glib.GTypeConstants as GType
 {# fun unsafe model_iter_prev as ^ { withModelIter* `ModelIter' } -> `ModelIter' newModelIter* #}
 
 {# fun unsafe model_iter_get_model as ^ { withModelIter* `ModelIter' } -> `Model' newModel* #}
-modelIterModel :: ReadAttr ModelIter Model
-modelIterModel = readAttr modelIterGetModel
+
 
 {# fun unsafe model_iter_get_row as ^ { withModelIter* `ModelIter' } -> `Word' cIntConv #}
+
+
+-- Attributes
+
+-- CHECKME: Makes sense to be read only, and no set
+--function (but get function), but clutter doc says Read/Write next to
+--it
+
+-- | The row number to which this iter points to.
+--
+-- Default value: 0
+--
+-- * Since 0.6
+--
 modelIterRow :: ReadAttr ModelIter Word
-modelIterRow = readAttr modelIterGetRow
+modelIterRow = readNamedAttr "row" modelIterGetRow
+
+
+-- | A reference to the 'Model' that this iter belongs to.
+--
+-- * Since 0.6
+--
+modelIterModel :: ReadAttr ModelIter Model
+modelIterModel = readNamedAttr "model" modelIterGetModel
 

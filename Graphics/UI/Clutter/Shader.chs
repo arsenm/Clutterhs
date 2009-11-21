@@ -80,9 +80,10 @@ module Graphics.UI.Clutter.Shader (
 --valueShaderMatrix
 
 -- * Attributes
---shaderVertexSource,
---shaderFragmentSource,
-  shaderIsEnabled
+  shaderCompiled,
+  shaderEnabled,
+  shaderFragmentSource,
+  shaderVertexSource
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -91,10 +92,11 @@ module Graphics.UI.Clutter.Shader (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.Properties
 import System.Glib.GError
 
 
--- * Create a new 'Shader' instance.
+-- | Create a new 'Shader' instance.
 --
 -- [@Returns@] a new Shader.
 --
@@ -156,14 +158,6 @@ shaderSetFragmentSource shader str= let func = {# call unsafe shader_set_fragmen
 -- * Since 0.6
 --
 {# fun unsafe shader_get_fragment_source as ^ { withShader* `Shader' } -> `Maybe String' maybeString* #}
-
-{-
-shaderVertexSource :: Attr Shader (Maybe String)
-shaderVertexSource = newAttr shaderGetVertexSource shaderSetVertexSource
-
-shaderFragmentSource :: Attr Shader (Maybe String)
-shaderFragmentSource = newAttr shaderGetFragmentSource shaderSetFragmentSource
--}
 
 --TODO: Fix this description of GError
 -- | Compiles and links GLSL sources set for vertex and fragment
@@ -228,10 +222,6 @@ shaderCompile shader = withShader shader $ \sPtr ->
 --
 {# fun unsafe shader_get_is_enabled as ^ { withShader* `Shader' } -> `Bool' #}
 
-shaderIsEnabled :: Attr Shader Bool
-shaderIsEnabled = newAttr shaderGetIsEnabled shaderSetIsEnabled
-
-
 --TODO: GValue
 --{# fun unsafe shader_set_uniform as ^ { withShader* `Shader', `String',  } -> `()' #}
 
@@ -249,5 +239,49 @@ shaderIsEnabled = newAttr shaderGetIsEnabled shaderSetIsEnabled
 
 --{# fun unsafe value_set_shader_matrix as ^
 --{# fun unsafe value_get_shader_matrix as ^
+
+
+
+-- | Whether the shader is compiled and linked, ready for use in the
+--   GL context.
+--
+-- Default value: @False@
+--
+-- * Since 0.8
+--
+shaderCompiled :: ReadAttr Shader Bool
+shaderCompiled = readAttrFromBoolProperty "compiled"
+
+
+-- | Whether the shader is currently used in the GL rendering
+--   pipeline.
+--
+-- Default value: @False@
+--
+-- * Since 0.6
+--
+shaderEnabled :: Attr Shader Bool
+shaderEnabled = newAttrFromBoolProperty "enabled"
+
+
+-- | GLSL source code for the fragment shader part of the shader
+--   program.
+--
+-- Default value: @Nothing@
+--
+-- * Since 0.6
+--
+shaderFragmentSource :: Attr Shader (Maybe String)
+shaderFragmentSource = newAttrFromMaybeStringProperty "fragment-source"
+
+-- | GLSL source code for the vertex shader part of the shader
+--   program, if any
+--
+-- Default value: @Nothing@
+--
+-- * Since 0.6
+--
+shaderVertexSource :: Attr Shader (Maybe String)
+shaderVertexSource = newAttrFromMaybeStringProperty "vertex-source"
 
 

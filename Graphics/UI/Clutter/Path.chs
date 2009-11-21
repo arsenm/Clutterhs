@@ -104,15 +104,18 @@ module Graphics.UI.Clutter.Path (
   pathToCairoPath,
   pathClear,
   pathGetPosition,
-  pathGetLength
+  pathGetLength,
 -- * Attributes
---pathDescription,
+  pathDescription,
+  pathLength
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
+import System.Glib.Attributes
+import System.Glib.Properties
 import Control.Monad (liftM2)
 import Graphics.Rendering.Cairo.Types (Cairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
@@ -371,8 +374,6 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 {# fun unsafe path_replace_node as ^ { withPath* `Path', cIntConv `Word', withPathNode* `PathNode' } -> `()' #}
 
 
---FIXME: Attribute with the returning of bool from set description for success I think won't work
-
 -- | Returns a string describing the path in the same format as used by 'pathAddString'
 --
 -- [@path@] a 'Path'
@@ -396,9 +397,6 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 -- * Since 1.0
 --
 {# fun unsafe path_set_description as ^ { withPath* `Path', `String' } -> `Bool' #}
-
---pathDescription :: Attr Path String
---pathDescription = newAttr pathGetDescription pathSetDescription
 
 -- | Add the nodes of the ClutterPath to the path in the Cairo context.
 --
@@ -452,4 +450,19 @@ pathGetPosition path progress = withPath path $ \pathptr ->
 -- * Since 1.0
 --
 {# fun unsafe path_get_length as ^ { withPath* `Path' } -> `Word' cIntConv #}
+
+
+-- | SVG-style description of the path.
+--
+-- Default value: ""
+--
+pathDescription :: Attr Path String
+pathDescription = newAttrFromStringProperty "description"
+
+-- | An approximation of the total length of the path.
+--
+-- Default value: 0
+--
+pathLength :: ReadAttr Path Word
+pathLength = readNamedAttr "length" pathGetLength
 

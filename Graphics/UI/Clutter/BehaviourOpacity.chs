@@ -38,13 +38,19 @@ module Graphics.UI.Clutter.BehaviourOpacity (
 
 -- * Methods
   behaviourOpacitySetBounds,
-  behaviourOpacityGetBounds
+  behaviourOpacityGetBounds,
+
+-- * Attributes
+  behaviourOpacityOpacityEnd,
+  behaviourOpacityOpacityStart
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
+import System.Glib.Attributes
+import System.Glib.Properties
 
 -- | Creates a new 'BehaviourOpacity' object, driven by alpha which
 --   controls the opacity property of every actor, making it change in
@@ -91,4 +97,31 @@ import C2HS
        { withBehaviourOpacity* `BehaviourOpacity',
          alloca- `Word8' peekIntConv*,
          alloca- `Word8' peekIntConv*} -> `()' #}
+
+
+
+
+-- | Final opacity level of the behaviour.
+--
+-- Allowed values: <= 255
+--
+-- Default value: 0
+--
+-- * Since 0.2
+--
+behaviourOpacityOpacityEnd :: Attr BehaviourOpacity Word
+behaviourOpacityOpacityEnd = newAttrFromUIntProperty "opacity-end"
+
+
+
+-- | Initial opacity level of the behaviour.
+--
+-- Allowed values: <= 255
+--
+-- Default value: 0
+--
+-- * Since 0.2
+--
+behaviourOpacityOpacityStart :: Attr BehaviourOpacity Word
+behaviourOpacityOpacityStart = newAttrFromUIntProperty "opacity-start"
 

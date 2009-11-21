@@ -42,9 +42,7 @@ module Graphics.UI.Clutter.Model (
   modelGetColumnName,
   modelGetColumnType,
   modelGetNColumns,
-  modelNColumns,
   modelGetNRows,
-  modelNRows,
 --modelAppend,
 --modelPrepend,
 --modelInsert,
@@ -53,7 +51,6 @@ module Graphics.UI.Clutter.Model (
   modelForeach,
   modelSetSortingColumn,
   modelGetSortingColumn,
-  modelSortingColumn,
 --modelSetSort,
   modelResort,
 --modelSetFilter,
@@ -63,6 +60,8 @@ module Graphics.UI.Clutter.Model (
   modelGetFirstIter,
   modelGetLastIter,
   modelGetIterAtRow,
+-- * Attributes
+  modelFilterSet,
 
 --TODO: Signals
 -- * Signals
@@ -86,6 +85,7 @@ module Graphics.UI.Clutter.Model (
 
 import C2HS
 import System.Glib.Attributes
+import System.Glib.Properties
 import System.Glib.GType
 import Data.Word
 
@@ -97,24 +97,15 @@ import Data.Word
 
 {# fun unsafe model_get_n_columns as ^
        `(ModelClass model)' => { withModelClass* `model' } -> `Word' cIntConv #}
-modelNColumns :: (ModelClass model) => ReadAttr model Word
-modelNColumns = readAttr modelGetNColumns
 
 {# fun unsafe model_get_n_rows as ^
        `(ModelClass model)' => { withModelClass* `model' } -> `Word' cIntConv #}
-modelNRows :: (ModelClass model) => ReadAttr model Word
-modelNRows = readAttr modelGetNRows
-
-
 
 
 {# fun unsafe model_get_sorting_column as ^
        `(ModelClass model)' => { withModelClass* `model' } -> `Word' cIntConv #}
 {# fun unsafe model_set_sorting_column as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `()' #}
-modelSortingColumn :: (ModelClass model) => Attr model Word
-modelSortingColumn = newAttr modelGetSortingColumn modelSetSortingColumn
-
 
 
 --CHECKME: unsafe?
@@ -159,6 +150,14 @@ modelSetFilter model filterFunc = withModelClass model $ \mdlPtr -> do
 {# fun unsafe model_get_iter_at_row as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `ModelIter' newModelIter* #}
 
+
+-- Attributes
+
+modelFilterSet :: (ModelClass self) => ReadAttr self Bool
+modelFilterSet = readAttrFromBoolProperty "filter-set"
+
+
+-- Signals
 
 onFilterChanged, afterFilterChanged :: Model -> IO () -> IO (ConnectId Model)
 onFilterChanged = connect_NONE__NONE "filter-changed" False

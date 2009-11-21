@@ -59,7 +59,12 @@ module Graphics.UI.Clutter.BehaviourRotate (
   behaviourRotateGetCenter,
 
 -- * Attributes
+  behaviourRotateAngleEnd,
+  behaviourRotateAngleStart,
   behaviourRotateAxis,
+  behaviourRotateCenterX,
+  behaviourRotateCenterY,
+  behaviourRotateCenterZ,
   behaviourRotateDirection
   ) where
 
@@ -68,6 +73,7 @@ module Graphics.UI.Clutter.BehaviourRotate (
 
 import C2HS
 import System.Glib.Attributes
+import System.Glib.Properties
 
 
 -- | Creates a new 'BehaviourRotate'. This behaviour will rotate
@@ -121,9 +127,6 @@ import System.Glib.Attributes
 {# fun unsafe behaviour_rotate_get_axis as ^
        { withBehaviourRotate* `BehaviourRotate' } -> `RotateAxis' cToEnum #}
 
-behaviourRotateAxis :: Attr BehaviourRotate RotateAxis
-behaviourRotateAxis = newAttr behaviourRotateGetAxis behaviourRotateSetAxis
-
 
 -- | Sets the rotation direction used by the rotate behaviour.
 --
@@ -146,9 +149,6 @@ behaviourRotateAxis = newAttr behaviourRotateGetAxis behaviourRotateSetAxis
 --
 {# fun unsafe behaviour_rotate_get_direction as ^
        { withBehaviourRotate* `BehaviourRotate' } -> `RotateDirection' cToEnum #}
-
-behaviourRotateDirection :: Attr BehaviourRotate RotateDirection
-behaviourRotateDirection = newAttr behaviourRotateGetDirection behaviourRotateSetDirection
 
 -- | Sets the initial and final angles of a rotation behaviour; angles
 --   \>= 360 degrees get clamped to the canonical interval <0, 360).
@@ -210,4 +210,83 @@ behaviourRotateDirection = newAttr behaviourRotateGetDirection behaviourRotateSe
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
+
+
+
+-- | The final angle to where the rotation should end.
+--
+-- Allowed values: [0,360]
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+behaviourRotateAngleEnd :: Attr BehaviourRotate Double
+behaviourRotateAngleEnd = newAttrFromDoubleProperty "angle-end"
+
+
+-- | The initial angle from whence the rotation should start.
+--
+-- Allowed values: [0,360]
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+behaviourRotateAngleStart :: Attr BehaviourRotate Double
+behaviourRotateAngleStart = newAttrFromDoubleProperty "angle-start"
+
+
+-- | The axis of rotation.
+--
+-- Default value: 'ZAxis'
+--
+-- * Since 0.4
+--
+behaviourRotateAxis :: Attr BehaviourRotate RotateAxis
+behaviourRotateAxis = newNamedAttr "axis" behaviourRotateGetAxis behaviourRotateSetAxis
+
+-- | The x center of rotation.
+--
+-- Allowed values: >= -2147483647
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+behaviourRotateCenterX :: Attr BehaviourRotate Int
+behaviourRotateCenterX = newAttrFromIntProperty "center-x"
+
+
+-- | The y center of rotation.
+--
+-- Allowed values: >= -2147483647
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+behaviourRotateCenterY :: Attr BehaviourRotate Int
+behaviourRotateCenterY = newAttrFromIntProperty "center-y"
+
+
+-- | The z center of rotation.
+--
+-- Allowed values: >= -2147483647
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+behaviourRotateCenterZ :: Attr BehaviourRotate Int
+behaviourRotateCenterZ = newAttrFromIntProperty "center-z"
+
+-- | The direction of the rotation.
+--
+-- Default value: 'RotateCw'
+--
+-- * Since 0.4
+--
+behaviourRotateDirection :: Attr BehaviourRotate RotateDirection
+behaviourRotateDirection = newNamedAttr "direction" behaviourRotateGetDirection behaviourRotateSetDirection
 

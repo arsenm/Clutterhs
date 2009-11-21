@@ -48,7 +48,11 @@ module Graphics.UI.Clutter.Script (
   scriptConnectSignals,
 --scriptConnectSignalsFull,
 --scriptGetTypeFromName,
-  getScriptId
+  getScriptId,
+
+-- * Attributes
+  scriptFilename,
+  scriptFilenameSet
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -60,6 +64,7 @@ import System.Glib.GObject
 import System.Glib.GType
 import System.Glib.GTypeConstants
 import System.Glib.Attributes
+import System.Glib.Properties
 
 {# fun unsafe script_new as ^ { } -> `Script' newScript* #}
 
@@ -89,5 +94,28 @@ scriptConnectSignals script func = withScript $ \p -> do
 {# fun unsafe get_script_id as ^
        `(GObjectClass gobject)' => { withGObject* `gobject' } -> `String' #}
 
+
+
+-- | The path of the currently parsed file. If 'scriptFilenameSet' is
+--   @False@ then the value of this property is undefined.
+--
+-- Default value: @Nothing@
+--
+-- * Since 0.6
+--
+scriptFilename :: ReadAttr Script (Maybe String)
+scriptFilename = readAttrFromMaybeStringProperty "filename"
+
+
+-- | Whether the 'scriptFilename' property is set. If this property is
+--   @True@ then the currently parsed data comes from a file, and the
+--   file name is stored inside the 'Script':filename property.
+--
+-- Default value: @False@
+--
+-- * Since 0.6
+--
+scriptFilenameSet :: ReadAttr Script Bool
+scriptFilenameSet = readAttrFromBoolProperty "filename-set"
 
 

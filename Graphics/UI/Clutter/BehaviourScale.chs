@@ -42,8 +42,13 @@ module Graphics.UI.Clutter.BehaviourScale (
 
 -- * Methods
   behaviourScaleSetBounds,
-  behaviourScaleGetBounds
+  behaviourScaleGetBounds,
 
+-- * Attributes
+  behaviourScaleXScaleEnd,
+  behaviourScaleXScaleStart,
+  behaviourScaleYScaleEnd,
+  behaviourScaleYScaleStart
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -52,6 +57,7 @@ module Graphics.UI.Clutter.BehaviourScale (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
+import System.Glib.Properties
 
 
 -- | Creates a new 'BehaviourScale' instance.
@@ -109,4 +115,53 @@ import System.Glib.Attributes
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*} -> `()' #}
+
+
+
+-- | The final scaling factor on the X axis for the actors.
+--
+-- Allowed values: >= 0
+--
+-- Default value: 1
+--
+-- * Since 0.6
+--
+behaviourScaleXScaleEnd :: Attr BehaviourScale Double
+behaviourScaleXScaleEnd = newAttrFromDoubleProperty "x-scale-end"
+
+
+-- | The initial scaling factor on the X axis for the actors.
+--
+-- Allowed values: >= 0
+--
+-- Default value: 1
+--
+-- * Since 0.6
+--
+behaviourScaleXScaleStart :: Attr BehaviourScale Double
+behaviourScaleXScaleStart = newAttrFromDoubleProperty "x-scale-start"
+
+
+-- | The final scaling factor on the Y axis for the actors.
+--
+-- Allowed values: >= 0
+--
+-- Default value: 1
+--
+-- * Since 0.6
+--
+behaviourScaleYScaleEnd :: Attr BehaviourScale Double
+behaviourScaleYScaleEnd = newAttrFromDoubleProperty "y-scale-end"
+
+
+-- | The initial scaling factor on the Y axis for the actors.
+--
+-- Allowed values: >= 0
+--
+-- Default value: 1
+--
+-- * Since 0.6
+--
+behaviourScaleYScaleStart :: Attr BehaviourScale Double
+behaviourScaleYScaleStart = newAttrFromDoubleProperty "y-scale-start"
 

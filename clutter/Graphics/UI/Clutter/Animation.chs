@@ -31,7 +31,7 @@ module Graphics.UI.Clutter.Animation (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Animation'
+-- |    +----'Animation'
 -- @
 
 -- * Types
@@ -101,24 +101,82 @@ import Control.Monad (foldM_)
 
 import System.Glib.GObject
 import System.Glib.Attributes
+import System.Glib.Properties
 
+
+
+
+-- | Creates a new 'Animation' instance. You should set the GObject to
+--   be animated using 'animationSetObject', set the duration with
+--   'animationSetDuration' and the easing mode using
+--   'animationSetMode'.
+--
+-- Use 'animationBind' or 'animationBindInterval' to define the
+-- properties to be animated. The interval and the animated properties
+-- can be updated at runtime.
+--
+-- The 'actorAnimate' and relative family of functions provide an easy
+-- way to animate an 'Actor' and automatically manage the lifetime of
+-- a 'Animation' instance, so you should consider using those
+-- functions instead of manually creating an animation.
+--
+-- [@Returns@] the newly created 'Animation'
+--
+-- * Since 1.0
+--
 {# fun unsafe animation_new as ^ { } -> `Animation' newAnimation* #}
 
+
+-- | Attaches animation to object.
+--
+-- [@animation@] an 'Animation'
+--
+-- [@object@] a GObject
+--
+-- * Since 1.0
+--
 {# fun unsafe animation_set_object as ^
        `GObjectClass obj' => { withAnimation* `Animation', withGObject* `obj' } -> `()' #}
+
+
+-- | Retrieves the GObject attached to animation.
+--
+-- [@animation@] an Animation
+--
+-- [@Returns@] a GObject
+--
+-- * Since 1.0
+--
 {# fun unsafe animation_get_object as ^
        { withAnimation* `Animation' } -> `GObject' newGObject* #}
 
--- FIXME ?: Property issue since can set any gobject class, but can only get GObject back
---animationObject :: (GObjectClass obj) => Attr Animation obj
-animationObject :: Attr Animation GObject
-animationObject = newAttr animationGetObject animationSetObject
-
+-- | Sets the animation mode of animation. The animation mode is a
+--   logical id, either coming from the ClutterAnimationMode
+--   enumeration or the return value of clutter_alpha_register_func().
+--
+-- This function will also set 'alpha' if needed.
+--
+-- [@animation@] an 'Animation'
+--
+-- [@mode@] an animation mode logical id
+--
+-- * Since 1.0
+--
 {# fun unsafe animation_set_mode as ^
        { withAnimation* `Animation', cFromEnum `AnimationMode' } -> `()' #}
+
+
+-- | Retrieves the animation mode of animation, as set by
+--   'animationSetMode'.
+--
+-- [@animation@] an 'Animation'
+--
+-- [@Returns@] the mode for the animation
+--
+-- * Since 1.0
+--
 {# fun unsafe animation_get_mode as ^ { withAnimation* `Animation' } -> `AnimationMode' cToEnum #}
-animationMode :: Attr Animation AnimationMode
-animationMode = newAttr animationGetMode animationSetMode
+
 
 --CHECKME: Set a gint, get out a guint?
 -- | Sets the duration of animation in milliseconds.
@@ -142,10 +200,6 @@ animationMode = newAttr animationGetMode animationSetMode
 -- * Since 1.0
 --
 {# fun unsafe animation_get_duration as ^ { withAnimation* `Animation' } -> `Int' #}
-
-animationDuration :: Attr Animation Int
-animationDuration = newAttr animationGetDuration animationSetDuration
-
 
 
 -- | Sets the 'Timeline' used by animation.
@@ -172,9 +226,6 @@ animationDuration = newAttr animationGetDuration animationSetDuration
 --
 {# fun unsafe animation_get_timeline as ^
        { withAnimation* `Animation' } -> `Maybe Timeline' maybeNewTimeline* #}
-
-animationTimeline :: Attr Animation (Maybe Timeline)
-animationTimeline = newAttr animationGetTimeline animationSetTimeline
 
 
 --CHECKME: animation ownership and nothing?
@@ -204,10 +255,6 @@ animationTimeline = newAttr animationGetTimeline animationSetTimeline
 {# fun unsafe animation_get_alpha as ^
        { withAnimation* `Animation' } -> `Maybe Alpha' maybeNewAlpha* #}
 
--- | the alpha object used by the animation.
-animationAlpha :: Attr Animation (Maybe Alpha)
-animationAlpha = newAttr animationGetAlpha animationSetAlpha
-
 
 --TODO: Link signal name, but I'm not fully commited to signal names yet
 -- | Sets whether animation should loop over itself once finished.
@@ -235,10 +282,6 @@ animationAlpha = newAttr animationGetAlpha animationSetAlpha
 --
 {# fun unsafe animation_get_loop as ^ { withAnimation* `Animation' } -> `Bool' #}
 
--- | Whether an animation should loop over itself once finished.
-animationLoop :: Attr Animation Bool
-animationLoop = newAttr animationGetLoop animationSetLoop
-
 
 --CHECKME: Referencing
 -- | Emits the ::completed signal on animation
@@ -249,11 +292,10 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 --
 {# fun animation_completed as ^ { withAnimation* `Animation' } -> `()' #}
 
+
+--FIXME: Use AnimOp
 --Says it returns the Animation as a convenience for language bindings.
 --This is convenient to me how?
---CHECKME: Is this even proper to bind?
---The whole animation thing could be better.
---CHECKME: Get rid of the return?
 -- | Adds a single property with name property_name to the animation
 --   animation. For more information about animations, see 'animate'.
 --
@@ -371,11 +413,6 @@ animationLoop = newAttr animationGetLoop animationSetLoop
 {# fun actor_get_animation as ^
        `(ActorClass a)' => { withActorClass* `a' } -> `Maybe Animation' maybeNewAnimation* #}
 
--- | Retrieves the 'Animation' used by actor, if 'animate' has been
---   called on actor.
-actorAnimation :: (ActorClass actor) => ReadAttr actor (Maybe Animation)
-actorAnimation = readAttr actorGetAnimation
-
 
 onCompleted, afterCompleted :: Animation -> IO () -> IO (ConnectId Animation)
 onCompleted = connect_NONE__NONE "completed" False
@@ -422,6 +459,29 @@ toListAnim :: (ActorClass o) => [AnimOp o] -> ([String], [GenericValue])
 toListAnim = foldr step ([], [])
     where step (attr :-> val) (strs, vals) = (show attr:strs, toGenericValue val:vals)
 
+
+
+-- | Animates the given list of attributes of actor between the
+--   current value for each property and a new final value. The
+--   animation has a definite duration and a speed given by the mode.
+--
+--
+-- * Warning
+--
+-- Unlike clutter_actor_animate(), this function will not allow you to
+-- specify "signal::" names and callbacks.
+--
+-- [@actor@] an Actor
+--
+-- [@mode@] an animation mode logical id
+--
+-- [@duration@] duration of the animation, in milliseconds
+--
+-- [@anim ops@] A list of attributes associated with their final
+-- values.
+--
+-- * Since 1.0
+--
 animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [AnimOp actor] -> IO Animation
 animate _ _ _ [] = error "Need arguments to animate"
 animate actor mode duration us =
@@ -438,6 +498,30 @@ animate actor mode duration us =
                foldM_ unsetOneGVal gvPtr gvals
                newAnimation ret
 
+
+
+-- | Animates the given list of properties of actor between the
+--   current value for each property and a new final value. The
+--   animation has a definite behaviour given by the passed alpha.
+--
+-- See 'animate' for further details.
+--
+-- This function is useful if you want to use an existing 'Alpha' to animate actor.
+--
+-- * Warning
+--
+-- Unlike clutter_actor_animate_with_alpha(), this function will not
+-- allow you to specify "signal::" names and callbacks.
+--
+-- [@actor@] an Actor
+--
+-- [@alpha@] an Alpha
+--
+-- [@anim ops@] A list of attributes associated with their final
+-- values.
+--
+-- * Since 1.0
+--
 animateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [AnimOp actor] -> IO Animation
 animateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
 animateWithAlpha actor alpha us =
@@ -454,6 +538,29 @@ animateWithAlpha actor alpha us =
               newAnimation ret
 
 
+
+
+-- | Animates the given list of properties of actor between the
+--   current value for each property and a new final value. The
+--   animation has a definite duration given by timeline and a speed
+--   given by the mode.
+--
+-- See 'animate for further details.
+--
+-- This function is useful if you want to use an existing timeline to
+-- animate actor.
+--
+-- [@actor@] an Actor
+--
+-- [@mode@] an animation mode logical id
+--
+-- [@timeline@] a 'Timeline'
+--
+-- [@anim ops@] A list of attributes associated with their final
+-- values.
+--
+-- * Since 1.0
+--
 animateWithTimeline :: (ActorClass actor) =>
                        actor
                        -> AnimationMode
@@ -474,4 +581,60 @@ animateWithTimeline actor mode tml us =
               ret <- animatev actptr cmode tmlptr (cIntConv len) strptr gvPtr
               foldM_ unsetOneGVal gvPtr gvals
               newAnimation ret
+
+
+-- | the alpha object used by the animation.
+--
+-- * Since 1.0
+--
+animationAlpha :: Attr Animation (Maybe Alpha)
+animationAlpha = newNamedAttr "alpha" animationGetAlpha animationSetAlpha
+
+
+-- | The duration of the animation, expressed in milliseconds.
+--
+-- Default value: 0
+--
+-- * Since 1.0
+--
+animationDuration :: Attr Animation Int
+animationDuration = newNamedAttr "duration" animationGetDuration animationSetDuration
+
+
+-- | Whether the animation should loop.
+--
+-- Default value: @False@
+--
+-- * Since 1.0
+--
+animationLoop :: Attr Animation Bool
+animationLoop = newNamedAttr "loop" animationGetLoop animationSetLoop
+
+
+-- | The animation mode, either a value from 'AnimationMode' or a
+--   value returned by clutter_alpha_register_func(). The default
+--   value is 'Linear'.
+--
+-- * Since 1.0
+--
+animationMode :: Attr Animation AnimationMode
+animationMode = newAttr animationGetMode animationSetMode
+
+-- | Retrieves the 'Animation' used by actor, if 'animate' has been
+--   called on actor.
+actorAnimation :: (ActorClass actor) => ReadAttr actor (Maybe Animation)
+actorAnimation = readAttr actorGetAnimation
+
+-- | Object to which the animation applies.
+animationObject :: Attr Animation GObject
+animationObject = newNamedAttr "object" animationGetObject animationSetObject
+
+
+-- | The ClutterTimeline used by the animation.
+--
+-- * Since 1.0
+--
+animationTimeline :: Attr Animation (Maybe Timeline)
+animationTimeline = newNamedAttr "timeline" animationGetTimeline animationSetTimeline
+
 

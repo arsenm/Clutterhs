@@ -1325,6 +1325,7 @@ textUseMarkup = newNamedAttr "use-markup" textGetUseMarkup textSetUseMarkup
 
 -- Signals
 
+
 --See note in Types of Activatable
 instance Activatable Text where
   onActivate = connect_NONE__NONE "activate" False
@@ -1336,7 +1337,14 @@ onCursorEvent, afterCursorEvent :: Text -> (Geometry -> IO ()) -> IO (ConnectId 
 onCursorEvent = connect_BOXED__NONE "cursor-event" peek False
 afterCursorEvent = connect_BOXED__NONE "cursor-event" peek True
 
---CHECKME: Event?
+
+-- | The ::'cursorEvent' signal is emitted whenever the cursor
+--   position changes inside a 'Text' actor. Inside geometry it is
+--   stored the current position and size of the cursor, relative to
+--   the actor itself.
+--
+-- * Since 1.0
+--
 cursorEvent :: Signal Text (Geometry -> IO ())
 cursorEvent = Signal (connect_BOXED__NONE "cursor-event" peek)
 
@@ -1345,6 +1353,11 @@ onTextChanged, afterTextChanged :: Text -> IO () -> IO (ConnectId Text)
 onTextChanged = connect_NONE__NONE "text-changed" False
 afterTextChanged = connect_NONE__NONE "text-changed" True
 
+
+-- | The ::'textChanged' signal is emitted after actor's text changes
+--
+-- * Since 1.0
+--
 textChanged :: Signal Text (IO ())
 textChanged = Signal (connect_NONE__NONE "text-changed")
 

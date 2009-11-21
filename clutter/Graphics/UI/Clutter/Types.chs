@@ -1440,6 +1440,22 @@ instance Storable e => MArray RGBData e IO where
 -- it (which actually isn't much of a problem, just something to
 -- remember if such a class existed). I don't think this is an issue,
 -- but I don't know what I'm doing.
+
+
+--FIXME: This is ugly and confusing, and haddock apparently can't
+--document instances. Probably don't do this madness with Activatable
+--Documentation for Text's activate
+
+-- | The ::'activate' signal is emitted each time a Text actor is
+--    'activated' by the user, normally by pressing the 'Enter'
+--    key. The signal is emitted only if "activatable" is set to
+--    @True@.
+--
+-- | The ::'activate' signal is emitted when the stage receives key
+--   focus from the underlying window system.
+--
+-- * Since 0.6
+--
 class Activatable a where
   onActivate :: a -> IO () -> IO (ConnectId a)
   afterActivate :: a -> IO () -> IO (ConnectId a)

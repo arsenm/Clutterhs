@@ -29,47 +29,53 @@
 --struct using vs. functions. Don't need to do silly struct things.
 
 module Graphics.UI.Clutter.Event (
-                                  EventM,
+  EventM,
 
-                                  EAny,
-                                  EButton,
-                                  EKey,
-                                  EMotion,
-                                  EScroll,
-                                  EStageState,
-                                  ECrossing,
+  EAny,
+  EButton,
+  EKey,
+  EMotion,
+  EScroll,
+  EStageState,
+  ECrossing,
 
-                                  eventM,
-                                  tryEvent,
+  eventM,
+  tryEvent,
 
-                                  eventCoordinates,
-                                  eventState,
-                                  eventTime,
-                                  eventSource,
-                                  eventStage,
-                                  eventFlags,
-                                  eventButton,
-                                  eventClickCount,
-                                  eventKeySymbol,
-                                  eventKeyUnicode,
+  eventCoordinates,
+  eventState,
+  eventTime,
+  eventSource,
+  eventStage,
+  eventFlags,
 
-                                  keysymToUnicode,
+  eventButton,
+  eventClickCount,
+  eventKeySymbol,
+  eventKeyCode,
+  eventKeyUnicode,
 
-                                --eventDevice,
-                                  eventDeviceId,
-                                  eventDeviceType,
-                                --eventGetInputDeviceForId,
-                                --inputDeviceGetDeviceType,
+  eventRelated,
+  eventScrollDirection,
 
-                                  getCurrentEventTime,
+  keysymToUnicode,
 
-                                  scrollEvent,
-                                  motionNotifyEvent,
+--eventDevice,
+  eventDeviceId,
+  eventDeviceType,
+--eventGetInputDeviceForId,
+--inputDeviceGetDeviceType,
 
-                                  buttonPressEvent,
-                                  buttonReleaseEvent
+  getCurrentEventTime,
+  eventsPending,
 
-                                 ) where
+  scrollEvent,
+  motionNotifyEvent,
+
+  buttonPressEvent,
+  buttonReleaseEvent
+
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
@@ -121,6 +127,7 @@ data EStageState = EStageState
 -- | A tag for /Crossing/ events.
 data ECrossing = ECrossing
 
+
 --Clutter seems to not have the event mask stuff
 eventM :: ActorClass a => SignalName ->
   ConnectAfter -> a -> (EventM t Bool) -> IO (ConnectId a)
@@ -153,102 +160,165 @@ instance HasModifierType EKey
 instance HasModifierType EMotion
 instance HasModifierType EScroll
 
+--FIXME: Evil casting
+
+
+-- | Retrieves the 'EventFlags' of event
+--
+-- the event flags
+--
+-- * Since 1.0
+--
 eventFlags :: EventM t [EventFlags]
 eventFlags = ask >>= \ptr ->
-             liftIO $ liftM cToFlags ({# get ClutterAnyEvent->flags #} ptr)
+             liftIO $ liftM cToFlags ({# call unsafe event_get_flags #} (castPtr ptr))
 
-eventStage :: EventM t Stage
+
+-- | Retrieves the source 'Stage' the event originated for, or
+--   @Nothing@ if the event has no stage.
+--
+-- * Since 0.8
+--
+eventStage :: EventM t (Maybe Stage)
 eventStage = ask >>= \ptr ->
-             liftIO $ newStage =<< {# get ClutterAnyEvent->stage #} ptr
+             liftIO $ maybeNewStage . castPtr =<< {# call unsafe event_get_stage #} (castPtr ptr)
 
-eventSource :: EventM t Actor
+
+
+-- | Retrieves the source 'Actor' the event originated from, or
+--   @Nothing@ if the event has no source.
+--
+-- * Since 0.6
+--
+eventSource :: EventM t (Maybe Actor)
 eventSource = ask >>= \ptr ->
-             liftIO $ newActor =<< {# get ClutterAnyEvent->source #} ptr
+             liftIO $ maybeNewActor =<< {# call unsafe event_get_source #} (castPtr ptr)
+
+
+
+-- | Retrieves the related actor of a crossing event.
+--
+-- @Just@ the related 'Actor', or @Nothing@. transfer none.
+-- * Since 1.0
+--
+eventRelated :: EventM ECrossing (Maybe Actor)
+eventRelated = ask >>= \ptr ->
+  liftIO $ maybeNewActor =<< {# call unsafe event_get_related #} (castPtr ptr)
+
 
 
 -- | Retrieve the @(x,y)@ coordinates of the mouse.
 eventCoordinates :: HasCoordinates t => EventM t (Float, Float)
-eventCoordinates = do
-  ptr <- ask
-  liftIO $ do
-    ty <- {# get ClutterEvent->type #} ptr
-    case cToEnum ty of
-      ButtonPress -> do
-        x <- {# get ClutterButtonEvent->x #} ptr
-        y <- {# get ClutterButtonEvent->y #} ptr
-        return (realToFrac x, realToFrac y)
-      Motion -> do
-        x <- {# get ClutterMotionEvent->x #} ptr
-        y <- {# get ClutterMotionEvent->y #} ptr
-        return (realToFrac x, realToFrac y)
-      Scroll -> do
-        x <- {# get ClutterScrollEvent->x #} ptr
-        y <- {# get ClutterScrollEvent->y #} ptr
-        return (realToFrac x, realToFrac y)
-      Enter -> do
-        x <- {# get ClutterCrossingEvent->x #} ptr
-        y <- {# get ClutterCrossingEvent->y #} ptr
-        return (realToFrac x, realToFrac y)
-      Leave -> do
-        x <- {# get ClutterCrossingEvent->x #} ptr
-        y <- {# get ClutterCrossingEvent->y #} ptr
-        return (realToFrac x, realToFrac y)
-      _ -> error ("eventCoordinates: none for event type " ++ show ty)
+eventCoordinates = ask >>= \ptr ->
+  liftIO $ alloca $ \xptr ->
+             alloca $ \yptr -> do
+               {# call unsafe event_get_coords #} (castPtr ptr) xptr yptr
+               x <- peekFloatConv xptr
+               y <- peekFloatConv yptr
+               return (x,y)
 
-
+-- | The time of the event, or CLUTTER_CURRENT_TIME
+--
+-- * Since 0.4
+--
 eventTime :: EventM t Timestamp
 eventTime = ask >>= \ptr ->
-            liftIO $ liftM fromIntegral ({# get ClutterAnyEvent-> time #} ptr)
+            liftIO $ liftM fromIntegral ({# call unsafe event_get_time #} (castPtr ptr))
+
 
 buttonPressEvent :: ActorClass self => Signal self (EventM EButton Bool)
-buttonPressEvent = Signal (eventM "button_press_event")
+buttonPressEvent = Signal (eventM "button-press-event")
 
 buttonReleaseEvent :: ActorClass self => Signal self (EventM EButton Bool)
-buttonReleaseEvent = Signal (eventM "button_release_event")
+buttonReleaseEvent = Signal (eventM "button-release-event")
 
 scrollEvent :: ActorClass self => Signal self (EventM EScroll Bool)
-scrollEvent = Signal (eventM "scroll_event")
+scrollEvent = Signal (eventM "scroll-event")
 
 motionNotifyEvent :: ActorClass self => Signal self (EventM EMotion Bool)
-motionNotifyEvent = Signal (eventM "motion_event")
+motionNotifyEvent = Signal (eventM "motion-event")
 
+
+-- | Retrieves the modifier state of the event.
+--
+-- the modifier state parameters, or []
+--
+-- * Since 0.4
+--
 eventState :: HasModifierType t => EventM t [ModifierType]
 eventState = do
   ptr <- ask
-  liftIO $ do
-    ty <- {# get ClutterEvent->type #} ptr
-    case cToEnum ty of
-      KeyPress -> liftM (toModFlags.cIntConv) ({# get ClutterKeyEvent->modifier_state #} ptr)
-      ButtonPress -> liftM (toModFlags.cIntConv) ({# get ClutterButtonEvent->modifier_state #} ptr)
-      Motion -> liftM (toModFlags.cIntConv) ({# get ClutterMotionEvent->modifier_state #} ptr)
-      Scroll -> liftM (toModFlags.cIntConv) ({# get ClutterScrollEvent->modifier_state #} ptr)
-      _ -> error ("eventModifierType: none for event type " ++ show ty)
+  liftIO $
+    liftM (toModFlags . cIntConv) $ {# call unsafe event_get_state #} (castPtr ptr)
 
+
+-- | Retrieves the button number of event
+--
+-- the button number
+--
+-- * Since 1.0
+--
 eventButton :: EventM EButton Word32
 eventButton = ask >>= \ptr ->
-              liftIO $ liftM cIntConv ({# get ClutterButtonEvent->button #} ptr)
+              liftIO $ liftM cIntConv ({# call unsafe event_get_button #} (castPtr ptr))
 
+
+
+-- | Retrieves the number of clicks of event
+--
+-- the click count
+--
+-- * Since 1.0
+--
 eventClickCount :: EventM EButton Word
 eventClickCount = ask >>= \ptr ->
-                  liftIO $ liftM cIntConv ({# get ClutterButtonEvent->click_count #} ptr)
+                  liftIO $ liftM cIntConv ({# call unsafe event_get_click_count #} (castPtr ptr))
 
 
-eventKeySymbol :: EventM EButton Word
+
+-- | Retrieves the key symbol of event
+--
+-- the key symbol representing the key
+--
+-- * Since 1.0
+--
+eventKeySymbol :: EventM EKey Word
 eventKeySymbol = ask >>= \ptr ->
-                 liftIO $ liftM cIntConv ({# get ClutterKeyEvent->keyval #} ptr)
+                 liftIO $ liftM cIntConv ({# call unsafe event_get_key_symbol #} (castPtr ptr))
 
-eventKeyCode :: EventM EButton Word16
+
+
+-- | Retrieves the keycode of the key that caused event
+--
+-- The keycode representing the key
+--
+-- * Since 1.0
+--
+eventKeyCode :: EventM EKey Word16
 eventKeyCode = ask >>= \ptr ->
                liftIO $ liftM cIntConv ({# get ClutterKeyEvent->hardware_keycode #} ptr)
 
-eventKeyUnicode :: EventM EButton Word32
+
+-- | Retrieves the unicode value for the key that caused keyev.
+--
+-- The unicode value representing the key
+--
+eventKeyUnicode :: EventM EKey Word32
 eventKeyUnicode = ask >>= \ptr ->
                  liftIO $ liftM cIntConv ({# get ClutterKeyEvent->unicode_value #} ptr)
 
 
+
+-- | Retrieves the direction of the scrolling of event
+--
+-- the scrolling direction
+--
+-- * Since 1.0
+--
 eventScrollDirection :: EventM EScroll ScrollDirection
 eventScrollDirection = ask >>= \ptr ->
               liftIO $ liftM cToEnum ({# get ClutterScrollEvent->direction #} ptr)
+
 
 {-
 --I don't understand why GDK is doing modif .&. mask stuff
@@ -282,30 +352,74 @@ eM allModifs = do
 -}
 
 --TODO: Should this happen automatically? unicode char?
-{# fun unsafe keysym_to_unicode as ^ { `Int' } -> `Word' cIntConv #}
+{# fun unsafe keysym_to_unicode as ^ { cIntConv `Word' } -> `Word' cIntConv #}
 
 
 {-
-{# fun unsafe get_input_device_for_id as ^ { `Int' } -> `InputDevice' #}
-
---TODO: The Device stuff I don't think is useful without first looking
---at some of the backend specific stuff
+{# fun unsafe get_input_device_for_id as ^ { cIntConv `DeviceID' } -> `Maybe InputDevice' #}
 
 eventDevice :: EventM t InputDevice
 eventDevice = ask >>= \ptr ->
                  liftIO $ newInputDevice =<< {# call unsafe event_get_device #} ptr
 -}
 
---TODO: DeviceID type? Silly structiness?
---I also don't understand why the cast is needed
-eventDeviceId :: EventM any Int
+
+-- | Retrieves the events device id if set.
+--
+-- @Just@ A unique identifier for the device or @Nothing@ if the event
+-- has no specific device set.
+--
+eventDeviceId :: EventM any (Maybe DeviceID)
 eventDeviceId = ask >>= \ptr ->
-                liftIO $ liftM cIntConv $ {# call unsafe event_get_device_id #} (castPtr ptr)
+                liftIO $ do
+                  did <- liftM cIntConv $ {# call unsafe event_get_device_id #} (castPtr ptr)
+                  return $ if did == (-1)
+                             then P.Nothing
+                             else Just did
 
 
+-- | Retrieves the type of the device for event
+--
+-- the 'InputDeviceType' for the device, if any is set
+--
+-- * Since 1.0
+--
 eventDeviceType :: EventM any InputDeviceType
 eventDeviceType = ask >>= \ptr ->
                 liftIO $ liftM cToEnum $ {# call unsafe event_get_device_type #} (castPtr ptr)
 
+
+-- | Retrieves the timestamp of the last event, if there is an event
+--   or if the event has a timestamp.
+--
+-- [@Returns@] the event timestamp, or CLUTTER_CURRENT_TIME
+--
+-- * Since 1.0
+--
 {# fun unsafe get_current_event_time as ^ { } -> `Timestamp' cIntConv #}
+
+
+
+-- | Checks if events are pending in the event queue.
+--
+-- [@Returns@] @True@ if there are pending events, @False@ otherwise.
+--
+-- * Since 0.4
+--
+{# fun unsafe events_pending as ^ { } -> `Bool' #}
+
+
+--CHECKME: Bad?
+-- | Puts a copy of the event on the back of the event queue. The
+--   event will have the 'EventFlagSynthetic' flag set. If the source
+--   is set event signals will be emitted for this source and
+--   capture/bubbling for its ancestors. If the source is not set it
+--   will be generated by picking or use the actor that currently has
+--   keyboard focus
+--
+-- * Since 0.6
+--
+eventPut :: EventM any ()
+eventPut = ask >>= \ptr -> liftIO $
+                {# call unsafe event_put #} (castPtr ptr)
 

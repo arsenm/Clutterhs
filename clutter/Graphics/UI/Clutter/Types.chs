@@ -45,6 +45,7 @@ module Graphics.UI.Clutter.Types (
                                   Word,
                                   GID,
                                   Timestamp,
+                                  DeviceID,
 
                                   Color(..),
                                   ColorPtr,
@@ -422,6 +423,7 @@ instance Flags FontFlags
 
 type GID = Word32
 type Timestamp = Word
+type DeviceID = Int
 
 --CHECKME: I'm not sure how to deal with this opaque type
 -- {# pointer *ClutterUnits as Units newtype #}

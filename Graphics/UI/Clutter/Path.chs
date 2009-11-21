@@ -454,7 +454,7 @@ pathGetPosition path progress = withPath path $ \pathptr ->
 
 -- | SVG-style description of the path.
 --
--- Default value: ""
+-- Default value: \"\"
 --
 pathDescription :: Attr Path String
 pathDescription = newAttrFromStringProperty "description"

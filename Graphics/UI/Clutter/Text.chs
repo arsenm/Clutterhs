@@ -1155,7 +1155,7 @@ textEllipsize :: (TextClass self) => Attr self EllipsizeMode
 textEllipsize = newAttr textGetEllipsize textSetEllipsize
 
 -- | The font to be used by the ClutterText, as a string that can be
---   parsed by pango_font_description_from_string().
+--   parsed by 'Pango.Font.fontDescriptionFromString'.
 --
 -- Default value: @Nothing@
 --
@@ -1175,7 +1175,6 @@ textFontName = newNamedAttr "font-name" textGetFontName textSetFontName
 textJustify :: (TextClass self) => Attr self Bool
 textJustify = newNamedAttr "justify" textGetJustify textSetJustify
 
-
 -- | The preferred alignment for the text. This property controls the
 --   alignment of multi-line paragraphs.
 --
@@ -1191,7 +1190,7 @@ textLineAlignment = newNamedAttr "line-alignment" textGetLineAlignment textSetLi
 --   the available allocation. The wrapping strategy is controlled by
 --   the 'textLineWrapMode' attribute.
 --
--- Default value: @False
+-- Default value: @False@
 --
 textLineWrap :: (TextClass self) => Attr self Bool
 textLineWrap = newNamedAttr "line-wrap" textGetLineWrap textSetLineWrap
@@ -1305,7 +1304,7 @@ textSingleLineMode = newNamedAttr "single-line-mode" textGetSingleLineMode textS
 
 -- | The text to render inside the actor.
 --
--- Default value: ""
+-- Default value: \"\"
 --
 -- * Since 1.0
 --
@@ -1313,9 +1312,8 @@ textText :: (TextClass self) => Attr self String
 textText = newNamedAttr "text" textGetText textSetText
 
 
-
 -- | Whether the text includes Pango markup. See
---   pango_layout_set_markup() in the Pango documentation.
+--   'Pango.Layout.layoutSetMarkup' in the Pango documentation.
 --
 -- Default value: @False@
 --

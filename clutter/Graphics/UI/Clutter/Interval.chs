@@ -69,53 +69,14 @@ import qualified System.Glib.GTypeConstants as GType
 
 intervalNew = error "ClutterInterval unimplemented"
 
---this seems to replace intervalNew for language bindings so rename
---it?  FIXME: toGValue and then pattern match against constructors is
---kind of dumb but I'm too lazy to fix it now
 {-
-gValueArgGType val = case toGValueArg val of
-                       (UInteger _) -> GType.int
-                       (UDouble _) ->  GType.double
-                       (UFloat _) -> GType.float
-                       (UString _) -> GType.string
-                       (UChar _) ->  GType.char
-                       (UUChar _) -> GType.uchar
-                       (UColor _) -> color
-                       (UGObject _) -> GType.object
-
-
 intervalNewWithValues :: (GValueArgClass arg) => arg -> arg -> IO Interval
 intervalNewWithValues initial final = let func = {# call unsafe interval_new_with_values #}
                                           gtype = gValueArgGType initial
                                       in withGValueArg initial $ \argptr1 ->
                                           withGValueArg final $ \argptr2 ->
                                             newInterval =<< func gtype argptr1 argptr2
-
+-}
 {# fun unsafe interval_clone as ^
        { withInterval* `Interval' } -> `Interval' newInterval* #}
-
-
-{# fun unsafe interval_set_initial_value as ^
-   `(GValueArgClass value)' => { withInterval* `Interval', withGValueArg* `value' } -> `()' #}
-
-{# fun unsafe interval_set_final_value as ^
-   `(GValueArgClass value)' => { withInterval* `Interval', withGValueArg* `value' } -> `()' #}
-
---TODO: How to get out GValue?
---Clutter also has set way using varargs to avoid gvalues,
---but not a arg vector version
-
-{# fun unsafe interval_compute_value as ^
-       `(GValueArgClass value)' =>
-       { withInterval* `Interval',
-         `Double',
-         withGValueArg* `value' } -> `Bool' #}
-
-{# fun unsafe interval_get_value_type as ^
-       { withInterval* `Interval' } -> `GType' cToEnum #}
-
-
---ProgressFunc: grar gvalues cause me pain
-
--}
 

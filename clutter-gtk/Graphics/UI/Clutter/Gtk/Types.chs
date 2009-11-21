@@ -31,9 +31,9 @@ module Graphics.UI.Clutter.Gtk.Types (
   withClutterEmbed
   ) where
 
-{# import Graphics.UI.Clutter.Types #}
 
 import C2HS
+import Graphics.UI.Clutter.Types
 import Graphics.UI.Gtk.Types
 import System.Glib.GObject
 

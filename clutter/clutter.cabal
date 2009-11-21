@@ -21,8 +21,6 @@ Flag X11Support
   Description: Enable X11 support
   Default:     True
 
---TODO Split ClutterGtk into separate thing? also where does it belong
---in hierarchy?
 --TODO: Better way of including/excluding x11 without
 --listing everything else
 Library
@@ -78,9 +76,6 @@ Library
                      Graphics.UI.Clutter.Scriptable,
                      Graphics.UI.Clutter.BindingPool,
                      Graphics.UI.Clutter.X11,
-                     Graphics.UI.Clutter.Gtk.Types,
-                     Graphics.UI.Clutter.Gtk.Embed,
-                     Graphics.UI.Clutter.Gtk,
                      Graphics.UI.Clutter.Utilities,
                      Graphics.UI.Clutter
   else
@@ -138,7 +133,6 @@ Library
                    ./Graphics,
                    ./Graphics/UI,
                    ./Graphics/UI/Clutter
-                   ./Graphics/UI/Clutter/Gtk
   Include-dirs: /usr/include/clutter-1.0/,
                 /usr/include/glib-2.0,
                 /usr/include/glib-2.0/glib,
@@ -162,7 +156,6 @@ Executable arst
                    Graphics,
                    Graphics/UI,
                    Graphics/UI/Clutter,
-                   Graphics/UI/Clutter/Gtk
                    dist/build
 
   Build-Depends: base, glib

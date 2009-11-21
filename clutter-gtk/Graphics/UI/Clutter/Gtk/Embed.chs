@@ -19,6 +19,7 @@
 --
 {-# LANGUAGE ForeignFunctionInterface #-}
 
+#include <clutter/clutter.h>
 #include <clutter-gtk/clutter-gtk.h>
 
 {# context lib="clutter" prefix="gtk" #}
@@ -28,14 +29,17 @@
 
 -- | GtkEmbed — Widget for embedding a Clutter scene
 module Graphics.UI.Clutter.Gtk.Embed (
-                                      clutterEmbedNew
-                                     ) where
+  clutterEmbedNew,
+  clutterEmbedGetStage
+  ) where
 
 import C2HS
 
-{# import Graphics.UI.Clutter.Types #}
+import Graphics.UI.Clutter.Types
 {# import Graphics.UI.Clutter.Gtk.Types #}
 
+
+{# pointer *ClutterActor as ActorPtr foreign -> Actor nocode #}
 
 
 -- | Creates a new 'ClutterEmbed' widget. This widget can be used to build

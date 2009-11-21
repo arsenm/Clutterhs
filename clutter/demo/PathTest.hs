@@ -118,7 +118,7 @@ main = do
 
   timelineStart tml
 
-  on tml completed clutterMainQuit
+  on tml completed mainQuit
 
   clutterMain
 

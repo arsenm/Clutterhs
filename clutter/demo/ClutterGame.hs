@@ -73,7 +73,7 @@ main = do
   stage <- stageGetDefault
   set stage [stageColor := Color 0 0 0 255]
 
-  on stage hide clutterMainQuit
+  on stage hide mainQuit
 
   height <- get stage actorHeight
   width <- get stage actorWidth

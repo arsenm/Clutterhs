@@ -37,7 +37,7 @@ main = do
   on tml markerReached (\name ms -> putStrLn $ "Marker reached: " ++
                                      P.show name ++ ": " ++ P.show ms ++ "ms")
 
-  on tml completed (putStrLn "timeline ended" >> clutterMainQuit)
+  on tml completed (putStrLn "timeline ended" >> mainQuit)
 
   on tml started (putStrLn "Timeline started")
 

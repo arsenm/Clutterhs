@@ -50,7 +50,7 @@ main = do
   animtml <- fmap fromJust (animationGetTimeline anim)
   timelineStart animtml
 
-  on stg hide (clutterMainQuit)
+  on stg hide mainQuit
   set stg [actorWidth := 800,
            actorHeight := 800]
 

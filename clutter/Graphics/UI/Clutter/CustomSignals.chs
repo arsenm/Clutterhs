@@ -28,7 +28,6 @@ module Graphics.UI.Clutter.CustomSignals (
 import Control.Monad (liftM)
 
 import System.Glib.FFI
-import System.Glib.UTFString (peekUTFString)
 import System.Glib.GError (failOnGError)
 import System.Glib.Signals
 import System.Glib.GObject

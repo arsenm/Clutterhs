@@ -56,7 +56,9 @@ module Graphics.UI.Clutter.Utility (
   maybeNewAnimation,
   maybeNewTimeline,
   maybeNewTexture,
-  maybeNewShader
+  maybeNewShader,
+
+  clutterNewAttrFromUIntProperty
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -65,9 +67,13 @@ import C2HS
 import Data.Maybe (catMaybes)
 
 import System.Glib.Flags
-import System.Glib.GObject (makeNewGObject, objectUnref)
+import System.Glib.Attributes
+import System.Glib.Properties
+import System.Glib.GValueTypes
+import System.Glib.GObject (makeNewGObject, objectUnref, GObjectClass)
 import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
+import qualified System.Glib.GTypeConstants as GType
 
 import Graphics.UI.Gtk.Types (PangoContext, mkPangoContext, unPangoLayoutRaw)
 
@@ -201,4 +207,16 @@ newPangoContext p = makeNewGObject mkPangoContext (return p)
 --FIXME/WTF: this should be this, but for some reason in this file
 --it's getting the old version of makeNewGObject
 --newPangoContext p = makeNewGObject (mkPangoContext, objectUnref) (return p)
+
+
+-- gtk2hs uses Int for everything, which doesn't work for opacity at all.
+clutterNewAttrFromUIntProperty :: GObjectClass gobj => String -> Attr gobj Word
+clutterNewAttrFromUIntProperty propName =
+  newNamedAttr propName (clutterObjectGetPropertyUInt propName) (clutterObjectSetPropertyUInt propName)
+
+clutterObjectGetPropertyUInt :: GObjectClass gobj => String -> gobj -> IO Word
+clutterObjectGetPropertyUInt = objectGetPropertyInternal GType.uint valueGetUInt
+
+clutterObjectSetPropertyUInt :: GObjectClass gobj => String -> gobj -> Word -> IO ()
+clutterObjectSetPropertyUInt = objectSetPropertyInternal GType.uint valueSetUInt
 

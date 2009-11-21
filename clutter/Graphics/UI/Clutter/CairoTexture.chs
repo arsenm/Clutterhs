@@ -210,10 +210,9 @@ import Graphics.Rendering.Cairo.Types (Cairo)
        { withCairo `Cairo', withColor* `Color' } -> `()' #}
 
 
---FIXME/CHECKME: Patch to gtk2hs for this to actually be Word, not Int
 cairoTextureSurfaceHeight :: (CairoTextureClass self) => Attr self Word
-cairoTextureSurfaceHeight = newAttrFromUIntProperty "surface-height"
+cairoTextureSurfaceHeight = clutterNewAttrFromUIntProperty "surface-height"
 
 cairoTextureSurfaceWidth :: (CairoTextureClass self) => Attr self Word
-cairoTextureSurfaceWidth = newAttrFromUIntProperty "surface-width"
+cairoTextureSurfaceWidth = clutterNewAttrFromUIntProperty "surface-width"
 

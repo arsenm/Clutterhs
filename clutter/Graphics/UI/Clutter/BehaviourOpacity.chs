@@ -110,7 +110,7 @@ import System.Glib.Properties
 -- * Since 0.2
 --
 behaviourOpacityOpacityEnd :: Attr BehaviourOpacity Word
-behaviourOpacityOpacityEnd = newAttrFromUIntProperty "opacity-end"
+behaviourOpacityOpacityEnd = clutterNewAttrFromUIntProperty "opacity-end"
 
 
 
@@ -123,5 +123,5 @@ behaviourOpacityOpacityEnd = newAttrFromUIntProperty "opacity-end"
 -- * Since 0.2
 --
 behaviourOpacityOpacityStart :: Attr BehaviourOpacity Word
-behaviourOpacityOpacityStart = newAttrFromUIntProperty "opacity-start"
+behaviourOpacityOpacityStart = clutterNewAttrFromUIntProperty "opacity-start"
 

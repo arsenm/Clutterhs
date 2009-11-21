@@ -385,7 +385,8 @@ onCompleted = connect_NONE__NONE "completed" False
 afterCompleted = connect_NONE__NONE "completed" True
 
 
--- | The ::completed signal is emitted once the animation has been completed.
+-- | The ::'completed' signal is emitted once the animation has been
+--   completed.
 --
 -- The animation instance is guaranteed to be valid for the entire
 -- duration of the signal emission chain.
@@ -413,11 +414,13 @@ started = Signal (connect_NONE__NONE "started")
 -- CHECKME? allow WriteAttr?  Also, Animatable class? Not all
 --attributes animatable. Especially the convenient ones I added like
 --position and size
+--TODO: Rename to be more general, since other stuff uses it too
 --data AnimOp o = forall a b. ReadWriteAttr o a b :-> b
 data AnimOp o = forall a b. (GenericValueClass b) => ReadWriteAttr o a b :-> b
 
 infixr 0 :->
 
+--TODO: Rename these
 toListAnim :: (ActorClass o) => [AnimOp o] -> ([String], [GenericValue])
 toListAnim = foldr step ([], [])
     where step (attr :-> val) (strs, vals) = (show attr:strs, toGenericValue val:vals)

@@ -17,7 +17,8 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# OPTIONS_HADDOCK prune #-}
 
 #include <clutter/clutter.h>
 
@@ -31,7 +32,7 @@ module Graphics.UI.Clutter.Container (
 -- |
 -- @
 -- |  'GInterface'
--- |   +----'Container'
+-- |    +----'Container'
 -- @
 
 -- * Methods
@@ -49,17 +50,21 @@ module Graphics.UI.Clutter.Container (
   containerSortDepthOrder,
 --containerClassFindChildProperty,
 --containerClassListChildProperties,
---containerChildSetProperty,
 --containerChildGetProperty,
---containerChildSet,
+  containerChildSet,
 --containerChildGet,
   containerGetChildMeta
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Animation #}
+{# import Graphics.UI.Clutter.StoreValue #}
 
 import C2HS
+import Prelude
+import qualified Prelude as P
 import System.Glib.GObject
+import Control.Monad (forM_)
 
 --CHECKME: unsafe
 -- | Adds an Actor to container. This function will emit the "actor-added" signal.
@@ -126,23 +131,59 @@ containerForeachWithInternals c func = withContainerClass c $ \cptr -> do
 {# fun unsafe container_sort_depth_order as ^
        `(ContainerClass container)' => { withContainerClass* `container' } -> `()' #}
 {-
+We don't care about GParamSpec stuff
 {# fun unsafe container_class_find_child_property as ^
        `(GObjectClass gobj)' => { withGObjectClass* `gobj', `String' } -> `GParamSpec' #}
 
 {# fun unsafe container_class_list_child_properties as ^
        `(GObjectClass gobj)' => { withGObjectClass* `gobj', `Word' } -> `[GParamSpec]' #}
 -}
---container_child_set_property
---container_child_get_property
---TODO: Set property functions, hiding gvalues.
---container_child_set
---container_child_get are var arg functions, but can just wrap many calls to single one
+--
 
 
--- | Retrieves the 'ChildMeta' which contains the data about the container specific state for actor.
+
+
+-- | Retrieves the 'ChildMeta' which contains the data about the
+--   container specific state for actor.
 {# fun unsafe container_get_child_meta as ^
        `(ContainerClass container)' =>
        { withContainerClass* `container',
          withActor* `Actor' } ->
         `ChildMeta' newChildMeta* #}
+
+--CHECKME: unsafe?
+--CHECKME: What are "container specific properties" and does this make sense?
+-- | Sets container specific properties on the child of a container.
+--
+-- [@container@] a Container
+--
+-- [@actor@] an Actor that is a child of container.
+--
+-- [@attributes@] List of attributes and their values to be set
+--
+-- * Since 0.8
+--
+containerChildSet :: (ContainerClass container, ActorClass child) => container
+                     -> child
+                     -> [AnimOp child]
+                     -> IO ()
+containerChildSet ctr chld ops = let func = {# call unsafe container_child_set_property #}
+                                 in withContainerClass ctr $ \ctrPtr ->
+                                      withActorClass chld $ \chldPtr ->
+                                        forM_ ops $ \(attr :-> val) ->
+                                                     withCString (P.show attr) $ \strPtr ->
+                                                       withGenericValue val $ \valPtr ->
+                                                         func ctrPtr chldPtr strPtr valPtr
+
+{-
+--getting gvalues out is problematic
+containerChildGet :: (ContainerClass container, ActorClass child, GValueClass a) =>
+                     container
+                     -> child
+                     -> AnimOp child
+                     -> IO a
+containerChildGet ctr chld op =  let func = {# call unsafe container_child_get_property #}
+                                 in withContainerClass ctr $ \ctrPtr ->
+                                      withActorClass chld $ \chldPtr ->
+-}
 

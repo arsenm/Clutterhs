@@ -18,10 +18,7 @@
 --  Lesser General Public License for more details.
 --
 {-# LANGUAGE ForeignFunctionInterface,
-             TypeSynonymInstances,
-             ExistentialQuantification,
-             FlexibleInstances,
-             OverlappingInstances #-}
+             ExistentialQuantification #-}
 {-# OPTIONS_HADDOCK prune #-}
 
 #include <glib.h>

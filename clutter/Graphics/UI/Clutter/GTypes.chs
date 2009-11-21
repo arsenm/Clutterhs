@@ -1,9 +1,9 @@
 -- -*-haskell-*-
---  GValue
+--  GTypes for Clutter
 --
 --  Author : Matthew Arsenault
 --
---  Created: 25 Sep 2009
+--  Created: 21 Nov 2009
 --
 --  Copyright (C) 2009 Matthew Arsenault
 --
@@ -17,10 +17,8 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface,
-             TypeSynonymInstances,
-             FlexibleInstances,
-             UndecidableInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 
 
 #include <clutter/clutter.h>
@@ -28,20 +26,14 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
---TODO: Lots of stuff here should be private?
---FIXME: Messy names
---TODO: Merge this with StoreValue, since this is what you actually want
-
-module Graphics.UI.Clutter.GValue (
+module Graphics.UI.Clutter.GTypes (
                                    gTypeColor,
                                    gTypeVertex,
                                    gTypeGravity,
                                    gTypeRequestMode,
                                    gTypeGeometry,
                                    gTypeActor,
-                                   gTypeAlpha,
-                                   valueSetColor,
-                                   valueGetColor
+                                   gTypeAlpha
                                   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -49,11 +41,6 @@ module Graphics.UI.Clutter.GValue (
 import C2HS
 import System.Glib.GValue
 import System.Glib.GType
-
-
---Color GValue
-{# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
-{# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
 
 --TODO: Move these
 {# fun pure unsafe color_get_type as gTypeColor { } -> `GType' cToEnum #}

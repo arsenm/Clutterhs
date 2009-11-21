@@ -35,6 +35,9 @@
 #include <clutter/clutter.h>
 #include <glib.h>
 
+{# context lib="clutter" prefix="clutter" #}
+
+--TODO: Missing clutter types
 
 --StoreValue in Gtk2hs was missing some pieces for color
 --that wouldn't make sense to put there, such as GV's for color and units
@@ -47,8 +50,8 @@ module Graphics.UI.Clutter.StoreValue (
                                        --valueSetGenericValue,
                                        --valueGetGenericValue,
                                        GenericValueClass(..),
+                                       WrapGObject(..),
                                        withGenericValue,
-                                       unGValue,  --I don't remember why this is here.
                                        unsetGValue,
                                        unsetOneGVal
                                       ) where
@@ -62,7 +65,7 @@ import Control.OldException (throw, Exception(AssertionFailed))
 import Control.Exception (bracket)
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #} (gTypeColor, valueSetColor, valueGetColor)
+{# import Graphics.UI.Clutter.GTypes #}
 
 import System.Glib.FFI
 import System.Glib.GValue
@@ -79,9 +82,9 @@ import System.Glib.GType
 
 --GenericValue is a wrapper around haskell types that can be put in a gvalue
 --GValue is the actual C type. GenericValues get put into GValues
+--This is mostly the same as in gtk2hs, but with clutter types included
 
 --CHECKME: Types for char, uchar. Do we want them to actually be Int8, Word8?
---that would also mean gtk2hs patch would need to change.
 data GenericValue = GVuint    Word
 	          | GVint     Int
 	          | GVuchar   Word8
@@ -235,8 +238,10 @@ freeGValue p = unsetGValue (castPtr p) >> free p
 withGenericValue :: (GenericValueClass arg) => arg -> (GenericValuePtr -> IO a) -> IO a
 withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) freeGValue
 
+-- I don't really like this solution to functions that use gvalues.
 class GenericValueClass a where
   toGenericValue :: a -> GenericValue
+
 instance GenericValueClass Int where
   toGenericValue = GVint
 instance GenericValueClass Word where
@@ -253,15 +258,26 @@ instance GenericValueClass Bool where
   toGenericValue = GVboolean
 instance GenericValueClass String where
   toGenericValue = GVstring . Just
-
 instance GenericValueClass Color where
   toGenericValue = GVcolor
 
---UndecidableInstances
+--UndecidableInstances = bad
 --instance (GObjectClass obj) => GenericValueClass obj where
 --  toGenericValue = GVobject . toGObject
 
+--TODO: Better name? Or better way of working around this?
 
-unGValue :: GValue -> Ptr ()
-unGValue (GValue a) = castPtr a
+
+-- | Allows use of functions using AnimOp to use GObjects.
+newtype WrapGObject g = WrapGObject { unwrapGObject :: g }
+
+instance GObjectClass g => GenericValueClass (WrapGObject g) where
+  toGenericValue = GVobject . toGObject . unwrapGObject
+
+
+
+
+--Color GValue
+{# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
+{# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
 

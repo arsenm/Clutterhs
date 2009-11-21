@@ -270,13 +270,25 @@ module Graphics.UI.Clutter.Actor (
 
   onUnrealize,
   afterUnrealize,
-  unrealize
+  unrealize,
+
+-- * Events
+  buttonPressEvent,
+  buttonReleaseEvent,
+  capturedEvent,
+  enterEvent,
+  event,
+  leaveEvent,
+  motionEvent,
+  scrollEvent
+
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.GValue #}
 {# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.Event #}
 {# import Graphics.UI.Clutter.CustomSignals #}
 
 --FIXME: should I do something about clutter/prelude conflicts?
@@ -2348,26 +2360,6 @@ actorX = newNamedAttr "x" actorGetX actorSetX
 actorY :: (ActorClass self) => Attr self Float
 actorY = newNamedAttr "y" actorGetY actorSetY
 
---actorGeometry :: (ActorClass self) => Attr self Geometry
---actorGeometry = newAttr actorGetGeometry actorSetGeometry
-
---actorGid :: (ActorClass self) => ReadAttr self GID
---actorGid = readAttr actorGetGid
-
---actorParent :: (ActorClass self, ActorClass parent) => Attr self parent
---actorParent = newAttr actorGetPartent actorSetParent
-
---actorTransformedSize :: (ActorClass self) => ReadAttr self (Double, Double)
---actorTransformedSize = readAttr actorGetTransformedSize
-
---actorPaintOpacity :: (ActorClass self) => ReadAttr self Word8
---actorPaintOpacity = readAttr actorGetPaintOpacity
-
---actorPaintVisibility :: (ActorClass self) => ReadAttr self Bool
---actorPaintVisibility = readAttr actorGetPaintVisibility
-
---actorShader :: (ActorClass self) => Attr self (Maybe Shader)
---actorShader = newAttr actorGetShader actorSetShader
 
 -- Signals
 
@@ -2376,11 +2368,11 @@ actorY = newNamedAttr "y" actorGetY actorSetY
 onAllocationChanged, afterAllocationChanged :: ActorClass a => a
                                             -> (ActorBox -> AllocationFlags -> IO ())
                                             -> IO (ConnectId a)
-onAllocationChanged = connect_BOXED_ENUM__NONE "allocation_changed" False
-afterAllocationChanged = connect_BOXED_ENUM__NONE "allocation_changed" True
+onAllocationChanged = connect_BOXED_ENUM__NONE "allocation-changed" False
+afterAllocationChanged = connect_BOXED_ENUM__NONE "allocation-changed" True
 
 allocationChanged :: ActorClass self => Signal self (ActorBox -> AllocationFlags -> IO ())
-allocationChanged = Signal (connect_BOXED_ENUM__NONE "destroy")
+allocationChanged = Signal (connect_BOXED_ENUM__NONE "allocation-changed")
 -}
 
 onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
@@ -2538,5 +2530,146 @@ afterUnrealize = connect_NONE__NONE "unrealize" True
 --
 unrealize :: ActorClass self => Signal self (IO ())
 unrealize = Signal (connect_NONE__NONE "unrealize")
+
+
+-- Events
+
+--CHECKME: Types of events
+
+
+-- | The ::button-press-event signal is emitted each time a mouse
+--   button is pressed on actor.
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+buttonPressEvent :: ActorClass self => Signal self (EventM EButton Bool)
+buttonPressEvent = Signal (eventM "button-press-event")
+
+
+
+-- | The ::button-release-event signal is emitted each time a mouse
+--   button is released on actor.
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+buttonReleaseEvent :: ActorClass self => Signal self (EventM EButton Bool)
+buttonReleaseEvent = Signal (eventM "button-release-event")
+
+
+
+
+-- | The ::'capturedEvent' signal is emitted when an event is captured
+--   by Clutter. This signal will be emitted starting from the
+--   top-level container (the 'Stage') to the actor which received the
+--   event going down the hierarchy. This signal can be used to
+--   intercept every event before the specialized events (like
+--   'Actor'::'buttonPressEvent' or ::'keyReleasedEvent') are emitted.
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+capturedEvent :: ActorClass self => Signal self (EventM EAny Bool)
+capturedEvent = Signal (eventM "captured-event")
+
+
+
+-- | The ::enter-event signal is emitted when the pointer enters the
+--   actor
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+enterEvent :: ActorClass self => Signal self (EventM EMotion Bool)
+enterEvent = Signal (eventM "enter-event")
+
+
+
+
+-- | The ::'event' signal is emitted each time an event is received by
+--   the actor. This signal will be emitted on every actor, following
+--   the hierarchy chain, until it reaches the top-level container
+--   (the 'Stage').
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+event :: ActorClass self => Signal self (EventM EAny Bool)
+event = Signal (eventM "event")
+
+
+-- | The ::'keyPressEvent' signal is emitted each time a keyboard
+--   button is pressed while actor has key focus (see
+--   'stageSetKeyFocus').
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+keyPressEvent :: ActorClass self => Signal self (EventM EKey Bool)
+keyPressEvent = Signal (eventM "key-press-event")
+
+
+-- | The ::'keyReleaseEvent' signal is emitted each time a keyboard
+--   button is released while actor has key focus (see
+--   'stageSetKeyFocus').
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+keyReleaseEvent :: ActorClass self => Signal self (EventM EKey Bool)
+keyReleaseEvent = Signal (eventM "key-release-event")
+
+
+
+
+-- | The ::'leaveEvent' signal is emitted when the pointer leaves the
+--   actor.
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+leaveEvent :: ActorClass self => Signal self (EventM EMotion Bool)
+leaveEvent = Signal (eventM "leave-event")
+
+
+-- | The ::'motionEvent' signal is emitted each time the mouse pointer
+--   is moved over actor.
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+motionEvent :: ActorClass self => Signal self (EventM EMotion Bool)
+motionEvent = Signal (eventM "motion-event")
+
+
+-- | The ::'scrollEvent' signal is emitted each time the mouse is
+--   scrolled on actor
+--
+-- [@Returns@] @True@ if the event has been handled by the actor, or
+-- @False@ to continue the emission.
+--
+-- * Since 0.6
+--
+scrollEvent :: ActorClass self => Signal self (EventM EScroll Bool)
+scrollEvent = Signal (eventM "scroll-event")
 
 

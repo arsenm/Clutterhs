@@ -592,10 +592,21 @@ textureTileWaste = readNamedAttr "tile-waste" textureGetMaxTileWaste
 -- signals
 
 --CHECKME: Exception in handler?
+
 onLoadFinished, afterLoadFinished :: Texture -> (Maybe GError -> IO ()) -> IO (ConnectId Texture)
 onLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek False
 afterLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek True
 
+
+
+-- | The ::'loadFinished' signal is emitted when a texture load has
+-- completed. If there was an error during loading, error will be set,
+-- otherwise it will be @Nothing@
+--
+-- [@error@] A set error, or @Nothing@
+--
+-- * Since 1.0
+--
 loadFinished :: (TextureClass self) => Signal self (GError -> IO ())
 loadFinished = Signal (connect_BOXED__NONE "load-finished" peek)
 
@@ -606,8 +617,6 @@ afterPixbufChange = connect_NONE__NONE "pixbuf-change" True
 
 -- | The ::pixbuf-change signal is emitted each time the pixbuf used
 --   by texture changes.
---
--- [@texture@] the texture which received the signal
 --
 pixbufChange :: (TextureClass self) => Signal self (IO ())
 pixbufChange = Signal (connect_NONE__NONE "pixbuf-change")
@@ -621,8 +630,6 @@ afterSizeChange = connect_INT_INT__NONE "size-change" True
 -- | The ::size-change signal is emitted each time the size of the
 -- pixbuf used by texture changes. The new size is given as argument
 -- to the callback.
---
--- [@texture@] the texture which received the signal
 --
 -- [@width@] the width of the new texture
 --

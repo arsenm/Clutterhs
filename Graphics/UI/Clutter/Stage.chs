@@ -83,10 +83,10 @@ module Graphics.UI.Clutter.Stage (
   stageEnsureRedraw,
   stageQueueRedraw,
 
-  --stageEvent,
+--stageEvent,
   stageSetKeyFocus,
   stageGetKeyFocus,
-  --stageKeyFocus,
+--stageKeyFocus,
   stageReadPixels,
 
   stageSetThrottleMotionEvents,
@@ -109,14 +109,14 @@ module Graphics.UI.Clutter.Stage (
 
 -- * Attributes
   stageColor,
-  stageFullscreen,
-  stageThrottleMotionEvents,
+  stageCursorVisible,
+  stageFog,
+  stageFullscreenSet,
+  stageOffscreen,
   stagePerspective,
   stageTitle,
-  stageUserResizable,
-
   stageUseFog,
-  stageFog,
+  stageUserResizable,
 
 -- * Signals
 --FIXME: Export conflicts with Text's signals and probably other signals
@@ -395,6 +395,96 @@ stageReadPixels stage x y w h = let cx = cIntConv x
     { withStageClass* `stage', alloca- `Fog' peek* } -> `()' #}
 
 
+-- Attributes
+
+
+-- | The color of the main stage.
+stageColor :: (StageClass stage) => Attr stage Color
+stageColor = newNamedAttr "color" stageGetColor stageSetColor
+
+
+-- | Whether the mouse pointer should be visible
+--
+-- Default value: @True@
+--
+stageCursorVisible :: (StageClass stage) => Attr stage Bool
+stageCursorVisible = newAttrFromBoolProperty "cursor-visible"
+
+
+-- | Whether the main stage is fullscreen.
+--
+-- Default value: @False@
+--
+stageFullscreenSet :: (StageClass stage) => ReadAttr stage Bool
+stageFullscreenSet = readAttrFromBoolProperty "fullscreen-set"
+
+-- | Whether the stage should be rendered in an offscreen buffer.
+--
+-- * Warning
+--
+-- Not every backend supports redirecting the stage to an offscreen
+-- buffer. This property might not work and it might be deprecated at
+-- any later date.
+--
+-- Default value: @False@
+--
+stageOffscreen :: (StageClass stage) => Attr stage Bool
+stageOffscreen = newAttrFromBoolProperty "offscreen"
+
+
+-- | The parameters used for the perspective projection from 3D
+--   coordinates to 2D
+--
+-- * Since 0.8.2
+--
+stagePerspective :: (StageClass stage) => Attr stage Perspective
+stagePerspective = newNamedAttr "perspective" stageGetPerspective stageSetPerspective
+
+
+-- | The stage's title - usually displayed in stage windows title
+--   decorations.
+--
+-- Default value: @Nothing@
+--
+-- * Since 0.4
+--
+stageTitle :: (StageClass stage) => Attr stage (Maybe String)
+stageTitle = newNamedAttr "title" stageGetTitle stageSetTitle
+
+
+-- | Whether the stage is resizable via user interaction.
+--
+-- Default value: @False@
+--
+-- * Since 0.4
+--
+stageUserResizable :: (StageClass stage) => Attr stage Bool
+stageUserResizable = newNamedAttr "user-resizable" stageGetUserResizable stageSetUserResizable
+
+
+-- | Whether the stage should use a linear GL "fog" in creating the
+--   depth-cueing effect, to enhance the perception of depth by fading
+--   actors farther from the viewpoint.
+--
+-- Default value: @False@
+--
+-- * Since 0.6
+--
+stageUseFog :: (StageClass stage) => Attr stage Bool
+stageUseFog = newNamedAttr "use-fog" stageGetUseFog stageSetUseFog
+
+
+-- | The settings for the GL "fog", used only if "use-fog" is set to
+--   @True@
+--
+-- * Since 1.0
+--
+stageFog :: (StageClass stage) => Attr stage Fog
+stageFog = newNamedAttr "fog" stageGetFog stageSetFog
+
+
+-- Signals
+
 --See note in Types of Activatable
 -- | The 'activate' signal is emitted when the stage receives key focus from the underlying window system.
 instance Activatable Stage where
@@ -429,100 +519,4 @@ afterUnfullscreen = connect_NONE__NONE "unfullscreen" True
 unfullscreen :: (StageClass stage) => Signal stage (IO ())
 unfullscreen = Signal (connect_NONE__NONE "unfullscreen")
 
-
--- Attributes
-
-
--- | The color of the main stage.
-stageColor :: (StageClass stage) => Attr stage Color
-stageColor = newNamedAttr "color" stageGetColor stageSetColor
-
-
--- | Whether the mouse pointer should be visible
---
--- Default value: @True@
---
-stageCursorVisible :: (StageClass stage) => Attr stage Bool
-stageCursorVisible = newAttrFromBoolProperty "cursor-visible"
-
-
--- | Whether the main stage is fullscreen.
---
--- Default value: @False@
---
-stageFullscreenSet :: (StageClass stage) => ReadAttr stage Bool
-stageFullscreenSet = readAttrFromBoolProperty "fullscreen-set"
-
---CHECKME: Theres' something I'm missing here about
---properties. fullscreen vs. fullscreenset and stuff
-
-stageFullscreen :: (StageClass stage) => Attr stage Bool
-stageFullscreen = newAttr stageGetFullscreen stageSetFullscreen
-
-
--- | Whether the stage should be rendered in an offscreen buffer.
---
--- * Warning
---
--- Not every backend supports redirecting the stage to an offscreen
--- buffer. This property might not work and it might be deprecated at
--- any later date.
---
--- Default value: @False@
---
-stageOffscreen :: (StageClass stage) => Attr stage Bool
-stageOffscreen = newAttrFromBoolProperty "offscreen"
-
-
-stageThrottleMotionEvents :: (StageClass stage) => Attr stage Bool
-stageThrottleMotionEvents = newAttr stageGetThrottleMotionEvents stageSetThrottleMotionEvents
-
--- | The parameters used for the perspective projection from 3D
---   coordinates to 2D
---
--- Since 0.8.2
---
-stagePerspective :: (StageClass stage) => Attr stage Perspective
-stagePerspective = newNamedAttr "perspective" stageGetPerspective stageSetPerspective
-
-
--- | The stage's title - usually displayed in stage windows title
---   decorations.
---
--- Default value: @Nothing@
---
--- Since 0.4
-stageTitle :: (StageClass stage) => Attr stage (Maybe String)
-stageTitle = newNamedAttr "title" stageGetTitle stageSetTitle
-
-
--- | Whether the stage is resizable via user interaction.
---
--- Default value: @False@
---
--- * Since 0.4
---
-stageUserResizable :: (StageClass stage) => Attr stage Bool
-stageUserResizable = newNamedAttr "user-resizable" stageGetUserResizable stageSetUserResizable
-
-
--- | Whether the stage should use a linear GL "fog" in creating the
---   depth-cueing effect, to enhance the perception of depth by fading
---   actors farther from the viewpoint.
---
--- Default value: @False@
---
--- * Since 0.6
---
-stageUseFog :: (StageClass stage) => Attr stage Bool
-stageUseFog = newNamedAttr "use-fog" stageGetUseFog stageSetUseFog
-
-
--- | The settings for the GL "fog", used only if "use-fog" is set to
---   @True@
---
--- * Since 1.0
---
-stageFog :: (StageClass stage) => Attr stage Fog
-stageFog = newNamedAttr "fog" stageGetFog stageSetFog
 

@@ -18,6 +18,7 @@
 --  Lesser General Public License for more details.
 --
 {-# LANGUAGE ForeignFunctionInterface  #-}
+{-# OPTIONS_HADDOCK prune #-}
 
 #include <clutter/clutter.h>
 
@@ -29,6 +30,7 @@
 --struct using vs. functions. Don't need to do silly struct things.
 
 module Graphics.UI.Clutter.Event (
+-- * Event monad, and type tags
   EventM,
 
   EAny,
@@ -39,9 +41,9 @@ module Graphics.UI.Clutter.Event (
   EStageState,
   ECrossing,
 
-  eventM,
-  tryEvent,
+  InputDevice,
 
+-- * Accessor functions for event information
   eventCoordinates,
   eventState,
   eventTime,
@@ -60,21 +62,27 @@ module Graphics.UI.Clutter.Event (
 
   keysymToUnicode,
 
---eventDevice,
+  eventDevice,
   eventDeviceId,
   eventDeviceType,
---eventGetInputDeviceForId,
---inputDeviceGetDeviceType,
 
+-- * Events
+  scrollEvent,
+  motionNotifyEvent,
+  buttonPressEvent,
+  buttonReleaseEvent,
+  eventPut,
+
+-- * Misc
   getCurrentEventTime,
   eventsPending,
 
-  scrollEvent,
-  motionNotifyEvent,
+  getInputDeviceForId,
+  inputDeviceGetDeviceId,
+  inputDeviceGetDeviceType,
 
-  buttonPressEvent,
-  buttonReleaseEvent
-
+  tryEvent,
+  stopEvent
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -148,6 +156,15 @@ tryEvent act = do
                                 else throw e) ]
 
 
+-- | Explicitly stop the handling of an event. This function should only be
+--   called inside a handler that is wrapped with 'tryEvent'. (It merely
+--   throws a bogus pattern matching error which 'tryEvent' interprets as if
+--   the handler does not handle the event.)
+stopEvent :: EventM any ()
+stopEvent =
+  liftIO $ throw (PatternMatchFail "EventM.stopEvent called explicitly")
+
+
 class HasCoordinates a
 instance HasCoordinates EButton
 instance HasCoordinates EMotion
@@ -160,8 +177,8 @@ instance HasModifierType EKey
 instance HasModifierType EMotion
 instance HasModifierType EScroll
 
---FIXME: Evil casting
 
+--FIXME: Evil casting
 
 -- | Retrieves the 'EventFlags' of event
 --
@@ -320,48 +337,62 @@ eventScrollDirection = ask >>= \ptr ->
               liftIO $ liftM cToEnum ({# get ClutterScrollEvent->direction #} ptr)
 
 
-{-
---I don't understand why GDK is doing modif .&. mask stuff
-eM allModifs = do
-  let mask | allModifs = -1
-           | otherwise = defModMask
-  ptr <- ask
-  liftIO $ do
-    (ty :: #{gtk2hs_type GdkEventType}) <- peek (castPtr ptr)
-    if ty `elem` [ #{const GDK_KEY_PRESS},
-                   #{const GDK_KEY_RELEASE}] then do
-        (modif ::#gtk2hs_type guint)	<- #{peek GdkEventKey, state} ptr
-        return (toFlags (fromIntegral (modif .&. mask)))
-      else if ty `elem` [ #{const GDK_BUTTON_PRESS},
-                   #{const GDK_2BUTTON_PRESS},
-                   #{const GDK_3BUTTON_PRESS},
-                   #{const GDK_BUTTON_RELEASE}] then do
-        (modif ::#gtk2hs_type guint)	<- #{peek GdkEventButton, state} ptr
-        return (toFlags (fromIntegral (modif .&. mask)))
-      else if ty `elem` [ #{const GDK_SCROLL} ] then do
-        (modif ::#gtk2hs_type guint)	<- #{peek GdkEventScroll, state} ptr
-        return (toFlags (fromIntegral (modif .&. mask)))
-      else if ty `elem` [ #{const GDK_MOTION_NOTIFY} ] then do
-        (modif ::#gtk2hs_type guint)	<- #{peek GdkEventMotion, state} ptr
-        return (toFlags (fromIntegral (modif .&. mask)))
-      else if ty `elem` [ #{const GDK_ENTER_NOTIFY},
-                          #{const GDK_LEAVE_NOTIFY}] then do
-        (modif ::#gtk2hs_type guint)	<- #{peek GdkEventCrossing, state} ptr
-        return (toFlags (fromIntegral (modif .&. mask)))
-      else error ("eventModifiers: none for event type "++show ty)
--}
-
 --TODO: Should this happen automatically? unicode char?
 {# fun unsafe keysym_to_unicode as ^ { cIntConv `Word' } -> `Word' cIntConv #}
 
 
-{-
-{# fun unsafe get_input_device_for_id as ^ { cIntConv `DeviceID' } -> `Maybe InputDevice' #}
 
-eventDevice :: EventM t InputDevice
+-- | Retrieves the 'InputDevice' from its id.
+--
+-- [@id@] a device id
+--
+-- [@Returns@] @Just@ an 'InputDevice', or @Nothing@. transfer none.
+--
+-- * Since 0.8
+--
+getInputDeviceForId :: DeviceID -> IO (Maybe InputDevice)
+getInputDeviceForId did = let cdid = cIntConv did
+                          in do
+                            dev <- {# call unsafe get_input_device_for_id #} cdid
+                            return $ if dev == nullPtr
+                                       then P.Nothing
+                                       else Just (castPtr dev)
+
+
+-- | Retrieves the unique identifier of device
+--
+-- [@device@] an 'InputDevice'
+--
+-- [@Returns@] the identifier of the device
+--
+-- * Since 1.0
+--
+{# fun unsafe input_device_get_device_id as ^ { castPtr `InputDevice' } -> `DeviceID' cIntConv #}
+
+
+-- | Retrieves the type of device
+--
+-- [@device@] an 'InputDevice'
+--
+-- [@Returns@] the type of the device
+--
+-- * Since 1.0
+--
+{# fun unsafe input_device_get_device_type as ^ { castPtr `InputDevice' } -> `InputDeviceType' cToEnum #}
+
+
+eventDevice :: EventM t (Maybe InputDevice)
 eventDevice = ask >>= \ptr ->
-                 liftIO $ newInputDevice =<< {# call unsafe event_get_device #} ptr
--}
+                 liftIO $ do
+                   device <- {# call unsafe event_get_device #} (castPtr ptr)
+                   return $ if device == nullPtr
+                              then P.Nothing
+                              else Just (castPtr device)
+
+
+data InputDeviceStruct = InputDeviceStruct
+
+{# pointer *ClutterInputDevice as InputDevice -> InputDeviceStruct #}
 
 
 -- | Retrieves the events device id if set.

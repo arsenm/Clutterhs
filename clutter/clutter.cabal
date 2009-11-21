@@ -3,7 +3,7 @@ version: 0.0.1
 license: LGPL
 license-file: COPYING
 maintainer: arsenm2@rpi.edu
-stability: lol
+stability: alpha
 homepage: http://example.com
 category: Graphics
 Synopsis: Clutter bindings

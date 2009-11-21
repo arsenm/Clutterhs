@@ -164,13 +164,6 @@ alphaNewWithFunc tl af = withTimeline tl $ \tlptr -> do
 {# fun unsafe alpha_get_timeline as ^
        { withAlpha* `Alpha' } -> `Timeline' newTimeline* #}
 
--- | A 'Timeline' instance used to drive the alpha function
---
--- * Since 0.2
---
-alphaTimeline :: Attr Alpha Timeline
-alphaTimeline = newAttr alphaGetTimeline alphaSetTimeline
-
 --CHECKME/FIXME: AlphaMode can be something returned from register_func?
 --how does enum stuff handle this?
 
@@ -194,37 +187,11 @@ alphaTimeline = newAttr alphaGetTimeline alphaSetTimeline
 {# fun unsafe alpha_get_mode as ^
        { withAlpha* `Alpha' } -> `AnimationMode' cToEnum #}
 
---CHECKME: The custom mode return
--- | The progress function logical id - either a value from the
---   'AnimationMode' enumeration or a value returned by
---   'alphaRegisterFunc'.
---
--- If CLUTTER_CUSTOM_MODE is used then the function set using
--- 'alphaSetFunc' will be
--- used.
---
--- * Since 1.0
---
-alphaMode :: Attr Alpha AnimationMode
-alphaMode = newAttr alphaGetMode alphaSetMode
-
 -- | Query the current alpha value
 --
 -- * Since 0.2
 --
 {# fun unsafe alpha_get_alpha as ^ { withAlpha* `Alpha' } -> `Double' #}
-
--- | The alpha value as computed by the alpha function. The linear
--- interval is 0.0 to 1.0, but the Alpha allows overshooting by one
--- unit in each direction, so the valid interval is -1.0 to 2.0.
--- Allowed values: [-1,2]
---
--- Default value: 0
---
--- * Since 0.2
---
-alphaAlpha :: ReadAttr Alpha Double
-alphaAlpha = readAttr alphaGetAlpha
 
 
 -- | Sets the 'AlphaFunc' function used to compute the alpha value at
@@ -257,4 +224,44 @@ alphaRegisterFunc af = do
 --pretty sure don't care about gclosure
 --{# fun unsafe alpha_set_closure as ^ { withAlpha* `Alpha', `GClosure' } -> `()' #}
 --{# fun unsafe alpha_register_closure as ^ { `GClosure' } -> `GULong' #}
+
+
+
+
+-- | The alpha value as computed by the alpha function. The linear
+-- interval is 0.0 to 1.0, but the Alpha allows overshooting by one
+-- unit in each direction, so the valid interval is -1.0 to 2.0.
+-- Allowed values: [-1,2]
+--
+-- Default value: 0
+--
+-- * Since 0.2
+--
+alphaAlpha :: ReadAttr Alpha Double
+alphaAlpha = readNamedAttr "alpha" alphaGetAlpha
+
+
+--CHECKME: The custom mode return
+-- | The progress function logical id - either a value from the
+--   'AnimationMode' enumeration or a value returned by
+--   'alphaRegisterFunc'.
+--
+-- If CLUTTER_CUSTOM_MODE is used then the function set using
+-- 'alphaSetFunc' will be
+-- used.
+--
+-- * Since 1.0
+--
+alphaMode :: Attr Alpha AnimationMode
+alphaMode = newNamedAttr "mode" alphaGetMode alphaSetMode
+
+
+
+-- | A 'Timeline' instance used to drive the alpha function
+--
+-- * Since 0.2
+--
+alphaTimeline :: Attr Alpha Timeline
+alphaTimeline = newNamedAttr "timeline" alphaGetTimeline alphaSetTimeline
+
 

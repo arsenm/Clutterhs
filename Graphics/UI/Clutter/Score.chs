@@ -160,7 +160,7 @@ import System.Glib.Attributes
 {# fun unsafe score_get_loop as ^ { withScore* `Score' } -> `Bool' #}
 
 scoreLoop :: Attr Score Bool
-scoreLoop = newAttr scoreGetLoop scoreSetLoop
+scoreLoop = newNamedAttr "score" scoreGetLoop scoreSetLoop
 
 
 -- | Appends a timeline to another one existing in the score; the

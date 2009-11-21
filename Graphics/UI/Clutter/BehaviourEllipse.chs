@@ -47,14 +47,12 @@ module Graphics.UI.Clutter.BehaviourEllipse (
 
   behaviourEllipseSetAngleTilt,
   behaviourEllipseGetAngleTilt,
-  --behaviourEllipseAngleTilt, TODO: Property for each axis
 
   behaviourEllipseSetHeight,
   behaviourEllipseGetHeight,
 
   behaviourEllipseSetWidth,
   behaviourEllipseGetWidth,
-  behaviourEllipseSize,
 
   behaviourEllipseSetTilt,
   behaviourEllipseGetTilt,
@@ -62,20 +60,23 @@ module Graphics.UI.Clutter.BehaviourEllipse (
   behaviourEllipseGetDirection,
 
 -- * Attributes
-  behaviourEllipseAngleStart,
   behaviourEllipseAngleEnd,
+  behaviourEllipseAngleStart,
+  behaviourEllipseAngleTiltX,
+  behaviourEllipseAngleTiltY,
+  behaviourEllipseAngleTiltZ,
+  behaviourEllipseCenter,
+  behaviourEllipseDirection,
   behaviourEllipseHeight,
-  behaviourEllipseWidth,
-  behaviourEllipseDirection
+  behaviourEllipseWidth
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM2)
-import Control.Arrow ((&&&))
 import System.Glib.Attributes
+import System.Glib.Properties
 
 -- | Creates a behaviour that drives actors along an elliptical path
 --   with given center, width and height; the movement starts at start
@@ -165,9 +166,6 @@ import System.Glib.Attributes
 {# fun unsafe behaviour_ellipse_get_angle_start as ^
        { withBehaviourEllipse* `BehaviourEllipse' } -> `Double' #}
 
-behaviourEllipseAngleStart :: Attr BehaviourEllipse Double
-behaviourEllipseAngleStart = newAttr behaviourEllipseGetAngleStart behaviourEllipseSetAngleStart
-
 -- | Sets the angle at which movement ends; angles \>= 360 degress get
 --   clamped to the canonical interval <0, 360).
 --
@@ -190,9 +188,6 @@ behaviourEllipseAngleStart = newAttr behaviourEllipseGetAngleStart behaviourElli
 --
 {# fun unsafe behaviour_ellipse_get_angle_end as ^
        { withBehaviourEllipse* `BehaviourEllipse' } -> `Double' #}
-
-behaviourEllipseAngleEnd :: Attr BehaviourEllipse Double
-behaviourEllipseAngleEnd = newAttr behaviourEllipseGetAngleEnd behaviourEllipseSetAngleEnd
 
 -- | Sets the angle at which the ellipse should be tilted around it's
 --   center.
@@ -219,10 +214,6 @@ behaviourEllipseAngleEnd = newAttr behaviourEllipseGetAngleEnd behaviourEllipseS
 --
 {# fun unsafe behaviour_ellipse_get_angle_tilt as ^
        { withBehaviourEllipse* `BehaviourEllipse', cFromEnum `RotateAxis' } -> `Double' #}
---TODO: Deal with the fact that you have the RotateAxis and stuff
---behaviourEllipseAngleTilt :: Attr BehaviourEllipse Double
---behaviourEllipseAngleTilt = newAttr behaviourGetAngleTilt behaviourSetAngleTilt
-
 
 -- | Sets the height of the elliptical path.
 --
@@ -246,9 +237,6 @@ behaviourEllipseAngleEnd = newAttr behaviourEllipseGetAngleEnd behaviourEllipseS
 {# fun unsafe behaviour_ellipse_get_height as ^
        { withBehaviourEllipse* `BehaviourEllipse' } -> `Int' #}
 
-behaviourEllipseHeight :: Attr BehaviourEllipse Int
-behaviourEllipseHeight = newAttr behaviourEllipseGetHeight behaviourEllipseSetHeight
-
 
 -- | Sets the width of the elliptical path.
 --
@@ -271,15 +259,6 @@ behaviourEllipseHeight = newAttr behaviourEllipseGetHeight behaviourEllipseSetHe
 --
 {# fun unsafe behaviour_ellipse_get_width as ^
        { withBehaviourEllipse* `BehaviourEllipse' } -> `Int' #}
-behaviourEllipseWidth :: Attr BehaviourEllipse Int
-behaviourEllipseWidth = newAttr behaviourEllipseGetWidth behaviourEllipseSetWidth
-
---set width and height at the same time
-behaviourEllipseSize :: Attr BehaviourEllipse (Int, Int)
-behaviourEllipseSize = newAttr
-                        (uncurry (liftM2 (,)) . (behaviourEllipseGetWidth &&& behaviourEllipseGetHeight))
-                        (\x (a,b) -> behaviourEllipseSetWidth x a >>
-                                     behaviourEllipseSetHeight x b)
 
 
 -- | Sets the angles at which the ellipse should be tilted around it's
@@ -341,6 +320,108 @@ behaviourEllipseSize = newAttr
 --
 {# fun unsafe behaviour_ellipse_get_direction as ^
        { withBehaviourEllipse* `BehaviourEllipse' } -> `RotateDirection' cToEnum #}
+
+-- Attributes
+
+
+-- | The final angle to where the rotation should end.
+--
+-- Allowed values: [0,360]
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+behaviourEllipseAngleEnd :: Attr BehaviourEllipse Double
+behaviourEllipseAngleEnd = newNamedAttr "angle-end" behaviourEllipseGetAngleEnd behaviourEllipseSetAngleEnd
+
+
+-- | The initial angle from where the rotation should start.
+--
+-- Allowed values: [0,360]
+--
+-- Default value: 0
+--
+-- * Since 0.4
+--
+behaviourEllipseAngleStart :: Attr BehaviourEllipse Double
+behaviourEllipseAngleStart = newNamedAttr "angle-start" behaviourEllipseGetAngleStart behaviourEllipseSetAngleStart
+
+
+-- | The tilt angle for the rotation around center in X axis
+--
+-- Allowed values: [0,360]
+--
+-- Default value: 360
+--
+-- * Since 0.4
+--
+behaviourEllipseAngleTiltX :: Attr BehaviourEllipse Double
+behaviourEllipseAngleTiltX = newAttrFromDoubleProperty "angle-tilt-x"
+
+
+-- | The tilt angle for the rotation around center in Y axis
+--
+-- Allowed values: [0,360]
+--
+-- Default value: 360
+--
+-- * Since 0.4
+--
+behaviourEllipseAngleTiltY :: Attr BehaviourEllipse Double
+behaviourEllipseAngleTiltY = newAttrFromDoubleProperty "angle-tilt-y"
+
+
+-- | The tilt angle for the rotation on the Z axis
+--
+-- Allowed values: [0,360]
+--
+-- Default value: 360
+--
+-- * Since 0.4
+--
+behaviourEllipseAngleTiltZ :: Attr BehaviourEllipse Double
+behaviourEllipseAngleTiltZ = newAttrFromDoubleProperty "angle-tilt-z"
+
+-- | The center of the ellipse.
+--
+-- * Since 0.4
+--
+behaviourEllipseCenter :: Attr BehaviourEllipse Knot
+behaviourEllipseCenter = newNamedAttr "center" behaviourEllipseGetCenter (uncurry . behaviourEllipseSetCenter)
+
+
+
+-- | The direction of the rotation.
+--
+-- Default value: 'RotateCw'
+--
+-- * Since 0.4
+--
 behaviourEllipseDirection :: Attr BehaviourEllipse RotateDirection
-behaviourEllipseDirection = newAttr behaviourEllipseGetDirection behaviourEllipseSetDirection
+behaviourEllipseDirection = newNamedAttr "direction" behaviourEllipseGetDirection behaviourEllipseSetDirection
+
+
+-- | Height of the ellipse, in pixels
+--
+-- Allowed values: >= 0
+--
+-- Default value: 50
+--
+-- * Since 0.4
+--
+behaviourEllipseHeight :: Attr BehaviourEllipse Int
+behaviourEllipseHeight = newNamedAttr "height" behaviourEllipseGetHeight behaviourEllipseSetHeight
+
+-- | Width of the ellipse, in pixels
+--
+-- Allowed values: >= 0
+--
+-- Default value: 100
+--
+-- * Since 0.4
+--
+behaviourEllipseWidth :: Attr BehaviourEllipse Int
+behaviourEllipseWidth = newNamedAttr "width" behaviourEllipseGetWidth behaviourEllipseSetWidth
+
 

@@ -92,8 +92,6 @@ module Graphics.UI.Clutter.Behaviour (
   behaviourSetAlpha,
 
 -- * Attributes
-  behaviourActors,
-  behaviourNActors,
   behaviourAlpha,
 
 -- * Signals
@@ -191,9 +189,6 @@ behaviourActorsForeach b func = withBehaviourClass b $ \bptr -> do
 {# fun unsafe behaviour_get_actors as ^
        `(BehaviourClass behave)' => { withBehaviourClass* `behave' } -> `[Actor]' newActorList* #}
 
-behaviourActors :: (BehaviourClass behave) => ReadAttr behave [Actor]
-behaviourActors = readAttr behaviourGetActors
-
 -- | Gets an actor the behaviour was applied to referenced by index
 --   num.
 --
@@ -218,8 +213,6 @@ behaviourActors = readAttr behaviourGetActors
 --
 {# fun unsafe behaviour_get_n_actors as ^
        `(BehaviourClass behave)' => { withBehaviourClass* `behave' } -> `Int' #}
-behaviourNActors:: (BehaviourClass behave) => ReadAttr behave Int
-behaviourNActors = readAttr behaviourGetNActors
 
 -- | Retrieves the 'Alpha' object bound to behave.
 --
@@ -251,15 +244,21 @@ behaviourNActors = readAttr behaviourGetNActors
 {# fun unsafe behaviour_set_alpha as ^
        `(BehaviourClass behave)' => { withBehaviourClass* `behave', withMaybeAlpha* `Maybe Alpha' } -> `()' #}
 
-behaviourAlpha :: (BehaviourClass behave) => Attr behave (Maybe Alpha)
-behaviourAlpha = newAttr behaviourGetAlpha behaviourSetAlpha
 
 
+-- | The 'Α' object used to drive this behaviour. An 'Alpha' object
+--   binds a 'Timeline' and a function which computes a value (the
+--   "alpha") depending on the time. Each time the alpha value changes
+--   the alpha-notify virtual function is called.
+--
+-- * Since 0.2
+--
+behaviourAlpha :: (BehaviourClass self) => Attr self (Maybe Alpha)
+behaviourAlpha = newNamedAttr "alpha" behaviourGetAlpha behaviourSetAlpha
 
 onApplied, afterApplied :: (BehaviourClass behave) => behave -> (Actor -> IO ()) -> IO (ConnectId behave)
 onApplied = connect_OBJECT__NONE "applied" False
 afterApplied = connect_OBJECT__NONE "applied" True
-
 
 
 -- | The ::apply signal is emitted each time the behaviour is applied to an actor.

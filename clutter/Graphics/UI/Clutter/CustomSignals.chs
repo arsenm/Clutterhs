@@ -22,12 +22,14 @@
 --I needed signal handlers with checks for null, but I was too lazy to
 --modify the generator.
 module Graphics.UI.Clutter.CustomSignals (
-  connect_MAYBEOBJECT__NONE
+  connect_MAYBEOBJECT__NONE,
+  connect_BOXED_FLAGS__NONE
   ) where
 
 import Control.Monad (liftM)
 
 import System.Glib.FFI
+import System.Glib.Flags
 import System.Glib.GError (failOnGError)
 import System.Glib.Signals
 import System.Glib.GObject
@@ -48,5 +50,23 @@ connect_MAYBEOBJECT__NONE signal after obj user =
                                   makeNewGObject mkGObject (return obj1) >>= \obj1' ->
                                     user (Just (unsafeCastGObject obj1'))
 
+
+
+
+--The generator was producing slightly wrong stuff here, but I'm too
+--lazy to fix it right now.
+connect_BOXED_FLAGS__NONE ::
+  (Flags b, GObjectClass obj) => SignalName ->
+  (Ptr a' -> IO a) ->
+  ConnectAfter -> obj ->
+  (a -> [b] -> IO ()) ->
+  IO (ConnectId obj)
+connect_BOXED_FLAGS__NONE signal boxedPre1 after obj user =
+  connectGeneric signal after obj action
+  where action :: Ptr GObject -> Ptr () -> Int -> IO ()
+        action _ box1 flags2 =
+          failOnGError $
+          boxedPre1 (castPtr box1) >>= \box1' ->
+          user box1' (toFlags flags2)
 
 

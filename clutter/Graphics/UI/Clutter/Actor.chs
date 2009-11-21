@@ -223,10 +223,9 @@ module Graphics.UI.Clutter.Actor (
   actorY,
 
 -- * Signals
-
---onAllocationChanged,
---afterAllocationChanged,
---allocationChanged,
+  onAllocationChanged,
+  afterAllocationChanged,
+  allocationChanged,
 
   onDestroy,
   afterDestroy,
@@ -2363,17 +2362,32 @@ actorY = newNamedAttr "y" actorGetY actorSetY
 
 -- Signals
 
-{-
---CHECKME/FIXME: allocation flags enum magic maybe break things, need flags thing to happen
-onAllocationChanged, afterAllocationChanged :: ActorClass a => a
-                                            -> (ActorBox -> AllocationFlags -> IO ())
-                                            -> IO (ConnectId a)
-onAllocationChanged = connect_BOXED_ENUM__NONE "allocation-changed" False
-afterAllocationChanged = connect_BOXED_ENUM__NONE "allocation-changed" True
 
-allocationChanged :: ActorClass self => Signal self (ActorBox -> AllocationFlags -> IO ())
-allocationChanged = Signal (connect_BOXED_ENUM__NONE "allocation-changed")
--}
+--CHECKME
+
+onAllocationChanged, afterAllocationChanged :: ActorClass a => a
+                                            -> (ActorBox -> [AllocationFlags] -> IO ())
+                                            -> IO (ConnectId a)
+onAllocationChanged = connect_BOXED_FLAGS__NONE "allocation-changed" peek False
+afterAllocationChanged = connect_BOXED_FLAGS__NONE "allocation-changed" peek True
+
+
+-- | The ::'allocationChanged' signal is emitted when the "allocation"
+--   property changes. Usually, application code should just use the
+--   notifications for the :allocation property but if you want to
+--   track the allocation flags as well, for instance to know whether
+--   the absolute origin of actor changed, then you might want use
+--   this signal instead.
+--
+-- [@box@] an 'ActorBox with the new allocation
+--
+-- [@flags@] 'AllocationFlags' for the allocation
+--
+-- * Since 1.0
+--
+allocationChanged :: ActorClass self => Signal self (ActorBox -> [AllocationFlags] -> IO ())
+allocationChanged = Signal (connect_BOXED_FLAGS__NONE "allocation-changed" peek)
+
 
 onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
 onDestroy = connect_NONE__NONE "destroy" False
@@ -2382,6 +2396,9 @@ afterDestroy = connect_NONE__NONE "destroy" True
 -- | The \"destroy\" signal is emitted when an actor is destroyed,
 --   either by direct invocation of 'actorDestroy' or when the 'Group'
 --   that contains the actor is destroyed.
+--
+-- * Since 0.2
+--
 destroy :: ActorClass self => Signal self (IO ())
 destroy = Signal (connect_NONE__NONE "destroy")
 
@@ -2393,6 +2410,9 @@ afterHide = connect_NONE__NONE "hide" True
 
 -- | The \"hide\" signal is emitted when an actor is no longer
 --   rendered on the stage.
+--
+-- * Since 0.2
+--
 hide :: ActorClass self => Signal self (IO ())
 hide = Signal (connect_NONE__NONE "hide")
 
@@ -2428,10 +2448,12 @@ afterPaint = connect_NONE__NONE "paint" True
 -- | The \"paint\" signal is emitted each time an actor is being
 --   painted.
 --
--- Subclasses of Actor should override the class signal handler and paint themselves in that function.
+-- Subclasses of Actor should override the class signal handler and
+-- paint themselves in that function.
 --
 --
--- It is possible to connect a handler to the \"paint\" signal in order to set up some custom aspect of a paint.
+-- It is possible to connect a handler to the \"paint\" signal in
+-- order to set up some custom aspect of a paint.
 --
 -- * Since 0.8
 --
@@ -2443,7 +2465,7 @@ onParentSet, afterParentSet :: ActorClass a => a -> (Actor -> IO ()) -> IO (Conn
 onParentSet = connect_OBJECT__NONE "parent-set" False
 afterParentSet = connect_OBJECT__NONE "parent-set" True
 
---CHECKME: Test if this signals works
+--CHECKME: Test if this signal works
 -- | This signal is emitted when the parent of the actor changes.
 --
 -- [@actor@] :
@@ -2550,7 +2572,7 @@ buttonPressEvent = Signal (eventM "button-press-event")
 
 
 
--- | The ::button-release-event signal is emitted each time a mouse
+-- | The ::'buttonReleaseEvent' signal is emitted each time a mouse
 --   button is released on actor.
 --
 -- [@Returns@] @True@ if the event has been handled by the actor, or
@@ -2560,8 +2582,6 @@ buttonPressEvent = Signal (eventM "button-press-event")
 --
 buttonReleaseEvent :: ActorClass self => Signal self (EventM EButton Bool)
 buttonReleaseEvent = Signal (eventM "button-release-event")
-
-
 
 
 -- | The ::'capturedEvent' signal is emitted when an event is captured
@@ -2591,8 +2611,6 @@ capturedEvent = Signal (eventM "captured-event")
 --
 enterEvent :: ActorClass self => Signal self (EventM EMotion Bool)
 enterEvent = Signal (eventM "enter-event")
-
-
 
 
 -- | The ::'event' signal is emitted each time an event is received by

@@ -68,7 +68,7 @@ module Graphics.UI.Clutter.Event (
 
 -- * Events
   scrollEvent,
-  motionNotifyEvent,
+  motionEvent,
   buttonPressEvent,
   buttonReleaseEvent,
   eventPut,
@@ -243,17 +243,35 @@ eventTime = ask >>= \ptr ->
             liftIO $ liftM fromIntegral ({# call unsafe event_get_time #} (castPtr ptr))
 
 
+--TODO: Move these
 buttonPressEvent :: ActorClass self => Signal self (EventM EButton Bool)
 buttonPressEvent = Signal (eventM "button-press-event")
 
 buttonReleaseEvent :: ActorClass self => Signal self (EventM EButton Bool)
 buttonReleaseEvent = Signal (eventM "button-release-event")
 
+
+--CHECKME: Types of events
+capturedEvent :: ActorClass self => Signal self (EventM EAny Bool)
+capturedEvent = Signal (eventM "captured-event")
+
+enterEvent :: ActorClass self => Signal self (EventM EMotion Bool)
+enterEvent = Signal (eventM "enter-event")
+
+leaveEvent :: ActorClass self => Signal self (EventM EMotion Bool)
+leaveEvent = Signal (eventM "leave-event")
+
+keyPressEvent :: ActorClass self => Signal self (EventM EKey Bool)
+keyPressEvent = Signal (eventM "key-press-event")
+
+keyReleaseEvent :: ActorClass self => Signal self (EventM EKey Bool)
+keyReleaseEvent = Signal (eventM "key-release-event")
+
+motionEvent :: ActorClass self => Signal self (EventM EMotion Bool)
+motionEvent = Signal (eventM "motion-event")
+
 scrollEvent :: ActorClass self => Signal self (EventM EScroll Bool)
 scrollEvent = Signal (eventM "scroll-event")
-
-motionNotifyEvent :: ActorClass self => Signal self (EventM EMotion Bool)
-motionNotifyEvent = Signal (eventM "motion-event")
 
 
 -- | Retrieves the modifier state of the event.

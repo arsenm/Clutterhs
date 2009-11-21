@@ -82,7 +82,8 @@ module Graphics.UI.Clutter.CairoTexture (
   cairoSetSourceColor,
 
 -- * Attributes
-  cairoSourceColor
+  cairoTextureSurfaceHeight,
+  cairoTextureSurfaceWidth
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -90,7 +91,10 @@ module Graphics.UI.Clutter.CairoTexture (
 
 import C2HS
 import System.Glib.Attributes
+import System.Glib.Properties
 import Graphics.Rendering.Cairo.Types (Cairo)
+
+--TODO: CairoTextureClass
 
 -- stop c2hs complaining about Ptr () not being Ptr Cairo
 {# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
@@ -205,6 +209,11 @@ import Graphics.Rendering.Cairo.Types (Cairo)
 {# fun unsafe cairo_set_source_color as ^
        { withCairo `Cairo', withColor* `Color' } -> `()' #}
 
-cairoSourceColor :: WriteAttr Cairo Color
-cairoSourceColor = writeAttr cairoSetSourceColor
+
+--FIXME/CHECKME: Patch to gtk2hs for this to actually be Word, not Int
+cairoTextureSurfaceHeight :: (CairoTextureClass self) => Attr self Word
+cairoTextureSurfaceHeight = newAttrFromUIntProperty "surface-height"
+
+cairoTextureSurfaceWidth :: (CairoTextureClass self) => Attr self Word
+cairoTextureSurfaceWidth = newAttrFromUIntProperty "surface-width"
 

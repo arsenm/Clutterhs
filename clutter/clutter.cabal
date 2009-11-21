@@ -24,7 +24,7 @@ Flag X11Support
 --TODO: Better way of including/excluding x11 without
 --listing everything else
 Library
-  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0, pango
   Build-Tools: c2hs
   Includes: clutter/clutter.h,
             csrc/clutter-macros.h
@@ -129,33 +129,21 @@ Library
   Exposed: True
   GHC-options: -W
   C-Sources: ./csrc/clutter-macros.c
-  Hs-Source-Dirs:  .,
-                   ./Graphics,
-                   ./Graphics/UI,
-                   ./Graphics/UI/Clutter
-  Include-dirs: /usr/include/clutter-1.0/,
-                /usr/include/glib-2.0,
-                /usr/include/glib-2.0/glib,
-                /usr/lib/glib-2.0/include,
-                /usr/include/pango-1.0/,
-                /usr/include/cairo
-               ./csrc
+  Hs-Source-Dirs: .
+  Include-dirs: ./csrc
   if flag(debug)
     CC-Options: "-DDEBUG -O0 -g"
     CPP-Options: -DDEBUG
 
 
 Executable arst
-  Main-Is:         Main.hs
+  Main-Is:         Arst.hs
   Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
-                   demo
-                   Graphics,
-                   Graphics/UI,
-                   Graphics/UI/Clutter,
+                   demo,
                    dist/build
 
   Build-Depends: base, glib
@@ -168,10 +156,7 @@ Executable pathtest
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
-                   Graphics,
-                   demo
-                   Graphics/UI,
-                   Graphics/UI/Clutter,
+                   demo,
                    dist/build
   Build-Depends: base, glib
 
@@ -183,8 +168,6 @@ Executable texttest
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   Graphics/UI,
-                   Graphics/UI/Clutter,
                    dist/build
   Build-Depends: base, glib
 
@@ -196,10 +179,7 @@ Executable timelinetest
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
-                   Graphics,
                    demo
-                   Graphics/UI,
-                   Graphics/UI/Clutter,
                    dist/build
 
   Build-Depends: base, glib
@@ -235,10 +215,7 @@ Executable behaviourellipsetest
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
-                   Graphics,
                    demo
-                   Graphics/UI,
-                   Graphics/UI/Clutter,
                    dist/build
 
   Build-Depends: base, glib
@@ -251,10 +228,7 @@ Executable rectangletest
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
-                   Graphics,
                    demo
-                   Graphics/UI,
-                   Graphics/UI/Clutter,
                    dist/build
 
   Build-Depends: base, glib
@@ -267,10 +241,7 @@ Executable cluttergame
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
-                   Graphics,
                    demo
-                   Graphics/UI,
-                   Graphics/UI/Clutter,
                    dist/build
 
   Build-Depends: base, glib

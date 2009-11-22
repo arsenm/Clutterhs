@@ -37,12 +37,12 @@ Library
     Build-Depends: base, glib, gtk, haskell98, mtl, cairo, X11, array
 --Utility should not be exposed
     Exposed-modules: Graphics.UI.Clutter.Types,
+                     Graphics.UI.Clutter.Signals,
+                     Graphics.UI.Clutter.Utility,
                      Graphics.UI.Clutter.GTypes,
                      Graphics.UI.Clutter.Event,
-                     Graphics.UI.Clutter.Utility,
-                     Graphics.UI.Clutter.Animation,
                      Graphics.UI.Clutter.StoreValue,
-                     Graphics.UI.Clutter.Signals,
+                     Graphics.UI.Clutter.Animation,
                      Graphics.UI.Clutter.CustomSignals,
                      Graphics.UI.Clutter.General,
                      Graphics.UI.Clutter.Color,
@@ -85,12 +85,12 @@ Library
       Build-Depends: base, glib, gtk, haskell98, mtl, cairo, array
 --I'm not sure that GValue should be exposed. Utility definitely not
       Exposed-modules: Graphics.UI.Clutter.Types,
+                       Graphics.UI.Clutter.Signals,
+                       Graphics.UI.Clutter.Utility,
                        Graphics.UI.Clutter.GTypes,
                        Graphics.UI.Clutter.Event,
-                       Graphics.UI.Clutter.Utility,
-                       Graphics.UI.Clutter.Animation,
                        Graphics.UI.Clutter.StoreValue,
-                       Graphics.UI.Clutter.Signals,
+                       Graphics.UI.Clutter.Animation,
                        Graphics.UI.Clutter.CustomSignals,
                        Graphics.UI.Clutter.General,
                        Graphics.UI.Clutter.Color,

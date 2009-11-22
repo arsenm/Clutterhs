@@ -259,10 +259,9 @@ import System.Glib.GValue
        { withAnimation* `Animation' } -> `Maybe Alpha' maybeNewAlpha* #}
 
 
---TODO: Link signal name, but I'm not fully commited to signal names yet
 -- | Sets whether animation should loop over itself once finished.
 --
--- A looping 'Animation' will not emit the "completed" signal when
+-- A looping 'Animation' will not emit the 'completed' signal when
 -- finished.
 --
 -- This function will set "alpha" and "timeline" if needed.
@@ -287,7 +286,7 @@ import System.Glib.GValue
 
 
 --CHECKME: Referencing
--- | Emits the ::completed signal on animation
+-- | Emits the ::'completed' signal on animation
 --
 -- [@animation@] an 'Animation'
 --
@@ -323,6 +322,7 @@ import System.Glib.GValue
                                    `Animation' newAnimation* #}
 
 
+--CHECKME: Wrap animation type to track type of object animated?
 -- | Binds interval to the property_name of the GObject attached to
 --   animation. The 'Animation' will take ownership of the passed
 --   'Interval'. For more information about animations, see 'animate'.
@@ -340,11 +340,13 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_bind_interval as ^
-   { withAnimation* `Animation',
-     `String',
-     withInterval* `Interval a'} ->
-     `Animation' newAnimation* #}
+animationBindInterval :: (GObjectClass obj) => Animation -> Attr obj o -> Interval o -> IO Animation
+animationBindInterval anim attr interval = let func = {# call unsafe animation_bind_interval #}
+                                               str = P.show attr
+                                           in withAnimation anim $ \animPtr ->
+                                                withInterval interval $ \iPtr ->
+                                                  withCString str $ \strPtr ->
+                                                    newAnimation =<< func animPtr strPtr iPtr
 
 
 -- | Changes the interval for property_name. The 'Animation' will take

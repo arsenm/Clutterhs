@@ -105,10 +105,13 @@ module Graphics.UI.Clutter.Types (
                                   ScrollDirection(..),
 
                                   Animation,
-                                  AnimationClass,
+                                  AnimationRaw,
+                                  AnimationRawClass,
                                   toAnimation,
                                   withAnimation,
-                                  newAnimation,
+                                  mkAnimation,
+                                  newAnimationRaw,
+                                  getAnimationRaw,
 
                                   Timeline,
                                   TimelineClass,
@@ -632,19 +635,36 @@ withPerspective pst = bracket (mkPerspective pst) free
 
 -- *** Animation
 
-{# pointer *ClutterAnimation as Animation foreign newtype #}
+{# pointer *ClutterAnimation as AnimationRaw foreign newtype #}
 
-class GObjectClass o => AnimationClass o
-toAnimation :: AnimationClass o => o -> Animation
+data Animation a = Animation a AnimationRaw
+
+withAnimation (Animation _ raw) = withAnimationRaw raw
+
+--CHECKME: does animationraw class make sense to have?
+class GObjectClass o => AnimationRawClass o
+toAnimation :: AnimationRawClass o => o -> AnimationRaw
 toAnimation = unsafeCastGObject . toGObject
 
-newAnimation:: Ptr Animation -> IO Animation
-newAnimation a = makeNewGObject (Animation, objectUnref) $ return (castPtr a)
+mkAnimation :: a -> AnimationRaw -> Animation a
+mkAnimation _ raw = Animation (undefined :: a) raw
 
-instance AnimationClass Animation
-instance GObjectClass Animation where
-  toGObject (Animation a) = constrGObject (castForeignPtr a)
-  unsafeCastGObject (GObject o) = Animation (castForeignPtr o)
+--CHECKME: Do I actually need this and does it break things?
+getAnimationRaw :: Animation a -> AnimationRaw
+getAnimationRaw (Animation _ raw) = raw
+
+newAnimationRaw:: Ptr AnimationRaw -> IO AnimationRaw
+newAnimationRaw a = makeNewGObject (AnimationRaw, objectUnref) $ return (castPtr a)
+
+instance AnimationRawClass AnimationRaw
+instance GObjectClass AnimationRaw where
+  toGObject (AnimationRaw a) = constrGObject (castForeignPtr a)
+  unsafeCastGObject (GObject o) = AnimationRaw (castForeignPtr o)
+
+--CHECKME:
+instance (GObjectClass a) => GObjectClass (Animation a) where
+  toGObject (Animation _ (AnimationRaw p)) = constrGObject (castForeignPtr p)
+  unsafeCastGObject (GObject o) = Animation (undefined :: a) (AnimationRaw (castForeignPtr o))
 
 -- *** Timeline
 

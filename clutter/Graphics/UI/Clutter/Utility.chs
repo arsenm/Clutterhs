@@ -53,7 +53,6 @@ module Graphics.UI.Clutter.Utility (
   maybeNewActor,
   maybeNewStage,
   maybeNewAlpha,
-  maybeNewAnimation,
   maybeNewTimeline,
   maybeNewTexture,
   maybeNewShader,
@@ -116,8 +115,8 @@ maybeNewStage = maybeNullNew newStage
 maybeNewAlpha :: Ptr Alpha -> IO (Maybe Alpha)
 maybeNewAlpha = maybeNullNew newAlpha
 
-maybeNewAnimation :: Ptr Animation -> IO (Maybe Animation)
-maybeNewAnimation = maybeNullNew newAnimation
+--maybeNewAnimation :: Ptr Animation -> IO (Maybe Animation)
+--maybeNewAnimation = maybeNullNew newAnimation
 
 maybeNewTimeline :: Ptr Timeline -> IO (Maybe Timeline)
 maybeNewTimeline = maybeNullNew newTimeline

@@ -25,9 +25,9 @@ white = Color 255 255 255 255
 
 createRectangles::Stage ->
                   Float ->
-                  (Maybe Animation, [Rectangle], Float) ->
+                  (Maybe (Animation Rectangle), [Rectangle], Float) ->
                   Color ->
-                  IO (Maybe Animation, [Rectangle], Float)
+                  IO (Maybe (Animation Rectangle), [Rectangle], Float)
 createRectangles stage size (_, recs, i) col = do
   rec <- rectangleNewWithColor col
   containerAddActor stage rec
@@ -41,7 +41,7 @@ createRectangles stage size (_, recs, i) col = do
 
   return (Just anim, rec:recs, i+1)
 
-scatterRectangle :: Float -> Float -> Rectangle -> IO Animation
+scatterRectangle :: Float -> Float -> Rectangle -> IO (Animation Rectangle)
 scatterRectangle h w rec = do
   rnd1 <- randomIO
   rnd2 <- randomIO
@@ -53,7 +53,7 @@ scatterRectangle h w rec = do
                                    actorRotationAngleZ :-> ang,
                                    actorOpacity :-> 0 ]
 
-completedAnimation :: Stage -> IO Animation
+completedAnimation :: Stage -> IO (Animation Text)
 completedAnimation stage = do
   text <- textNewWithText "Bitstream Vera Sans 40" "Congratulations!"
   w <- get stage actorWidth

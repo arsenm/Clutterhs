@@ -127,20 +127,34 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_new as ^ { } -> `Animation' newAnimation* #}
+--{# fun unsafe animation_new as ^ { } -> `Animation' newAnimation* #}
+animationNew :: IO (Animation ())
+animationNew = liftM (mkAnimation (undefined :: ())) (newAnimationRaw =<< {# call unsafe animation_new #})
 
-
--- | Attaches animation to object.
+--CHECKME: Not using the old animation?
+--CHECKME: Referencing. Creating the "new" animation using the raw animation
+-- | Attaches animation to object. The old animation should not be
+--   used after setting a new object.
 --
 -- [@animation@] an 'Animation'
 --
 -- [@object@] a GObject
 --
+-- [@Returns@] The new animation associated with object.
+--
 -- * Since 1.0
 --
-{# fun unsafe animation_set_object as ^
-       `GObjectClass obj' => { withAnimation* `Animation', withGObject* `obj' } -> `()' #}
+animationSetObject :: (GObjectClass obj) => Animation a -> obj -> IO (Animation obj)
+animationSetObject anim obj = withAnimation anim $ \animPtr ->
+                                withGObject obj $ \objPtr -> do
+                                  {# call unsafe animation_set_object #} animPtr objPtr
+                                  return $ mkAnimation (undefined::obj) (getAnimationRaw anim)
 
+
+
+--CHECKME: You should be able to create an empty animation without an
+--object, which will be of type Animation (), which you won't be
+--allowed to get the object from with this.
 
 -- | Retrieves the GObject attached to animation.
 --
@@ -150,8 +164,9 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_get_object as ^
-       { withAnimation* `Animation' } -> `GObject' newGObject* #}
+animationGetObject :: (GObjectClass obj) => Animation obj -> IO obj
+animationGetObject anim = withAnimation anim $ \animPtr ->
+  liftM unsafeCastGObject (newGObject =<< {# call unsafe animation_get_object #} animPtr)
 
 -- | Sets the animation mode of animation. The animation mode is a
 --   logical id, either coming from the ClutterAnimationMode
@@ -166,7 +181,7 @@ import System.Glib.GValue
 -- * Since 1.0
 --
 {# fun unsafe animation_set_mode as ^
-       { withAnimation* `Animation', cFromEnum `AnimationMode' } -> `()' #}
+       { withAnimation* `Animation a', cFromEnum `AnimationMode' } -> `()' #}
 
 
 -- | Retrieves the animation mode of animation, as set by
@@ -178,7 +193,7 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_get_mode as ^ { withAnimation* `Animation' } -> `AnimationMode' cToEnum #}
+{# fun unsafe animation_get_mode as ^ { withAnimation* `Animation a' } -> `AnimationMode' cToEnum #}
 
 
 --CHECKME: Set a gint, get out a guint?
@@ -192,7 +207,7 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_set_duration as ^ { withAnimation* `Animation', `Int' } -> `()' #}
+{# fun unsafe animation_set_duration as ^ { withAnimation* `Animation a', `Int' } -> `()' #}
 
 -- | Retrieves the duration of animation, in milliseconds.
 --
@@ -202,7 +217,7 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_get_duration as ^ { withAnimation* `Animation' } -> `Int' #}
+{# fun unsafe animation_get_duration as ^ { withAnimation* `Animation a' } -> `Int' #}
 
 
 -- | Sets the 'Timeline' used by animation.
@@ -215,7 +230,7 @@ import System.Glib.GValue
 -- * Since 1.0
 --
 {# fun unsafe animation_set_timeline as ^
-       { withAnimation* `Animation', withMaybeTimeline* `Maybe Timeline' } -> `()' #}
+       { withAnimation* `Animation a', withMaybeTimeline* `Maybe Timeline' } -> `()' #}
 
 
 --CHECKME: Return Null?
@@ -228,7 +243,7 @@ import System.Glib.GValue
 -- * Since 1.0
 --
 {# fun unsafe animation_get_timeline as ^
-       { withAnimation* `Animation' } -> `Maybe Timeline' maybeNewTimeline* #}
+       { withAnimation* `Animation a' } -> `Maybe Timeline' maybeNewTimeline* #}
 
 
 --CHECKME: animation ownership and nothing?
@@ -245,7 +260,7 @@ import System.Glib.GValue
 -- * Since 1.0
 --
 {# fun unsafe animation_set_alpha as ^
-       { withAnimation* `Animation', withMaybeAlpha* `Maybe Alpha' } -> `()' #}
+       { withAnimation* `Animation a', withMaybeAlpha* `Maybe Alpha' } -> `()' #}
 
 -- | Retrieves the 'Alpha' used by animation.
 --
@@ -256,7 +271,7 @@ import System.Glib.GValue
 -- * Since 1.0
 --
 {# fun unsafe animation_get_alpha as ^
-       { withAnimation* `Animation' } -> `Maybe Alpha' maybeNewAlpha* #}
+       { withAnimation* `Animation a' } -> `Maybe Alpha' maybeNewAlpha* #}
 
 
 -- | Sets whether animation should loop over itself once finished.
@@ -272,7 +287,7 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_set_loop as ^ { withAnimation* `Animation', `Bool' } -> `()' #}
+{# fun unsafe animation_set_loop as ^ { withAnimation* `Animation a', `Bool' } -> `()' #}
 
 -- | Retrieves whether animation is looping.
 --
@@ -282,7 +297,7 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_get_loop as ^ { withAnimation* `Animation' } -> `Bool' #}
+{# fun unsafe animation_get_loop as ^ { withAnimation* `Animation a' } -> `Bool' #}
 
 
 --CHECKME: Referencing
@@ -292,7 +307,7 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-{# fun animation_completed as ^ { withAnimation* `Animation' } -> `()' #}
+{# fun animation_completed as ^ { withAnimation* `Animation a' } -> `()' #}
 
 
 --FIXME: Use AnimOp
@@ -316,10 +331,10 @@ import System.Glib.GValue
 -- * Since 1.0
 --
 {# fun unsafe animation_bind as ^
-   `(GenericValueClass final)' => { withAnimation* `Animation',
+   `(GenericValueClass final)' => { withAnimation* `Animation a',
                                     `String',
                                     withGenericValue* `final'} ->
-                                   `Animation' newAnimation* #}
+                                   `AnimationRaw' newAnimationRaw* #}
 
 
 --CHECKME: Wrap animation type to track type of object animated?
@@ -340,13 +355,13 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
-animationBindInterval :: (GObjectClass obj) => Animation -> Attr obj o -> Interval o -> IO Animation
+animationBindInterval :: (GObjectClass obj) => Animation obj -> Attr obj o -> Interval o -> IO (Animation obj)
 animationBindInterval anim attr interval = let func = {# call unsafe animation_bind_interval #}
                                                str = P.show attr
                                            in withAnimation anim $ \animPtr ->
                                                 withInterval interval $ \iPtr ->
                                                   withCString str $ \strPtr ->
-                                                    newAnimation =<< func animPtr strPtr iPtr
+                                                    liftM (mkAnimation (undefined :: obj)) (newAnimationRaw =<< func animPtr strPtr iPtr)
 
 
 -- | Changes the interval for property_name. The 'Animation' will take
@@ -361,7 +376,7 @@ animationBindInterval anim attr interval = let func = {# call unsafe animation_b
 -- * Since 1.0
 --
 {# fun unsafe animation_update_interval as ^
-   { withAnimation* `Animation', `String', withInterval* `Interval a'} -> `()' #}
+   { withAnimation* `Animation a', `String', withInterval* `Interval a'} -> `()' #}
 
 
 -- | Checks whether animation is controlling property_name.
@@ -376,7 +391,7 @@ animationBindInterval anim attr interval = let func = {# call unsafe animation_b
 -- * Since 1.0
 --
 {# fun unsafe animation_has_property as ^
-       { withAnimation* `Animation', `String' } -> `Bool' #}
+       { withAnimation* `Animation a', `String' } -> `Bool' #}
 
 --CHECKME: unsafe?
 -- | Removes property_name from the list of animated properties.
@@ -388,13 +403,14 @@ animationBindInterval anim attr interval = let func = {# call unsafe animation_b
 -- * Since 1.0
 --
 {# fun unsafe animation_unbind_property as ^
-       { withAnimation* `Animation', `String' } -> `()' #}
+       { withAnimation* `Animation a', `String' } -> `()' #}
 
 
 --The type of the interval should be set when you create it, and
 --should be the same as the type of the corresponding attribute, so
 --I'm assuming that bad things aren't happening in clutter.  This
 --needs a good testing.
+
 -- | Retrieves the 'Interval' associated to property_name inside
 --   animation.
 --
@@ -406,15 +422,14 @@ animationBindInterval anim attr interval = let func = {# call unsafe animation_b
 --
 -- * Since 1.0
 --
-animationGetInterval :: Animation -> Attr Animation a -> IO (Interval a)
+animationGetInterval :: (GObjectClass a) => Animation a -> Attr a b -> IO (Interval b)
 animationGetInterval anim attr = let func = {# call unsafe animation_get_interval #}
                                      str = P.show attr
                                  in withAnimation anim $ \animPtr ->
                                       withCString str $ \strPtr ->
                                           liftM
-                                            (mkInterval (undefined :: a))
+                                            (mkInterval (undefined :: b))
                                             (newIntervalRaw =<< func animPtr strPtr)
-
 
 
 -- | Retrieves the 'Animation' used by actor, if 'animate' has been
@@ -426,11 +441,15 @@ animationGetInterval anim attr = let func = {# call unsafe animation_get_interva
 --
 -- * Since 1.0
 --
-{# fun actor_get_animation as ^
-       `(ActorClass a)' => { withActorClass* `a' } -> `Maybe Animation' maybeNewAnimation* #}
+actorGetAnimation :: (ActorClass a) => a -> IO (Maybe (Animation a))
+actorGetAnimation actor =  withActorClass actor $ \actorPtr -> do
+  raw <- {# call unsafe actor_get_animation #} actorPtr
+  if raw == nullPtr
+     then return P.Nothing
+     else newAnimationRaw raw >>= return . Just . mkAnimation (undefined :: a)
 
 
-onCompleted, afterCompleted :: Animation -> IO () -> IO (ConnectId Animation)
+onCompleted, afterCompleted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
 onCompleted = connect_NONE__NONE "completed" False
 afterCompleted = connect_NONE__NONE "completed" True
 
@@ -443,11 +462,11 @@ afterCompleted = connect_NONE__NONE "completed" True
 --
 -- * Since 1.0
 --
-completed :: Signal Animation (IO ())
+completed :: (GObjectClass a) => Signal (Animation a) (IO ())
 completed = Signal (connect_NONE__NONE "completed")
 
 
-onStarted, afterStarted :: Animation -> IO () -> IO (ConnectId Animation)
+onStarted, afterStarted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
 onStarted = connect_NONE__NONE "started" False
 afterStarted = connect_NONE__NONE "started" True
 
@@ -457,7 +476,7 @@ afterStarted = connect_NONE__NONE "started" True
 --
 -- * Since 1.0
 --
-started :: Signal Animation (IO ())
+started :: (GObjectClass a) => Signal (Animation a) (IO ())
 started = Signal (connect_NONE__NONE "started")
 
 
@@ -498,7 +517,7 @@ toListAnim = foldr step ([], [])
 --
 -- * Since 1.0
 --
-animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [AnimOp actor] -> IO Animation
+animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [AnimOp actor] -> IO (Animation actor)
 animate _ _ _ [] = error "Need arguments to animate"
 animate actor mode duration us =
     let (names, gvals) = toListAnim us
@@ -512,7 +531,8 @@ animate actor mode duration us =
            withArray gvals $ \gvPtr -> do
                ret <- animatev actptr cmode cdur (cIntConv len) strptr gvPtr
                foldM_ unsetOneGVal gvPtr gvals
-               newAnimation ret
+               raw <- newAnimationRaw ret
+               return (mkAnimation (undefined :: actor) raw)
 
 
 
@@ -538,7 +558,7 @@ animate actor mode duration us =
 --
 -- * Since 1.0
 --
-animateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [AnimOp actor] -> IO Animation
+animateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [AnimOp actor] -> IO (Animation actor)
 animateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
 animateWithAlpha actor alpha us =
     let (names, gvals) = toListAnim us
@@ -551,9 +571,8 @@ animateWithAlpha actor alpha us =
             withArray gvals $ \gvPtr -> do
               ret <- animatev actptr alphptr (cIntConv len) strptr gvPtr
               foldM_ unsetOneGVal gvPtr gvals
-              newAnimation ret
-
-
+              raw <- newAnimationRaw ret
+              return (mkAnimation (undefined :: actor) raw)
 
 
 -- | Animates the given list of properties of actor between the
@@ -582,7 +601,7 @@ animateWithTimeline :: (ActorClass actor) =>
                        -> AnimationMode
                        -> Timeline
                        -> [AnimOp actor]
-                       -> IO Animation
+                       -> IO (Animation actor)
 animateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
 animateWithTimeline actor mode tml us =
     let (names, gvals) = toListAnim us
@@ -596,14 +615,15 @@ animateWithTimeline actor mode tml us =
             withArray gvals $ \gvPtr -> do
               ret <- animatev actptr cmode tmlptr (cIntConv len) strptr gvPtr
               foldM_ unsetOneGVal gvPtr gvals
-              newAnimation ret
+              raw <- newAnimationRaw ret
+              return (mkAnimation (undefined :: actor) raw)
 
 
 -- | the alpha object used by the animation.
 --
 -- * Since 1.0
 --
-animationAlpha :: Attr Animation (Maybe Alpha)
+animationAlpha :: Attr (Animation a) (Maybe Alpha)
 animationAlpha = newNamedAttr "alpha" animationGetAlpha animationSetAlpha
 
 
@@ -613,7 +633,7 @@ animationAlpha = newNamedAttr "alpha" animationGetAlpha animationSetAlpha
 --
 -- * Since 1.0
 --
-animationDuration :: Attr Animation Int
+animationDuration :: Attr (Animation a) Int
 animationDuration = newNamedAttr "duration" animationGetDuration animationSetDuration
 
 
@@ -623,7 +643,7 @@ animationDuration = newNamedAttr "duration" animationGetDuration animationSetDur
 --
 -- * Since 1.0
 --
-animationLoop :: Attr Animation Bool
+animationLoop :: Attr (Animation a) Bool
 animationLoop = newNamedAttr "loop" animationGetLoop animationSetLoop
 
 
@@ -633,24 +653,36 @@ animationLoop = newNamedAttr "loop" animationGetLoop animationSetLoop
 --
 -- * Since 1.0
 --
-animationMode :: Attr Animation AnimationMode
+animationMode :: Attr (Animation a) AnimationMode
 animationMode = newAttr animationGetMode animationSetMode
 
 -- | Retrieves the 'Animation' used by actor, if 'animate' has been
 --   called on actor.
-actorAnimation :: (ActorClass actor) => ReadAttr actor (Maybe Animation)
+actorAnimation :: (ActorClass actor) => ReadAttr actor (Maybe (Animation actor))
 actorAnimation = readAttr actorGetAnimation
 
+--CHECKME: You can get a different type of animation from setting back
+--which you would then use, so I'm not sure this property entirely
+--makes sense as writable. It could only possibly make sense if you set an object
+--of the same type.  Is it a problem to not have this?
+
 -- | Object to which the animation applies.
-animationObject :: Attr Animation GObject
-animationObject = newNamedAttr "object" animationGetObject animationSetObject
+--
+-- * Note
+--
+--  This is not writable since you may set a different type of object,
+--  and must use the result of the set operation as a new animation
+--  Use 'animationSetObject' and use the result instead.
+--
+animationObject :: (GObjectClass a) => ReadAttr (Animation a) a
+animationObject = readNamedAttr "object" animationGetObject
 
 
 -- | The ClutterTimeline used by the animation.
 --
 -- * Since 1.0
 --
-animationTimeline :: Attr Animation (Maybe Timeline)
+animationTimeline :: Attr (Animation a) (Maybe Timeline)
 animationTimeline = newNamedAttr "timeline" animationGetTimeline animationSetTimeline
 
 

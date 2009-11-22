@@ -19,13 +19,11 @@ main = do
   ival1 <- intervalNew (50::Float) (500::Float)
   ival2 <- intervalNew (50::Float) (300::Float)
 
---FIXME: newAnimation and Co. exposed and huge mistakes happen
---FIXME: Wrap animation type to tell what is animated
-  anim <- animationNew
-  animationSetObject anim rec
+  anim <- animationNew >>= flip animationSetObject rec
+
   animationSetDuration anim 2500
-  animationBindInterval anim (actorX::Attr Rectangle Float)  ival1
-  animationBindInterval anim (actorY::Attr Rectangle Float)  ival2
+  animationBindInterval anim actorX  ival1
+  animationBindInterval anim actorY  ival2
 
   tml <- fmap fromJust (animationGetTimeline anim)
   timelineStart tml

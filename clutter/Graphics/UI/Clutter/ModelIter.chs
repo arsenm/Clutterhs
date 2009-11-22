@@ -42,7 +42,6 @@ module Graphics.UI.Clutter.ModelIter (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import Control.Monad (liftM)

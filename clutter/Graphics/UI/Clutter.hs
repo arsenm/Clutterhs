@@ -23,7 +23,6 @@ module Graphics.UI.Clutter (
 -- * Core Reference
 -- ** Types and general stuff
   module Graphics.UI.Clutter.Types,
-  module Graphics.UI.Clutter.GValue,
   module Graphics.UI.Clutter.StoreValue,
 
 -- ** Abstract classes and interfaces
@@ -107,7 +106,6 @@ import Graphics.UI.Clutter.Animation
 import Graphics.UI.Clutter.Animatable
 import Graphics.UI.Clutter.Timeline
 import Graphics.UI.Clutter.Score
-import Graphics.UI.Clutter.GValue
 import Graphics.UI.Clutter.StoreValue
 import Graphics.UI.Clutter.Alpha
 import Graphics.UI.Clutter.CairoTexture

@@ -35,7 +35,7 @@ module Graphics.UI.Clutter.Clone (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #}
+{# import Graphics.UI.Clutter.GTypes #}
 
 import C2HS
 import System.Glib.Attributes

@@ -81,7 +81,6 @@ module Graphics.UI.Clutter.Model (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
-{# import Graphics.UI.Clutter.GValue #}
 
 import C2HS
 import System.Glib.Attributes

@@ -284,10 +284,10 @@ module Graphics.UI.Clutter.Actor (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GValue #}
+{# import Graphics.UI.Clutter.GTypes #}
 {# import Graphics.UI.Clutter.Utility #}
-{# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Event #}
+{# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.CustomSignals #}
 
 --FIXME: should I do something about clutter/prelude conflicts?

@@ -51,6 +51,7 @@ module Graphics.UI.Clutter.StoreValue (
                                        AnimType(..),
                                        GenericValue(..),
                                        GenericValuePtr,
+                                       ExtractGValue,
                                        --valueSetGenericValue,
                                        --valueGetGenericValue,
                                        GenericValueClass(..),
@@ -58,7 +59,9 @@ module Graphics.UI.Clutter.StoreValue (
                                        withGenericValue,
                                        unsetGValue,
                                        unsetOneGVal,
-                                       genericValuePtrGetType
+                                       genericValuePtrGetType,
+                                       extractGValue,
+                                       allocaTypedGValue
                                       ) where
 
 import C2HS
@@ -235,10 +238,25 @@ instance Storable GenericValue where
                   {# set GValue->g_type #} p (0 :: GType) --must be initialized to 0 or init will fail
                   valueSetGenericValue gv ut
 
+
 mkGValueFromGenericValue :: GenericValue -> IO GenericValuePtr
 mkGValueFromGenericValue gv = do cptr <- malloc
                                  poke cptr gv
                                  return cptr
+
+--interval get stuff wants initialized type.
+--FIXME: This is disgusting and more duplication. Fix it.
+allocaTypedGValue :: GType -> (GenericValuePtr -> IO ()) -> IO GenericValue
+allocaTypedGValue gtype body =
+  -- c2hs is broken in that it can't handle arrays of compound arrays in the
+  -- sizeof hook
+  allocaBytes ({# sizeof GType #}+ 2* {# sizeof guint64 #}) $ \gvPtr -> do
+    {# set GValue->g_type #} gvPtr gtype
+    body gvPtr
+    val <- valueGetGenericValue (GValue (castPtr gvPtr))
+    {#call unsafe g_value_unset#} gvPtr
+    return val
+
 
 freeGValue :: GenericValuePtr -> IO ()
 freeGValue p = unsetGValue (castPtr p) >> free p
@@ -284,7 +302,22 @@ newtype WrapGObject g = WrapGObject { unwrapGObject :: g }
 instance GObjectClass g => GenericValueClass (WrapGObject g) where
   toGenericValue = GVobject . toGObject . unwrapGObject
 
+-- For some of the functions which return gvalues, we know the type in
+-- advance. We still want to unwrap them since gvalues are nasty.
+-- This class will allow that, although rather ugly. I don't know if
+-- there's a better way. This should hopefully only be necessary
+-- internally.
+class (GenericValueClass a) => ExtractGValue a where
+  extractGValue :: GenericValue -> a
 
+
+instance ExtractGValue Int where
+  extractGValue (GVint x) = x
+  extractGValue _         = error "extractGValue: Type mismatch"
+
+instance ExtractGValue Float where
+  extractGValue (GVfloat x) = x
+  extractGValue _         = error "extractGValue: Type mismatch"
 
 
 --Color GValue

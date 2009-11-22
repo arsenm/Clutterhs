@@ -33,7 +33,7 @@ module Graphics.UI.Clutter.Interval (
 -- @
 
 -- * Constructors
-  intervalNew
+  intervalNew,
   intervalClone,
 
 -- * Methods
@@ -50,7 +50,7 @@ module Graphics.UI.Clutter.Interval (
 --intervalSetInterval,
 --intervalGetInterval,
 
-  intervalComputeValue,
+--intervalComputeValue,
 --intervalValidate,
 --intervalRegisterProgressFunc
 
@@ -91,6 +91,16 @@ intervalSetFinalValue interval val = withInterval interval $ \intervalPtr ->
                                          withGenericValue val $ \valPtr ->
                                           {# call unsafe interval_set_initial_value #} intervalPtr valPtr
 
+
+intervalGetInitialValue :: (GenericValueClass a, ExtractGValue a) => Interval a -> IO a
+intervalGetInitialValue interval = withInterval interval $ \intervalPtr -> do
+                                     gtype <- liftM cToEnum $ {# call unsafe interval_get_value_type #} intervalPtr
+                                     generic <- allocaTypedGValue gtype $ \gvPtr ->
+                                                       {# call unsafe interval_get_initial_value #} intervalPtr gvPtr
+                                     return (extractGValue generic)
+
+
+
 {-
 intervalComputeValue :: (GenericValueClass a) => Interval a -> Double -> IO (Maybe a)
 intervalComputeValue interval factor = let func = {# call unsafe interval_compute_value #}
@@ -101,5 +111,6 @@ intervalComputeValue interval factor = let func = {# call unsafe interval_comput
                                                        then Just ???
                                                        else P.Nothing
 -}
+
 
 

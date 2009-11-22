@@ -127,12 +127,11 @@ import System.Glib.GValue
 --
 -- * Since 1.0
 --
---{# fun unsafe animation_new as ^ { } -> `Animation' newAnimation* #}
-animationNew :: IO (Animation ())
-animationNew = liftM (mkAnimation (undefined :: ())) (newAnimationRaw =<< {# call unsafe animation_new #})
+animationNew :: (GObjectClass obj) => IO (Animation obj)
+animationNew = liftM (mkAnimation (undefined :: obj)) (newAnimationRaw =<< {# call unsafe animation_new #})
 
---CHECKME: Not using the old animation?
---CHECKME: Referencing. Creating the "new" animation using the raw animation
+
+
 -- | Attaches animation to object. The old animation should not be
 --   used after setting a new object.
 --
@@ -144,17 +143,11 @@ animationNew = liftM (mkAnimation (undefined :: ())) (newAnimationRaw =<< {# cal
 --
 -- * Since 1.0
 --
-animationSetObject :: (GObjectClass obj) => Animation a -> obj -> IO (Animation obj)
+animationSetObject :: (GObjectClass obj) => Animation a -> obj -> IO ()
 animationSetObject anim obj = withAnimation anim $ \animPtr ->
                                 withGObject obj $ \objPtr -> do
                                   {# call unsafe animation_set_object #} animPtr objPtr
-                                  return $ mkAnimation (undefined::obj) (getAnimationRaw anim)
 
-
-
---CHECKME: You should be able to create an empty animation without an
---object, which will be of type Animation (), which you won't be
---allowed to get the object from with this.
 
 -- | Retrieves the GObject attached to animation.
 --
@@ -661,21 +654,10 @@ animationMode = newAttr animationGetMode animationSetMode
 actorAnimation :: (ActorClass actor) => ReadAttr actor (Maybe (Animation actor))
 actorAnimation = readAttr actorGetAnimation
 
---CHECKME: You can get a different type of animation from setting back
---which you would then use, so I'm not sure this property entirely
---makes sense as writable. It could only possibly make sense if you set an object
---of the same type.  Is it a problem to not have this?
-
 -- | Object to which the animation applies.
 --
--- * Note
---
---  This is not writable since you may set a different type of object,
---  and must use the result of the set operation as a new animation
---  Use 'animationSetObject' and use the result instead.
---
-animationObject :: (GObjectClass a) => ReadAttr (Animation a) a
-animationObject = readNamedAttr "object" animationGetObject
+animationObject :: (GObjectClass a) => Attr (Animation a) a
+animationObject = newNamedAttr "object" animationGetObject animationSetObject
 
 
 -- | The ClutterTimeline used by the animation.

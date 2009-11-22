@@ -19,7 +19,8 @@ main = do
   ival1 <- intervalNew (50::Float) (500::Float)
   ival2 <- intervalNew (50::Float) (300::Float)
 
-  anim <- animationNew >>= flip animationSetObject rec
+  anim <- animationNew :: IO (Animation Rectangle)
+  animationSetObject anim rec
 
   animationSetDuration anim 2500
   animationBindInterval anim actorX  ival1

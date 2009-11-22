@@ -18,6 +18,7 @@
 --  Lesser General Public License for more details.
 --
 {-# LANGUAGE ForeignFunctionInterface,
+             ScopedTypeVariables,
              ExistentialQuantification #-}
 {-# OPTIONS_HADDOCK prune #-}
 
@@ -66,7 +67,7 @@ module Graphics.UI.Clutter.Animation (
 
   animationHasProperty,
   animationUnbindProperty,
-  animationGetInterval,
+--animationGetInterval,
   actorGetAnimation,
   actorAnimation,
 
@@ -95,13 +96,15 @@ module Graphics.UI.Clutter.Animation (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
+import Prelude
+import qualified Prelude as P
 
-import Control.Arrow (second)
-import Control.Monad (foldM_)
+import Control.Monad (liftM, foldM_)
 
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
+import System.Glib.GValue
 
 
 
@@ -340,7 +343,7 @@ import System.Glib.Properties
 {# fun unsafe animation_bind_interval as ^
    { withAnimation* `Animation',
      `String',
-     withInterval* `Interval'} ->
+     withInterval* `Interval a'} ->
      `Animation' newAnimation* #}
 
 
@@ -356,7 +359,7 @@ import System.Glib.Properties
 -- * Since 1.0
 --
 {# fun unsafe animation_update_interval as ^
-   { withAnimation* `Animation', `String', withInterval* `Interval'} -> `()' #}
+   { withAnimation* `Animation', `String', withInterval* `Interval a'} -> `()' #}
 
 
 -- | Checks whether animation is controlling property_name.
@@ -386,19 +389,30 @@ import System.Glib.Properties
        { withAnimation* `Animation', `String' } -> `()' #}
 
 
+--The type of the interval should be set when you create it, and
+--should be the same as the type of the corresponding attribute, so
+--I'm assuming that bad things aren't happening in clutter.  This
+--needs a good testing.
 -- | Retrieves the 'Interval' associated to property_name inside
 --   animation.
 --
 -- [@animation@] an 'Animation'
 --
--- [@property_name@] name of the property
+-- [@property@] An attribute
 --
 -- [@Returns@] the 'Interval'
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_get_interval as ^
-   { withAnimation* `Animation', `String' } -> `Interval' newInterval* #}
+animationGetInterval :: Animation -> Attr Animation a -> IO (Interval a)
+animationGetInterval anim attr = let func = {# call unsafe animation_get_interval #}
+                                     str = P.show attr
+                                 in withAnimation anim $ \animPtr ->
+                                      withCString str $ \strPtr ->
+                                          liftM
+                                            (mkInterval (undefined :: a))
+                                            (newIntervalRaw =<< func animPtr strPtr)
+
 
 
 -- | Retrieves the 'Animation' used by actor, if 'animate' has been

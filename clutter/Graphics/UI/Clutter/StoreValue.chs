@@ -39,6 +39,10 @@
 
 --TODO: Missing clutter types
 
+--FIXME: Too much duplication, and unnecessary incompatability between
+--2 different representations of GValue
+--FIXME: Overall this is very messy
+
 --StoreValue in Gtk2hs was missing some pieces for color
 --that wouldn't make sense to put there, such as GV's for color and units
 --Instead of TreeModels, Animations and ClutterModels and so forth.
@@ -53,7 +57,8 @@ module Graphics.UI.Clutter.StoreValue (
                                        WrapGObject(..),
                                        withGenericValue,
                                        unsetGValue,
-                                       unsetOneGVal
+                                       unsetOneGVal,
+                                       genericValuePtrGetType
                                       ) where
 
 import C2HS
@@ -79,6 +84,11 @@ import System.Glib.GType
 -- * Internally used by "Graphics.UI.Clutter.Animation".
 
 {# pointer *GValue as GenericValuePtr -> GenericValue #}
+
+-- most of this is duplicated in gtk2hs, and should be fixed
+
+genericValuePtrGetType :: GenericValuePtr -> IO GType
+genericValuePtrGetType gvPtr = {# get GValue->g_type #} gvPtr
 
 --GenericValue is a wrapper around haskell types that can be put in a gvalue
 --GValue is the actual C type. GenericValues get put into GValues

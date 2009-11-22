@@ -126,9 +126,10 @@ module Graphics.UI.Clutter.Types (
                                   TimelineDirection(..),
 
                                   Interval,
-                                  IntervalClass,
+                                  IntervalRaw,
+                                  mkInterval,
                                   withInterval,
-                                  newInterval,
+                                  newIntervalRaw,
 
                                   Fog(..),
                                   FogPtr,
@@ -716,18 +717,21 @@ foreign import ccall "wrapper"
 
 -- *** Interval
 
-{# pointer *ClutterInterval as Interval foreign newtype #}
+{# pointer *ClutterInterval as IntervalRaw foreign newtype #}
 
-class GObjectClass o => IntervalClass o
-toInterval :: IntervalClass o => o -> Interval
-toInterval = unsafeCastGObject . toGObject
+-- Track the type of the interval with the 1st field
+data Interval a = Interval a IntervalRaw
 
-newInterval a = makeNewGObject (Interval, objectUnref) $ return (castPtr a)
+mkInterval :: a -> IntervalRaw -> Interval a
+mkInterval _ raw = Interval (undefined :: a) raw
 
-instance IntervalClass Interval
-instance GObjectClass Interval where
-  toGObject (Interval i) = constrGObject (castForeignPtr i)
-  unsafeCastGObject (GObject o) = Interval (castForeignPtr o)
+withInterval (Interval _ raw) = withIntervalRaw raw
+
+newIntervalRaw a = makeNewGObject (IntervalRaw, objectUnref) $ return (castPtr a)
+
+instance GObjectClass IntervalRaw where
+  toGObject (IntervalRaw i) = constrGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = IntervalRaw (castForeignPtr o)
 
 -- *** Fog
 

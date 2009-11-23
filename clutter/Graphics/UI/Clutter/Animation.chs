@@ -315,22 +315,22 @@ animationGetObject anim = withAnimation anim $ \animPtr ->
 --
 -- [@animation@] an 'Animation'
 --
--- [@property_name@] the property to control
---
--- [@final@] The final value of the property
+-- [@property@] the property to control and it's final value
 --
 -- [@Returns@] The animation itself
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_bind as ^
-   `(GenericValueClass final)' => { withAnimation* `Animation a',
-                                    `String',
-                                    withGenericValue* `final'} ->
-                                   `AnimationRaw' newAnimationRaw* #}
+animationBind :: Animation a -> AnimOp b -> IO (Animation a)
+animationBind anim (attr :-> val) = let func = {# call unsafe animation_bind #}
+                                        str = P.show attr
+                                    in withAnimation anim $ \animPtr ->
+                                         withCString str $ \strPtr ->
+                                          withGenericValue val $ \valPtr ->
+                                            liftM (mkAnimation (undefined ::a))
+                                                  (newAnimationRaw =<< func animPtr strPtr valPtr)
 
 
---CHECKME: Wrap animation type to track type of object animated?
 -- | Binds interval to the property_name of the GObject attached to
 --   animation. The 'Animation' will take ownership of the passed
 --   'Interval'. For more information about animations, see 'animate'.
@@ -340,7 +340,7 @@ animationGetObject anim = withAnimation anim $ \animPtr ->
 --
 -- [@animation@] an 'Animation'
 --
--- [@property_name@] the property to control
+-- [@property@] the property to control
 --
 -- [@interval@] an 'Interval'
 --
@@ -357,47 +357,54 @@ animationBindInterval anim attr interval = let func = {# call unsafe animation_b
                                                     liftM (mkAnimation (undefined :: obj)) (newAnimationRaw =<< func animPtr strPtr iPtr)
 
 
--- | Changes the interval for property_name. The 'Animation' will take
---   ownership of the passed 'Interval'.
+-- | Changes the interval for property.
 --
 -- [@animation@] an 'Animation'
 --
--- [@property_name@] name of the property
+-- [@property@] name of the property
 --
 -- [@interval@] a 'Interval'
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_update_interval as ^
-   { withAnimation* `Animation a', `String', withInterval* `Interval a'} -> `()' #}
+animationUpdateInterval :: Animation a -> Attr a b -> Interval b -> IO ()
+animationUpdateInterval anim attr interval = let func = {# call unsafe animation_update_interval #}
+                                                 str = P.show attr
+                                             in withAnimation anim $ \animPtr ->
+                                                  withCString str $ \strPtr ->
+                                                    withInterval interval $ \iPtr ->
+                                                      func animPtr strPtr iPtr
 
 
--- | Checks whether animation is controlling property_name.
+-- | Checks whether animation is controlling property.
 --
 -- [@animation@] an 'Animation'
 --
--- [@property_name@] name of the property
+-- [@property@] the attribute
 --
 -- [@Returns@] @True@ if the property is animated by the 'Animation',
 --   @False@ otherwise
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_has_property as ^
-       { withAnimation* `Animation a', `String' } -> `Bool' #}
+animationHasProperty :: Animation a -> Attr a b -> IO Bool
+animationHasProperty anim attr = withAnimation anim $ \animPtr ->
+                                   withCString (P.show attr) $ \strPtr ->
+                                     liftM cToBool $ {# call unsafe animation_has_property #} animPtr strPtr
 
 --CHECKME: unsafe?
--- | Removes property_name from the list of animated properties.
+-- | Removes property from the list of animated properties.
 --
 -- [@animation@] an 'Animation'
 --
--- [@property_name@] name of the property
+-- [@property@] the attribute
 --
 -- * Since 1.0
 --
-{# fun unsafe animation_unbind_property as ^
-       { withAnimation* `Animation a', `String' } -> `()' #}
-
+animationUnbindProperty :: Animation a -> Attr a b -> IO ()
+animationUnbindProperty anim attr = withAnimation anim $ \animPtr ->
+                                      withCString (P.show attr) $ \strPtr ->
+                                        {# call unsafe animation_unbind_property #} animPtr strPtr
 
 --The type of the interval should be set when you create it, and
 --should be the same as the type of the corresponding attribute, so

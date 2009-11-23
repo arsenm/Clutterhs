@@ -52,16 +52,15 @@ module Graphics.UI.Clutter.StoreValue (
                                        GenericValue(..),
                                        GenericValuePtr,
                                        ExtractGValue,
-                                       --valueSetGenericValue,
-                                       --valueGetGenericValue,
+                                       valueSetGenericValue,
+                                       valueGetGenericValue,
                                        GenericValueClass(..),
                                        WrapGObject(..),
                                        withGenericValue,
                                        unsetGValue,
                                        unsetOneGVal,
                                        genericValuePtrGetType,
-                                       extractGValue,
-                                       allocaTypedGValue
+                                       extractGValue
                                       ) where
 
 import C2HS
@@ -243,19 +242,6 @@ mkGValueFromGenericValue :: GenericValue -> IO GenericValuePtr
 mkGValueFromGenericValue gv = do cptr <- malloc
                                  poke cptr gv
                                  return cptr
-
---interval get stuff wants initialized type.
---FIXME: This is disgusting and more duplication. Fix it.
-allocaTypedGValue :: GType -> (GenericValuePtr -> IO ()) -> IO GenericValue
-allocaTypedGValue gtype body =
-  -- c2hs is broken in that it can't handle arrays of compound arrays in the
-  -- sizeof hook
-  allocaBytes ({# sizeof GType #}+ 2* {# sizeof guint64 #}) $ \gvPtr -> do
-    {# set GValue->g_type #} gvPtr gtype
-    body gvPtr
-    val <- valueGetGenericValue (GValue (castPtr gvPtr))
-    {#call unsafe g_value_unset#} gvPtr
-    return val
 
 
 freeGValue :: GenericValuePtr -> IO ()

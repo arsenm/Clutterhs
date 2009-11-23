@@ -65,7 +65,11 @@ module Graphics.UI.Clutter.Interval (
 
 import C2HS
 import Control.Monad (liftM)
+import Prelude
+import qualified Prelude as P
 import qualified System.Glib.GTypeConstants as GType
+
+import System.Glib.GValue
 
 intervalNew :: (GenericValueClass a) => a -> a -> IO (Interval a)
 intervalNew initial final = let func = {# call unsafe interval_new_with_values #}
@@ -91,26 +95,24 @@ intervalSetFinalValue interval val = withInterval interval $ \intervalPtr ->
                                          withGenericValue val $ \valPtr ->
                                           {# call unsafe interval_set_initial_value #} intervalPtr valPtr
 
-
+--TODO: Cleanup
 intervalGetInitialValue :: (GenericValueClass a, ExtractGValue a) => Interval a -> IO a
-intervalGetInitialValue interval = withInterval interval $ \intervalPtr -> do
-                                     gtype <- liftM cToEnum $ {# call unsafe interval_get_value_type #} intervalPtr
-                                     generic <- allocaTypedGValue gtype $ \gvPtr ->
-                                                       {# call unsafe interval_get_initial_value #} intervalPtr gvPtr
-                                     return (extractGValue generic)
+intervalGetInitialValue interval = withInterval interval $ \intervalPtr ->
+                                     allocaGValue $ \gv@(GValue gvPtr) -> do
+                                       {# call unsafe interval_get_initial_value #} intervalPtr (castPtr gvPtr)
+                                       valueGetGenericValue gv >>= return . extractGValue
 
 
-
-{-
-intervalComputeValue :: (GenericValueClass a) => Interval a -> Double -> IO (Maybe a)
+intervalComputeValue :: (GenericValueClass a, ExtractGValue a) => Interval a -> Double -> IO (Maybe a)
 intervalComputeValue interval factor = let func = {# call unsafe interval_compute_value #}
                                        in withInterval interval $ \intervalPtr ->
-                                            allocaGValue $ \valPtr ->
-                                            ret <- liftM cToBool $ func intervalPtr (cFloatConv factor) valPtr
-                                            return $ if ret
-                                                       then Just ???
-                                                       else P.Nothing
--}
+                                            allocaGValue $ \gv@(GValue gvPtr) -> do
+                                              ret <- liftM cToBool $ func intervalPtr (cFloatConv factor) (castPtr gvPtr)
+                                              generic <- valueGetGenericValue gv
+                                              return $ if ret
+                                                         then Just (extractGValue generic)
+                                                         else P.Nothing
+
 
 
 

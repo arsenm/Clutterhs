@@ -51,16 +51,13 @@ module Graphics.UI.Clutter.StoreValue (
                                        AnimType(..),
                                        GenericValue(..),
                                        GenericValuePtr,
-                                       ExtractGValue,
                                        valueSetGenericValue,
                                        valueGetGenericValue,
                                        GenericValueClass(..),
-                                       WrapGObject(..),
                                        withGenericValue,
                                        unsetGValue,
                                        unsetOneGVal,
-                                       genericValuePtrGetType,
-                                       extractGValue
+                                       genericValuePtrGetType
                                       ) where
 
 import C2HS
@@ -193,8 +190,8 @@ valueSetGenericValue gvalue (GVstring x)  = do valueInit gvalue GType.string
                                                valueSetMaybeString  gvalue x
 valueSetGenericValue gvalue (GVobject x)  = do valueInit gvalue GType.object
                                                valueSetGObject gvalue x
-valueSetGenericValue gvalue (GVcolor x)  = do valueInit gvalue gTypeColor
-                                              valueSetColor gvalue x
+valueSetGenericValue gvalue (GVcolor x)  =  do valueInit gvalue gTypeColor
+                                               valueSetColor gvalue x
 --valueSetGenericValue gvalue (GVboxed x)   = valueSetPointer gvalue x
 
 valueGetGenericValue :: GValue -> IO GenericValue
@@ -255,58 +252,60 @@ withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) fre
 -- I don't really like this solution to functions that use gvalues.
 class GenericValueClass a where
   toGenericValue :: a -> GenericValue
+  extractGenericValue :: GenericValue -> a
+
+-- for every use of gvalues, the out type should be inferrable from
+-- what you pass in, so this should never happen unless clutter is
+-- doing horrible things inside
+typeMismatchError =  error "extractGenericValue: Type mismatch"
 
 instance GenericValueClass Int where
   toGenericValue = GVint
+  extractGenericValue (GVint x) = x
+  extractGenericValue _         = typeMismatchError
+
 instance GenericValueClass Word where
   toGenericValue = GVuint
+  extractGenericValue (GVuint x) = x
+  extractGenericValue _          = typeMismatchError
+
 instance GenericValueClass Float where
   toGenericValue = GVfloat
+  extractGenericValue (GVfloat x) = x
+  extractGenericValue _           = typeMismatchError
+
 instance GenericValueClass Double where
   toGenericValue = GVdouble
+  extractGenericValue (GVdouble x) = x
+  extractGenericValue _            = typeMismatchError
+
 instance GenericValueClass Int8 where
   toGenericValue = GVchar
+  extractGenericValue (GVchar x)  = x
+  extractGenericValue _           = typeMismatchError
+
 instance GenericValueClass Word8 where
   toGenericValue = GVuchar
+  extractGenericValue (GVuchar x)  = x
+  extractGenericValue _            = typeMismatchError
+
 instance GenericValueClass Bool where
   toGenericValue = GVboolean
+  extractGenericValue (GVboolean x)  = x
+  extractGenericValue _              = typeMismatchError
+
+--TODO: String vs. Maybe String
 instance GenericValueClass String where
   toGenericValue = GVstring . Just
+  extractGenericValue (GVstring (Just x))  = x
+  extractGenericValue _                    = typeMismatchError
+
 instance GenericValueClass Color where
   toGenericValue = GVcolor
-
---UndecidableInstances = bad
---instance (GObjectClass obj) => GenericValueClass obj where
---  toGenericValue = GVobject . toGObject
-
---TODO: Better name? Or better way of working around this?
+  extractGenericValue (GVcolor x)  = x
+  extractGenericValue _            = typeMismatchError
 
 
--- | Allows use of functions using AnimOp to use GObjects.
-newtype WrapGObject g = WrapGObject { unwrapGObject :: g }
-
-instance GObjectClass g => GenericValueClass (WrapGObject g) where
-  toGenericValue = GVobject . toGObject . unwrapGObject
-
--- For some of the functions which return gvalues, we know the type in
--- advance. We still want to unwrap them since gvalues are nasty.
--- This class will allow that, although rather ugly. I don't know if
--- there's a better way. This should hopefully only be necessary
--- internally.
-class (GenericValueClass a) => ExtractGValue a where
-  extractGValue :: GenericValue -> a
-
-
-instance ExtractGValue Int where
-  extractGValue (GVint x) = x
-  extractGValue _         = error "extractGValue: Type mismatch"
-
-instance ExtractGValue Float where
-  extractGValue (GVfloat x) = x
-  extractGValue _         = error "extractGValue: Type mismatch"
-
-
---Color GValue
 {# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
 {# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
 

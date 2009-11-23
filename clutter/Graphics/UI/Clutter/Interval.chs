@@ -96,23 +96,22 @@ intervalSetFinalValue interval val = withInterval interval $ \intervalPtr ->
                                           {# call unsafe interval_set_initial_value #} intervalPtr valPtr
 
 --TODO: Cleanup
-intervalGetInitialValue :: (GenericValueClass a, ExtractGValue a) => Interval a -> IO a
+intervalGetInitialValue :: (GenericValueClass a) => Interval a -> IO a
 intervalGetInitialValue interval = withInterval interval $ \intervalPtr ->
                                      allocaGValue $ \gv@(GValue gvPtr) -> do
                                        {# call unsafe interval_get_initial_value #} intervalPtr (castPtr gvPtr)
-                                       valueGetGenericValue gv >>= return . extractGValue
+                                       valueGetGenericValue gv >>= return . extractGenericValue
 
 
-intervalComputeValue :: (GenericValueClass a, ExtractGValue a) => Interval a -> Double -> IO (Maybe a)
+intervalComputeValue :: (GenericValueClass a) => Interval a -> Double -> IO (Maybe a)
 intervalComputeValue interval factor = let func = {# call unsafe interval_compute_value #}
                                        in withInterval interval $ \intervalPtr ->
                                             allocaGValue $ \gv@(GValue gvPtr) -> do
                                               ret <- liftM cToBool $ func intervalPtr (cFloatConv factor) (castPtr gvPtr)
                                               generic <- valueGetGenericValue gv
                                               return $ if ret
-                                                         then Just (extractGValue generic)
+                                                         then Just (extractGenericValue generic)
                                                          else P.Nothing
-
 
 
 

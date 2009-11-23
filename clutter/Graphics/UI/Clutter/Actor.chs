@@ -274,6 +274,8 @@ module Graphics.UI.Clutter.Actor (
 -- * Events
   buttonPressEvent,
   buttonReleaseEvent,
+  keyPressEvent,
+  keyReleaseEvent,
   capturedEvent,
   enterEvent,
   event,

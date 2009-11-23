@@ -27,27 +27,24 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.GTypes (
-                                   gTypeColor,
-                                   gTypeVertex,
-                                   gTypeGravity,
-                                   gTypeRequestMode,
-                                   gTypeGeometry,
-                                   gTypeActor,
-                                   gTypeAlpha
+                                   color,
+                                   vertex,
+                                   gravity,
+                                   requestmode,
+                                   geometry,
+                                   actor,
+                                   alpha
                                   ) where
 
-{# import Graphics.UI.Clutter.Types #}
-
 import C2HS
-import System.Glib.GValue
 import System.Glib.GType
 
 --TODO: Move these
-{# fun pure unsafe color_get_type as gTypeColor { } -> `GType' cToEnum #}
-{# fun pure unsafe vertex_get_type as gTypeVertex { } -> `GType' cToEnum #}
-{# fun pure unsafe gravity_get_type as gTypeGravity { } -> `GType' cToEnum #}
-{# fun pure unsafe request_mode_get_type as gTypeRequestMode { } -> `GType' cToEnum #}
-{# fun pure unsafe geometry_get_type as gTypeGeometry { } -> `GType' cToEnum #}
-{# fun pure unsafe actor_get_type as gTypeActor { } -> `GType' cToEnum #}
-{# fun pure unsafe alpha_get_type as gTypeAlpha { } -> `GType' cToEnum #}
+{# fun pure unsafe color_get_type as color { } -> `GType' cToEnum #}
+{# fun pure unsafe vertex_get_type as vertex { } -> `GType' cToEnum #}
+{# fun pure unsafe gravity_get_type as gravity { } -> `GType' cToEnum #}
+{# fun pure unsafe request_mode_get_type as requestmode { } -> `GType' cToEnum #}
+{# fun pure unsafe geometry_get_type as geometry { } -> `GType' cToEnum #}
+{# fun pure unsafe actor_get_type as actor { } -> `GType' cToEnum #}
+{# fun pure unsafe alpha_get_type as alpha { } -> `GType' cToEnum #}
 

@@ -69,7 +69,7 @@ import Control.OldException (throw, Exception(AssertionFailed))
 import Control.Exception (bracket)
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GTypes #}
+{# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 
 import System.Glib.FFI
 import System.Glib.GValue
@@ -145,7 +145,7 @@ instance Enum AnimType where
   fromEnum ATdouble  = fromEnum GType.double
   fromEnum ATstring  = fromEnum GType.string
   fromEnum ATobject  = fromEnum GType.object
-  fromEnum ATcolor  = fromEnum gTypeColor
+  fromEnum ATcolor  = fromEnum  CGT.color
 --fromEnum ATboxed   = fromEnum GType.boxed
 
   toEnum x | x == fromEnum GType.invalid = ATinvalid
@@ -161,7 +161,7 @@ instance Enum AnimType where
            | x == fromEnum GType.double	 = ATdouble
            | x == fromEnum GType.string	 = ATstring
            | x == fromEnum GType.object	 = ATobject
-           | x == fromEnum gTypeColor	 = ATcolor
+           | x == fromEnum CGT.color	 = ATcolor
        --- | x == fromEnum GType.boxed	 = ATboxed
            | otherwise	 = error "StoreValue.toEnum(AnimType): no dynamic types allowed."
 
@@ -190,7 +190,7 @@ valueSetGenericValue gvalue (GVstring x)  = do valueInit gvalue GType.string
                                                valueSetMaybeString  gvalue x
 valueSetGenericValue gvalue (GVobject x)  = do valueInit gvalue GType.object
                                                valueSetGObject gvalue x
-valueSetGenericValue gvalue (GVcolor x)  =  do valueInit gvalue gTypeColor
+valueSetGenericValue gvalue (GVcolor x)  =  do valueInit gvalue CGT.color
                                                valueSetColor gvalue x
 --valueSetGenericValue gvalue (GVboxed x)   = valueSetPointer gvalue x
 

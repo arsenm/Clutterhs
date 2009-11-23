@@ -284,7 +284,7 @@ module Graphics.UI.Clutter.Actor (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GTypes #}
+{# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 {# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Event #}
 {# import Graphics.UI.Clutter.Signals #}
@@ -1938,7 +1938,7 @@ actorAnchorY = newAttrFromFloatProperty "anchor-y"
 -- Every part of the actor outside the clip region will not be painted
 --
 actorClip :: (ActorClass self) => Attr self Geometry
-actorClip = newAttrFromBoxedStorableProperty "clip" gTypeGeometry
+actorClip = newAttrFromBoxedStorableProperty "clip" CGT.geometry
 
 
 -- | Whether the clip region should track the allocated area of the actor.
@@ -2202,7 +2202,7 @@ actorRealized = readNamedAttr "realized" actorIsRealized
 -- * Since 0.8
 --
 actorRequestMode :: (ActorClass self) => Attr self RequestMode
-actorRequestMode = newAttrFromEnumProperty "realized" gTypeRequestMode
+actorRequestMode = newAttrFromEnumProperty "realized" CGT.requestmode
 
 -- | The rotation angle on the X axis
 --
@@ -2235,13 +2235,13 @@ actorRotationAngleZ = newAttrFromDoubleProperty "rotation-angle-z"
 
 
 actorRotationCenterX :: (ActorClass self) => Attr self Vertex
-actorRotationCenterX = newAttrFromBoxedStorableProperty "rotation-center-x" gTypeVertex
+actorRotationCenterX = newAttrFromBoxedStorableProperty "rotation-center-x" CGT.vertex
 
 actorRotationCenterY :: (ActorClass self) => Attr self Vertex
-actorRotationCenterY = newAttrFromBoxedStorableProperty "rotation-center-y" gTypeVertex
+actorRotationCenterY = newAttrFromBoxedStorableProperty "rotation-center-y" CGT.vertex
 
 actorRotationCenterZ :: (ActorClass self) => Attr self Vertex
-actorRotationCenterZ = newAttrFromBoxedStorableProperty "rotation-center-z" gTypeVertex
+actorRotationCenterZ = newAttrFromBoxedStorableProperty "rotation-center-z" CGT.vertex
 
 
 -- | The rotation center on the Z axis expressed as a 'Gravity'.
@@ -2251,7 +2251,7 @@ actorRotationCenterZ = newAttrFromBoxedStorableProperty "rotation-center-z" gTyp
 -- * Since 1.0
 --
 actorRotationCenterZGravity :: (ActorClass self) => Attr self Gravity
-actorRotationCenterZGravity = newAttrFromEnumProperty "rotation-center-z-gravity" gTypeGravity
+actorRotationCenterZGravity = newAttrFromEnumProperty "rotation-center-z-gravity" CGT.gravity
 
 
 -- | The horizontal center point for scaling
@@ -2281,7 +2281,7 @@ actorScaleCenterY = newAttrFromFloatProperty "scale-center-y"
 -- * Since 1.0
 --
 actorScaleGravity :: (ActorClass self) => Attr self Gravity
-actorScaleGravity = newAttrFromEnumProperty "scale-gravity" gTypeGravity
+actorScaleGravity = newAttrFromEnumProperty "scale-gravity" CGT.gravity
 
 
 

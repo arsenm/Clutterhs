@@ -35,7 +35,7 @@ module Graphics.UI.Clutter.Clone (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.GTypes #}
+{# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 
 import C2HS
 import System.Glib.Attributes
@@ -54,6 +54,6 @@ import System.Glib.Properties
 
 --CHECKME: Actor vs. ActorClass. Could get anything back.
 cloneSource :: (ActorClass self) => Attr Clone self
-cloneSource = newAttrFromObjectProperty "source" gTypeActor
+cloneSource = newAttrFromObjectProperty "source" CGT.actor
 
 

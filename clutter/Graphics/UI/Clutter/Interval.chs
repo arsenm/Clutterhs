@@ -67,7 +67,6 @@ import C2HS
 import Control.Monad (liftM)
 import Prelude
 import qualified Prelude as P
-import qualified System.Glib.GTypeConstants as GType
 
 import System.Glib.GValue
 

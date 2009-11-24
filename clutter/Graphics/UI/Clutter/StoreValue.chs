@@ -77,6 +77,7 @@ import Control.Exception (bracket)
 {# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 
 import System.Glib.FFI
+import System.Glib.Flags
 import System.Glib.GValue
 import System.Glib.GValueTypes
 import qualified System.Glib.GTypeConstants as GType
@@ -199,6 +200,13 @@ valueSetGenericValue gvalue (GVcolor x)  =  do valueInit gvalue CGT.color
                                                valueSetColor gvalue x
 --valueSetGenericValue gvalue (GVboxed x)   = valueSetPointer gvalue x
 
+--valueSetGenericValue gvalue (GVenum x)    = do valueInit gvalue GType.enum
+--                                               valueSetUInt    gvalue (fromIntegral x)
+
+
+--    TMenum	-> liftM (GVenum . fromIntegral)  $ valueGetUInt    gvalue
+
+
 valueGetGenericValue :: GValue -> IO GenericValue
 valueGetGenericValue gvalue = do
   gtype <- valueGetType gvalue
@@ -254,7 +262,10 @@ freeGValue p = unsetGValue (castPtr p) >> free p
 withGenericValue :: (GenericValueClass arg) => arg -> (GenericValuePtr -> IO a) -> IO a
 withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) freeGValue
 
--- I don't really like this solution to functions that use gvalues.
+-- Wrapper type for gvalues you want to use in Clutter with unsafe
+--  extraction. This should never be needed directly, and the type for
+--  the extraction should be constrained to be the proper type by
+--  every function I think that needs this.
 class GenericValueClass a where
   toGenericValue :: a -> GenericValue
   extractGenericValue :: GenericValue -> a
@@ -264,15 +275,45 @@ class GenericValueClass a where
 -- doing horrible things inside
 typeMismatchError =  error "extractGenericValue: Type mismatch"
 
-instance GenericValueClass Int where
-  toGenericValue = GVint
-  extractGenericValue (GVint x) = x
-  extractGenericValue _         = typeMismatchError
 
 instance GenericValueClass Word where
   toGenericValue = GVuint
   extractGenericValue (GVuint x) = x
   extractGenericValue _          = typeMismatchError
+
+instance GenericValueClass Int where
+  toGenericValue = GVint
+  extractGenericValue (GVint x) = x
+  extractGenericValue _         = typeMismatchError
+
+instance GenericValueClass Word8 where
+  toGenericValue = GVuchar
+  extractGenericValue (GVuchar x)  = x
+  extractGenericValue _            = typeMismatchError
+
+instance GenericValueClass Int8 where
+  toGenericValue = GVchar
+  extractGenericValue (GVchar x)  = x
+  extractGenericValue _           = typeMismatchError
+
+instance GenericValueClass Bool where
+  toGenericValue = GVboolean
+  extractGenericValue (GVboolean x) = x
+  extractGenericValue _             = typeMismatchError
+
+-- another overlap
+-- Flags and enums can never be gobjects, so that should be OK.
+-- Flags and Enums may
+instance (Enum a) => GenericValueClass a where
+  toGenericValue = GVenum . fromEnum
+  extractGenericValue (GVenum  x)  = toEnum x
+  extractGenericValue _            = typeMismatchError
+
+--a likely more horrible overlap?
+instance (Flags a) => GenericValueClass [a] where
+  toGenericValue = GVflags . fromFlags
+  extractGenericValue (GVflags  x) = toFlags x
+  extractGenericValue _            = typeMismatchError
 
 instance GenericValueClass Float where
   toGenericValue = GVfloat
@@ -284,32 +325,11 @@ instance GenericValueClass Double where
   extractGenericValue (GVdouble x) = x
   extractGenericValue _            = typeMismatchError
 
-instance GenericValueClass Int8 where
-  toGenericValue = GVchar
-  extractGenericValue (GVchar x)  = x
-  extractGenericValue _           = typeMismatchError
-
-instance GenericValueClass Word8 where
-  toGenericValue = GVuchar
-  extractGenericValue (GVuchar x)  = x
-  extractGenericValue _            = typeMismatchError
-
-instance GenericValueClass Bool where
-  toGenericValue = GVboolean
-  extractGenericValue (GVboolean x)  = x
-  extractGenericValue _              = typeMismatchError
-
 --TODO: String vs. Maybe String
 instance GenericValueClass String where
   toGenericValue = GVstring . Just
   extractGenericValue (GVstring (Just x))  = x
   extractGenericValue _                    = typeMismatchError
-
-instance GenericValueClass Color where
-  toGenericValue = GVcolor
-  extractGenericValue (GVcolor x)  = x
-  extractGenericValue _            = typeMismatchError
-
 
 --cast should be safe, since all uses of this should be constrained
 -- this instance is the possible source of bad things.  I only sort of
@@ -319,6 +339,12 @@ instance (GObjectClass obj) => GenericValueClass obj where
   toGenericValue = GVobject . toGObject
   extractGenericValue (GVobject x) = unsafeCastGObject x
   extractGenericValue _            = typeMismatchError
+
+instance GenericValueClass Color where
+  toGenericValue = GVcolor
+  extractGenericValue (GVcolor x)  = x
+  extractGenericValue _            = typeMismatchError
+
 
 
 {# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}

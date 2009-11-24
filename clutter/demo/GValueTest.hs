@@ -24,5 +24,7 @@ main = do
   let d = isA bo GT.object
   print [a,b,c,d]
 
+
+
   clutterMain
 

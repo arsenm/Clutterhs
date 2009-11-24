@@ -29,8 +29,13 @@
 -- Portability : portable (depends on GHC)
 --
 
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface,
+             UndecidableInstances,
+             FlexibleInstances,
+             OverlappingInstances,
+             TypeSynonymInstances #-}
 
+--FIXME: UndecidableInstances, OverlappingInstances, horrible things?
 
 #include <clutter/clutter.h>
 #include <glib.h>
@@ -106,8 +111,8 @@ data GenericValue = GVuint    Word
 	          | GVdouble  Double
 	          | GVstring  (Maybe String)
 	          | GVobject  GObject
-                  | GVcolor  Color
-              --- | GVunits  Units
+                  | GVcolor   Color
+              --- | GVunits   Units
               --- | GVboxed   (Ptr ())
 
 -- This is an enumeration of all GTypes that can be used in an Animation
@@ -303,6 +308,16 @@ instance GenericValueClass String where
 instance GenericValueClass Color where
   toGenericValue = GVcolor
   extractGenericValue (GVcolor x)  = x
+  extractGenericValue _            = typeMismatchError
+
+
+--cast should be safe, since all uses of this should be constrained
+-- this instance is the possible source of bad things.  I only sort of
+-- understand the issue using it, but with the usage of gvalues it
+-- might be ok.
+instance (GObjectClass obj) => GenericValueClass obj where
+  toGenericValue = GVobject . toGObject
+  extractGenericValue (GVobject x) = unsafeCastGObject x
   extractGenericValue _            = typeMismatchError
 
 

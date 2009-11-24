@@ -113,4 +113,5 @@ intervalComputeValue interval factor = let func = {# call unsafe interval_comput
                                                          else P.Nothing
 
 
+--intervalRegisterProgressFunc :: (GenericValueClass a) => GType -> a -> a -> Double -> IO (Maybe a)
 

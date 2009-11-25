@@ -101,14 +101,14 @@ intervalGetInitialValue interval = withInterval interval $ \intervalPtr -> do
                                      gtype <- liftM cToEnum $ {# call unsafe interval_get_value_type #} intervalPtr
                                      generic <- allocaTypedGValue gtype $ \gvPtr ->
                                                        {# call unsafe interval_get_initial_value #} intervalPtr gvPtr
-                                     return (extractGenericValue generic)
+                                     return (unsafeExtractGenericValue generic)
 
 intervalGetFinalValue :: (GenericValueClass a) => Interval a -> IO a
 intervalGetFinalValue interval = withInterval interval $ \intervalPtr -> do
                                      gtype <- liftM cToEnum $ {# call unsafe interval_get_value_type #} intervalPtr
                                      generic <- allocaTypedGValue gtype $ \gvPtr ->
                                                        {# call unsafe interval_get_final_value #} intervalPtr gvPtr
-                                     return (extractGenericValue generic)
+                                     return (unsafeExtractGenericValue generic)
 
 
 
@@ -120,7 +120,7 @@ intervalComputeValue interval factor = let func = {# call unsafe interval_comput
                                               ret <- liftM cToBool $ func intervalPtr (cFloatConv factor) (castPtr gvPtr)
                                               generic <- valueGetGenericValue gv
                                               return $ if ret
-                                                         then Just (extractGenericValue generic)
+                                                         then Just (unsafeExtractGenericValue generic)
                                                          else P.Nothing
 
 

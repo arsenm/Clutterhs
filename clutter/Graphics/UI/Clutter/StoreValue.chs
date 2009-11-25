@@ -296,15 +296,15 @@ withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) fre
 --  every function I think that needs this.
 class GenericValueClass a where
   toGenericValue :: a -> GenericValue
-  extractGenericValue :: GenericValue -> a
+  unsafeExtractGenericValue :: GenericValue -> a
 
 class GenericValueClass' flag a where
   toGenericValue' :: flag -> a -> GenericValue
-  extractGenericValue' :: flag -> GenericValue -> a
+  unsafeExtractGenericValue' :: flag -> GenericValue -> a
 
 instance (GVPred a flag, GenericValueClass' flag a) => GenericValueClass a where
   toGenericValue = toGenericValue' (undefined::flag)
-  extractGenericValue = extractGenericValue' (undefined::flag)
+  unsafeExtractGenericValue = extractGenericValue' (undefined::flag)
 
 
 -- overlapping instances are used only for GVPred
@@ -327,60 +327,60 @@ data RegularGValue
 
 instance GenericValueClass' RegularGValue Int where
   toGenericValue'      _ x         = GVint x
-  extractGenericValue' _ (GVint x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVint x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance GenericValueClass' RegularGValue Word where
   toGenericValue'      _ x         = GVuint x
-  extractGenericValue' _ (GVuint x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVuint x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance GenericValueClass' RegularGValue Word8 where
   toGenericValue'      _ x         = GVuchar x
-  extractGenericValue' _ (GVuchar x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVuchar x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance GenericValueClass' RegularGValue Int8 where
   toGenericValue'      _ x         = GVchar x
-  extractGenericValue' _ (GVchar x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVchar x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance GenericValueClass' RegularGValue Bool where
   toGenericValue'      _ x         = GVboolean x
-  extractGenericValue' _ (GVboolean x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVboolean x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 -- TODO: Enum, Flags
   {-
 instance GenericValueClass' RegularGValue Bool where
   toGenericValue'      _ x         = GVboolean x
-  extractGenericValue' _ (GVboolean x) = x
+  unsafeExtractGenericValue' _ (GVboolean x) = x
 -}
 
 instance GenericValueClass' RegularGValue Float where
   toGenericValue'      _ x         = GVfloat x
-  extractGenericValue' _ (GVfloat x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVfloat x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance GenericValueClass' RegularGValue Double where
   toGenericValue'      _ x         = GVdouble x
-  extractGenericValue' _ (GVdouble x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVdouble x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance GenericValueClass' RegularGValue (Maybe String) where
   toGenericValue'      _ x         = GVstring x
-  extractGenericValue' _ (GVstring x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVstring x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance GenericValueClass' RegularGValue Color where
   toGenericValue'      _ x         = GVcolor x
-  extractGenericValue' _ (GVcolor x) = x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVcolor x) = x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 instance (GObjectClass a) => GenericValueClass' IsGObject a where
   toGenericValue'      _ x         = GVobject (toGObject x)
-  extractGenericValue' _ (GVobject x) = unsafeCastGObject x
-  extractGenericValue' _ _ = typeMismatchError
+  unsafeExtractGenericValue' _ (GVobject x) = unsafeCastGObject x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
 
 
 --More madness from Haskell wiki. This is the part I really don't
@@ -398,7 +398,7 @@ instance TypeCast'' () a a where typeCast'' _ x  = x
 -- for every use of gvalues, the out type should be inferrable from
 -- what you pass in, so this should never happen unless clutter is
 -- doing horrible things inside
-typeMismatchError =  error "extractGenericValue: Type mismatch"
+typeMismatchError =  error "unsafeExtractGenericValue: Type mismatch"
 
 {# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
 {# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}

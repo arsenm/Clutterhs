@@ -28,8 +28,13 @@ module Graphics.UI.Clutter.Script (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Script'
+-- |    +----'Script'
 -- @
+
+-- * Types
+  Script,
+  ScriptError(..),
+
 
 -- * Constructors
   scriptNew,

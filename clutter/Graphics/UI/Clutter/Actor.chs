@@ -45,6 +45,8 @@ module Graphics.UI.Clutter.Actor (
   Gravity(..),
   Vertex(..),
   ActorFlags(..),
+  AllocationFlags(..),
+  GID,
   Callback,
 
 -- * Methods,

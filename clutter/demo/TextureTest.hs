@@ -71,6 +71,7 @@ but this ends in assertion failures
                 actorX := 400,
                 actorY := 400 ]
 
+{-
   putStrLn "Attempting to read pixels"
   pixels <- fmap (fromMaybe (P.error "stageReadPixels failed"))
                  (stageReadPixels stage 2 2 10 10)
@@ -84,7 +85,7 @@ but this ends in assertion failures
   putStrLn $ "Set from rgb sucess: " ++ P.show success
 
   containerAddActor stage pixTx
-
+-}
   containerAddActor stage sfClone
   actorShowAll stage
   clutterMain

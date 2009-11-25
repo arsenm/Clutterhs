@@ -39,7 +39,7 @@ module Graphics.UI.Clutter.Timeline (
 -- * Types
   Timeline,
   TimelineClass,
-  TimelineDirection,
+  TimelineDirection(..),
 
 -- * Constructors
 

@@ -64,6 +64,7 @@ module Graphics.UI.Clutter.Stage (
   StageClass,
   Perspective(..),
   Fog(..),
+  PickMode(..),
 
 -- * Constructors
   stageGetDefault,
@@ -93,7 +94,7 @@ module Graphics.UI.Clutter.Stage (
   stageSetKeyFocus,
   stageGetKeyFocus,
 --stageKeyFocus,
-  stageReadPixels,
+--stageReadPixels,
 
   stageSetThrottleMotionEvents,
   stageGetThrottleMotionEvents,

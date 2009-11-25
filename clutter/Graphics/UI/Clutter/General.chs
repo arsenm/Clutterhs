@@ -28,6 +28,7 @@ module Graphics.UI.Clutter.General (
 
 -- * Types
   InitError(..),
+  FontFlags(..),
 
 -- * General functions
   clutterInit,

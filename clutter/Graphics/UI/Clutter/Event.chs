@@ -35,7 +35,11 @@ module Graphics.UI.Clutter.Event (
   ScrollDirection(..),
   InputDeviceType(..),
   EventType(..),
+  EventFlags(..),
+  StageState(..),
   InputDevice,
+  DeviceID,
+  Timestamp,
 
 -- * Event monad, and type tags
   EventM,

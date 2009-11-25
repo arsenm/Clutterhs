@@ -70,7 +70,8 @@ module Graphics.UI.Clutter.StoreValue (
                                        withGenericValue,
                                        unsetGValue,
                                        unsetOneGVal,
-                                       genericValuePtrGetType
+                                       genericValuePtrGetType,
+                                       allocaTypedGValue
                                       ) where
 
 import C2HS
@@ -254,6 +255,19 @@ instance Storable GenericValue where
                 in do
                   {# set GValue->g_type #} p (0 :: GType) --must be initialized to 0 or init will fail
                   valueSetGenericValue gv ut
+
+
+
+--interval get stuff wants initialized type. This is essentially allocaGValue
+allocaTypedGValue :: GType -> (GenericValuePtr -> IO ()) -> IO GenericValue
+allocaTypedGValue gtype body =
+  allocaBytes ({# sizeof GType #}+ 2* {# sizeof guint64 #}) $ \gvPtr -> do
+    {# set GValue->g_type #} gvPtr gtype
+    body gvPtr
+    val <- valueGetGenericValue (GValue (castPtr gvPtr))
+    {#call unsafe g_value_unset#} gvPtr
+    return val
+
 
 
 mkGValueFromGenericValue :: GenericValue -> IO GenericValuePtr

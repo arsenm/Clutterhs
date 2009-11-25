@@ -69,7 +69,6 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.Properties
-import System.Glib.GObject
 
 
 -- | Creates a new 'Actor' which clones 'source'
@@ -109,7 +108,7 @@ cloneNew actor = withMaybeActorClass actor $ \actorPtr ->
 --
 cloneGetSource :: (ActorClass a) => Clone a -> IO (Maybe a)
 cloneGetSource clone = withClone clone $ \clonePtr ->
-                         liftM (liftM (unsafeCastGObject . toGObject))
+                         liftM (liftM unsafeCastActor)
                                (maybeNewActor =<< {# call unsafe clone_get_source #} clonePtr)
 
 

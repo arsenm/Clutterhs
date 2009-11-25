@@ -57,7 +57,8 @@ module Graphics.UI.Clutter.Utility (
   maybeNewTexture,
   maybeNewShader,
 
-  clutterNewAttrFromUIntProperty
+  clutterNewAttrFromUIntProperty,
+  unsafeCastActor
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -69,7 +70,7 @@ import System.Glib.Flags
 import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.GValueTypes
-import System.Glib.GObject (makeNewGObject, objectUnref, GObjectClass)
+import System.Glib.GObject (makeNewGObject, GObjectClass, toGObject, unsafeCastGObject)
 import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 import qualified System.Glib.GTypeConstants as GType
@@ -218,4 +219,8 @@ clutterObjectGetPropertyUInt = objectGetPropertyInternal GType.uint valueGetUInt
 
 clutterObjectSetPropertyUInt :: GObjectClass gobj => String -> gobj -> Word -> IO ()
 clutterObjectSetPropertyUInt = objectSetPropertyInternal GType.uint valueSetUInt
+
+
+unsafeCastActor :: (ActorClass a, ActorClass b) => a -> b
+unsafeCastActor = unsafeCastGObject . toGObject
 

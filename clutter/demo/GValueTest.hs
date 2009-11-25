@@ -23,8 +23,14 @@ main = do
   let c = isA bo CGT.behaviourellipse
   let d = isA bo GT.object
   print [a,b,c,d]
+  putStrLn "arst"
+  ival1 <- intervalNew (4::Int) 500
 
-
+  putStrLn "Oh wow"
+  intervalGetInitialValue ival1 >>= \s -> putStrLn $ "Initial value: " ++ P.show s
+  intervalGetFinalValue ival1 >>= \s -> putStrLn $ "Final value: " ++ P.show s
+  intervalComputeValue ival1 0.5 >>= \s -> putStrLn $ "Computed: " ++ P.show s
+  putStrLn "Hello"
 
   clutterMain
 

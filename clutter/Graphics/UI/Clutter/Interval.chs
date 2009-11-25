@@ -40,17 +40,17 @@ module Graphics.UI.Clutter.Interval (
 
 --intervalGetValueType,
   intervalSetInitialValue,
---intervalGetInitialValue,
+  intervalGetInitialValue,
 
 --intervalPeekInitalValue,
   intervalSetFinalValue,
---intervalGetFinalValue,
+  intervalGetFinalValue,
 
 --intervalPeekFinalValue,
 --intervalSetInterval,
 --intervalGetInterval,
 
---intervalComputeValue,
+  intervalComputeValue,
 --intervalValidate,
 --intervalRegisterProgressFunc
 
@@ -100,6 +100,14 @@ intervalGetInitialValue interval = withInterval interval $ \intervalPtr ->
                                      allocaGValue $ \gv@(GValue gvPtr) -> do
                                        {# call unsafe interval_get_initial_value #} intervalPtr (castPtr gvPtr)
                                        valueGetGenericValue gv >>= return . extractGenericValue
+
+
+intervalGetFinalValue :: (GenericValueClass a) => Interval a -> IO a
+intervalGetFinalValue interval = withInterval interval $ \intervalPtr ->
+                                     allocaGValue $ \gv@(GValue gvPtr) -> do
+                                       {# call unsafe interval_get_final_value #} intervalPtr (castPtr gvPtr)
+                                       valueGetGenericValue gv >>= return . extractGenericValue
+
 
 
 intervalComputeValue :: (GenericValueClass a) => Interval a -> Double -> IO (Maybe a)

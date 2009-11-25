@@ -20,9 +20,6 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
--- TODO: this module is deprecated and should be removed. The GenericValue
--- type is currently exposed to users and it should not be.
---
 -- |
 -- Maintainer  : arsenm2@rpi.edu
 -- Stability   : experimental
@@ -30,11 +27,22 @@
 --
 
 {-# LANGUAGE ForeignFunctionInterface,
+             MultiParamTypeClasses,
+             FunctionalDependencies,
+             EmptyDataDecls,
              UndecidableInstances,
-             FlexibleInstances,
              OverlappingInstances,
              TypeSynonymInstances #-}
 
+{-# OPTIONS -fglasgow-exts #-}
+
+{-
+-- {- #  ForeignFunctionInterface,
+             UndecidableInstances,
+             FlexibleInstances,
+             OverlappingInstances,
+             TypeSynonymInstances # -}
+-}
 --FIXME: UndecidableInstances, OverlappingInstances, horrible things?
 
 #include <clutter/clutter.h>
@@ -262,6 +270,12 @@ freeGValue p = unsetGValue (castPtr p) >> free p
 withGenericValue :: (GenericValueClass arg) => arg -> (GenericValuePtr -> IO a) -> IO a
 withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) freeGValue
 
+
+--This madness is almost straight from Haskell wiki on AdvancedOverlap
+-- I only halfway understand it. It should pick the GObjectClass
+-- instance for any gobject, and the others for anything else.
+
+
 -- Wrapper type for gvalues you want to use in Clutter with unsafe
 --  extraction. This should never be needed directly, and the type for
 --  the extraction should be constrained to be the proper type by
@@ -270,83 +284,110 @@ class GenericValueClass a where
   toGenericValue :: a -> GenericValue
   extractGenericValue :: GenericValue -> a
 
+class GenericValueClass' flag a where
+  toGenericValue' :: flag -> a -> GenericValue
+  extractGenericValue' :: flag -> GenericValue -> a
+
+instance (GVPred a flag, GenericValueClass' flag a) => GenericValueClass a where
+  toGenericValue = toGenericValue' (undefined::flag)
+  extractGenericValue = extractGenericValue' (undefined::flag)
+
+
+-- overlapping instances are used only for GVPred
+class GVPred a flag | a -> flag where {}
+
+instance GVPred Word RegularGValue
+instance GVPred Int RegularGValue
+instance GVPred Word8 RegularGValue
+instance GVPred Int8 RegularGValue
+instance GVPred Bool RegularGValue
+--Enum
+--Flags
+instance GVPred Float RegularGValue
+instance GVPred Double RegularGValue
+instance GVPred (Maybe String) RegularGValue
+instance GVPred Color RegularGValue
+
+data IsGObject
+data RegularGValue
+
+instance GenericValueClass' RegularGValue Int where
+  toGenericValue'      _ x         = GVint x
+  extractGenericValue' _ (GVint x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance GenericValueClass' RegularGValue Word where
+  toGenericValue'      _ x         = GVuint x
+  extractGenericValue' _ (GVuint x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance GenericValueClass' RegularGValue Word8 where
+  toGenericValue'      _ x         = GVuchar x
+  extractGenericValue' _ (GVuchar x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance GenericValueClass' RegularGValue Int8 where
+  toGenericValue'      _ x         = GVchar x
+  extractGenericValue' _ (GVchar x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance GenericValueClass' RegularGValue Bool where
+  toGenericValue'      _ x         = GVboolean x
+  extractGenericValue' _ (GVboolean x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+-- TODO: Enum, Flags
+  {-
+instance GenericValueClass' RegularGValue Bool where
+  toGenericValue'      _ x         = GVboolean x
+  extractGenericValue' _ (GVboolean x) = x
+-}
+
+instance GenericValueClass' RegularGValue Float where
+  toGenericValue'      _ x         = GVfloat x
+  extractGenericValue' _ (GVfloat x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance GenericValueClass' RegularGValue Double where
+  toGenericValue'      _ x         = GVdouble x
+  extractGenericValue' _ (GVdouble x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance GenericValueClass' RegularGValue (Maybe String) where
+  toGenericValue'      _ x         = GVstring x
+  extractGenericValue' _ (GVstring x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance GenericValueClass' RegularGValue Color where
+  toGenericValue'      _ x         = GVcolor x
+  extractGenericValue' _ (GVcolor x) = x
+  extractGenericValue' _ _ = typeMismatchError
+
+instance (GObjectClass a) => GenericValueClass' IsGObject a where
+  toGenericValue'      _ x         = GVobject (toGObject x)
+  extractGenericValue' _ (GVobject x) = unsafeCastGObject x
+  extractGenericValue' _ _ = typeMismatchError
+
+
+--More madness from Haskell wiki. This is the part I really don't
+-- understand.  "Used only if the other instances don't apply"
+instance TypeCast flag RegularGValue => GVPred a flag
+
+class TypeCast   a b   | a -> b, b->a   where typeCast   :: a -> b
+class TypeCast'  t a b | t a -> b, t b -> a where typeCast'  :: t->a->b
+class TypeCast'' t a b | t a -> b, t b -> a where typeCast'' :: t->a->b
+instance TypeCast'  () a b => TypeCast a b where typeCast x = typeCast' () x
+instance TypeCast'' t a b => TypeCast' t a b where typeCast' = typeCast''
+instance TypeCast'' () a a where typeCast'' _ x  = x
+
+
 -- for every use of gvalues, the out type should be inferrable from
 -- what you pass in, so this should never happen unless clutter is
 -- doing horrible things inside
 typeMismatchError =  error "extractGenericValue: Type mismatch"
 
-
-instance GenericValueClass Word where
-  toGenericValue = GVuint
-  extractGenericValue (GVuint x) = x
-  extractGenericValue _          = typeMismatchError
-
-instance GenericValueClass Int where
-  toGenericValue = GVint
-  extractGenericValue (GVint x) = x
-  extractGenericValue _         = typeMismatchError
-
-instance GenericValueClass Word8 where
-  toGenericValue = GVuchar
-  extractGenericValue (GVuchar x)  = x
-  extractGenericValue _            = typeMismatchError
-
-instance GenericValueClass Int8 where
-  toGenericValue = GVchar
-  extractGenericValue (GVchar x)  = x
-  extractGenericValue _           = typeMismatchError
-
-instance GenericValueClass Bool where
-  toGenericValue = GVboolean
-  extractGenericValue (GVboolean x) = x
-  extractGenericValue _             = typeMismatchError
-
--- another overlap
--- Flags and enums can never be gobjects, so that should be OK.
--- Flags and Enums may
-instance (Enum a) => GenericValueClass a where
-  toGenericValue = GVenum . fromEnum
-  extractGenericValue (GVenum  x)  = toEnum x
-  extractGenericValue _            = typeMismatchError
-
---a likely more horrible overlap?
-instance (Flags a) => GenericValueClass [a] where
-  toGenericValue = GVflags . fromFlags
-  extractGenericValue (GVflags  x) = toFlags x
-  extractGenericValue _            = typeMismatchError
-
-instance GenericValueClass Float where
-  toGenericValue = GVfloat
-  extractGenericValue (GVfloat x) = x
-  extractGenericValue _           = typeMismatchError
-
-instance GenericValueClass Double where
-  toGenericValue = GVdouble
-  extractGenericValue (GVdouble x) = x
-  extractGenericValue _            = typeMismatchError
-
---TODO: String vs. Maybe String
-instance GenericValueClass String where
-  toGenericValue = GVstring . Just
-  extractGenericValue (GVstring (Just x))  = x
-  extractGenericValue _                    = typeMismatchError
-
---cast should be safe, since all uses of this should be constrained
--- this instance is the possible source of bad things.  I only sort of
--- understand the issue using it, but with the usage of gvalues it
--- might be ok.
-instance (GObjectClass obj) => GenericValueClass obj where
-  toGenericValue = GVobject . toGObject
-  extractGenericValue (GVobject x) = unsafeCastGObject x
-  extractGenericValue _            = typeMismatchError
-
-instance GenericValueClass Color where
-  toGenericValue = GVcolor
-  extractGenericValue (GVcolor x)  = x
-  extractGenericValue _            = typeMismatchError
-
-
-
 {# fun unsafe value_get_color as ^ { withGValue `GValue' } -> `Color' peek* #}
 {# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
+
+
 

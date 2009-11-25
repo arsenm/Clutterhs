@@ -32,6 +32,10 @@ module Graphics.UI.Clutter.ListModel (
 -- |         +----'ListModel'
 -- @
 
+-- * Types
+  ListModel,
+  ListModelClass,
+
 -- * Constructors
   listModelNew
   ) where

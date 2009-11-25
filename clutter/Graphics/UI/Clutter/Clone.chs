@@ -25,6 +25,34 @@
 
 -- | ClutterClone — An actor that displays a clone of a source actor
 module Graphics.UI.Clutter.Clone (
+-- * Description
+--
+-- | 'Clone' is an Actor which draws with the paint function of
+-- another actor, scaled to fit its own allocation.
+--
+-- 'Clone' can be used to efficiently clone any other actor.
+--
+-- * Note
+--
+-- This is different from 'textureNewFromActor' which requires support
+-- for FBOs in the underlying GL implementation.
+--
+-- 'Clone' is available since Clutter 1.0
+--
+
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |    +----'Actor'
+-- |           +----'Clone'
+-- @
+--
+
+-- * Types
+  Clone,
+  CloneClass,
+
 -- * Constructors
   cloneNew,
 -- * Methods
@@ -53,6 +81,11 @@ import System.Glib.Properties
 {# fun unsafe clone_set_source as ^ `(ActorClass a)' => { withClone* `Clone', withActorClass* `a' } -> `()' #}
 
 --CHECKME: Actor vs. ActorClass. Could get anything back.
+
+-- | This property specifies the source actor being cloned.
+--
+-- * Since 1.0
+--
 cloneSource :: (ActorClass self) => Attr Clone self
 cloneSource = newAttrFromObjectProperty "source" CGT.actor
 

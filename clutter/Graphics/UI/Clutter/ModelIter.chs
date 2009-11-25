@@ -24,6 +24,11 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.ModelIter (
+-- * ModelIter
+  ModelIter,
+  ModelIterClass,
+
+-- * Methods
   modelIterCopy,
 --modelIterGet,
 --modelIterGetValue,

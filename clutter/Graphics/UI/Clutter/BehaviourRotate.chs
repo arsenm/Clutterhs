@@ -42,6 +42,12 @@ module Graphics.UI.Clutter.BehaviourRotate (
 -- |
 -- @
 
+-- * Types
+  BehaviourRotate,
+  BehaviourRotateClass,
+  RotateAxis(..),
+  RotateDirection(..),
+
 -- * Constructors
   behaviourRotateNew,
 

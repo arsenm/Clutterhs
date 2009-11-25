@@ -25,6 +25,9 @@
 
 -- | Colors — Color management and manipulation.
 module Graphics.UI.Clutter.Color (
+-- * Types
+  Color(..),
+
 -- * Description
 -- | 'Color' is a simple type for representing colors in Clutter.
 --

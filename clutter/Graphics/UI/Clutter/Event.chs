@@ -30,6 +30,13 @@
 --struct using vs. functions. Don't need to do silly struct things.
 
 module Graphics.UI.Clutter.Event (
+-- * Types
+  ModifierType(..),
+  ScrollDirection(..),
+  InputDeviceType(..),
+  EventType(..),
+  InputDevice,
+
 -- * Event monad, and type tags
   EventM,
 
@@ -41,7 +48,6 @@ module Graphics.UI.Clutter.Event (
   EStageState,
   ECrossing,
 
-  InputDevice,
 
 -- * Accessor functions for event information
   eventCoordinates,

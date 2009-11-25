@@ -30,6 +30,9 @@ module Graphics.UI.Clutter.Scriptable (
 -- |   +----'Scriptable'
 -- @
 
+-- * Types
+  ScriptableClass,
+
 -- * Methods
   scriptableSetId,
   scriptableGetId,

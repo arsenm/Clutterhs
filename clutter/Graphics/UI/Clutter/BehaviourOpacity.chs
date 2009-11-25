@@ -33,6 +33,10 @@ module Graphics.UI.Clutter.BehaviourOpacity (
 -- |
 -- @
 
+-- * Types
+  BehaviourOpacity,
+  BehaviourOpacityClass,
+
 -- * Constructors
   behaviourOpacityNew,
 

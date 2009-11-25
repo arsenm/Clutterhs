@@ -76,6 +76,12 @@ module Graphics.UI.Clutter.Path (
 -- |    +----'Path'
 -- @
 
+-- * Types
+  Path,
+  PathClass,
+  PathNode,
+  PathCallback,
+
 -- * Constructors
   pathNew,
   pathNewWithDescription,

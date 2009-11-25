@@ -40,6 +40,11 @@ module Graphics.UI.Clutter.Shader (
 -- |   +----'Shader'
 -- @
 
+-- * Types
+  Shader,
+  ShaderClass,
+  ShaderError(..),
+
 -- * Constructors
   shaderNew,
 

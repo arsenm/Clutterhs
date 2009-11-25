@@ -45,6 +45,10 @@ module Graphics.UI.Clutter.Group (
 -- |                  +----'Stage'
 -- @
 
+-- * Types
+  Group,
+  GroupClass,
+
 -- * Constructors
   groupNew,
 

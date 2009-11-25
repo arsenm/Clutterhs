@@ -22,7 +22,6 @@
 module Graphics.UI.Clutter (
 -- * Core Reference
 -- ** Types and general stuff
-  module Graphics.UI.Clutter.Types,
   module Graphics.UI.Clutter.StoreValue,
 
 -- ** Abstract classes and interfaces
@@ -93,7 +92,6 @@ module Graphics.UI.Clutter (
 
 import Graphics.UI.Clutter.Event
 import Graphics.UI.Clutter.Stage
-import Graphics.UI.Clutter.Types
 import Graphics.UI.Clutter.Color
 import Graphics.UI.Clutter.Actor
 import Graphics.UI.Clutter.General

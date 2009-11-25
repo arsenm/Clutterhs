@@ -64,6 +64,11 @@ module Graphics.UI.Clutter.Alpha (
 -- |    +----'Alpha'
 -- @
 
+-- * Types
+  Alpha,
+  AlphaClass,
+  AlphaFunc,
+
 -- * Constructors
   alphaNew,
   alphaNewFull,

@@ -33,6 +33,10 @@ module Graphics.UI.Clutter.BehaviourEllipse (
 -- |
 -- @
 
+-- * Types
+  BehaviourEllipse,
+  BehaviourEllipseClass,
+
 -- * Constructors
   behaviourEllipseNew,
 

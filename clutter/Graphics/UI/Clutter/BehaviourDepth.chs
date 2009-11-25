@@ -40,6 +40,10 @@ module Graphics.UI.Clutter.BehaviourDepth (
 -- |
 -- @
 
+-- * Types
+  BehaviourDepth,
+  BehaviourDepthClass,
+
 -- * Constructors
   behaviourDepthNew,
 

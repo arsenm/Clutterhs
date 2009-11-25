@@ -25,6 +25,11 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.General (
+
+-- * Types
+  InitError(..),
+
+-- * General functions
   clutterInit,
   clutterMain,
   mainQuit,

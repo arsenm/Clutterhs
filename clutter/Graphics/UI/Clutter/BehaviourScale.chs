@@ -37,6 +37,10 @@ module Graphics.UI.Clutter.BehaviourScale (
 -- |
 -- @
 
+-- * Types
+  BehaviourScale,
+  BehaviourScaleClass,
+
 -- * Constructors
   behaviourScaleNew,
 

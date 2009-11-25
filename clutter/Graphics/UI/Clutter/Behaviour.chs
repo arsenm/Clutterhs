@@ -79,6 +79,11 @@ module Graphics.UI.Clutter.Behaviour (
 -- |         +----'BehaviourScale'
 -- @
 
+-- * Types
+  Behaviour,
+  BehaviourClass,
+  BehaviourForeachFunc,
+
 -- * Methods
   behaviourApply,
   behaviourRemove,

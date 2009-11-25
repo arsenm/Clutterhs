@@ -24,12 +24,17 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Animatable (
+-- * Class Hierarchy
 -- |
 -- @
 -- |  'GInterface'
 -- |   +----'Animatable'
 -- @
 
+-- * Types
+  AnimatableClass,
+
+-- * Methods
   animatableAnimateProperty
   ) where
 
@@ -50,8 +55,6 @@ animatableAnimateProperty :: (AnimatableClass animatable, GValueArgClass val) =>
 -}
 animatableAnimateProperty = undefined
 {-
-TODO: Requires getting out the value from the gvalue for this to be meaningful
-How to deal with gvalues still not good
 animatableAnimateProperty animAble anim pName initial final prog =
 --CHECKME: unsafe?
     let func = {# call unsafe animatable_animate_property #}

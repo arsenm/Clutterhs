@@ -18,7 +18,6 @@
 --  Lesser General Public License for more details.
 --
 {-# LANGUAGE ForeignFunctionInterface,
-             ScopedTypeVariables,
              ExistentialQuantification #-}
 {-# OPTIONS_HADDOCK prune #-}
 
@@ -36,6 +35,8 @@ module Graphics.UI.Clutter.Animation (
 -- @
 
 -- * Types
+  Animation,
+  AnimationMode(..),
   AnimOp(..),
 
 -- * Constructors

@@ -33,6 +33,10 @@ module Graphics.UI.Clutter.Rectangle (
 -- |           +----'Rectangle'
 -- @
 
+-- * Types
+  Rectangle,
+  RectangleClass,
+
 -- * Constructors
   rectangleNew,
   rectangleNewWithColor,

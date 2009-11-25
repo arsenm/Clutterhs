@@ -34,6 +34,11 @@ module Graphics.UI.Clutter.Model (
 -- |         +----'ListModel'
 -- @
 
+-- * Types
+  Model,
+  ModelClass,
+  ModelForeachFunc,
+
 -- * Methods
 
 --modelSetNames,

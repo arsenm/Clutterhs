@@ -44,6 +44,10 @@ module Graphics.UI.Clutter.Media (
 -- |   +----'Media'
 -- @
 
+-- * Types
+  Media,
+  MediaClass,
+
 -- * Methods
   mediaSetUri,
   mediaGetUri,

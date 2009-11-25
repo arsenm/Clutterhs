@@ -32,6 +32,10 @@ module Graphics.UI.Clutter.Interval (
 -- |    +----'Interval'
 -- @
 
+-- * Types
+  Interval,
+--ProgressFunc,
+
 -- * Constructors
   intervalNew,
   intervalClone,

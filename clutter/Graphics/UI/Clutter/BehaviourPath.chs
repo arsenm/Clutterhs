@@ -32,6 +32,11 @@ module Graphics.UI.Clutter.BehaviourPath (
 -- |
 -- @
 
+-- * Types
+  BehaviourPath,
+  BehaviourPathClass,
+  Knot,
+
 -- * Constructors
   behaviourPathNew,
   behaviourPathNewWithDescription,

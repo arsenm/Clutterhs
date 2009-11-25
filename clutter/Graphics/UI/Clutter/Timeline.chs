@@ -36,6 +36,11 @@ module Graphics.UI.Clutter.Timeline (
 -- |   +----'Timeline'
 -- @
 
+-- * Types
+  Timeline,
+  TimelineClass,
+  TimelineDirection,
+
 -- * Constructors
 
   timelineNew,

@@ -72,6 +72,11 @@ module Graphics.UI.Clutter.Score (
 -- |  'GObject'
 -- |   +----'Score'
 -- @
+--
+
+-- * Types
+  Score,
+  ScoreClass,
 
 -- * Constructors
   scoreNew,

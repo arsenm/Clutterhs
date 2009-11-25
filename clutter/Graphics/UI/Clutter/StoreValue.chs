@@ -28,38 +28,27 @@
 
 {-# LANGUAGE ForeignFunctionInterface,
              MultiParamTypeClasses,
-             FunctionalDependencies,
-             EmptyDataDecls,
              UndecidableInstances,
-             OverlappingInstances,
-             TypeSynonymInstances #-}
-
-{-# OPTIONS -fglasgow-exts #-}
-
-{-
--- {- #  ForeignFunctionInterface,
-             UndecidableInstances,
+             ScopedTypeVariables,
              FlexibleInstances,
-             OverlappingInstances,
-             TypeSynonymInstances # -}
--}
---FIXME: UndecidableInstances, OverlappingInstances, horrible things?
+             FunctionalDependencies,
+             EmptyDataDecls                #-} -- If this is on next line, GHC panic
 
 #include <clutter/clutter.h>
 #include <glib.h>
 
 {# context lib="clutter" prefix="clutter" #}
 
---TODO: Missing clutter types
+--FIXME: Overall this is very messy
 
 --FIXME: Too much duplication, and unnecessary incompatability between
 --2 different representations of GValue
---FIXME: Overall this is very messy
 
---StoreValue in Gtk2hs was missing some pieces for color
---that wouldn't make sense to put there, such as GV's for color and units
---Instead of TreeModels, Animations and ClutterModels and so forth.
---Maybe do something about this later
+--StoreValue in Gtk2hs was missing some pieces for color (which also
+--must be different than boxed) that wouldn't make sense to put there,
+--such as GV's for color.
+--
+
 module Graphics.UI.Clutter.StoreValue (
                                        AnimType(..),
                                        GenericValue(..),
@@ -304,7 +293,7 @@ class GenericValueClass' flag a where
 
 instance (GVPred a flag, GenericValueClass' flag a) => GenericValueClass a where
   toGenericValue = toGenericValue' (undefined::flag)
-  unsafeExtractGenericValue = extractGenericValue' (undefined::flag)
+  unsafeExtractGenericValue = unsafeExtractGenericValue' (undefined::flag)
 
 
 -- overlapping instances are used only for GVPred
@@ -385,7 +374,7 @@ instance (GObjectClass a) => GenericValueClass' IsGObject a where
 
 --More madness from Haskell wiki. This is the part I really don't
 -- understand.  "Used only if the other instances don't apply"
-instance TypeCast flag RegularGValue => GVPred a flag
+--instance TypeCast flag RegularGValue => GVPred a flag
 
 class TypeCast   a b   | a -> b, b->a   where typeCast   :: a -> b
 class TypeCast'  t a b | t a -> b, t b -> a where typeCast'  :: t->a->b

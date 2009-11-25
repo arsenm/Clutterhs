@@ -28,6 +28,11 @@
 --CHECKME: Do I want to have the functions that claim to be not for applications?
 
 module Graphics.UI.Clutter.Utilities (
+-- * Types
+--TimeoutPool,
+  SourceFunc,
+  HandlerID,
+
   utilNextP2,
 --timeoutPoolNew,
 --timeoutPoolAdd,

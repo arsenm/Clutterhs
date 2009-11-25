@@ -32,6 +32,13 @@ module Graphics.UI.Clutter.Texture (
 -- |           +----'Texture'
 -- |                  +----'CairoTexture'
 -- @
+--
+
+-- * Types
+  Texture,
+  TextureClass,
+  TextureFlags(..),
+  TextureQuality(..),
 
 -- * Constructors
   textureNew,
@@ -39,7 +46,6 @@ module Graphics.UI.Clutter.Texture (
   textureNewFromActor,
 
 -- * Methods
-
   textureSetFromFile,
   textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
 --textureSetFromYuvData,

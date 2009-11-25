@@ -35,6 +35,11 @@ module Graphics.UI.Clutter.Text (
 -- |           +----'Text'
 -- @
 
+-- * Types
+  Text,
+  TextClass,
+
+
 -- * Constructors
   textNew,
   textNewFull,

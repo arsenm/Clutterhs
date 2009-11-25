@@ -38,6 +38,15 @@ module Graphics.UI.Clutter.Actor (
 -- |           +----'Text'
 -- @
 
+-- * Types
+  Actor,
+  ActorClass,
+  ActorBox,
+  Gravity(..),
+  Vertex(..),
+  ActorFlags(..),
+  Callback,
+
 -- * Methods,
   actorIsRealized,
   actorIsMapped,

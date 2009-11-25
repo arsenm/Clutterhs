@@ -59,6 +59,12 @@ module Graphics.UI.Clutter.Stage (
 -- |                 +----'Stage'
 -- @
 
+-- * Types
+  Stage,
+  StageClass,
+  Perspective(..),
+  Fog(..),
+
 -- * Constructors
   stageGetDefault,
   stageNew,

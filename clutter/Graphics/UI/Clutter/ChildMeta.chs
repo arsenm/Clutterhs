@@ -24,11 +24,24 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.ChildMeta (
-                                      childMetaGetContainer
-                                    --childMetaContainer,
-                                    --childMetaGetActor,
-                                    --childMetaActor
-                                     ) where
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |    +----'Actor'
+-- |  'GObject'
+-- |   +----'ChildMeta'
+-- @
+--
+
+-- * Types
+  ChildMeta,
+
+  childMetaGetContainer
+--childMetaContainer,
+--childMetaGetActor,
+--childMetaActor
+  ) where
 
 {# import Graphics.UI.Clutter.Types #}
 

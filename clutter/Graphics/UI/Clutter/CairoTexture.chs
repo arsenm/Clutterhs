@@ -67,6 +67,10 @@ module Graphics.UI.Clutter.CairoTexture (
 -- |               +----'CairoTexture'
 -- @
 
+-- * Types
+  CairoTexture,
+  CairoTextureClass,
+
 -- * Constructors
   cairoTextureNew,
 

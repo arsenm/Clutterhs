@@ -66,7 +66,7 @@ but this ends in assertion failures
                textureRepeat := (True, True) ]
 -}
 
-  sfClone <- cloneNew squirrelfish
+  sfClone <- cloneNew (Just squirrelfish)
   set sfClone [ actorWidth := 50,
                 actorX := 400,
                 actorY := 400 ]

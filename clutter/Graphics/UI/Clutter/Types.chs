@@ -152,10 +152,11 @@ module Graphics.UI.Clutter.Types (
                                   ChildMetaClass,
                                   newChildMeta,
 
-                                  CloneClass,
                                   Clone,
+                                  CloneRaw,
+                                  mkClone,
+                                  newCloneRaw,
                                   withClone,
-                                  newClone,
 
                                   BehaviourClass,
                                   Behaviour,
@@ -831,20 +832,33 @@ instance GObjectClass ChildMeta where
 
 -- *** Clone
 
-{# pointer *ClutterClone as Clone foreign newtype #}
+{# pointer *ClutterClone as CloneRaw foreign newtype #}
 
-class GObjectClass o => CloneClass o
-toClone :: CloneClass o => o -> Clone
-toClone = unsafeCastGObject . toGObject
+data Clone a = Clone a CloneRaw
 
-newClone a = makeNewActor (Clone, objectUnref) $ return (castPtr a)
+newCloneRaw a = makeNewActor (CloneRaw, objectUnref) $ return (castPtr a)
 
-instance CloneClass Clone
-instance ScriptableClass Clone
-instance ActorClass Clone
-instance GObjectClass Clone where
-  toGObject (Clone i) = constrGObject (castForeignPtr i)
-  unsafeCastGObject (GObject o) = Clone (castForeignPtr o)
+mkClone :: (ActorClass a) => a -> CloneRaw -> Clone a
+mkClone _ raw = Clone (undefined :: a) raw
+
+withClone (Clone _ raw) = withCloneRaw raw
+
+
+class GObjectClass o => CloneRawClass o
+toCloneRaw :: CloneRawClass o => o -> CloneRaw
+toCloneRaw = unsafeCastGObject . toGObject
+
+
+instance (ActorClass a) => ScriptableClass (Clone a)
+instance (ActorClass a) => ActorClass (Clone a)
+instance (ActorClass a) => GObjectClass (Clone a) where
+  toGObject (Clone _ (CloneRaw i)) = constrGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Clone (undefined::a) (CloneRaw (castForeignPtr o))
+
+instance GObjectClass CloneRaw where
+  toGObject (CloneRaw i) = constrGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = CloneRaw (castForeignPtr o)
+
 
 -- *** Behaviour
 

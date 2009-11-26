@@ -1,277 +1,716 @@
-name: clutter
+name: clutterhs
 version: 0.0.1
 license: LGPL
 license-file: COPYING
-maintainer: arsenm2@rpi.edu
 stability: alpha
+author: Matthew Arsenault
+copyright: (c) 2009 Matthew Arsenault
+maintainer: arsenm2@rpi.edu
 homepage: http://example.com
 category: Graphics
-Synopsis: Clutter bindings
-Description: Clutter bindings
-build-depends: base, glib, array
+Description: Bindings to the Clutter animation library
+build-depends: base, glib, array, gtk
 Build-Type: Simple
+tested-with: GHC == 6.10.4
 
 Cabal-Version: >= 1.2
 
 Flag Debug
   Description: Enable debug support
-  Default:     True
+  Default:     False
 
-Flag X11Support
-  Description: Enable X11 support
-  Default:     True
+--Flag X11Support
+--  Description: Enable X11 support
+--  Default:     True
 
---TODO: Better way of including/excluding x11 without
---listing everything else
 Library
-  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0, pango
+  pkgconfig-depends: glib-2.0, gobject-2.0, clutter-1.0, pango
   Build-Tools: c2hs
   Includes: csrc/clutter-macros.h
   Extensions: ForeignFunctionInterface,
               ExistentialQuantification,
               TypeSynonymInstances,
               CPP,
+              FunctionalDependencies,
+              MultiParamTypeClasses,
+              OverlappingInstances,
+              ScopedTypeVariables,
+              EmptyDataDecls,
+              UndecidableInstances,
               FlexibleInstances
 
-  if flag(X11Support)
-    Build-Depends: base, glib, gtk, haskell98, mtl, cairo, X11, array
---Utility should not be exposed
-    Exposed-modules: Graphics.UI.Clutter.Types,
-                     Graphics.UI.Clutter.Signals,
-                     Graphics.UI.Clutter.Utility,
-                     Graphics.UI.Clutter.GTypes,
-                     Graphics.UI.Clutter.Event,
-                     Graphics.UI.Clutter.StoreValue,
-                     Graphics.UI.Clutter.Animation,
-                     Graphics.UI.Clutter.CustomSignals,
-                     Graphics.UI.Clutter.General,
-                     Graphics.UI.Clutter.Color,
-                     Graphics.UI.Clutter.Actor,
-                     Graphics.UI.Clutter.Rectangle,
-                     Graphics.UI.Clutter.Texture,
-                     Graphics.UI.Clutter.Container,
-                     Graphics.UI.Clutter.Group,
-                     Graphics.UI.Clutter.Text,
-                     Graphics.UI.Clutter.Stage,
-                     Graphics.UI.Clutter.Animatable,
-                     Graphics.UI.Clutter.Timeline,
-                     Graphics.UI.Clutter.Score,
-                     Graphics.UI.Clutter.CairoTexture,
-                     Graphics.UI.Clutter.Alpha,
-                     Graphics.UI.Clutter.Media,
-                     Graphics.UI.Clutter.ChildMeta,
-                     Graphics.UI.Clutter.Clone,
-                     Graphics.UI.Clutter.Behaviour,
-                     Graphics.UI.Clutter.BehaviourScale,
-                     Graphics.UI.Clutter.BehaviourDepth,
-                     Graphics.UI.Clutter.BehaviourEllipse,
-                     Graphics.UI.Clutter.BehaviourOpacity,
-                     Graphics.UI.Clutter.BehaviourRotate,
-                     Graphics.UI.Clutter.BehaviourPath,
-                     Graphics.UI.Clutter.Interval,
-                     Graphics.UI.Clutter.Path,
-                     Graphics.UI.Clutter.Shader,
-                     Graphics.UI.Clutter.Model,
-                     Graphics.UI.Clutter.ListModel,
-                     Graphics.UI.Clutter.ModelIter,
-                     Graphics.UI.Clutter.Script,
-                     Graphics.UI.Clutter.Units,
-                     Graphics.UI.Clutter.Scriptable,
-                     Graphics.UI.Clutter.BindingPool,
-                     Graphics.UI.Clutter.X11,
-                     Graphics.UI.Clutter.Utilities,
-                     Graphics.UI.Clutter
-  else
-      Build-Depends: base, glib, gtk, haskell98, mtl, cairo, array
---I'm not sure that GValue should be exposed. Utility definitely not
-      Exposed-modules: Graphics.UI.Clutter.Types,
-                       Graphics.UI.Clutter.Signals,
-                       Graphics.UI.Clutter.Utility,
-                       Graphics.UI.Clutter.GTypes,
-                       Graphics.UI.Clutter.Event,
-                       Graphics.UI.Clutter.StoreValue,
-                       Graphics.UI.Clutter.Animation,
-                       Graphics.UI.Clutter.CustomSignals,
-                       Graphics.UI.Clutter.General,
-                       Graphics.UI.Clutter.Color,
-                       Graphics.UI.Clutter.Actor,
-                       Graphics.UI.Clutter.Rectangle,
-                       Graphics.UI.Clutter.Texture,
-                       Graphics.UI.Clutter.Container,
-                       Graphics.UI.Clutter.Group,
-                       Graphics.UI.Clutter.Text,
-                       Graphics.UI.Clutter.Stage,
-                       Graphics.UI.Clutter.Animatable,
-                       Graphics.UI.Clutter.Timeline,
-                       Graphics.UI.Clutter.Score,
-                       Graphics.UI.Clutter.CairoTexture,
-                       Graphics.UI.Clutter.Alpha,
-                       Graphics.UI.Clutter.Media,
-                       Graphics.UI.Clutter.ChildMeta,
-                       Graphics.UI.Clutter.Clone,
-                       Graphics.UI.Clutter.Behaviour,
-                       Graphics.UI.Clutter.BehaviourScale,
-                       Graphics.UI.Clutter.BehaviourDepth,
-                       Graphics.UI.Clutter.BehaviourEllipse,
-                       Graphics.UI.Clutter.BehaviourOpacity,
-                       Graphics.UI.Clutter.BehaviourRotate,
-                       Graphics.UI.Clutter.BehaviourPath,
-                       Graphics.UI.Clutter.Interval,
-                       Graphics.UI.Clutter.Path,
-                       Graphics.UI.Clutter.Shader,
-                       Graphics.UI.Clutter.Model,
-                       Graphics.UI.Clutter.ListModel,
-                       Graphics.UI.Clutter.ModelIter,
-                       Graphics.UI.Clutter.Script,
-                       Graphics.UI.Clutter.Units,
-                       Graphics.UI.Clutter.Scriptable,
-                       Graphics.UI.Clutter.BindingPool,
-                       Graphics.UI.Clutter.Utilities,
-                       Graphics.UI.Clutter
+  Build-Depends: base, glib, haskell98, mtl, cairo, X11, array, gtk
+--Utility and Types should not be exposed, but build fails if put in Other-modules field
+--X11 and gtk should also be optional
+  Exposed-modules: Graphics.UI.Clutter.Types,
+                   Graphics.UI.Clutter.Signals,
+                   Graphics.UI.Clutter.Utility,
+                   Graphics.UI.Clutter.GTypes,
+                   Graphics.UI.Clutter.Event,
+                   Graphics.UI.Clutter.StoreValue,
+                   Graphics.UI.Clutter.Animation,
+                   Graphics.UI.Clutter.CustomSignals,
+                   Graphics.UI.Clutter.General,
+                   Graphics.UI.Clutter.Color,
+                   Graphics.UI.Clutter.Actor,
+                   Graphics.UI.Clutter.Rectangle,
+                   Graphics.UI.Clutter.Texture,
+                   Graphics.UI.Clutter.Container,
+                   Graphics.UI.Clutter.Group,
+                   Graphics.UI.Clutter.Text,
+                   Graphics.UI.Clutter.Stage,
+                   Graphics.UI.Clutter.Animatable,
+                   Graphics.UI.Clutter.Timeline,
+                   Graphics.UI.Clutter.Score,
+                   Graphics.UI.Clutter.CairoTexture,
+                   Graphics.UI.Clutter.Alpha,
+                   Graphics.UI.Clutter.Media,
+                   Graphics.UI.Clutter.ChildMeta,
+                   Graphics.UI.Clutter.Clone,
+                   Graphics.UI.Clutter.Behaviour,
+                   Graphics.UI.Clutter.BehaviourScale,
+                   Graphics.UI.Clutter.BehaviourDepth,
+                   Graphics.UI.Clutter.BehaviourEllipse,
+                   Graphics.UI.Clutter.BehaviourOpacity,
+                   Graphics.UI.Clutter.BehaviourRotate,
+                   Graphics.UI.Clutter.BehaviourPath,
+                   Graphics.UI.Clutter.Interval,
+                   Graphics.UI.Clutter.Path,
+                   Graphics.UI.Clutter.Shader,
+                   Graphics.UI.Clutter.Model,
+                   Graphics.UI.Clutter.ListModel,
+                   Graphics.UI.Clutter.ModelIter,
+                   Graphics.UI.Clutter.Script,
+                   Graphics.UI.Clutter.Units,
+                   Graphics.UI.Clutter.Scriptable,
+                   Graphics.UI.Clutter.BindingPool,
+                   Graphics.UI.Clutter.Utilities,
+                   Graphics.UI.Clutter.X11,
+                   Graphics.UI.Clutter
+
 
   Exposed: True
-  GHC-options: -W
   C-Sources: ./csrc/clutter-macros.c
   Hs-Source-Dirs: .
   Include-dirs: ./csrc
   if flag(debug)
+    GHC-options: -W
     CC-Options: "-DDEBUG -O0 -g"
     CPP-Options: -DDEBUG
+  else
+    GHC-options: -O
+    CC-Options: "-O3"
 
-
+--Build systems hate me....
 Executable arst
   Main-Is:         Arst.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
-                   demo,
-                   dist/build
-
+                   demo
   Build-Depends: base, glib
 
 
 Executable pathtest
   Main-Is:         PathTest.hs
-  Other-Modules:   Graphics.UI.Clutter
-  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
-  C-Sources: ./csrc/clutter-macros.c
-  Include-dirs:   ./csrc
-  Hs-Source-Dirs:  .,
-                   demo,
-                   dist/build
-  Build-Depends: base, glib
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
 
-Executable texttest
-  Main-Is:         TextTest.hs
-  Other-Modules:   Graphics.UI.Clutter
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
+  Build-Depends: base, glib
+
+Executable texttest
+  Main-Is:         TextTest.hs
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
+  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  C-Sources: ./csrc/clutter-macros.c
+  Include-dirs:   ./csrc
+  Hs-Source-Dirs:  .,
+                   demo
   Build-Depends: base, glib
 
 
 Executable timelinetest
   Main-Is:         TimelineTest.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
-
   Build-Depends: base, glib
 
 
 Executable scoretest
   Main-Is:         ScoreTest.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
   Build-Depends: base, glib
 
 
 Executable texturetest
   Main-Is:         TextureTest.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
   Build-Depends: base, glib
 
 Executable behaviourellipsetest
   Main-Is:         BehaviourEllipseTest.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
-
   Build-Depends: base, glib
 
 
 Executable rectangletest
   Main-Is:         RectangleTest.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
-
   Build-Depends: base, glib
 
 Executable intervaltest
   Main-Is:         IntervalTest.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
-
   Build-Depends: base, glib
 
 
 Executable gvaluetest
   Main-Is:         GValueTest.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
-
   Build-Depends: base, glib
 
 
 Executable cluttergame
   Main-Is:         ClutterGame.hs
-  Other-Modules:   Graphics.UI.Clutter
+  Other-Modules: Graphics.UI.Clutter.Types,
+                 Graphics.UI.Clutter.Signals,
+                 Graphics.UI.Clutter.Utility,
+                 Graphics.UI.Clutter.GTypes,
+                 Graphics.UI.Clutter.Event,
+                 Graphics.UI.Clutter.StoreValue,
+                 Graphics.UI.Clutter.Animation,
+                 Graphics.UI.Clutter.CustomSignals,
+                 Graphics.UI.Clutter.General,
+                 Graphics.UI.Clutter.Color,
+                 Graphics.UI.Clutter.Actor,
+                 Graphics.UI.Clutter.Rectangle,
+                 Graphics.UI.Clutter.Texture,
+                 Graphics.UI.Clutter.Container,
+                 Graphics.UI.Clutter.Group,
+                 Graphics.UI.Clutter.Text,
+                 Graphics.UI.Clutter.Stage,
+                 Graphics.UI.Clutter.Animatable,
+                 Graphics.UI.Clutter.Timeline,
+                 Graphics.UI.Clutter.Score,
+                 Graphics.UI.Clutter.CairoTexture,
+                 Graphics.UI.Clutter.Alpha,
+                 Graphics.UI.Clutter.Media,
+                 Graphics.UI.Clutter.ChildMeta,
+                 Graphics.UI.Clutter.Clone,
+                 Graphics.UI.Clutter.Behaviour,
+                 Graphics.UI.Clutter.BehaviourScale,
+                 Graphics.UI.Clutter.BehaviourDepth,
+                 Graphics.UI.Clutter.BehaviourEllipse,
+                 Graphics.UI.Clutter.BehaviourOpacity,
+                 Graphics.UI.Clutter.BehaviourRotate,
+                 Graphics.UI.Clutter.BehaviourPath,
+                 Graphics.UI.Clutter.Interval,
+                 Graphics.UI.Clutter.Path,
+                 Graphics.UI.Clutter.Shader,
+                 Graphics.UI.Clutter.Model,
+                 Graphics.UI.Clutter.ListModel,
+                 Graphics.UI.Clutter.ModelIter,
+                 Graphics.UI.Clutter.Script,
+                 Graphics.UI.Clutter.Units,
+                 Graphics.UI.Clutter.Scriptable,
+                 Graphics.UI.Clutter.BindingPool,
+                 Graphics.UI.Clutter.Utilities,
+                 Graphics.UI.Clutter.X11,
+                 Graphics.UI.Clutter
+
   pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
   C-Sources: ./csrc/clutter-macros.c
   Include-dirs:   ./csrc
   Hs-Source-Dirs:  .,
                    demo
-                   dist/build
-
   Build-Depends: base, glib
 
 

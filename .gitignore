@@ -8,7 +8,6 @@ Graphics/UI/Clutter/Stage.chi
 Graphics/UI/Clutter/Stage.chs.h
 Graphics/UI/Clutter/Stage.hs
 Graphics/UI/Clutter/Types.hs
-C2HS.hs
 Graphics/UI/Clutter/#Stage.chs#
 Graphics/UI/Clutter/.#Stage.chs
 Graphics/UI/Clutter/Color.chi

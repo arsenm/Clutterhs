@@ -143,15 +143,14 @@ alphaNewWithFunc :: Timeline    -- ^ a 'Timeline'
                   -> IO Alpha   -- ^ The newly created 'Alpha'
 alphaNewWithFunc tl af = withTimeline tl $ \tlptr -> do
                          afptr <- newAlphaFunc af
-                         gdestroy <- mkFunPtrDestroyNotify afptr
-                         a <- {# call unsafe alpha_new_with_func #} tlptr afptr nullPtr gdestroy
+                         a <- {# call unsafe alpha_new_with_func #} tlptr afptr (castFunPtrToPtr afptr) destroyFunPtr
                          newAlpha a
 
 -- | Binds alpha to timeline.
 --
---[@alpha@] An 'Alpha'
+-- [@alpha@] An 'Alpha'
 --
---[@timeline@] A 'Timeline'
+-- [@timeline@] A 'Timeline'
 --
 -- * Since 0.2
 --
@@ -208,8 +207,7 @@ alphaNewWithFunc tl af = withTimeline tl $ \tlptr -> do
 alphaSetFunc :: Alpha -> AlphaFunc -> IO ()
 alphaSetFunc alp af = withAlpha alp $ \alpPtr -> do
                         afptr <- newAlphaFunc af
-                        gdestroy <- mkFunPtrDestroyNotify afptr
-                        {# call unsafe alpha_set_func #} alpPtr afptr nullPtr gdestroy
+                        {# call unsafe alpha_set_func #} alpPtr afptr (castFunPtrToPtr afptr) destroyFunPtr
 
 --TODO: some kind of ID Type for this.
 --TODO: What is CLUTTER_ANIMATION_LAST here? some kind of macro

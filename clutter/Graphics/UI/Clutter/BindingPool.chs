@@ -163,8 +163,7 @@ bindingPoolInstallAction bp name keyval modif gCB = withBindingPool bp $ \bpPtr 
                                                         kc = cIntConv keyval
                                                     in do
                                                       gcbPtr <- newGCallback gCB
-                                                      gdestroy <- mkFunPtrDestroyNotify gcbPtr
-                                                      func bpPtr namePtr kc mod gcbPtr nullPtr gdestroy
+                                                      func bpPtr namePtr kc mod gcbPtr (castFunPtrToPtr gcbPtr) destroyFunPtr
 
 
 bindingPoolOverrideAction :: BindingPool -> KeyVal -> [ModifierType] -> GCallback -> IO ()
@@ -175,8 +174,7 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
                                                     kc = cIntConv keyval
                                                 in do
                                                   gcbPtr <- newGCallback gCB
-                                                  gdestroy <- mkFunPtrDestroyNotify gcbPtr
-                                                  func bpPtr kc mod gcbPtr nullPtr gdestroy
+                                                  func bpPtr kc mod gcbPtr (castFunPtrToPtr gcbPtr) destroyFunPtr
 
 {# fun unsafe binding_pool_find_action as ^
        { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromModFlags `[ModifierType]' } -> `Maybe String' maybeString* #}

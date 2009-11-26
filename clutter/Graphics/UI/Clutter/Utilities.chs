@@ -45,7 +45,7 @@ module Graphics.UI.Clutter.Utilities (
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.MainLoop
-import System.Glib.GObject (DestroyNotify, mkFunPtrDestroyNotify)
+import System.Glib.GObject
 
 
 {# fun pure unsafe util_next_p2 as ^ { `Int' } -> `Int' #}
@@ -78,8 +78,7 @@ foreign import ccall "wrapper" mkSourceFunc :: SourceFunc -> IO CSourceFunc
 makeCallback :: SourceFunc -> IO (CSourceFunc, DestroyNotify)
 makeCallback fun = do
   funPtr <- mkSourceFunc fun
-  dPtr <- mkFunPtrDestroyNotify funPtr
-  return (funPtr, dPtr)
+  return (funPtr, destroyFunPtr)
 
 frameSourceAdd :: Word -> SourceFunc -> IO HandlerID
 frameSourceAdd fps sfFunc = let func = {# call unsafe frame_source_add #}
@@ -91,7 +90,7 @@ frameSourceAddFull :: Priority -> HandlerID -> SourceFunc -> IO HandlerID
 frameSourceAddFull priority fps sfFunc = let func = {# call unsafe frame_source_add_full #}
                                          in do
                                            (sf, gdn) <- makeCallback sfFunc
-                                           liftM cIntConv $ func (cIntConv priority) (cIntConv fps) sf nullPtr gdn
+                                           liftM cIntConv $ func (cIntConv priority) (cIntConv fps) sf (castFunPtrToPtr sf) gdn
 
 
 --TODO: Other stuff here needs cogl

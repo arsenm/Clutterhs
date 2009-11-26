@@ -1,0 +1,50 @@
+=== Clutterhs README ==
+
+Bindings for the Clutter (http://clutter-project.org/) animation
+library for Haskell.
+
+This currently depends on Gtk2hs from darcs, mostly using the
+Glib/GObject bindings.
+
+git: http://jayne.hortont.com/git/cgit.cgi/clutterhs.git/
+
+    This library is currently incomplete. Most of the core parts of
+Clutter are bound. Basic actors and animations should all be bound
+(however incompletely tested). Documentation is partially complete. It
+is mostly copied from the Clutter C documentation, and some parts have
+not been Haskellified yet. There's also quite a bit of mess internally
+that will be cleaned up eventually.
+
+If you have any comments, complaints, or suggestions on the API or
+anything, feel free to email me.
+
+The only major components that are somewhere between entirely unbound
+or effectively so are ClutterUnits, ClutterModel related things, and
+perhaps ClutterScriptable and Animatable. Also many random lower level
+functions, and things involving threads or timeouts are unbound.
+
+I've only tested on Linux, and only partially have the X11 backend
+specific stuff bound (which you also can't yet disable, so this is
+more or less Linux only for right now). Clutter-gtk is in the source
+tree, but pretend it doesn't exist since nothing is actually there
+right now.
+
+As another GObject based GUI library, use should be similar to gtk2hs
+in many ways. As a simple example of animations, you do something like
+
+  animate rectangle EaseOutBounce 3000 [ actorX :-> rnd1 * w,
+                                         actorY :-> rnd2 * h / 2 + h / 2,
+                                         actorRotationAngleZ :-> ang,
+                                         actorOpacity :-> 0 ]
+
+where the last argument to the animate function is a list of
+attributes and their ending values in the animation. Any writable
+property of the Clutter Actor you are animating should work, paired
+with it's ending value with ':->'. The best example currently would be
+ClutterGame.hs in the demo folder. Better examples and a tutorial are
+planned.
+
+In general, anything in the Clutter C API that takes a string name of
+a property and a Gvalue uses an Attribute.
+
+

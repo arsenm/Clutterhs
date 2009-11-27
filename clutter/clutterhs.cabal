@@ -1,5 +1,5 @@
 name: clutterhs
-version: 0.0.1
+version: 0.1
 license: LGPL
 license-file: COPYING
 stability: alpha
@@ -8,10 +8,17 @@ copyright: (c) 2009 Matthew Arsenault
 maintainer: arsenm2@rpi.edu
 homepage: http://example.com
 category: Graphics
-Description: Bindings to the Clutter animation library
 build-depends: base, glib, array, gtk
 Build-Type: Simple
 tested-with: GHC == 6.10.4
+synopsis: Bindings to the Clutter animation library
+Description: Clutterhs is a binding to the Clutter C library. Clutter
+             is an open source software library for creating fast,
+             visually rich, portable and animated graphical user
+             interfaces. Clutter uses OpenGL for rendering but with
+             an API which hides the underlying GL complexity from the
+             developer. The Clutter API is intended to be easy to use,
+             efficient and flexible.
 
 Cabal-Version: >= 1.2
 

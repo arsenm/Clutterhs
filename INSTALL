@@ -7,7 +7,7 @@ Prerequisites
 You need GHC, the Haskell compiler (as far as I know). I've only
 tested with 6.10.4.
 
-You need gtk2hs installed from darcs.
+You need gtk2hs installed from darcs, and the c2hs 0.16.0.
 
 
 Simple install procedure

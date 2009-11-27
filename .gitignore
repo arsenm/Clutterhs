@@ -29,4 +29,37 @@ callbackGen/HookGenerator.o
 callbackGen/HookGenerator.hi
 callbackGen/HookGenerator
 
+clutter/demo/Arst
+clutter/demo/Arst.hi
+clutter/demo/Arst.o
+clutter/demo/BehaviourEllipseTest
+clutter/demo/BehaviourEllipseTest.hi
+clutter/demo/BehaviourEllipseTest.o
+clutter/demo/ClutterGame
+clutter/demo/ClutterGame.hi
+clutter/demo/ClutterGame.o
+clutter/demo/GValueTest
+clutter/demo/GValueTest.hi
+clutter/demo/GValueTest.o
+clutter/demo/IntervalTest
+clutter/demo/IntervalTest.hi
+clutter/demo/IntervalTest.o
+clutter/demo/PathTest
+clutter/demo/PathTest.hi
+clutter/demo/PathTest.o
+clutter/demo/RectangleTest
+clutter/demo/RectangleTest.hi
+clutter/demo/RectangleTest.o
+clutter/demo/ScoreTest
+clutter/demo/ScoreTest.hi
+clutter/demo/ScoreTest.o
+clutter/demo/TextTest
+clutter/demo/TextTest.hi
+clutter/demo/TextTest.o
+clutter/demo/TextureTest
+clutter/demo/TextureTest.hi
+clutter/demo/TextureTest.o
+clutter/demo/TimelineTest
+clutter/demo/TimelineTest.hi
+clutter/demo/TimelineTest.o
 

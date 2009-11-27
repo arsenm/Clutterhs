@@ -1,0 +1,30 @@
+                     Clutterhs Installation Instructions
+                     ------------------------------------
+
+Prerequisites
+~~~~~~~~~~~~~
+
+You need GHC, the Haskell compiler (as far as I know). I've only
+tested with 6.10.4.
+
+You need gtk2hs installed from darcs.
+
+
+Simple install procedure
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+  % tar -xzf <package>.tar.gz           # unpack the sources
+  % cd <package>                        # change to the toplevel directory
+  % runghc Setup.hs configure           # configure the build system
+  % runghc Setup.hs build               # build everything
+  [ Become root if necessary ]
+  % runghc Setup.hs install             # install clutterhs
+
+
+Documentation
+~~~~~~~~~~~~~
+Documentation can be build with
+
+   $ runghc Setup.hs haddock
+
+

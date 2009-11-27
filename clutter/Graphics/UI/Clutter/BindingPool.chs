@@ -40,7 +40,8 @@ module Graphics.UI.Clutter.BindingPool (
 -- 'BindingPool' inside their class initialization function and
 -- then install actions like this:
 --
--- TODO: Replace this
+-- TODO: Replace C example
+{-
 -- @
 -- static void
 -- foo_class_init (FooClass *klass)
@@ -84,6 +85,7 @@ module Graphics.UI.Clutter.BindingPool (
 --                                         key_event->modifier_state);
 --
 -- @
+-}
 -- The 'bindingPoolActivate' function will return @False@ if no action
 -- for the given key binding was found, if the action was blocked
 -- (using 'bindingPoolBlockAction') or if the key binding handler

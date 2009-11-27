@@ -8,6 +8,9 @@ Glib/GObject bindings.
 
 git: http://jayne.hortont.com/git/cgit.cgi/clutterhs.git/
 
+The closest things to examples are in clutter/demo in the git repo,
+the most useful of which is probably ClutterGame.
+
     This library is currently incomplete. Most of the core parts of
 Clutter are bound. Basic actors and animations should all be bound
 (however incompletely tested). Documentation is partially complete. It

@@ -21,6 +21,8 @@ Description: Clutterhs is a binding to the Clutter C library. Clutter
              efficient and flexible.
 
 Cabal-Version: >= 1.2
+Extra-Source-Files: AUTHORS, INSTALL, README
+
 
 Flag Debug
   Description: Enable debug support

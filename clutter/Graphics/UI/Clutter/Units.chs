@@ -23,6 +23,8 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+
+-- | Unit conversion — A logical distance unit
 module Graphics.UI.Clutter.Units (
                                   unitsFromMm,
                                 --unitsFromPt,
@@ -47,16 +49,4 @@ import C2HS
 import Control.Monad (liftM)
 
 unitsFromMm = undefined
-
---TODO: These functions should be pure, how do I unsafePerformIO with c2hs? or do it manually?
---Actually I lied. This is another opaque structure so it will be annoying like GValue
-{-
-unitsFromMm :: Float -> Units
-unitsFromMm mm = unsafePerformIO $ alloca $ \utPtr -> do
-                 {# call unsafe units_from_mm #} utPtr (cFloatConv mm)
-                 peek utPtr
--}
---CHECKME: id as marshaller = what
---{# fun unsafe units_to_string as ^ { id `Units' } -> `String' #}
-
 

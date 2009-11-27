@@ -23,6 +23,8 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+
+-- | ListModel — List model implementation
 module Graphics.UI.Clutter.ListModel (
 -- * Class Hierarchy
 -- |

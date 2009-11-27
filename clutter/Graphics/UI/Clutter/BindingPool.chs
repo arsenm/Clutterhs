@@ -23,6 +23,7 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | Key Bindings — Pool for key bindings
 module Graphics.UI.Clutter.BindingPool (
 -- * Description
 

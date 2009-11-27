@@ -21,7 +21,8 @@ anything, feel free to email me.
 The only major components that are somewhere between entirely unbound
 or effectively so are ClutterUnits, ClutterModel related things, and
 perhaps ClutterScriptable and Animatable. Also many random lower level
-functions, and things involving threads or timeouts are unbound.
+functions, and things involving threads or timeouts are unbound. Also
+I haven't started binding COGL yet, but that's also planned.
 
 I've only tested on Linux, and only partially have the X11 backend
 specific stuff bound (which you also can't yet disable, so this is

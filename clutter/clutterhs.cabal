@@ -6,7 +6,7 @@ stability: alpha
 author: Matthew Arsenault
 copyright: (c) 2009 Matthew Arsenault
 maintainer: arsenm2@rpi.edu
-homepage: http://example.com
+--homepage: http://example.com
 category: Graphics
 build-depends: base, glib, array, gtk
 Build-Type: Simple
@@ -24,7 +24,7 @@ Cabal-Version: >= 1.2
 
 Flag Debug
   Description: Enable debug support
-  Default:     True
+  Default:     False
 
 --Flag X11Support
 --  Description: Enable X11 support

@@ -34,6 +34,9 @@ Library
   pkgconfig-depends: glib-2.0, gobject-2.0, clutter-1.0, pango
   Build-Tools: c2hs
   Includes: csrc/clutter-macros.h
+  C-Sources: ./csrc/clutter-macros.c
+  Install-Includes: ./csrc/clutter-macros.h
+  Hs-Source-Dirs: .
   Extensions: ForeignFunctionInterface,
               ExistentialQuantification,
               TypeSynonymInstances,
@@ -96,8 +99,6 @@ Library
                    Graphics.UI.Clutter.X11,
                    Graphics.UI.Clutter
   Exposed: True
-  C-Sources: ./csrc/clutter-macros.c
-  Hs-Source-Dirs: .
   Include-dirs: ./csrc
   if flag(debug)
     GHC-options: -W

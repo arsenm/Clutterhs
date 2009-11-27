@@ -11,7 +11,7 @@ git: http://jayne.hortont.com/git/cgit.cgi/clutterhs.git/
 The closest things to examples are in clutter/demo in the git repo,
 the most useful of which is probably ClutterGame.
 
-    This library is currently incomplete. Most of the core parts of
+This library is currently incomplete. Most of the core parts of
 Clutter are bound. Basic actors and animations should all be bound
 (however incompletely tested). Documentation is partially complete. It
 is mostly copied from the Clutter C documentation, and some parts have
@@ -19,7 +19,7 @@ not been Haskellified yet. There's also quite a bit of mess internally
 that will be cleaned up eventually.
 
 If you have any comments, complaints, or suggestions on the API or
-anything, feel free to email me.
+anything, feel free to email me (arsenm2@rpi.edu).
 
 The only major components that are somewhere between entirely unbound
 or effectively so are ClutterUnits, ClutterModel related things, and
@@ -29,7 +29,7 @@ I haven't started binding COGL yet, but that's also planned.
 
 I've only tested on Linux, and only partially have the X11 backend
 specific stuff bound (which you also can't yet disable, so this is
-more or less Linux only for right now). Clutter-gtk is in the source
+more or less X11-backend-only for right now). Clutter-gtk is in the source
 tree, but pretend it doesn't exist since nothing is actually there
 right now.
 

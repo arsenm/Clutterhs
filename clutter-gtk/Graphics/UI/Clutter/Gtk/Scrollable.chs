@@ -114,10 +114,6 @@ clutterScrollableGetAdjustments scrollable =
 
 
 
-withAdjustment :: Adjustment -> (Ptr Adjustment -> IO a) -> IO a
-withAdjustment = withForeignPtr . unAdjustment
-
-
 --CHECKME: Maybe, reference
 
 clutterScrollableHadjustment :: (ClutterScrollableClass self) => Attr self Adjustment

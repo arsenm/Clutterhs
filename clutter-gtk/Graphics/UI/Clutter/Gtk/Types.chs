@@ -34,7 +34,17 @@ module Graphics.UI.Clutter.Gtk.Types (
   ClutterScrollableClass,
   withClutterScrollableClass,
   withClutterScrollable,
-  toClutterScrollable
+  toClutterScrollable,
+
+  ClutterZoomable,
+  ClutterZoomableClass,
+  withClutterZoomableClass,
+  withClutterZoomable,
+  toClutterZoomable,
+
+
+  newAdjustment,
+  withAdjustment
   ) where
 
 
@@ -67,6 +77,8 @@ instance GObjectClass ClutterEmbed where
   toGObject (ClutterEmbed s) = constrGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = ClutterEmbed (castForeignPtr o)
 
+
+
 -- *** Scrollable
 
 {# pointer *GtkClutterScrollable as ClutterScrollable foreign newtype #}
@@ -87,4 +99,33 @@ instance ClutterScrollableClass ClutterScrollable
 instance GObjectClass ClutterScrollable where
   toGObject (ClutterScrollable s) = constrGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = ClutterScrollable (castForeignPtr o)
+
+
+-- *** Zoomable
+
+{# pointer *GtkClutterZoomable as ClutterZoomable foreign newtype #}
+
+class (GObjectClass o) => ClutterZoomableClass o
+toClutterZoomable :: ClutterZoomableClass o => o -> ClutterZoomable
+toClutterZoomable = unsafeCastGObject . toGObject
+
+withClutterZoomableClass :: ClutterZoomableClass o => o -> (Ptr ClutterZoomable -> IO a) -> IO a
+withClutterZoomableClass = withClutterZoomable . toClutterZoomable
+
+instance ClutterZoomableClass ClutterZoomable
+instance GObjectClass ClutterZoomable where
+  toGObject (ClutterZoomable s) = constrGObject (castForeignPtr s)
+  unsafeCastGObject (GObject o) = ClutterZoomable (castForeignPtr o)
+
+-- * Misc
+
+--used by zoomable and scrollable
+
+newAdjustment :: Ptr Adjustment -> IO Adjustment
+newAdjustment a = makeNewObject mkAdjustment $ return (castPtr a)
+
+
+withAdjustment :: Adjustment -> (Ptr Adjustment -> IO a) -> IO a
+withAdjustment = withForeignPtr . unAdjustment
+
 

@@ -29,8 +29,12 @@
 -- structures and object classes with Clutter actors.
 --
 module Graphics.UI.Clutter.Gtk (
-                                module Graphics.UI.Clutter.Gtk.Embed
+                                module Graphics.UI.Clutter.Gtk.Embed,
+                                module Graphics.UI.Clutter.Gtk.Scrollable,
+                                module Graphics.UI.Clutter.Gtk.Zoomable
                                ) where
 
 import Graphics.UI.Clutter.Gtk.Embed
+import Graphics.UI.Clutter.Gtk.Scrollable
+import Graphics.UI.Clutter.Gtk.Zoomable
 

@@ -29,28 +29,47 @@
 
 -- | GtkEmbed — Widget for embedding a Clutter scene
 module Graphics.UI.Clutter.Gtk.Embed (
+-- * Class Hierarchy
+-- |
+-- @
+-- |  'GObject'
+-- |    +----'Gtk.Object'
+-- |          +----'Gtk.Widget'
+-- |                +----'Gtk.Container'
+-- |                      +----'ClutterEmbed'
+---
+-- @
+
+-- * Types
+  ClutterEmbed,
+  ClutterEmbedClass,
+
+-- * Constructors
   clutterEmbedNew,
+
+-- * Methods
   clutterEmbedGetStage
   ) where
 
 import C2HS
 
 import Graphics.UI.Clutter.Types
+import Graphics.UI.Gtk.Types
 {# import Graphics.UI.Clutter.Gtk.Types #}
 
 
 {# pointer *ClutterActor as ActorPtr foreign -> Actor nocode #}
+{# pointer *GtkWidget as WidgetPtr foreign -> Widget nocode #}
 
 
 -- | Creates a new 'ClutterEmbed' widget. This widget can be used to build
 --   a scene using Clutter API into a GTK+ application.
 --
--- [@Returns@] the newly created 'ClutterEmbed'
+-- [@Returns@] the newly created 'Embed'
 --
 -- * Since 0.6
 --
-clutterEmbedNew = undefined
---{# fun unsafe clutter_embed_new as ^ { } -> `ClutterEmbed' newClutterEmbed* #}
+{# fun unsafe clutter_embed_new as ^ { } -> `ClutterEmbed' newClutterEmbed* #}
 
 -- CHECKME: You should never destroy or unref
 -- | Retrieves the 'Stage' from embed. The returned stage can be used
@@ -62,6 +81,7 @@ clutterEmbedNew = undefined
 --
 -- * Since 0.6
 --
-{# fun unsafe clutter_embed_get_stage as ^ { withClutterEmbed* `ClutterEmbed' } -> `Stage' newStage* #}
+{# fun unsafe clutter_embed_get_stage as ^
+    { withClutterEmbed* `ClutterEmbed' } -> `Stage' newStage* #}
 
 

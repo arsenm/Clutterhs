@@ -28,14 +28,23 @@ module Graphics.UI.Clutter.Gtk.Types (
   ClutterEmbedClass,
   newClutterEmbed,
   toClutterEmbed,
-  withClutterEmbed
+  withClutterEmbed,
+
+  ClutterScrollable,
+  ClutterScrollableClass,
+  withClutterScrollableClass,
+  withClutterScrollable,
+  toClutterScrollable
   ) where
 
 
 import C2HS
 import Graphics.UI.Clutter.Types
 import Graphics.UI.Gtk.Types
+import Graphics.UI.Gtk.Abstract.Object
 import System.Glib.GObject
+
+-- *** Embed
 
 {# pointer *GtkClutterEmbed as ClutterEmbed foreign newtype #}
 
@@ -44,8 +53,12 @@ class (ObjectClass o, GObjectClass o) => ClutterEmbedClass o
 toClutterEmbed :: ClutterEmbedClass o => o -> ClutterEmbed
 toClutterEmbed = unsafeCastGObject . toGObject
 
-newClutterEmbed :: (WidgetClass actor) => Ptr actor -> IO ClutterEmbed
-newClutterEmbed a = makeNewActor (ClutterEmbed, objectUnref) $ return (castPtr a)
+newClutterEmbed :: (WidgetClass widget) => Ptr widget -> IO ClutterEmbed
+newClutterEmbed a = makeNewObject (ClutterEmbed, objectUnrefFromMainloop) $ return (castPtr a)
+
+--CHECKME:
+-- GtkClutterEmbed implements AtkImplementorIface and GtkBuildable.
+
 
 instance ClutterEmbedClass ClutterEmbed
 instance WidgetClass ClutterEmbed
@@ -53,4 +66,25 @@ instance ObjectClass ClutterEmbed
 instance GObjectClass ClutterEmbed where
   toGObject (ClutterEmbed s) = constrGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = ClutterEmbed (castForeignPtr o)
+
+-- *** Scrollable
+
+{# pointer *GtkClutterScrollable as ClutterScrollable foreign newtype #}
+
+class (GObjectClass o) => ClutterScrollableClass o
+toClutterScrollable :: ClutterScrollableClass o => o -> ClutterScrollable
+toClutterScrollable = unsafeCastGObject . toGObject
+
+withClutterScrollableClass :: ClutterScrollableClass o => o -> (Ptr ClutterScrollable -> IO a) -> IO a
+withClutterScrollableClass = withClutterScrollable . toClutterScrollable
+
+
+--CHECKME:
+-- GtkClutterEmbed implements AtkImplementorIface and GtkBuildable.
+
+
+instance ClutterScrollableClass ClutterScrollable
+instance GObjectClass ClutterScrollable where
+  toGObject (ClutterScrollable s) = constrGObject (castForeignPtr s)
+  unsafeCastGObject (GObject o) = ClutterScrollable (castForeignPtr o)
 

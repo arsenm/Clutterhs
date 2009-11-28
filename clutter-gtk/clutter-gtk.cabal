@@ -31,6 +31,7 @@ Library
   Other-modules:   C2HS
   Exposed-modules: Graphics.UI.Clutter.Gtk.Types,
                    Graphics.UI.Clutter.Gtk.Embed,
+                   Graphics.UI.Clutter.Gtk.Scrollable,
                    Graphics.UI.Clutter.Gtk
   Exposed: True
   GHC-options: -W

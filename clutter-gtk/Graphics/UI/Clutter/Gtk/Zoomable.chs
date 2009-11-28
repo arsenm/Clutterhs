@@ -39,7 +39,7 @@ module Graphics.UI.Clutter.Gtk.Zoomable (
 -- @
 -- |  'GObject'
 -- |    +----'GInterface'
--- |          +----'ClutterZoomable'
+-- |           +----'ClutterZoomable'
 ---
 -- @
 

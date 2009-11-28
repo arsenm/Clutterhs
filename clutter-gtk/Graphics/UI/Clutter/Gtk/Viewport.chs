@@ -85,9 +85,17 @@ import Graphics.UI.Clutter.Types
 -- * Since 0.10
 --
 {# fun unsafe clutter_viewport_new as ^
+   `(ActorClass a)' =>
     { withAdjustment* `Adjustment',
       withAdjustment* `Adjustment',
-      withAdjustment* `Adjustment' } -> `()' #}
+      withAdjustment* `Adjustment' } -> `Viewport a' #}
+clutterViewportNew :: (ActorClass a) => Adjustment -> Adjustment -> Adjustment -> IO (Viewport a)
+clutterViewportNew adj1 adj2 adj3 = let func = {# call unsafe clutter_viewport_new #}
+                                    in withAdjustment adj1 $ \adjPtr1 ->
+                                         withAdjustment adj3 $ \adjPtr2 ->
+                                           withAdjustment adj3 $ \adjPtr3 ->
+                                           raw <- newViewportRaw =<< func adjPtr1 adjPtr2 adjPtr3
+
 
 
 

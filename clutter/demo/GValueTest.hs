@@ -10,7 +10,7 @@ import qualified System.Glib.GTypeConstants as GT
 import System.Glib.GObject
 
 
-
+main :: IO ()
 main = do
   clutterInit
 

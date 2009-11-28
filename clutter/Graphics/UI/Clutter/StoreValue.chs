@@ -248,14 +248,14 @@ instance Storable GenericValue where
 
 
 --interval get stuff wants initialized type. This is essentially allocaGValue
-allocaTypedGValue :: GType -> (GenericValuePtr -> IO ()) -> IO GenericValue
+allocaTypedGValue :: GType -> (GenericValuePtr -> IO a) -> IO (GenericValue, a)
 allocaTypedGValue gtype body =
   allocaBytes ({# sizeof GType #}+ 2* {# sizeof guint64 #}) $ \gvPtr -> do
     {# set GValue->g_type #} gvPtr gtype
-    body gvPtr
+    ret <- body gvPtr
     val <- valueGetGenericValue (GValue (castPtr gvPtr))
     {#call unsafe g_value_unset#} gvPtr
-    return val
+    return (val, ret)
 
 
 

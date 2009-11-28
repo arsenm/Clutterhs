@@ -522,7 +522,7 @@ animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [AnimOp actor]
 animate _ _ _ [] = error "Need arguments to animate"
 animate actor mode duration us =
     let (names, gvals) = toListAnim us
-        animatev = {# call unsafe actor_animatev #}  --CHECKME: unsafe?
+        animatev = {# call actor_animatev #}
         cmode = cFromEnum mode
         cdur = cIntConv duration
     in
@@ -563,7 +563,7 @@ animateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [AnimOp actor] -> IO
 animateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
 animateWithAlpha actor alpha us =
     let (names, gvals) = toListAnim us
-        animatev = {# call unsafe actor_animate_with_alphav #}    --CHECKME: unsafe?
+        animatev = {# call actor_animate_with_alphav #}
     in
     withMany withCString names $ \cstrs ->
       withArrayLen cstrs $ \len strptr ->
@@ -606,7 +606,7 @@ animateWithTimeline :: (ActorClass actor) =>
 animateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
 animateWithTimeline actor mode tml us =
     let (names, gvals) = toListAnim us
-        animatev = {# call unsafe actor_animate_with_timelinev #}    --CHECKME: unsafe?
+        animatev = {# call actor_animate_with_timelinev #}
         cmode = cFromEnum mode
     in
     withMany withCString names $ \cstrs ->

@@ -315,7 +315,8 @@ module Graphics.UI.Clutter.Types (
                                   rgbDataHasAlpha,
                                   rgbDataData,
 
-                                  Activatable(..)
+                                  Activatable(..),
+                                  Playable(..)
 
                                  ) where
 
@@ -1499,4 +1500,17 @@ class Activatable a where
   afterActivate :: a -> IO () -> IO (ConnectId a)
   activate :: Signal a (IO ())
 
+-- | Class of things that have signals related to starting, pausing
+--   etc.
+--
+class (GObjectClass a) => Playable a where
+  started :: Signal a (IO ())
+  onStarted :: a -> IO () -> IO (ConnectId a)
+  afterStarted :: a -> IO () -> IO (ConnectId a)
+  completed :: Signal a (IO ())
+  onCompleted :: a -> IO () -> IO (ConnectId a)
+  afterCompleted :: a -> IO () -> IO (ConnectId a)
+  paused :: Signal a (IO ())
+  onPaused :: a -> IO () -> IO (ConnectId a)
+  afterPaused :: a -> IO () -> IO (ConnectId a)
 

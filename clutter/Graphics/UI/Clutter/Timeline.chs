@@ -433,15 +433,12 @@ timelineDirection = newNamedAttr "direction" timelineGetDirection timelineSetDir
 
 --TODO: Check these
 
-onCompleted, afterCompleted :: Timeline -> IO () -> IO (ConnectId Timeline)
-onCompleted = connect_NONE__NONE "completed" False
-afterCompleted = connect_NONE__NONE "completed" True
+--onCompleted, afterCompleted :: Timeline -> IO () -> IO (ConnectId Timeline)
 
 -- | The ::completed signal is emitted when the timeline reaches the
 --   number of frames specified by the 'Timeline':num-frames
 --   property.
-completed :: Signal Timeline (IO ())
-completed = Signal (connect_NONE__NONE "completed")
+--completed :: Signal Timeline (IO ())
 
 onMarkerReached, afterMarkerReached :: Timeline -> (String -> Word -> IO ()) -> IO (ConnectId Timeline)
 onMarkerReached = connect_STRING_WORD__NONE "marker-reached" False
@@ -488,22 +485,29 @@ newFrame :: Signal Timeline (Int -> IO ())
 newFrame = Signal (connect_INT__NONE "new-frame")
 
 
-onPaused, afterPaused :: Timeline -> IO () -> IO (ConnectId Timeline)
-onPaused = connect_NONE__NONE "paused" False
-afterPaused = connect_NONE__NONE "paused" True
+instance Playable Timeline where
+  started = Signal (connect_NONE__NONE "started")
+  onStarted = connect_NONE__NONE "started" False
+  afterStarted = connect_NONE__NONE "started" True
+  completed = Signal (connect_NONE__NONE "completed")
+  onCompleted = connect_NONE__NONE "completed" False
+  afterCompleted = connect_NONE__NONE "completed" True
+  paused = Signal (connect_NONE__NONE "paused")
+  onPaused = connect_NONE__NONE "paused" False
+  afterPaused = connect_NONE__NONE "paused" True
 
 
 -- | The ::paused signal is emitted when 'timelinePause' is invoked.
-paused :: Signal Timeline (IO ())
-paused = Signal (connect_NONE__NONE "paused")
+-- paused :: Signal Timeline (IO ())
 
-onStarted, afterStarted :: Timeline -> IO () -> IO (ConnectId Timeline)
-onStarted = connect_NONE__NONE "started" False
-afterStarted = connect_NONE__NONE "started" True
+
+-- onStarted, afterStarted :: Timeline -> IO () -> IO (ConnectId Timeline)
+
+
 
 -- | The ::started signal is emitted when the timeline starts its
 --   run. This might be as soon as 'timelineStart' is invoked or after
 --   the delay set in the 'Timeline':delay property has expired.
-started :: Signal Timeline (IO ())
-started = Signal (connect_NONE__NONE "started")
+--started :: Signal Timeline (IO ())
+
 

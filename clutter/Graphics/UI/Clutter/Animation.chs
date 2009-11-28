@@ -81,7 +81,7 @@ module Graphics.UI.Clutter.Animation (
   animationAlpha
 
 
---TODO: Signals, also name conflicts with timeline
+--TODO: Playable class
 -- * Signals
 --onCompleted,
 --afterCompleted,
@@ -450,10 +450,7 @@ actorGetAnimation actor =  withActorClass actor $ \actorPtr -> do
      else newAnimationRaw raw >>= return . Just . mkAnimation (undefined :: a)
 
 
-onCompleted, afterCompleted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
-onCompleted = connect_NONE__NONE "completed" False
-afterCompleted = connect_NONE__NONE "completed" True
-
+--onCompleted, afterCompleted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
 
 -- | The ::'completed' signal is emitted once the animation has been
 --   completed.
@@ -463,13 +460,9 @@ afterCompleted = connect_NONE__NONE "completed" True
 --
 -- * Since 1.0
 --
-completed :: (GObjectClass a) => Signal (Animation a) (IO ())
-completed = Signal (connect_NONE__NONE "completed")
+--completed :: (GObjectClass a) => Signal (Animation a) (IO ())
 
-
-onStarted, afterStarted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
-onStarted = connect_NONE__NONE "started" False
-afterStarted = connect_NONE__NONE "started" True
+--onStarted, afterStarted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
 
 
 -- | The ::started signal is emitted once the animation has been
@@ -477,9 +470,7 @@ afterStarted = connect_NONE__NONE "started" True
 --
 -- * Since 1.0
 --
-started :: (GObjectClass a) => Signal (Animation a) (IO ())
-started = Signal (connect_NONE__NONE "started")
-
+--started :: (GObjectClass a) => Signal (Animation a) (IO ())
 
 -- CHECKME? allow WriteAttr?  Also, Animatable class? Not all
 --attributes animatable. Especially the convenient ones I added like
@@ -674,5 +665,17 @@ animationObject = newNamedAttr "object" animationGetObject animationSetObject
 --
 animationTimeline :: Attr (Animation a) (Maybe Timeline)
 animationTimeline = newNamedAttr "timeline" animationGetTimeline animationSetTimeline
+
+
+instance (GObjectClass a) => Playable (Animation a) where
+  started = Signal (connect_NONE__NONE "started")
+  onStarted = connect_NONE__NONE "started" False
+  afterStarted = connect_NONE__NONE "started" True
+  completed = Signal (connect_NONE__NONE "completed")
+  onCompleted = connect_NONE__NONE "completed" False
+  afterCompleted = connect_NONE__NONE "completed" True
+  paused = Signal (connect_NONE__NONE "paused")
+  onPaused = connect_NONE__NONE "paused" False
+  afterPaused = connect_NONE__NONE "paused" True
 
 

@@ -293,48 +293,43 @@ scoreLoop = newNamedAttr "score" scoreGetLoop scoreSetLoop
 {# fun unsafe score_rewind as ^ { withScore* `Score' } -> `()' #}
 
 
-onCompleted, afterCompleted :: Score -> IO () -> IO (ConnectId Score)
-onCompleted = connect_NONE__NONE "completed" False
-afterCompleted = connect_NONE__NONE "completed" True
+--onCompleted, afterCompleted :: Score -> IO () -> IO (ConnectId Score)
 
 
 -- | The ::completed signal is emitted each time a 'Score' terminates.
 --
 -- * Since 0.6
 --
-completed :: Signal Score (IO ())
-completed = Signal (connect_NONE__NONE "completed")
 
-
-onPaused, afterPaused :: Score -> IO () -> IO (ConnectId Score)
-onPaused = connect_NONE__NONE "paused" False
-afterPaused = connect_NONE__NONE "paused" True
+-- onPaused, afterPaused :: Score -> IO () -> IO (ConnectId Score)
 
 
 -- | The ::paused signal is emitted each time a 'Score' is paused.
 --
 -- * Since 0.6
 --
-paused :: Signal Score (IO ())
-paused = Signal (connect_NONE__NONE "paused")
+-- paused :: Signal Score (IO ())
 
 
-onStarted, afterStarted :: Score -> IO () -> IO (ConnectId Score)
-onStarted = connect_NONE__NONE "started" False
-afterStarted = connect_NONE__NONE "started" True
+
+-- onStarted, afterStarted :: Score -> IO () -> IO (ConnectId Score)
 
 
--- | The ::started signal is emitted each time a 'Score' starts playing.
---
--- * Since 0.6
---
-started :: Signal Score (IO ())
-started = Signal (connect_NONE__NONE "started")
+instance Playable Score where
+  started = Signal (connect_NONE__NONE "started")
+  onStarted = connect_NONE__NONE "started" False
+  afterStarted = connect_NONE__NONE "started" True
+  completed = Signal (connect_NONE__NONE "completed")
+  onCompleted = connect_NONE__NONE "completed" False
+  afterCompleted = connect_NONE__NONE "completed" True
+  paused = Signal (connect_NONE__NONE "paused")
+  onPaused = connect_NONE__NONE "paused" False
+  afterPaused = connect_NONE__NONE "paused" True
 
 
 onTimelineCompleted, afterTimelineCompleted :: Score -> (Timeline -> IO ()) -> IO (ConnectId Score)
-onTimelineCompleted = connect_OBJECT__NONE "timeline_completed" False
-afterTimelineCompleted = connect_OBJECT__NONE "timeline_completed" True
+onTimelineCompleted = connect_OBJECT__NONE "timeline-completed" False
+afterTimelineCompleted = connect_OBJECT__NONE "timeline-completed" True
 
 
 -- | The ::timeline-completed signal is emitted each time a timeline
@@ -345,12 +340,12 @@ afterTimelineCompleted = connect_OBJECT__NONE "timeline_completed" True
 -- * Since 0.6
 --
 timelineCompleted :: Signal Score (Timeline -> IO ())
-timelineCompleted = Signal (connect_OBJECT__NONE "timeline_completed")
+timelineCompleted = Signal (connect_OBJECT__NONE "timeline-completed")
 
 
 onTimelineStarted, afterTimelineStarted :: Score -> (Timeline -> IO ()) -> IO (ConnectId Score)
-onTimelineStarted = connect_OBJECT__NONE "timeline_started" False
-afterTimelineStarted = connect_OBJECT__NONE "timeline_started" True
+onTimelineStarted = connect_OBJECT__NONE "timeline-started" False
+afterTimelineStarted = connect_OBJECT__NONE "timeline-started" True
 
 
 -- | The ::timeline-started signal is emitted each time a new timeline
@@ -361,6 +356,6 @@ afterTimelineStarted = connect_OBJECT__NONE "timeline_started" True
 -- * Since 0.6
 --
 timelineStarted :: Signal Score (Timeline -> IO ())
-timelineStarted = Signal (connect_OBJECT__NONE "timeline_started")
+timelineStarted = Signal (connect_OBJECT__NONE "timeline-started")
 
 

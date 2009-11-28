@@ -8,7 +8,7 @@ homepage: http://example.com
 category: Graphics
 Synopsis: Clutter-Gtk bindings
 Description: Clutter-Gtk bindings
-build-depends: base, glib, array
+build-depends: base, glib, array, clutterhs
 Build-Type: Simple
 
 Cabal-Version: >= 1.2
@@ -27,14 +27,14 @@ Library
   Includes: clutter/clutter.h,
             clutter-gtk/clutter-gtk.h
   Extensions: CPP, ForeignFunctionInterface
-  Build-Depends: base, glib, gtk, haskell98, mtl, array
+  Build-Depends: base, glib, gtk, haskell98, mtl, array, clutterhs
+  Other-modules:   C2HS
   Exposed-modules: Graphics.UI.Clutter.Gtk.Types,
                    Graphics.UI.Clutter.Gtk.Embed,
                    Graphics.UI.Clutter.Gtk
   Exposed: True
   GHC-options: -W
-  Hs-Source-Dirs:  .,
-                   ../clutter/dist/build/
+  Hs-Source-Dirs:  .
   Include-dirs: /usr/include/clutter-1.0/,
                 /usr/include/glib-2.0,
                 /usr/include/glib-2.0/glib,

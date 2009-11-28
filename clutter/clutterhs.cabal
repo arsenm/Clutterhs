@@ -7,10 +7,7 @@ author: Matthew Arsenault
 copyright: (c) 2009 Matthew Arsenault
 maintainer: arsenm2@rpi.edu
 --homepage: http://example.com
-category: Graphics
-build-depends: base, glib, array, gtk
-Build-Type: Simple
-tested-with: GHC == 6.10.4
+category: GUI
 synopsis: Bindings to the Clutter animation library
 Description: Clutterhs is a binding to the Clutter C library. Clutter
              is an open source software library for creating fast,
@@ -19,9 +16,16 @@ Description: Clutterhs is a binding to the Clutter C library. Clutter
              an API which hides the underlying GL complexity from the
              developer. The Clutter API is intended to be easy to use,
              efficient and flexible.
-
-Cabal-Version: >= 1.2
+Build-Type: Simple
 Extra-Source-Files: AUTHORS, INSTALL, README
+tested-with: GHC == 6.10.4
+Cabal-Version: >= 1.2
+build-depends: base >= 3 && <5,
+               glib >= 0.10.1,
+               gtk >= 0.10.1,
+               array,
+               c2hs >= 0.16
+
 
 
 Flag Debug
@@ -34,7 +38,7 @@ Flag Debug
 
 Library
   pkgconfig-depends: glib-2.0, gobject-2.0, clutter-1.0, pango
-  Build-Tools: c2hs
+  Build-Tools: c2hs >= 0.16
   Includes: csrc/clutter-macros.h
   C-Sources: ./csrc/clutter-macros.c
   Install-Includes: ./csrc/clutter-macros.h
@@ -51,7 +55,15 @@ Library
               UndecidableInstances,
               FlexibleInstances
 
-  Build-Depends: base, glib, haskell98, mtl, cairo, X11, array, gtk
+  Build-Depends:  base > 3 && < 5,
+                  haskell98,
+                  mtl,
+                  cairo,
+                  X11,
+                  glib >= 0.10.1,
+                  gtk >= 0.10.1,
+                  array
+
   Other-modules: C2HS
 --Utility and Types should not be exposed, but build fails if put in Other-modules field
 --X11 and gtk should also be optional
@@ -106,6 +118,4 @@ Library
     GHC-options: -W
     CC-Options: "-DDEBUG -O0 -g"
     CPP-Options: -DDEBUG
-  else
-    CC-Options: "-O3"
 

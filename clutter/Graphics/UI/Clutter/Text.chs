@@ -139,9 +139,9 @@ module Graphics.UI.Clutter.Text (
 -- * Related Types
   --TODO: Export more of Pango?
   PangoLayout,
-  LayoutWrapMode,
-  LayoutAlignment,
-  EllipsizeMode,
+  LayoutWrapMode(..),
+  LayoutAlignment(..),
+  EllipsizeMode(..),
 
 -- * Attributes
   textActivatable,

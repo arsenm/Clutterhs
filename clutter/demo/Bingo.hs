@@ -25,7 +25,9 @@ isqrt = floor .  sqrt . fromIntegral
 createTile ioArr str = do
   group <- groupNew
   rec <- rectangleNewWithColor (fromJust $ colorFromString "blue")
-  txt <- textNewWithText "Sans 20" str
+  txt <- textNewWithText "Sans 10" str
+  textSetLineWrap txt True
+  set txt [textLineWrapMode := WrapWholeWords]
   containerAddActor group rec
   containerAddActor group txt
 --containerLowerChild group rec txt
@@ -34,12 +36,12 @@ createTile ioArr str = do
 
   set rec [ actorX := 0,
             actorY := 0,
-            actorWidth := 75,
-            actorHeight := 75 ]
+            actorWidth := 120,
+            actorHeight := 120 ]
   set txt [ actorX := 0,
             actorY := 0,
-            actorWidth := 75,
-            actorHeight := 75 ]
+            actorWidth := 120,
+            actorHeight := 120 ]
 
   actorSetReactive group True
   on group buttonPressEvent $
@@ -56,6 +58,43 @@ createTile ioArr str = do
                   checkWon ioArr
   return group
 
+
+spinAlpha = do
+  tml <- timelineNew 3000
+  set tml [ timelineLoop := True ]
+  alphaNewFull tml Linear
+
+
+opacityAlpha = do
+  tml <- timelineNew 3000
+  set tml [ timelineLoop := True ]
+  alphaNewFull tml EaseInOutCubic
+
+-- make something bizarre happen when you win
+makeItSpin actor = do
+  x <- get actor actorX
+  y <- get actor actorY
+  stage <- stageGetDefault
+  sx <- get stage actorWidth
+  sy <- get stage actorHeight
+  alpha <- spinAlpha
+  bhv <- behaviourEllipseNew (Just alpha)
+                             (round x)
+                             (round y)
+                             (round (sx - x))
+                             (round (sy-y))
+                             RotateCw
+                             0
+                             360
+
+  alpha2 <- opacityAlpha
+  bhv2 <- behaviourOpacityNew (Just alpha2) 20 255
+
+  alphaGetTimeline alpha >>= timelineStart
+  alphaGetTimeline alpha2 >>= timelineStart
+  behaviourApply bhv actor
+  behaviourApply bhv2 actor
+
 checkWon ioArr = do
   arr <- readIORef ioArr
   -- assumes square matrix
@@ -71,7 +110,9 @@ checkWon ioArr = do
   let d = and [ snd $ arr ! (x, ub - x + 1) | x <- rng ]
 
   let res = or [or a, or b, c ,d]
-  when res (putStrLn "GLORIOUS VICTORY")
+  when res (putStrLn "GLORIOUS VICTORY"
+            >> mapM_ makeItSpin (map fst (elems arr))
+           )
 
 
 addTileToStage stage spacing ioTiles p@(x,y) = do
@@ -105,7 +146,7 @@ main = do
 
 -- Apparently can't use Uarray with Actors. Maybe fix this. So use
 -- silly IORef.
-  mapM_ (addTileToStage stage 120 ioArr) (indices arr)
+  mapM_ (addTileToStage stage 140 ioArr) (indices arr)
 
   actorShowAll stage
 

@@ -20,7 +20,7 @@ Build-Type: Simple
 Extra-Source-Files: AUTHORS, INSTALL, README
 tested-with: GHC == 6.10.4
 Cabal-Version: >= 1.2
-build-depends: base >= 3 && <5,
+build-depends: base >= 4 && <5,
                glib >= 0.10.1,
                gtk >= 0.10.1,
                array,
@@ -55,7 +55,7 @@ Library
               UndecidableInstances,
               FlexibleInstances
 
-  Build-Depends:  base > 3 && < 5,
+  Build-Depends:  base >= 4 && < 5,
                   haskell98,
                   mtl,
                   cairo,

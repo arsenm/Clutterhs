@@ -66,10 +66,7 @@ module Graphics.UI.Clutter.StoreValue (
 import C2HS
 import Control.Monad (liftM)
 
---TODO: New exceptions
-import Control.OldException (throw, Exception(AssertionFailed))
-
-import Control.Exception (bracket)
+import Control.Exception
 
 {# import Graphics.UI.Clutter.Types #}
 {# import qualified Graphics.UI.Clutter.GTypes #} as CGT
@@ -209,7 +206,7 @@ valueGetGenericValue :: GValue -> IO GenericValue
 valueGetGenericValue gvalue = do
   gtype <- valueGetType gvalue
   case cToEnum gtype of
-    ATinvalid	-> throw $ AssertionFailed "valueGetGenericValue: invalid or unavailable value."
+    ATinvalid	-> throwIO $ AssertionFailed "valueGetGenericValue: invalid or unavailable value."
     ATuint      -> liftM GVuint			  $ valueGetUInt    gvalue
     ATint	-> liftM GVint	                  $ valueGetInt	    gvalue
     ATuchar	-> liftM (GVuchar . cFromEnum)	  $ valueGetUChar   gvalue

@@ -62,4 +62,13 @@ clutter/demo/TextureTest.o
 clutter/demo/TimelineTest
 clutter/demo/TimelineTest.hi
 clutter/demo/TimelineTest.o
+clutter/Graphics/UI/Clutter.hi
+clutter/Graphics/UI/Clutter.o
+clutter/demo/Bingo
+clutter/demo/Bingo.hi
+clutter/demo/Bingo.o
+clutter/demo/SpinningBobDylanShaderGame
+clutter/demo/SpinningBobDylanShaderGame.hi
+clutter/demo/SpinningBobDylanShaderGame.o
+
 

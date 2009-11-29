@@ -22,7 +22,7 @@ Flag X11Support
   Default:     True
 
 Library
-  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0
+  pkgconfig-depends: gtk+-2.0, glib-2.0, gobject-2.0, clutter-1.0, clutter-gtk-0.10
   Build-Tools: c2hs
   Includes: clutter/clutter.h,
             clutter-gtk/clutter-gtk.h
@@ -38,12 +38,6 @@ Library
   Exposed: True
   GHC-options: -W
   Hs-Source-Dirs:  .
-  Include-dirs: /usr/include/clutter-1.0/,
-                /usr/include/glib-2.0,
-                /usr/include/glib-2.0/glib,
-                /usr/lib/glib-2.0/include,
-                /usr/include/pango-1.0/,
-                /usr/include/cairo
   if flag(debug)
     CC-Options: "-DDEBUG -O0 -g"
     CPP-Options: -DDEBUG

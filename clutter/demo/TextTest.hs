@@ -12,9 +12,15 @@ main = do
   clutterInit
   stage <- stageGetDefault
 
-  text <- textNewFull "Webdings 12" "Comic Sans is the best font" (Color 255 0 0 255)
+  text <- textNewFull "Comic Sans MS 12" "Comic Sans is the best font" (Color 255 0 0 255)
   set text [ actorX := 100,
              actorY := 200 ]
+
+  text2 <- textNewFull "Comic Sans MS 25" "TIM LOVES COMIC SANS" (Color 123 3 123 255)
+  set text2 [ actorX := 220,
+              actorY :=  10,
+              actorRotationAngleZ := 45]
+
 
   let black = fromJust (colorFromString "black")
   pwText <- textNewFull "Sans 10" "This is a secret password" black
@@ -43,9 +49,7 @@ main = do
   on textEdit textChanged (get textEdit textText >>= putStrLn)
 
 
-  containerAddActor stage text
-  containerAddActor stage pwText
-  containerAddActor stage textEdit
+  mapM_ (containerAddActor stage) [text, text2, pwText, textEdit]
 
   actorShowAll stage
 

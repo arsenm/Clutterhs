@@ -44,7 +44,11 @@ module Graphics.UI.Clutter.Gtk.Types (
 
 
   newAdjustment,
-  withAdjustment
+  withAdjustment,
+  withWidgetClass,
+
+  GtkInitError(..),
+  GtkTextureError(..),
   ) where
 
 
@@ -117,7 +121,7 @@ instance GObjectClass ClutterZoomable where
   toGObject (ClutterZoomable s) = constrGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = ClutterZoomable (castForeignPtr o)
 
--- * Misc
+-- *** Misc
 
 --used by zoomable and scrollable
 
@@ -127,5 +131,15 @@ newAdjustment a = makeNewObject mkAdjustment $ return (castPtr a)
 
 withAdjustment :: Adjustment -> (Ptr Adjustment -> IO a) -> IO a
 withAdjustment = withForeignPtr . unAdjustment
+
+
+withWidgetClass :: (WidgetClass widget) => widget -> (Ptr Widget -> IO a) -> IO a
+withWidgetClass = withForeignPtr . unWidget . toWidget
+
+
+-- *** Utility
+
+{# enum ClutterGtkInitError as GtkInitError {underscoreToCase} deriving (Show, Eq) #}
+{# enum ClutterGtkTextureError as GtkTextureError {underscoreToCase} deriving (Show, Eq) #}
 
 

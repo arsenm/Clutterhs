@@ -26,6 +26,9 @@ build-depends: base >= 4 && <5,
                array,
                c2hs >= 0.16
 
+source-repository head
+  type: git
+  location: http://jayne.hortont.com/repo/clutterhs.git
 
 
 Flag Debug

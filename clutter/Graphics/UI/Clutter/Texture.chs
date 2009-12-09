@@ -115,6 +115,7 @@ module Graphics.UI.Clutter.Texture (
 import Data.Array.Base (getBounds)
 
 import C2HS
+import Data.Ix
 import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.Properties
@@ -244,30 +245,30 @@ textureSetFromFile txt fname = let func = {# call texture_set_from_file #}
 --CHECKME: Generalized RGBData
 --CHECKME: Rgb or RGB?
 --FIXME: Proper rowstride
-textureSetFromRgbData :: (TextureClass self) => self ->
-                         RGBData Int Word8 ->
+--CHECKME: Ix i, Word8
+textureSetFromRgbData :: (TextureClass self, Storable e) => self ->
+                         RGBData (Int, Int) e ->
                          [TextureFlags] ->
                          IO Bool
 textureSetFromRgbData txt dat flags =
     let func = {# call texture_set_from_rgb_data #}
         hasA = rgbDataHasAlpha dat
         bpp = if hasA then 4 else 3
-        datPtr = rgbDataData dat
     in withTextureClass txt $ \txtptr ->
-        propagateGError $ \gerrorPtr -> do
-          (w, h) <- getBounds dat
-          putStrLn $ "W: " ++ Prelude.show w ++ " H: " ++ Prelude.show h
-          let rowstride = w * 4 -- FIXME
-          liftM cToBool $ withForeignPtr datPtr $ \fPtr ->
-            func txtptr
-                 (castPtr fPtr)
-                 (cFromBool hasA)
-                 (cIntConv w)
-                 (cIntConv h)
-                 (cIntConv rowstride)
-                 (cIntConv bpp)
-                 (cFromFlags flags)
-                 (castPtr gerrorPtr)
+         withRGBData dat $ \datPtr ->
+          propagateGError $ \gerrorPtr -> do
+            ((lw,_), (w, h)) <- getBounds dat  -- CHECKME
+            putStrLn $ "W: " ++ Prelude.show w ++ " H: " ++ Prelude.show h
+            let rowstride = (w - lw) * 4 -- FIXME
+            liftM cToBool $ func txtptr
+                                 (castPtr datPtr)
+                                 (cFromBool hasA)
+                                 (cIntConv w)
+                                 (cIntConv h)
+                                 (cIntConv rowstride)
+                                 (cIntConv bpp)
+                                 (cFromFlags flags)
+                                 (castPtr gerrorPtr)
 
 {-
 texture_set_from_yuv_data

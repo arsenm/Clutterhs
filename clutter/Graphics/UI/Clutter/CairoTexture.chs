@@ -62,9 +62,9 @@ module Graphics.UI.Clutter.CairoTexture (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Actor'
--- |         +----'Texture'
--- |               +----'CairoTexture'
+-- |    +----'Actor'
+-- |           +----'Texture'
+-- |                  +----'CairoTexture'
 -- @
 
 -- * Types

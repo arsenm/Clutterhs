@@ -313,7 +313,7 @@ module Graphics.UI.Clutter.Types (
                                   RGBData,
                                   mkRGBData,
                                   rgbDataHasAlpha,
-                                  rgbDataData,
+                                  withRGBData,
 
                                   Activatable(..),
                                   Playable(..)
@@ -326,11 +326,8 @@ import Data.Word
 
 --RGBData stuff
 import Data.Ix
--- internal module of GHC
-import Data.Array.Base ( MArray, newArray, newArray_, unsafeRead, unsafeWrite,
-			 getBounds,
-			 getNumElements
-                       )
+import Data.Array.Storable
+import Data.Array.MArray
 
 import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
@@ -1428,35 +1425,27 @@ foreign import ccall "wrapper"
 --This is basically PixbufData without the pixbuf.
 -- | An array that stored the raw pixel data in RGB Format.
 --
-data Ix i => RGBData i e = RGBData {-# UNPACK #-} !(ForeignPtr e)
-                                                  !Bool
-                                                  !(i,i)
-                                   {-# UNPACK #-} !Int
+data (Ix i) => RGBData i e = RGBData {-# UNPACK #-} !(StorableArray i e)
+                                                    !Bool
+                                     {-# UNPACK #-} !Int
 
 rgbDataHasAlpha :: (Storable e, Ix i) => RGBData i e -> Bool
-rgbDataHasAlpha (RGBData _ hasA _ _) = hasA
+rgbDataHasAlpha (RGBData _ hasA _ ) = hasA
 
 --FIXME: Bad bad bad
-rgbDataData (RGBData ptr _ _ _) = ptr
+rgbDataData (RGBData ptr _ _ ) = ptr
 
-mkRGBData :: Storable e => ForeignPtr e -> Bool -> Int -> RGBData Int e
-mkRGBData (ptr :: ForeignPtr e) hasA size =
-  RGBData ptr hasA (0, count) count
-  where count = fromIntegral (size `div` sizeOf (undefined :: e))
+mkRGBData :: StorableArray (Int, Int) Word8 -> Bool -> Int -> RGBData (Int, Int) Word8
+mkRGBData arr hasA size = RGBData arr hasA size
+
+withRGBData (RGBData arr _ _) = withStorableArray arr
 
 --CHECKME: Touching things?
 -- | 'RGBData' is a mutable array.
-instance Storable e => MArray RGBData e IO where
-  newArray (l,u) e = error "Clutter.Texture.RGBData.newArray: not implemented"
-  newArray_ (l,u)  = error "Clutter.Texture.RGBData.newArray_: not implemented"
-  {-# INLINE unsafeRead #-}
-  unsafeRead (RGBData pixPtr _ _ _) idx = withForeignPtr pixPtr (flip peekElemOff idx)
-  {-# INLINE unsafeWrite #-}
-  unsafeWrite (RGBData pixPtr _ _ _) idx elem = withForeignPtr pixPtr (\p -> pokeElemOff p idx elem)
-  {-# INLINE getBounds #-}
-  getBounds (RGBData _ _ bd _) = return bd
-  {-# INLINE getNumElements #-}
-  getNumElements (RGBData _ _ _ count) = return count
+instance (Storable e) => MArray RGBData e IO where
+  getBounds (RGBData arr _ _ ) = getBounds arr
+  newArray _ = error "Graphics.UI.Clutter.RGBData: newArray not implemented"
+  newArray_ _ = error "Graphics.UI.Clutter.RGBData: newArray_ not implemented"
 
 
 -- Since some things have the same signal names, classes for them. Not

@@ -46,7 +46,6 @@ main = do
   textureSetFromFile emptyTexture "khaaaaaaan.jpg"
 
   squirrelfish <- textureNewFromFile "SquirrelFish.svg"
-
   containerAddActor stage squirrelfish
   set squirrelfish [ actorX := 100,
                      actorY := 100,
@@ -65,6 +64,7 @@ but this ends in assertion failures
                actorPosition := (400, 400),
                textureRepeat := (True, True) ]
 -}
+
 
   sfClone <- cloneNew (Just squirrelfish)
   set sfClone [ actorWidth := 50,
@@ -86,7 +86,8 @@ but this ends in assertion failures
 
   containerAddActor stage pixTx
 -}
-  containerAddActor stage sfClone
+
+--  containerAddActor stage sfClone
   actorShowAll stage
   clutterMain
 

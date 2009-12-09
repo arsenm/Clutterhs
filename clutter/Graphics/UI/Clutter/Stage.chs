@@ -94,7 +94,7 @@ module Graphics.UI.Clutter.Stage (
   stageSetKeyFocus,
   stageGetKeyFocus,
 --stageKeyFocus,
---stageReadPixels,
+  stageReadPixels,
 
   stageSetThrottleMotionEvents,
   stageGetThrottleMotionEvents,
@@ -151,6 +151,9 @@ module Graphics.UI.Clutter.Stage (
 
 import C2HS
 import Control.Monad (liftM)
+import Data.Array.MArray
+import Data.Array.Storable
+import Data.Ix
 import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.FFI (maybeNull)
@@ -302,7 +305,7 @@ stageReadPixels :: (StageClass stage) =>
                    -> Int
                    -> Int
                    -> Int
-                   -> IO (Maybe (RGBData Int Word8))
+                   -> IO (Maybe (RGBData (Int, Int) Word8))
 stageReadPixels stage x y w h = let cx = cIntConv x
                                     cy = cIntConv y
                                     cw = cIntConv w
@@ -318,8 +321,9 @@ stageReadPixels stage x y w h = let cx = cIntConv x
                                   ptr <- {# call unsafe stage_read_pixels #} stgPtr cx cy cw ch
                                   if ptr == nullPtr
                                      then return Prelude.Nothing
-                                     else newForeignPtr finalizerGFree ptr >>= \fptr ->
-                                            return $ Just (mkRGBData (castForeignPtr fptr) True size)
+                                     else do fptr <- newForeignPtr finalizerGFree ptr
+                                             arr <- unsafeForeignPtrToStorableArray (castForeignPtr fptr) ((0, 0), (sizeW, sizeH)) :: IO (StorableArray (Int, Int) Word8)
+                                             return $ Just (mkRGBData arr True size)
 
 
 -- | Sets whether motion events received between redraws should be

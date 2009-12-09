@@ -1,26 +1,25 @@
 Bananas Attack
 Segmentation Fault
 Callback breaks something
-Assertion failures
-Bacon
-Huge fire
-Mooses
+Assertion failures.
+Fail quantum physics test
+Wanda eats food.
+Mooses.
+Compile Webkit.
 Bacon in the soap
-Pie
-Pizza
+AllInOneFile.cpp
+Random bleeding
+Jayne is running Windows
 Destroys mailbox
 Scientology hires pirates
 People from the internet show up
 3D not working
-Aliens
-Monkeys
-Emacs
+7 Monkeys appear.
 Richard Stallman stays in room
-Fail a test
-Get pizza
 Get far away pizza
 Secret functions happen
 Squirrels invade
 You need to reinstall windows.
+Laundry machine explodes.
+Get pizza
 Pork rabbits
-

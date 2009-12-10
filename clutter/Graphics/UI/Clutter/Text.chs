@@ -667,7 +667,7 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
 -- * Since 1.0
 --
 {# fun unsafe text_set_selection as ^ `(TextClass self)' =>
-    { withTextClass* `self', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
+    { withTextClass* `self', `Int32', `Int32' } -> `()' #}
 
 --CHECKME: Return NULL / make Maybe?
 -- | Retrieves the currently selected text.
@@ -806,7 +806,7 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
 -- * Since 1.0
 --
 {# fun unsafe text_insert_text as ^ `(TextClass self)' =>
-    { withTextClass* `self', `String', cIntConv `GSSize' } -> `()' #}
+    { withTextClass* `self', `String', `Int32' } -> `()' #}
 
 
 --FIXME: Unicode
@@ -848,7 +848,7 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
 -- * Since 1.0
 --
 {# fun unsafe text_delete_text as ^ `(TextClass self)' =>
-    { withTextClass* `self', cIntConv `GSSize', cIntConv `GSSize' } -> `()' #}
+    { withTextClass* `self', `Int32', `Int32' } -> `()' #}
 
 
 --CHECKME: Subclasses it references?
@@ -867,7 +867,6 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
     { withTextClass* `self' } -> `()' #}
 
 
---TODO: GSSize
 -- | Retrieves the contents of the 'Text' actor between start_pos and
 --   end_pos.
 --
@@ -885,7 +884,7 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
 -- * Since 1.0
 --
 {# fun unsafe text_get_chars as ^ `(TextClass self)' =>
-    { withTextClass* `self', cIntConv `GSSize', cIntConv `GSSize' } -> `String' peekNFreeString* #}
+    { withTextClass* `self',`Int32', `Int32' } -> `String' peekNFreeString* #}
 
 
 --CHECKME: This can be set to Nothing, but you can't get Nothing back.

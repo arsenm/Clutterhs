@@ -471,7 +471,7 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 --
 -- Note: you cannot destroy the 'Stage' returned by 'stageGetDefault'.
 --
-{# fun actor_destroy as ^  `(ActorClass self)' => { withActorClass* `self'} -> `()' #}
+{# fun actor_destroy as ^ `(ActorClass self)' => { withActorClass* `self'} -> `()' #}
 
 {-
 -- | This function is used to emit an event on the main stage. You

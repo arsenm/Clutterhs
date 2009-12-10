@@ -40,7 +40,6 @@ module Graphics.UI.Clutter.Types (
                                   makeNewActor,
                                   --TODO: Exports need organizing and stuff
 
-                                  GSSize,
                                   GUnichar,
                                   Word,
                                   GID,
@@ -388,7 +387,6 @@ withGValue (GValue gval) = castPtr gval
 -- {# class GObjectClass GObject #}
 
 --TODO: Make this go away.
-type GSSize = {# type gssize #}
 type GUnichar = {# type gunichar #}
 
 -- *** Misc

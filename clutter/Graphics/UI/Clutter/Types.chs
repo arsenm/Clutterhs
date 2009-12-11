@@ -327,7 +327,15 @@ import Data.Word
 --RGBData stuff
 import Data.Ix
 import Data.Array.Storable
-import Data.Array.MArray
+--import Data.Array.MArray
+-- internal module of GHC
+import Data.Array.Base ( MArray,
+                         newArray,
+                         newArray_,
+                         unsafeRead,
+                         unsafeWrite,
+			 getBounds,
+			 getNumElements )
 
 import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
@@ -1421,31 +1429,34 @@ foreign import ccall "wrapper"
 
 -- *** RGBData
 
---FIXME/CHECKME: Not really sure best way to deal with this
---This is basically PixbufData without the pixbuf.
 -- | An array that stored the raw pixel data in RGB Format.
 --
 data (Ix i) => RGBData i e = RGBData {-# UNPACK #-} !(StorableArray i e)
                                                     !Bool
                                      {-# UNPACK #-} !Int
 
-rgbDataHasAlpha :: (Storable e, Ix i) => RGBData i e -> Bool
+rgbDataHasAlpha :: (Ix i) => RGBData i e -> Bool
 rgbDataHasAlpha (RGBData _ hasA _ ) = hasA
 
---FIXME: Bad bad bad
-rgbDataData (RGBData ptr _ _ ) = ptr
 
 mkRGBData :: StorableArray (Int, Int) Word8 -> Bool -> Int -> RGBData (Int, Int) Word8
 mkRGBData arr hasA size = RGBData arr hasA size
 
 withRGBData (RGBData arr _ _) = withStorableArray arr
 
---CHECKME: Touching things?
+
 -- | 'RGBData' is a mutable array.
 instance (Storable e) => MArray RGBData e IO where
   getBounds (RGBData arr _ _ ) = getBounds arr
-  newArray _ = error "Graphics.UI.Clutter.RGBData: newArray not implemented"
+  newArray  _ = error "Graphics.UI.Clutter.RGBData: newArray not implemented"
   newArray_ _ = error "Graphics.UI.Clutter.RGBData: newArray_ not implemented"
+  {-# INLINE unsafeRead #-}
+  unsafeRead (RGBData arr _ _) = unsafeRead arr
+  {-# INLINE unsafeWrite #-}
+  unsafeWrite (RGBData arr _ _) = unsafeWrite arr
+  {-# INLINE getNumElements #-}
+  getNumElements (RGBData arr _ _) = getNumElements arr
+
 
 
 -- Since some things have the same signal names, classes for them. Not

@@ -338,10 +338,7 @@ import System.Glib.Signals
 --
 {# fun unsafe timeline_has_marker as ^ { withTimeline* `Timeline', `String' } -> `Bool' #}
 
---CHECKME: Does the returned gchar** need to be freed from this?
 --CHECME: Unicode?
---TODO: Maybe better way to get char** out
-
 -- | Retrieves the list of markers at time msecs. If frame_num is a
 --   negative integer, all the markers attached to timeline will be
 --   returned.

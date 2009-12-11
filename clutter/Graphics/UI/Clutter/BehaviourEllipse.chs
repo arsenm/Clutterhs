@@ -23,13 +23,15 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | BehaviourEllipse — A behaviour interpolating position along an
+-- ellipse
 module Graphics.UI.Clutter.BehaviourEllipse (
 -- * Class Hierarchy
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Behaviour'
--- |         +----BehaviourEllipse
+-- |    +----'Behaviour'
+-- |           +----BehaviourEllipse
 -- |
 -- @
 

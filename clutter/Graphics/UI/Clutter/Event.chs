@@ -26,8 +26,6 @@
 
 --TODO: Note the low level stuff ignored here
 --TODO: This is in need of a lot of testing
---TODO: Make stuff here more consistent with itself,
---struct using vs. functions. Don't need to do silly struct things.
 
 module Graphics.UI.Clutter.Event (
 -- * Types
@@ -51,7 +49,6 @@ module Graphics.UI.Clutter.Event (
   EScroll,
   EStageState,
   ECrossing,
-
 
 -- * Accessor functions for event information
   eventCoordinates,

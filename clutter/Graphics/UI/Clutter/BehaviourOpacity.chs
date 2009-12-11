@@ -23,13 +23,14 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | BehaviourOpacity — Behaviour controlling the opacity
 module Graphics.UI.Clutter.BehaviourOpacity (
 -- * Class Hierarchy
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Behaviour'
--- |         +----'BehaviourOpacity'
+-- |    +----'Behaviour'
+-- |           +----'BehaviourOpacity'
 -- |
 -- @
 
@@ -101,8 +102,6 @@ import System.Glib.Properties
        { withBehaviourOpacity* `BehaviourOpacity',
          alloca- `Word8' peekIntConv*,
          alloca- `Word8' peekIntConv*} -> `()' #}
-
-
 
 
 -- | Final opacity level of the behaviour.

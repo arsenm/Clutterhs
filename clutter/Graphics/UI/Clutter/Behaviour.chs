@@ -70,13 +70,13 @@ module Graphics.UI.Clutter.Behaviour (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Behaviour'
--- |         +----'BehaviourDepth'
--- |         +----'BehaviourEllipse'
--- |         +----'BehaviourOpacity'
--- |         +----'BehaviourPath'
--- |         +----'BehaviourRotate'
--- |         +----'BehaviourScale'
+-- |    +----'Behaviour'
+-- |           +----'BehaviourDepth'
+-- |           +----'BehaviourEllipse'
+-- |           +----'BehaviourOpacity'
+-- |           +----'BehaviourPath'
+-- |           +----'BehaviourRotate'
+-- |           +----'BehaviourScale'
 -- @
 
 -- * Types
@@ -90,7 +90,7 @@ module Graphics.UI.Clutter.Behaviour (
   behaviourRemoveAll,
   behaviourIsApplied,
   behaviourActorsForeach,
-  behaviourGetActors, --Set actors??
+  behaviourGetActors,
   behaviourGetNActors,
   behaviourGetNthActor,
   behaviourGetAlpha,
@@ -179,7 +179,7 @@ behaviourActorsForeach b func = withBehaviourClass b $ \bptr -> do
                                 freeHaskellFunPtr funcPtr
                                 --CHECKME: unsafe?
 
---TODO: We could make a rw attribute even though clutter doesn't do that.
+
 -- | Retrieves all the actors to which behave applies. It is not
 --   recommended for derived classes to use this in there alpha notify
 --   method but use behaviourActorsForeach as it avoids alot of

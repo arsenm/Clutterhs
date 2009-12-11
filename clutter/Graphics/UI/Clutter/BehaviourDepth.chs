@@ -35,8 +35,8 @@ module Graphics.UI.Clutter.BehaviourDepth (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Behaviour'
--- |         +----'BehaviourDepth'
+-- |    +----'Behaviour'
+-- |           +----'BehaviourDepth'
 -- |
 -- @
 

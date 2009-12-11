@@ -23,12 +23,13 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | BehaviourPath — A behaviour for moving actors along a 'Path'
 module Graphics.UI.Clutter.BehaviourPath (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Behaviour'
--- |         +----'BehaviourPath'
+-- |    +----'Behaviour'
+-- |           +----'BehaviourPath'
 -- |
 -- @
 
@@ -54,10 +55,6 @@ module Graphics.UI.Clutter.BehaviourPath (
   onKnotReached,
   afterKnotReached,
   knotReached
-
---knotCopy, --not needed
---knotFree,
---knotEqual
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -66,23 +63,25 @@ module Graphics.UI.Clutter.BehaviourPath (
 import C2HS
 import System.Glib.Attributes
 
+{# pointer *Knot as KnotPtr foreign -> Knot nocode #}
+
 {# fun unsafe behaviour_path_new as ^
        { withAlpha* `Alpha', withPath* `Path' } -> `BehaviourPath' newBehaviourPath* #}
 {# fun unsafe behaviour_path_new_with_description as ^
        { withAlpha* `Alpha', `String' } -> `BehaviourPath' newBehaviourPath* #}
 
---CHECKME: Again, why the casting from Ptr Knot to Ptr ()
 behaviourPathNewWithKnots :: Alpha -> [Knot] -> IO BehaviourPath
 behaviourPathNewWithKnots alp knots = let func = {# call unsafe behaviour_path_new_with_knots #}
                                       in withAlpha alp $ \aptr ->
                                           withArrayLen knots $ \len knotptr ->
-                                          newBehaviourPath =<< func aptr (castPtr knotptr) (cIntConv len)
+                                          newBehaviourPath =<< func aptr knotptr (cIntConv len)
 
 
 {# fun unsafe behaviour_path_set_path as ^
        { withBehaviourPath* `BehaviourPath', withPath* `Path'} -> `()' #}
 {# fun unsafe behaviour_path_get_path as ^
        { withBehaviourPath* `BehaviourPath' } -> `Path' newPath* #}
+
 
 -- Attributes
 
@@ -91,8 +90,8 @@ behaviourPathPath = newNamedAttr "path" behaviourPathGetPath behaviourPathSetPat
 
 
 onKnotReached, afterKnotReached :: BehaviourPath -> (Word -> IO ()) -> IO (ConnectId BehaviourPath)
-onKnotReached = connect_WORD__NONE "knot_reached" False
-afterKnotReached = connect_WORD__NONE "knot_reached" True
+onKnotReached = connect_WORD__NONE "knot-reached" False
+afterKnotReached = connect_WORD__NONE "knot-reached" True
 
 
 -- | This signal is emitted each time a node defined inside the path

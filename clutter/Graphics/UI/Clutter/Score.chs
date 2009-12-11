@@ -70,7 +70,7 @@ module Graphics.UI.Clutter.Score (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Score'
+-- |    +----'Score'
 -- @
 --
 

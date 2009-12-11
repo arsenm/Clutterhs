@@ -251,7 +251,7 @@ allocaTypedGValue gtype body =
     {# set GValue->g_type #} gvPtr gtype
     ret <- body gvPtr
     val <- valueGetGenericValue (GValue (castPtr gvPtr))
-    {#call unsafe g_value_unset#} gvPtr
+    {# call unsafe g_value_unset #} gvPtr
     return (val, ret)
 
 

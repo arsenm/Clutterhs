@@ -443,10 +443,10 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --
 pathGetPosition :: Path -> Double -> IO (Word, Knot)
 pathGetPosition path progress = withPath path $ \pathptr ->
-                                alloca $ \kptr -> do
-                                   ret <- ({# call unsafe path_get_position #} pathptr (cFloatConv progress) (castPtr kptr))
-                                   val <- peek kptr
-                                   return (cIntConv ret, val)
+                                  alloca $ \kptr -> do
+                                    ret <- ({# call unsafe path_get_position #} pathptr (cFloatConv progress) (castPtr kptr))
+                                    val <- peek kptr
+                                    return (cIntConv ret, val)
 
 -- | Retrieves an approximation of the total length of the path.
 --

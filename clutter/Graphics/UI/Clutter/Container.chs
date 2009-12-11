@@ -50,9 +50,8 @@ module Graphics.UI.Clutter.Container (
   containerSortDepthOrder,
 --containerClassFindChildProperty,
 --containerClassListChildProperties,
---containerChildGetProperty,
   containerChildSet,
---containerChildGet,
+  containerChildGet,
   containerGetChildMeta
   ) where
 
@@ -64,6 +63,10 @@ import C2HS
 import Prelude
 import qualified Prelude as P
 import System.Glib.GObject
+import System.Glib.Attributes
+import System.Glib.Signals
+import qualified System.Glib.GTypeConstants as GType
+import Graphics.UI.Clutter.Signals
 import Control.Monad (forM_)
 
 --CHECKME: unsafe
@@ -74,6 +77,8 @@ import Control.Monad (forM_)
        `(ContainerClass container, ActorClass actor)' =>
            { withContainerClass* `container', withActorClass* `actor' } -> `()' #}
 --TODO: add/removeList as var args function, to allow multiple types of the actor class in the list
+
+
 
 --TODO: Does this doc make sense?
 -- | Removes actor from container. The
@@ -130,6 +135,7 @@ containerForeachWithInternals c func = withContainerClass c $ \cptr -> do
 -- | Sorts a container's children using their depth. This function should not be normally used by applications.
 {# fun unsafe container_sort_depth_order as ^
        `(ContainerClass container)' => { withContainerClass* `container' } -> `()' #}
+
 {-
 We don't care about GParamSpec stuff
 {# fun unsafe container_class_find_child_property as ^
@@ -139,8 +145,6 @@ We don't care about GParamSpec stuff
        `(GObjectClass gobj)' => { withGObjectClass* `gobj', `Word' } -> `[GParamSpec]' #}
 -}
 --
-
-
 
 
 -- | Retrieves the 'ChildMeta' which contains the data about the
@@ -175,15 +179,30 @@ containerChildSet ctr chld ops = let func = {# call unsafe container_child_set_p
                                                        withGenericValue val $ \valPtr ->
                                                          func ctrPtr chldPtr strPtr valPtr
 
-{-
---getting gvalues out is problematic
-containerChildGet :: (ContainerClass container, ActorClass child, GValueClass a) =>
+
+--FIXME: ReadAttr? Also
+containerChildGet :: (ContainerClass container, ActorClass child, GenericValueClass a) =>
                      container
                      -> child
-                     -> AnimOp child
+                     -> Attr child a
                      -> IO a
-containerChildGet ctr chld op =  let func = {# call unsafe container_child_get_property #}
-                                 in withContainerClass ctr $ \ctrPtr ->
-                                      withActorClass chld $ \chldPtr ->
--}
+containerChildGet ctr chld attr =  let func = {# call unsafe container_child_get_property #}
+                                   in do (generic, _) <- withContainerClass ctr $ \ctrPtr ->
+                                                           withActorClass chld $ \chldPtr ->
+                                                             withCString (P.show attr) $ \strPtr ->
+                                                               allocaTypedGValue GType.none $ \gvPtr ->
+                                                                 func ctrPtr chldPtr strPtr gvPtr
+                                         return (unsafeExtractGenericValue generic)
+
+
+
+actorAdded :: (ContainerClass container) => Signal container (Actor -> IO ())
+actorAdded = Signal (connect_OBJECT__NONE "actor-added")
+
+
+actorRemoved :: (ContainerClass container) => Signal container (Actor -> IO ())
+actorRemoved = Signal (connect_OBJECT__NONE "actor-removed")
+
+-- child notify? gparamspec.
+
 

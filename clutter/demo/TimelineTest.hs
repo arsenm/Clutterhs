@@ -54,7 +54,6 @@ main = do
   clonePlay2 <- timelineIsPlaying tmlClone
   putStrLn $ "Clone play 2: " ++ P.show clonePlay2
 
-  --CHECKME: Is this freed
   markers <- timelineListMarkers tml (-1)
   putStrLn "Markers before removal:"
   mapM_ print markers

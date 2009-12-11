@@ -23,7 +23,7 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
--- | ClutterClone — An actor that displays a clone of a source actor
+-- | Clone — An actor that displays a clone of a source actor
 module Graphics.UI.Clutter.Clone (
 -- * Description
 --
@@ -83,8 +83,6 @@ cloneNew :: (ActorClass a) => Maybe a -> IO (Clone a)
 cloneNew actor = withMaybeActorClass actor $ \actorPtr ->
                    liftM (mkClone (undefined::a))
                          (newCloneRaw =<< {# call unsafe clone_new #} actorPtr)
-
-
 
 
 -- | Sets source as the source actor to be cloned by clone.

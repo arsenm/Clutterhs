@@ -23,7 +23,27 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | Texture — An actor for displaying and manipulating images.
 module Graphics.UI.Clutter.Texture (
+-- * Description
+-- | 'Texture' is a base class for displaying and manipulating pixel
+-- buffer type data.
+--
+-- The 'textureSetFromRgbData' and 'textureSetFromFile' functions are
+-- used to copy image data into texture memory and subsequently
+-- realize the texture.
+--
+-- If texture reads are supported by underlying GL implementation,
+-- unrealizing frees image data from texture memory moving to main
+-- system memory. Re-realizing then performs the opposite
+-- operation. This process allows basic management of commonly limited
+-- available texture memory.
+--
+-- Note: a 'Texture' will scale its contents to fit the bounding box
+-- requested using 'actorSetSize'. To display an area of a texture
+-- without scaling, you should set the clip area using 'actorSetClip'.
+--
+
 -- * Class Hierarchy
 -- |
 -- @

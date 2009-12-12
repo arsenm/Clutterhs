@@ -24,7 +24,23 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | Value intervals — An object holding an interval of two values
 module Graphics.UI.Clutter.Interval (
+-- * Description
+-- | 'Interval' is a simple object that can hold two values defining
+-- an interval. 'Interval' can hold any value that can be enclosed
+-- inside a GValue.
+--
+-- Once an 'Interval' for a specific GType has been instantiated the
+-- "value-type" property cannot be changed anymore.
+--
+-- 'Interval' is used by 'Animation' to define the interval of values
+-- that an implicit animation should tween over.
+--
+-- 'Interval' can be subclassed to override the validation and value computation.
+--
+-- 'Interval' is available since Clutter 1.0
+
 -- * Class Hierarchy
 -- |
 -- @
@@ -41,27 +57,19 @@ module Graphics.UI.Clutter.Interval (
   intervalClone,
 
 -- * Methods
-
 --intervalGetValueType,
   intervalSetInitialValue,
   intervalGetInitialValue,
 
---intervalPeekInitalValue,
   intervalSetFinalValue,
   intervalGetFinalValue,
-
---intervalPeekFinalValue,
---intervalSetInterval,
---intervalGetInterval,
 
   intervalComputeValue,
 --intervalValidate,
   intervalRegisterProgressFunc
 
 -- * Attributes
---intervalInitialValue,
---intervalFinalValue,
---intervalInterval
+--intervalValueType
 ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -77,6 +85,19 @@ import System.Glib.GValueTypes
 import System.Glib.Types
 import System.Glib.GType
 
+
+
+-- | Creates a new 'Interval' of type gtype, between initial and
+-- final.
+--
+-- [@initial@] the initial value of the interval
+--
+-- [@final@] the final value of the interval
+--
+-- [@Returns@] the newly created 'Interval'
+--
+-- * Since 1.0
+--
 intervalNew :: (GenericValueClass a) => a -> a -> IO (Interval a)
 intervalNew initial final = let func = {# call unsafe interval_new_with_values #}
                             in withGenericValue initial $ \iniPtr ->
@@ -86,16 +107,46 @@ intervalNew initial final = let func = {# call unsafe interval_new_with_values #
                                    return (mkInterval (undefined :: a) interval)
 
 
+
+-- | Creates a copy of interval.
+--
+-- [@interval@] an 'Interval'
+--
+-- [@Returns@] the newly created 'Interval'
+--
+-- * Since 1.0
+--
 intervalClone :: Interval a -> IO (Interval a)
 intervalClone interval = withInterval interval $ \intervalPtr ->
                            liftM (mkInterval (undefined :: a))
                                  (newIntervalRaw =<< {# call unsafe interval_clone #} intervalPtr)
 
+
+
+
+-- | Sets the initial value of interval to value.
+--
+-- [@interval@] an 'Interval'
+--
+-- [@value@] a value
+--
+-- * Since 1.0
+--
 intervalSetInitialValue :: (GenericValueClass a) => Interval a -> a -> IO ()
 intervalSetInitialValue interval val = withInterval interval $ \intervalPtr ->
                                          withGenericValue val $ \valPtr ->
                                           {# call unsafe interval_set_initial_value #} intervalPtr valPtr
 
+
+
+-- | Sets the final value of interval to value.
+--
+-- [@interval@] an 'Interval'
+--
+-- [@value@] a value
+--
+-- * Since 1.0
+--
 intervalSetFinalValue :: (GenericValueClass a) => Interval a -> a -> IO ()
 intervalSetFinalValue interval val = withInterval interval $ \intervalPtr ->
                                          withGenericValue val $ \valPtr ->
@@ -103,6 +154,16 @@ intervalSetFinalValue interval val = withInterval interval $ \intervalPtr ->
 
 
 --TODO: Cleanup
+
+
+-- | Retrieves the initial value of interval and copies it into value.
+--
+-- [@interval@] an 'Interval'
+--
+-- [@Returns@] a value
+--
+-- * Since 1.0
+--
 intervalGetInitialValue :: (GenericValueClass a) => Interval a -> IO a
 intervalGetInitialValue interval = withInterval interval $ \intervalPtr -> do
                                      gtype <- liftM cToEnum $ {# call unsafe interval_get_value_type #} intervalPtr
@@ -110,6 +171,16 @@ intervalGetInitialValue interval = withInterval interval $ \intervalPtr -> do
                                                        {# call unsafe interval_get_initial_value #} intervalPtr gvPtr
                                      return (unsafeExtractGenericValue generic)
 
+
+
+-- | Retrieves the final value of interval and copies it into value.
+--
+-- [@interval@] an 'Interval'
+--
+-- [@value@] a value
+--
+-- * Since 1.0
+--
 intervalGetFinalValue :: (GenericValueClass a) => Interval a -> IO a
 intervalGetFinalValue interval = withInterval interval $ \intervalPtr -> do
                                      gtype <- liftM cToEnum $ {# call unsafe interval_get_value_type #} intervalPtr
@@ -120,6 +191,18 @@ intervalGetFinalValue interval = withInterval interval $ \intervalPtr -> do
 
 
 
+-- | Computes the value between the interval boundaries given the
+-- progress factor and puts it into value.
+--
+-- [@interval@]  an 'Interval'
+--
+-- [@factor@] the progress factor, between 0 and 1
+--
+-- [@Returns@] @Just@ the computed value if the operation was
+-- successful
+--
+-- * Since 1.0
+--
 intervalComputeValue :: (GenericValueClass a) => Interval a -> Double -> IO (Maybe a)
 intervalComputeValue interval factor = let func = {# call unsafe interval_compute_value #}
                                        in withInterval interval $ \intervalPtr -> do

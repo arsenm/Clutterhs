@@ -1,5 +1,5 @@
 
-import Graphics.UI.Clutter
+import Graphics.UI.Clutter hiding (show)
 import System.Glib.Attributes
 import System.Glib.Signals
 import Data.Maybe
@@ -25,6 +25,9 @@ main = do
 
   ival1 <- intervalNew (50::Float) (500::Float)
   ival2 <- intervalNew (50::Float) (300::Float)
+
+  intervalGetInitialValue ival1 >>= \x -> putStrLn ("Initial value peek: " ++ show x)
+  intervalGetFinalValue ival1 >>= \x -> putStrLn ("Final value peek: " ++ show x)
 
   anim <- animationNew :: IO (Animation Rectangle)
   animationSetObject anim rec

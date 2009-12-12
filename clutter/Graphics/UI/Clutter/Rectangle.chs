@@ -25,6 +25,10 @@
 
 -- | 'Rectangle' — An actor that displays a simple rectangle.
 module Graphics.UI.Clutter.Rectangle (
+-- * Description
+-- | 'Rectangle' is a ClutterActor which draws a simple filled
+-- rectangle.
+
 -- * Class Hierarchy
 -- |
 -- @

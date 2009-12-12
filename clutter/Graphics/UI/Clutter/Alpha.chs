@@ -54,7 +54,7 @@ module Graphics.UI.Clutter.Alpha (
 -- internally used by the Animation API.
 --
 -- * Figure 3. Easing modes provided by Clutter
--- <<file:///home/matt/src/clutterhs/doc/easing-modes.png>>
+-- <<file:///home/matt/src/clutterhs/clutter/doc/easing-modes.png>>
 --
 
 -- * Class Hierarchy

@@ -26,6 +26,111 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.Actor (
+-- * Description
+
+-- | Actor is a base abstract class for all visual elements on the
+-- stage. Every object that must appear on the main ClutterStage must
+-- also be a ClutterActor, either by using one of the classes provided
+-- by Clutter, or by implementing a new ClutterActor subclass.
+--
+-- Every actor is a 2D surface positioned and optionally transformed
+-- in 3D space. The actor is positioned relative to top left corner of
+-- it parent with the childs origin being its anchor point (also top
+-- left by default).
+--
+-- The actors 2D surface is contained inside its bounding box,
+-- described by the 'ActorBox' structure:
+--
+-- * Figure 1. Bounding box of an Actor
+-- <<file:///home/matt/src/clutterhs/clutter/doc/actor-box.png>>
+--
+-- The actor box represents the untransformed area occupied by an
+-- actor. Each visible actor that has been put on a ClutterStage also
+-- has a transformed area, depending on the actual transformations
+-- applied to it by the developer (scale, rotation). Tranforms will
+-- also be applied to any child actors. Also applied to all actors by
+-- the ClutterStage is a perspective transformation. API is provided
+-- for both tranformed and untransformed actor geometry information.
+--
+-- The 'modelview' transform matrix for the actor is constructed from
+-- the actor settings by the following order of operations:
+--
+-- Translation by actor x, y coords,
+--
+-- Translation by actor depth (z),
+--
+-- Scaling by scale_x, scale_y,
+--
+-- Rotation around z axis,
+--
+-- Rotation around y axis,
+--
+-- Rotation around x axis,
+--
+-- Negative translation by anchor point x, y,
+--
+-- Rectangular Clip is applied (this is not an operation on the matrix
+-- as such, but it is done as part of the transform set up).
+--
+-- An actor can either be explicitly sized and positioned, using the
+-- various size and position accessors, like 'actorSetX' or
+-- 'actorSetWidth'; or it can have a preferred width and height, which
+-- then allows a layout manager to implicitly size and position it by
+-- "allocating" an area for an actor. This allows for actors to be
+-- manipulate in both a fixed or static parent container
+-- (i.e. children of 'Group') and a more automatic or dynamic layout
+-- based parent container.
+--
+-- When accessing the position and size of an actor, the simple
+-- accessors like 'actorGetWidth' and 'actorGetX' will return a value
+-- depending on whether the actor has been explicitly sized and
+-- positioned by the developer or implicitly by the layout manager.
+--
+-- Depending on whether you are querying an actor or implementing a
+-- layout manager, you should either use the simple accessors or use
+-- the size negotiation API.
+--
+-- Clutter actors are also able to receive input events and react to
+-- them. Events are handled in the following ways:
+--
+-- Actors emit pointer events if set reactive, see 'actorSetReactive'
+--
+-- The stage is always reactive
+--
+-- Events are handled by connecting signal handlers to the numerous
+-- event signal types.
+--
+-- Event handlers must return @True@ if they handled the event and
+-- wish to block the event emission chain, or @False@ if the emission
+-- chain must continue
+--
+-- Keyboard events are emitted if actor has focus, see
+-- 'stageSetKeyFocus'
+--
+-- Motion events (motion, enter, leave) are not emitted if
+-- 'setMotionEventsEnabled' is called with @False@. See
+-- 'setMotionEventsEnabled' documentation for more information.
+--
+-- Once emitted, an event emission chain has two phases: capture and
+-- bubble. An emitted event starts in the capture phase (see
+-- 'capturedEvent') beginning at the stage and traversing every child
+-- actor until the event source actor is reached. The emission then
+-- enters the bubble phase, traversing back up the chain via parents
+-- until it reaches the stage. Any event handler can abort this chain
+-- by returning @True@ (meaning "event handled").
+--
+-- Pointer events will 'pass through' non reactive overlapping actors.
+--
+-- * Figure 2. Event flow in Clutter
+-- <<file:///home/matt/src/clutterhs/clutter/doc/event-flow.png>>
+--
+--
+-- Every '?' box in the diagram above is an entry point for application code.
+--
+-- For implementing a new custom actor class, please read the
+-- corresponding section of the API reference.
+--
+
 -- * Class Hierarchy
 -- |
 -- @
@@ -199,7 +304,6 @@ module Graphics.UI.Clutter.Actor (
   actorFixedPositionSet,
   actorFixedX,
   actorFixedY,
---actorHasClip,
   actorHeight,
   actorMapped,
   actorMinHeight,
@@ -296,6 +400,7 @@ module Graphics.UI.Clutter.Actor (
 
   ) where
 
+{# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
 {# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 {# import Graphics.UI.Clutter.Utility #}

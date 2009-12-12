@@ -70,7 +70,8 @@ Library
   Other-modules: C2HS
 --Utility and Types should not be exposed, but build fails if put in Other-modules field
 --X11 and gtk should also be optional
-  Exposed-modules: Graphics.UI.Clutter.Types,
+  Exposed-modules: Graphics.UI.Clutter.Enums,
+                   Graphics.UI.Clutter.Types,
                    Graphics.UI.Clutter.Signals,
                    Graphics.UI.Clutter.Utility,
                    Graphics.UI.Clutter.GTypes,

@@ -144,6 +144,7 @@ module Graphics.UI.Clutter.Stage (
   unfullscreen
   ) where
 
+{# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Actor #}
 {# import Graphics.UI.Clutter.Signals #}

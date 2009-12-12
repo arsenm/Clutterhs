@@ -304,7 +304,6 @@ module Graphics.UI.Clutter.Actor (
   actorFixedPositionSet,
   actorFixedX,
   actorFixedY,
---actorHasClip,
   actorHeight,
   actorMapped,
   actorMinHeight,
@@ -401,6 +400,7 @@ module Graphics.UI.Clutter.Actor (
 
   ) where
 
+{# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
 {# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 {# import Graphics.UI.Clutter.Utility #}

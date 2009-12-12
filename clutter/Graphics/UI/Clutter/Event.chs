@@ -88,6 +88,7 @@ module Graphics.UI.Clutter.Event (
   eventM    --should be private
   ) where
 
+{# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}

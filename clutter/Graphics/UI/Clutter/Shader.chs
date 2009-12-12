@@ -91,6 +91,7 @@ module Graphics.UI.Clutter.Shader (
   shaderVertexSource
   ) where
 
+{# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
 

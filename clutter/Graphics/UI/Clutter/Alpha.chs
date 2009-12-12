@@ -94,6 +94,7 @@ module Graphics.UI.Clutter.Alpha (
   alphaAlpha
   ) where
 
+{# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS

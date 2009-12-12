@@ -54,6 +54,7 @@ module Graphics.UI.Clutter.StoreValue (
                                        GenericValue(..),
                                        GenericValuePtr,
                                        valueSetGenericValue,
+                                       valueSetGenericValueNoInit,
                                        valueGetGenericValue,
                                        GenericValueClass(..),
                                        withGenericValue,
@@ -165,6 +166,24 @@ instance Enum AnimType where
            | x == fromEnum CGT.color	 = ATcolor
        --- | x == fromEnum GType.boxed	 = ATboxed
            | otherwise	 = error "StoreValue.toEnum(AnimType): no dynamic types allowed."
+
+
+--Everything here is a horrible mess that needs to be fixed
+valueSetGenericValueNoInit :: GValue -> GenericValue -> IO ()
+valueSetGenericValueNoInit gvalue (GVuint x)    = valueSetUInt  gvalue x
+valueSetGenericValueNoInit gvalue (GVint x)     = valueSetInt   gvalue x
+valueSetGenericValueNoInit gvalue (GVuchar x)   = valueSetUChar gvalue x
+valueSetGenericValueNoInit gvalue (GVchar x)    = valueSetChar  gvalue (cToEnum x)
+valueSetGenericValueNoInit gvalue (GVboolean x) = valueSetBool  gvalue x
+valueSetGenericValueNoInit gvalue (GVenum x)    = valueSetUInt  gvalue (fromIntegral x)
+valueSetGenericValueNoInit gvalue (GVflags x)   = valueSetUInt  gvalue (fromIntegral x)
+--valueSetGenericValueNoInit gvalue (GVpointer x) = valueSetPointer gvalue x
+valueSetGenericValueNoInit gvalue (GVfloat x)   = valueSetFloat gvalue x
+valueSetGenericValueNoInit gvalue (GVdouble x)  = valueSetDouble  gvalue x
+valueSetGenericValueNoInit gvalue (GVstring x)  = valueSetMaybeString  gvalue x
+valueSetGenericValueNoInit gvalue (GVobject x)  = valueSetGObject gvalue x
+valueSetGenericValueNoInit gvalue (GVcolor x)   = valueSetColor  gvalue x
+
 
 
 valueSetGenericValue :: GValue -> GenericValue -> IO ()

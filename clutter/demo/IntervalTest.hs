@@ -4,6 +4,13 @@ import System.Glib.Attributes
 import System.Glib.Signals
 import Data.Maybe
 
+import qualified System.Glib.GTypeConstants as GType
+
+
+--customProgressFunc :: Float -> Float -> Double -> IO (Bool, Float)
+customProgressFunc :: ProgressFunc Float
+customProgressFunc a b p = let pf = realToFrac p
+                           in return (True, (b - a) * sin (pf * 2 * pi))
 
 main = do
   clutterInit
@@ -25,6 +32,9 @@ main = do
   animationSetDuration anim 2500
   animationBindInterval anim actorX  ival1
   animationBindInterval anim actorY  ival2
+
+
+  intervalRegisterProgressFunc GType.float customProgressFunc
 
   tml <- fmap fromJust (animationGetTimeline anim)
   timelineStart tml

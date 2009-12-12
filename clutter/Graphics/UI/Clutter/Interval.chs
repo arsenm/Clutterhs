@@ -34,7 +34,7 @@ module Graphics.UI.Clutter.Interval (
 
 -- * Types
   Interval,
---ProgressFunc,
+  ProgressFunc,
 
 -- * Constructors
   intervalNew,
@@ -56,12 +56,12 @@ module Graphics.UI.Clutter.Interval (
 
   intervalComputeValue,
 --intervalValidate,
---intervalRegisterProgressFunc
+  intervalRegisterProgressFunc
 
 -- * Attributes
 --intervalInitialValue,
 --intervalFinalValue,
---intervalInterval,
+--intervalInterval
 ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -73,6 +73,9 @@ import Prelude
 import qualified Prelude as P
 
 import System.Glib.GValue
+import System.Glib.GValueTypes
+import System.Glib.Types
+import System.Glib.GType
 
 intervalNew :: (GenericValueClass a) => a -> a -> IO (Interval a)
 intervalNew initial final = let func = {# call unsafe interval_new_with_values #}
@@ -128,7 +131,31 @@ intervalComputeValue interval factor = let func = {# call unsafe interval_comput
                                                       else P.Nothing
 
 
---intervalRegisterProgressFunc :: (GenericValueClass a) => GType -> a -> a -> Double -> IO (Maybe a)
+--TODO: Pure
+type ProgressFunc a = a -> a -> Double -> IO (Bool, a)
+type CProgressFunc = FunPtr (GenericValuePtr -> GenericValuePtr -> CDouble -> GenericValuePtr -> IO {# type gboolean #})
 
 
+-- CHECKME: Never free the function
+-- CHECKME: I think you will need to specify the gtype to avoid possibly breaking things
+intervalRegisterProgressFunc :: (GenericValueClass a) => GType -> ProgressFunc a -> IO ()
+intervalRegisterProgressFunc gtype pf = let func = {# call clutter_interval_register_progress_func #}
+                                        in newProgressFunc pf >>= func gtype
+
+
+newProgressFunc :: (GenericValueClass a) => ProgressFunc a -> IO CProgressFunc
+newProgressFunc userfunc = mkProgressFunc (newProgressFunc' userfunc)
+    where
+      newProgressFunc' :: (GenericValueClass a) => (a -> a -> Double -> IO (Bool, a)) -> GenericValuePtr -> GenericValuePtr -> Double -> GenericValuePtr -> IO Bool
+      newProgressFunc' userfunc aPtr bPtr p retPtr = do let retGV = GValue (castPtr retPtr)
+                                                            toReal = liftM unsafeExtractGenericValue . valueGetGenericValue . GValue . castPtr
+
+                                                        a <- toReal aPtr
+                                                        b <- toReal bPtr
+                                                        (stat, retVal) <- userfunc a b p
+                                                        valueSetGenericValueNoInit retGV (toGenericValue retVal)
+                                                        return stat
+
+foreign import ccall "wrapper"
+    mkProgressFunc :: (GenericValuePtr -> GenericValuePtr -> Double -> GenericValuePtr -> IO Bool) -> IO CProgressFunc
 

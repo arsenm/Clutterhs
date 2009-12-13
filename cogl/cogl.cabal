@@ -1,0 +1,52 @@
+name: coglhs
+version: 0.1
+license: LGPL
+license-file: COPYING
+stability: alpha
+author: Matthew Arsenault
+copyright: (c) 2009 Matthew Arsenault
+maintainer: arsenm2@rpi.edu
+--homepage: http://example.com
+category: Graphics
+synopsis: Bindings to COGL
+Description: COGL
+Build-Type: Simple
+Extra-Source-Files: AUTHORS, INSTALL, README
+tested-with: GHC == 6.10.4
+Cabal-Version: >= 1.2
+build-depends: base >= 4 && <5,
+               glib >= 0.10.1,
+               gtk >= 0.10.1,
+               array,
+               c2hs >= 0.16
+
+source-repository head
+  type: git
+  location: http://jayne.hortont.com/repo/clutterhs.git
+
+
+Flag Debug
+  Description: Enable debug support
+  Default:     False
+
+Library
+  pkgconfig-depends: glib-2.0, cogl-1.0
+  Build-Tools: c2hs >= 0.16
+  Hs-Source-Dirs: .
+  Extensions: ForeignFunctionInterface
+  Build-Depends:  base >= 4 && < 5,
+                  haskell98,
+                  mtl,
+                  X11,
+                  glib >= 0.10.1
+
+  Other-modules: C2HS
+  Exposed-modules: Graphics.Cogl,
+                   Graphics.Cogl.Types,
+                   Graphics.Cogl.Color
+  Exposed: True
+  if flag(debug)
+    GHC-options: -W
+    CC-Options: "-DDEBUG -O0 -g"
+    CPP-Options: -DDEBUG
+

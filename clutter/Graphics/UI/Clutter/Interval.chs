@@ -214,10 +214,8 @@ intervalComputeValue interval factor = let func = {# call unsafe interval_comput
                                                       else P.Nothing
 
 
---TODO: Pure
-type ProgressFunc a = a -> a -> Double -> IO (Bool, a)
+type ProgressFunc a = a -> a -> Double -> (Bool, a)
 type CProgressFunc = FunPtr (GenericValuePtr -> GenericValuePtr -> CDouble -> GenericValuePtr -> IO {# type gboolean #})
-
 
 -- CHECKME: Never free the function
 -- CHECKME: I think you will need to specify the gtype to avoid possibly breaking things
@@ -229,13 +227,13 @@ intervalRegisterProgressFunc gtype pf = let func = {# call clutter_interval_regi
 newProgressFunc :: (GenericValueClass a) => ProgressFunc a -> IO CProgressFunc
 newProgressFunc userfunc = mkProgressFunc (newProgressFunc' userfunc)
     where
-      newProgressFunc' :: (GenericValueClass a) => (a -> a -> Double -> IO (Bool, a)) -> GenericValuePtr -> GenericValuePtr -> Double -> GenericValuePtr -> IO Bool
+      newProgressFunc' :: (GenericValueClass a) => ProgressFunc a -> GenericValuePtr -> GenericValuePtr -> Double -> GenericValuePtr -> IO Bool
       newProgressFunc' userfunc aPtr bPtr p retPtr = do let retGV = GValue (castPtr retPtr)
                                                             toReal = liftM unsafeExtractGenericValue . valueGetGenericValue . GValue . castPtr
 
                                                         a <- toReal aPtr
                                                         b <- toReal bPtr
-                                                        (stat, retVal) <- userfunc a b p
+                                                        let (stat, retVal) = userfunc a b p
                                                         valueSetGenericValueNoInit retGV (toGenericValue retVal)
                                                         return stat
 

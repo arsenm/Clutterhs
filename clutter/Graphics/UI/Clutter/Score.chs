@@ -122,7 +122,6 @@ module Graphics.UI.Clutter.Score (
   onTimelineStarted,
   afterTimelineStarted,
   timelineStarted
-
   ) where
 
 {# import Graphics.UI.Clutter.Types #}

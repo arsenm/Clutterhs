@@ -42,12 +42,10 @@ module Graphics.UI.Clutter.Timeline (
   TimelineDirection(..),
 
 -- * Constructors
-
   timelineNew,
   timelineClone,
 
 -- * Methods
-
   timelineSetDuration,
   timelineGetDuration,
 

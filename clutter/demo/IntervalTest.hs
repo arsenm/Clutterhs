@@ -7,10 +7,9 @@ import Data.Maybe
 import qualified System.Glib.GTypeConstants as GType
 
 
---customProgressFunc :: Float -> Float -> Double -> IO (Bool, Float)
 customProgressFunc :: ProgressFunc Float
 customProgressFunc a b p = let pf = realToFrac p
-                           in return (True, (b - a) * sin (pf * 2 * pi))
+                           in (True, (b - a) * sin (pf * 2 * pi))
 
 main = do
   clutterInit

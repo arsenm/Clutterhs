@@ -29,15 +29,31 @@ module Graphics.Cogl.Color (
 -- * Types
   Color,
 
+-- * Constructors
+  colorNew,
+  colorCopy,
+
 -- * Methods
   colorSetFrom4f,
   colorSetFrom4ub,
-  colorCopy
 
+  colorGetAlpha,
+  colorGetRed,
+  colorGetBlue,
+  colorGetGreen,
+
+  colorGetAlphaFloat,
+  colorGetRedFloat,
+  colorGetBlueFloat,
+  colorGetGreenFloat,
+
+  colorGetAlphaByte,
+  colorGetRedByte,
+  colorGetBlueByte,
+  colorGetGreenByte
 ) where
 
 import C2HS
-import Control.Monad (liftM)
 
 {# import Graphics.Cogl.Types #}
 

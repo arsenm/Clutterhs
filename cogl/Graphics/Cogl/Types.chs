@@ -26,7 +26,9 @@
 
 module Graphics.Cogl.Types (
   Handle,
-  FogMode(..),
+  withHandle,
+  newHandle,
+
   Color,
   newColor,
   withColor
@@ -44,27 +46,6 @@ newHandle = liftM Handle . newForeignPtr handleUnref
 
 foreign import ccall unsafe "&cogl_hangle_unref"
   handleUnref :: FinalizerPtr Handle
-
-
--- | The fog mode determines the equation used to calculate the
--- fogging blend factor while fogging is enabled. The simplest
--- 'FogModeLinear' mode determines f as:
---
--- >  f = end - eye_distance \/ end - start
---
--- Where eye_distance is the distance of the current fragment in eye
--- coordinates from the origin.
---
--- [@FogModeLinear@] Calculates the fog blend factor as: >  f = end - eye_distance \/ end - start
---
--- [@FogModeExponential@] Calculates the fog blend factor as: >   f = e ^ -(density * eye_distance)
---
--- [@FogModeExponentialSquared@] Calculates the fog blend factor as: >  f = e ^ -(density * eye_distance)^2
---
--- * Since 1.0
---
-{# enum CoglFogMode as FogMode {underscoreToCase} deriving (Show, Eq) #}
-
 
 -- *** Color
 {# pointer *CoglColor as Color foreign newtype #}

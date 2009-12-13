@@ -19,9 +19,11 @@
 --
 
 module Graphics.Cogl (
-  module Graphics.Cogl.Color
+  module Graphics.Cogl.Color,
+  module Graphics.Cogl.Enums
 ) where
 
 import Graphics.Cogl.Color
+import Graphics.Cogl.Enums
 
 

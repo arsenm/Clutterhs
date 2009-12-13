@@ -27,7 +27,7 @@ source-repository head
 
 Flag Debug
   Description: Enable debug support
-  Default:     False
+  Default:     True
 
 Library
   pkgconfig-depends: glib-2.0, cogl-1.0
@@ -43,6 +43,7 @@ Library
   Other-modules: C2HS
   Exposed-modules: Graphics.Cogl,
                    Graphics.Cogl.Types,
+                   Graphics.Cogl.Enums,
                    Graphics.Cogl.Color
   Exposed: True
   if flag(debug)

@@ -25,17 +25,24 @@
 {# context lib="cogl" prefix="cogl" #}
 
 module Graphics.Cogl.Types (
+  module Data.Word,
   Handle,
   withHandle,
   newHandle,
 
   Color,
   newColor,
-  withColor
+  withColor,
+
+  Matrix,
+  withMatrix,
+  newMatrix
 ) where
 
 import C2HS
 import Control.Monad (liftM)
+
+import Data.Word
 
 -- *** Handle
 
@@ -56,4 +63,14 @@ newColor = liftM Color . newForeignPtr colorFree
 
 foreign import ccall unsafe "&cogl_color_free"
   colorFree :: FinalizerPtr Color
+
+
+-- *** Matrix
+
+{# pointer *CoglMatrix as Matrix foreign newtype #}
+
+--CHECKME: Free
+newMatrix :: Ptr Matrix -> IO Matrix
+newMatrix = liftM Matrix . newForeignPtr finalizerFree
+
 

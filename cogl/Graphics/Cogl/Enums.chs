@@ -64,8 +64,6 @@ import System.Glib.Flags
 
 
 
-
-
 -- | Flags for the supported features.
 --
 -- [@FeatureTextureRectangle@] ARB_texture_rectangle support
@@ -184,7 +182,7 @@ instance Flags BufferTarget -- CHECKME:
 --
 {# enum CoglBufferBit as BufferBit {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
-
+instance Flags BufferBit
 
 
 -- | Data types for the components of 'vertexBufferAdd'

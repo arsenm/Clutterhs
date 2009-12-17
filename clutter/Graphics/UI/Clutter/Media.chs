@@ -41,7 +41,7 @@ module Graphics.UI.Clutter.Media (
 -- |
 -- @
 -- |  'GInterface'
--- |   +----'Media'
+-- |     +----'Media'
 -- @
 
 -- * Types

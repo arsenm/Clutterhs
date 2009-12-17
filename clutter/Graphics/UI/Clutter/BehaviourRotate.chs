@@ -37,8 +37,8 @@ module Graphics.UI.Clutter.BehaviourRotate (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Behaviour'
--- |         +----'BehaviourRotate'
+-- |    +----'Behaviour'
+-- |           +----'BehaviourRotate'
 -- |
 -- @
 

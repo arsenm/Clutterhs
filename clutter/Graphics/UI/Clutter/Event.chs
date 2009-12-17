@@ -139,7 +139,6 @@ data EStageState = EStageState
 -- | A tag for /Crossing/ events.
 data ECrossing = ECrossing
 
-
 --Clutter seems to not have the event mask stuff
 eventM :: ActorClass a => SignalName ->
   ConnectAfter -> a -> (EventM t Bool) -> IO (ConnectId a)
@@ -148,16 +147,14 @@ eventM name after obj fun = connect_PTR__BOOL name after obj (runReaderT fun)
 
 -- | Execute an event handler and assume it handled the event unless it
 --   threw a pattern match exception.
---TODO: Support Old GHC exceptions here?
---Other exceptions? Why does gdk use pattern?
 tryEvent :: EventM any () -> EventM any Bool
 tryEvent act = do
   ptr <- ask
   liftIO $ (runReaderT (act >> return True) ptr)
     `catches` [ Handler (\ (PatternMatchFail _) -> return False),
                 Handler (\ e -> if isUserError e && "Pattern" `isPrefixOf` ioeGetErrorString e
-                                then return False
-                                else throw e) ]
+                                  then return False
+                                  else throw e) ]
 
 
 -- | Explicitly stop the handling of an event. This function should only be
@@ -181,8 +178,6 @@ instance HasModifierType EKey
 instance HasModifierType EMotion
 instance HasModifierType EScroll
 
-
---FIXME: Evil casting
 
 -- | Retrieves the 'EventFlags' of event
 --
@@ -431,7 +426,6 @@ eventDeviceType = ask >>= \ptr ->
 {# fun unsafe events_pending as ^ { } -> `Bool' #}
 
 
---CHECKME: Bad?
 -- | Puts a copy of the event on the back of the event queue. The
 --   event will have the 'EventFlagSynthetic' flag set. If the source
 --   is set event signals will be emitted for this source and
@@ -444,4 +438,5 @@ eventDeviceType = ask >>= \ptr ->
 eventPut :: EventM any ()
 eventPut = ask >>= \ptr -> liftIO $
                 {# call unsafe event_put #} (castPtr ptr)
+
 

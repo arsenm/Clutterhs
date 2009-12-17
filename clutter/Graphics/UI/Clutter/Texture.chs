@@ -267,8 +267,10 @@ textureSetFromFile txt fname = let func = {# call texture_set_from_file #}
 --CHECKME: Rgb or RGB?
 --FIXME: Proper rowstride
 --CHECKME: Ix i, Word8
-textureSetFromRgbData :: (TextureClass self, Storable e) => self ->
-                         RGBData (Int, Int) e ->
+--textureSetFromRgbData :: (TextureClass self, Storable e) => self ->
+textureSetFromRgbData :: (TextureClass self) => self ->
+--                         RGBData (Int, Int) e ->
+                         RGBData (Int, Int) Word8 ->
                          [TextureFlags] ->
                          IO Bool
 textureSetFromRgbData txt dat flags =
@@ -278,14 +280,18 @@ textureSetFromRgbData txt dat flags =
     in withTextureClass txt $ \txtptr ->
          withRGBData dat $ \datPtr ->
           propagateGError $ \gerrorPtr -> do
-            ((lw,_), (w, h)) <- getBounds dat  -- CHECKME
+            arst@(_, (w, h)) <- getBounds dat  -- CHECKME
+            putStrLn $ "RS2: " ++ Prelude.show (rangeSize arst)
             putStrLn $ "W: " ++ Prelude.show w ++ " H: " ++ Prelude.show h
-            let rowstride = (w - lw) * 4 -- FIXME
+            let sizeW = w `div` 4
+                sizeH = h
+                rowstride = rgbDataRowstride dat
+            putStrLn $ "LOL ROWSTRIDE: " ++ Prelude.show rowstride
             liftM cToBool $ func txtptr
                                  (castPtr datPtr)
                                  (cFromBool hasA)
-                                 (cIntConv w)
-                                 (cIntConv h)
+                                 (cIntConv sizeW)
+                                 (cIntConv sizeH)
                                  (cIntConv rowstride)
                                  (cIntConv bpp)
                                  (cFromFlags flags)

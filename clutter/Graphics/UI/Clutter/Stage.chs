@@ -159,6 +159,9 @@ import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.FFI (maybeNull)
 
+-- debugging, this shouldn't still be here.
+import GHC.Arr
+
 -- | Returns the main stage. The default 'Stage' is a singleton, so
 --   the stage will be created the first time this function is called
 --   (typically, inside 'clutterInit'); all the subsequent calls to
@@ -282,7 +285,7 @@ import System.Glib.FFI (maybeNull)
 --
 -- [@stage@] the 'Stage'
 --
--- [@Returns@] the actor with key focus, or the stage. transfer none.
+-- [@Returns@] the actor with key focus, or the stage.
 --
 -- * Since 0.6
 --
@@ -292,9 +295,6 @@ import System.Glib.FFI (maybeNull)
 --stageKeyFocus :: (StageClass stage, ActorClass actor) => Attr stage actor
 --stageKeyFocus = newAttr stageGetKeyFocus stageSetKeyFocus
 
---TODO: all those types, namely guchar* out = what?
---Returns some kind of image buffer, what do I do with it?
---{# fun unsafe stage_read_pixels as ^ `(StageClass stage)' => { withStageClass* `stage', `Int', `Int', `Int', `Int' } -> `Ptr ()' #}
 --Why is this scattered around in many places in gtk2hs?
 foreign import ccall unsafe "&g_free"
   finalizerGFree :: FinalizerPtr a
@@ -318,13 +318,29 @@ stageReadPixels stage x y w h = let cx = cIntConv x
                                   sizeH <- if h == -1
                                               then liftM floor (actorGetHeight stage)
                                               else return h
-                                  let size = sizeW * sizeH * 4
                                   ptr <- {# call unsafe stage_read_pixels #} stgPtr cx cy cw ch
+                                  putStrLn $ "ReadW: " ++ Prelude.show sizeW ++ "  ReadH: " ++ Prelude.show sizeH
                                   if ptr == nullPtr
                                      then return Prelude.Nothing
-                                     else do fptr <- newForeignPtr finalizerGFree ptr
-                                             arr <- unsafeForeignPtrToStorableArray (castForeignPtr fptr) ((0, 0), (sizeW, sizeH)) :: IO (StorableArray (Int, Int) Word8)
-                                             return $ Just (mkRGBData arr True size)
+                                     else do fptr <- newForeignPtr_  ptr
+                                           --fptr <- newForeignPtr finalizerGFree ptr
+                                             arr <- unsafeForeignPtrToStorableArray (castForeignPtr fptr) ((1, 1), (4*sizeW, sizeH)) :: IO (StorableArray (Int, Int) Word8)
+                                             bounds <- getBounds arr
+                                             let rs = rangeSize bounds
+                                             --arst <- fmap length (getElems arr)
+                                             putStrLn $ "Range size: " ++ (Prelude.show rs) -- 2,560,000
+                                             --putStrLn $ "Length: " ++ (Prelude.show arst)
+                                             let pos = (2*sizeW + 3, sizeH `div` 2 - 4)
+                                             let arst = unsafeIndex ((1,1), (4*sizeW, sizeH)) pos
+                                             let rowstride = sizeW * 4
+                                             putStrLn $ "ARST: " ++ Prelude.show arst
+                                             junk <- readArray arr pos
+                                             allLen <- fmap length (getElems arr)
+                                             non0 <- fmap (filter (/= 0)) (getElems arr)
+                                             putStrLn $ "LENGTHALL: " ++ Prelude.show allLen
+                                             putStrLn $ "LOL: " ++ Prelude.show non0
+                                             putStrLn ("Not dead: " ++ Prelude.show junk)
+                                             return $ Just (mkRGBData arr True rowstride)
 
 
 -- | Sets whether motion events received between redraws should be

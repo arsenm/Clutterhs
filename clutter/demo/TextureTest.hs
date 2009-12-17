@@ -8,6 +8,8 @@ import System.Glib.GError
 import System.Glib.Attributes
 import System.Glib.Signals
 
+import Data.Array.MArray
+
 
 main = do
   clutterInit
@@ -71,23 +73,29 @@ but this ends in assertion failures
                 actorX := 400,
                 actorY := 400 ]
 
-{-
   putStrLn "Attempting to read pixels"
   pixels <- fmap (fromMaybe (P.error "stageReadPixels failed"))
-                 (stageReadPixels stage 2 2 10 10)
+             --  (stageReadPixels stage 150 150 300 300)
+             --  (stageReadPixels stage 100 100 799 799)
+                 (stageReadPixels stage 100 100 (-1) (-1))
              --  (stageReadPixels stage 130 380 200 200)
 
+--  putStrLn $ "READARRAY: " ++ P.show (readArray pixels (5,10))
 
   pixTx <- textureNew
   putStrLn "Attempting to set from rgb data"
   success <- catchGError (textureSetFromRgbData pixTx pixels [TextureNone])
-                         (\(GError a b c ) -> P.error $ P.show a ++ " " ++ P.show b ++ " " ++ P.show c)
+                         (\(GError a b c) -> P.error $ P.show a ++ " " ++ P.show b ++ " " ++ P.show c)
   putStrLn $ "Set from rgb sucess: " ++ P.show success
 
   containerAddActor stage pixTx
--}
+  set pixTx [ actorWidth := 100,
+              actorHeight := 100,
+              actorX := 500,
+              actorY := 500 ]
 
---  containerAddActor stage sfClone
+
+  containerAddActor stage sfClone
   actorShowAll stage
   clutterMain
 

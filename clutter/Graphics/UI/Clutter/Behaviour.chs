@@ -26,7 +26,6 @@
 -- | Class for providing behaviours to actors
 module Graphics.UI.Clutter.Behaviour (
 -- * Description
-
 -- | 'Behaviour' is the base class for implementing behaviours. A
 --   behaviour is a controller object for Actors; you can use a
 --   behaviour to control one or more properties of an actor (such as
@@ -175,10 +174,8 @@ import System.Glib.Attributes
 behaviourActorsForeach :: (BehaviourClass behave) => behave -> BehaviourForeachFunc -> IO ()
 behaviourActorsForeach b func = withBehaviourClass b $ \bptr -> do
                                 funcPtr <- newBehaviourForeachFunc func
-                                {# call unsafe behaviour_actors_foreach #} bptr funcPtr nullPtr
+                                {# call behaviour_actors_foreach #} bptr funcPtr nullPtr
                                 freeHaskellFunPtr funcPtr
-                                --CHECKME: unsafe?
-
 
 -- | Retrieves all the actors to which behave applies. It is not
 --   recommended for derived classes to use this in there alpha notify
@@ -251,7 +248,7 @@ behaviourActorsForeach b func = withBehaviourClass b $ \bptr -> do
 
 
 
--- | The 'Α' object used to drive this behaviour. An 'Alpha' object
+-- | The 'Alpha' object used to drive this behaviour. An 'Alpha' object
 --   binds a 'Timeline' and a function which computes a value (the
 --   "alpha") depending on the time. Each time the alpha value changes
 --   the alpha-notify virtual function is called.

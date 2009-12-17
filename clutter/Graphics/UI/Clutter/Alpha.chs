@@ -225,12 +225,6 @@ alphaRegisterFunc af = do
   ret <- {# call unsafe alpha_register_func #} afptr nullPtr
   return (cIntConv ret)
 
---pretty sure don't care about gclosure
---{# fun unsafe alpha_set_closure as ^ { withAlpha* `Alpha', `GClosure' } -> `()' #}
---{# fun unsafe alpha_register_closure as ^ { `GClosure' } -> `GULong' #}
-
-
-
 
 -- | The alpha value as computed by the alpha function. The linear
 -- interval is 0.0 to 1.0, but the Alpha allows overshooting by one

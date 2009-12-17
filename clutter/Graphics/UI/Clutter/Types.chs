@@ -261,11 +261,7 @@ module Graphics.UI.Clutter.Types (
                                   vertexY,
                                   vertexZ,
 
-                                  ActorBox,
-                                  actorBoxX1,
-                                  actorBoxY1,
-                                  actorBoxX2,
-                                  actorBoxY2,
+                                  ActorBox(..),
                                   ActorBoxPtr,
                                   withActorBox,
 
@@ -288,6 +284,7 @@ module Graphics.UI.Clutter.Types (
                                   RGBData,
                                   mkRGBData,
                                   rgbDataHasAlpha,
+                                  rgbDataRowstride,
                                   withRGBData,
 
                                   Activatable(..),
@@ -1384,7 +1381,9 @@ rgbDataHasAlpha (RGBData _ hasA _ ) = hasA
 
 
 mkRGBData :: StorableArray (Int, Int) Word8 -> Bool -> Int -> RGBData (Int, Int) Word8
-mkRGBData arr hasA size = RGBData arr hasA size
+mkRGBData arr hasA rowstride = RGBData arr hasA rowstride
+
+rgbDataRowstride (RGBData _ _ x) = x
 
 withRGBData (RGBData arr _ _) = withStorableArray arr
 

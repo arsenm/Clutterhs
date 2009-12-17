@@ -304,6 +304,7 @@ module Graphics.UI.Clutter.Actor (
   actorFixedPositionSet,
   actorFixedX,
   actorFixedY,
+  actorHasClipAttr,
   actorHeight,
   actorMapped,
   actorMinHeight,
@@ -1984,24 +1985,28 @@ actorCreatePangoLayout act str = let func = {# call unsafe actor_create_pango_la
    `(ActorClass self)' => { withActorClass* `self', cFromEnum `Gravity' } -> `()' #}
 
 
+actorBoxGetX = actorBoxX1
+actorBoxGetY = actorBoxY1
+actorBoxGetWidth (ActorBox x1 _ x2 _) = x2 - x1
+actorBoxGetHeight (ActorBox _ y1 _ y2) = y2 - y1
+actorBoxGetOrigin (ActorBox x1 y1 _ _ ) = (x1, y1)
+actorBoxGetSize (ActorBox x1 y1 x2 y2) = (x2 -x1, y2 -y1)
+actorBoxGetArea (ActorBox x1 y1 x2 y2) = (x2 - x1) * (y2 - y1)
 
---TODO: Check they are pure. Also wouldn't be hard to actually haskellize them
-{# fun pure unsafe actor_box_get_x as ^ { withActorBox* `ActorBox' } -> `Float' #}
-{# fun pure unsafe actor_box_get_y as ^ { withActorBox* `ActorBox' } -> `Float' #}
-{# fun pure unsafe actor_box_get_width as ^ { withActorBox* `ActorBox' } -> `Float' #}
-{# fun pure unsafe actor_box_get_height as ^ { withActorBox* `ActorBox' } -> `Float' #}
-{# fun pure unsafe actor_box_get_origin as ^ { withActorBox* `ActorBox',
-                                               alloca- `Float' peekFloatConv*,
-                                               alloca- `Float' peekFloatConv* } -> `()' #}
-{# fun pure unsafe actor_box_get_size as ^ { withActorBox* `ActorBox',
-                                             alloca- `Float' peekFloatConv*,
-                                             alloca- `Float' peekFloatConv* } -> `()' #}
-{# fun pure unsafe actor_box_get_area as ^ { withActorBox* `ActorBox' } -> `Float' #}
+--CHECKME: Tuple for this?
+actorBoxContains (ActorBox x1 y1 x2 y2) x y = (x > x1 && x < x2) && (y > y1 && y < y2)
 
-{# fun pure unsafe actor_box_contains as ^ { withActorBox* `ActorBox',
-                                             `Float',
-                                             `Float' } -> `()' #}
 
+
+-- | Calculates the bounding box represented by the four vertices; for
+-- details of the vertex array see 'actorGetAbsAllocationVertices'.
+--
+-- [@box@] an 'ActorBox'
+--
+-- [@verts@] list of four 'Vertex'es
+--
+-- * Since: 1.0
+--
 {# fun pure unsafe actor_box_from_vertices as ^ { withActorBox* `ActorBox',
                                                   withArray* `[Vertex]'
                                                 } -> `()' #}
@@ -2118,13 +2123,12 @@ actorFixedY :: (ActorClass self) => Attr self Float
 actorFixedY = newAttrFromFloatProperty "fixed-y"
 
 
--- FIXME: Name conflicts with the actual function.
--- | Whether the actor has the "clip" property set or not
+-- | Whether the actor has the "clip" property set or not.
 --
 -- Default value: @False@
 --
---actorHasClip :: (ActorClass self) => ReadAttr self Bool
---actorHasClip = readNamedAttr "has-clip" actorHasClip
+actorHasClipAttr :: (ActorClass self) => ReadAttr self Bool
+actorHasClipAttr = readNamedAttr "has-clip" actorHasClip
 
 
 -- | Height of the actor (in pixels). If written, forces the minimum

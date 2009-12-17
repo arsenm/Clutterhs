@@ -104,18 +104,6 @@ module Graphics.UI.Clutter.Score (
   scoreLoop,
 
 -- * Signals
-{-
---FIXME: Export name conflict
-  onCompleted,
-  afterCompleted,
-  completed,
-  onPaused,
-  afterPaused,
-  paused,
-  onStarted,
-  afterStarted,
-  started,
--}
   onTimelineCompleted,
   afterTimelineCompleted,
   timelineCompleted,

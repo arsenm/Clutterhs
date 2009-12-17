@@ -104,6 +104,7 @@ module Graphics.UI.Clutter.BindingPool (
 
 -- * Types
   BindingPool,
+  KeyVal,
 --BindingActionFunc,
 
 -- * Constructors
@@ -183,7 +184,6 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
        { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromModFlags `[ModifierType]' } -> `Maybe String' maybeString* #}
 
 
---FIXME: make list of modifiers, cFromFlags won't work since Flags instance won't work for ModifierType
 -- | Removes the action matching the given key_val, modifiers pair, if
 --   any exists.
 --

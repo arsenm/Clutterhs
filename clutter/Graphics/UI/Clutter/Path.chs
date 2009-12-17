@@ -341,8 +341,7 @@ import qualified Graphics.Rendering.Cairo.Types as Cairo
 pathForeach :: Path -> PathCallback -> IO ()
 pathForeach path cpcb = withPath path $ \pathPtr -> do
                         funcPtr <- newPathCallback cpcb
-                        --CHECKME: unsafe?
-                        {# call unsafe path_foreach #} pathPtr funcPtr nullPtr
+                        {# call path_foreach #} pathPtr funcPtr nullPtr
                         freeHaskellFunPtr funcPtr
 
 -- | Inserts node into the path before the node at the given

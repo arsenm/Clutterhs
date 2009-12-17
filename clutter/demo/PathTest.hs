@@ -7,6 +7,11 @@ import System.Glib.Signals
 import Control.Monad (when)
 import System.IO
 
+
+testForeachFunc :: PathCallback
+testForeachFunc pn = putStr "PathCallback: " >> print pn
+
+
 -- example from docs
 --For example, to move an actor in a 100 by 100 pixel square
 --centered on the point 300,300 you could use the following path:
@@ -76,6 +81,7 @@ main = do
 
   when ( n2 /= n3 || len3 /= len2 ) (hPutStrLn stderr "Path2 /= Path3!")
 
+  pathForeach path1 testForeachFunc
 
   tml <- timelineNew 3000
   alph <- alphaNewFull tml EaseInSine

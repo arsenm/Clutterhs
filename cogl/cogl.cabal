@@ -44,6 +44,7 @@ Library
   Exposed-modules: Graphics.Cogl,
                    Graphics.Cogl.Types,
                    Graphics.Cogl.Enums,
+                   Graphics.Cogl.General,
                    Graphics.Cogl.Color
   Exposed: True
   if flag(debug)

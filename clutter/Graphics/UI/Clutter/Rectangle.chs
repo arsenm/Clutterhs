@@ -139,8 +139,6 @@ rectangleBorderColor = newNamedAttr "border-color" rectangleGetBorderColor recta
 rectangleBorderWidth :: Attr Rectangle Word
 rectangleBorderWidth = newNamedAttr "border-width" rectangleGetBorderWidth rectangleSetBorderWidth
 
---CHECKME: One random property without special function in clutter?
-
 
 -- | Whether the 'Rectangle' should be displayed with a border.
 --

@@ -25,15 +25,17 @@
 
 -- | Colors — Color management and manipulation.
 module Graphics.UI.Clutter.Color (
--- * Types
-  Color(..),
-
 -- * Description
 -- | 'Color' is a simple type for representing colors in Clutter.
 --
 -- A 'Color is expressed as a group of 4 alues ranging from zero to
 -- 255, one for each color channel plus one for the alpha.
 --
+
+-- * Types
+  Color(..),
+
+-- * Methods
   colorFromString,
   colorToString,
 

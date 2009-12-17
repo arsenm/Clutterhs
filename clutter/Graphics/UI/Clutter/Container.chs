@@ -28,6 +28,16 @@
 
 -- | ClutterContainer — An interface for implementing container actors
 module Graphics.UI.Clutter.Container (
+-- * Descriptionn
+-- | 'Container' is an interface for writing actors containing other
+-- 'Actor's. It provides a standard API for adding, removing and
+-- iterating on every contained actor.
+--
+-- An actor implementing 'ContainerClass' is 'Group'.
+--
+-- 'Container' is available since Clutter 0.4
+--
+
 -- * Class Hierarchy
 -- |
 -- @
@@ -101,7 +111,6 @@ containerForeach c func = withContainerClass c $ \cptr -> do
                             funcPtr <- newCallback func
                             {# call container_foreach #} cptr funcPtr nullPtr
                             freeHaskellFunPtr funcPtr
-                            --CHECKME: unsafe?
 
 -- | Calls callback for each child of container, including "internal"
 --   children built in to the container itself that were never added by
@@ -111,7 +120,6 @@ containerForeachWithInternals c func = withContainerClass c $ \cptr -> do
                                          funcPtr <- newCallback func
                                          {# call container_foreach #} cptr funcPtr nullPtr
                                          freeHaskellFunPtr funcPtr
-                                       --CHECKME: unsafe?
 
 
 -- | Finds a child actor of a container by its name. Search recurses into any child container.

@@ -44,6 +44,7 @@ Library
                    Graphics.Cogl.Types,
                    Graphics.Cogl.Enums,
                    Graphics.Cogl.General,
+                   Graphics.Cogl.Primitives,
                    Graphics.Cogl.Color
   Exposed: True
   if flag(debug)

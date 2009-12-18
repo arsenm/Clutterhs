@@ -21,11 +21,13 @@
 module Graphics.Cogl (
   module Graphics.Cogl.Color,
   module Graphics.Cogl.Enums,
+  module Graphics.Cogl.Primitives,
   module Graphics.Cogl.General
 ) where
 
 import Graphics.Cogl.Color
 import Graphics.Cogl.Enums
 import Graphics.Cogl.General
+import Graphics.Cogl.Primitives
 
 

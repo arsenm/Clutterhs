@@ -265,8 +265,12 @@ module Graphics.UI.Clutter.Types (
                                   ActorBoxPtr,
                                   withActorBox,
 
-                                --Units,
-                                --unUnits
+                                  Units,
+                                  withUnits,
+                                  allocUnits,
+                                  newUnits,
+                                  newCopiedUnits,
+                                  UnitType,
 
                                   Animatable,
                                   AnimatableClass,
@@ -315,7 +319,7 @@ import System.Glib.GValue (GValue(GValue))
 import System.Glib.GList
 import System.Glib.Flags
 import System.Glib.FFI
-import Control.Monad (when, liftM2, join)
+import Control.Monad (when, liftM, liftM2, join)
 import Control.Exception (bracket)
 
 {# import Graphics.UI.Clutter.Enums #}
@@ -377,10 +381,19 @@ type GID = Word32
 type Timestamp = Word
 type DeviceID = Int
 
---CHECKME: I'm not sure how to deal with this opaque type
--- {# pointer *ClutterUnits as Units newtype #}
+{# pointer *ClutterUnits as Units foreign newtype #}
 
--- unUnits (Units ptr) = ptr
+
+foreign import ccall unsafe "&clutter_units_free"
+  unitsFree :: FinalizerPtr Units
+
+allocUnits :: (Ptr Units -> IO a) -> IO a
+allocUnits act = act =<< mallocBytes {# sizeof ClutterUnits #}
+--CHECKME: For some reason it says to only use clutter_units_free on
+--units created with units_copy
+
+newCopiedUnits a = liftM Units (newForeignPtr a finalizerFree)
+newUnits a = liftM Units (newForeignPtr a unitsFree)
 
 -- *** Color
 

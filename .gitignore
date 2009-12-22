@@ -70,5 +70,6 @@ clutter/demo/Bingo.o
 clutter/demo/SpinningBobDylanShaderGame
 clutter/demo/SpinningBobDylanShaderGame.hi
 clutter/demo/SpinningBobDylanShaderGame.o
-
-
+clutter/demo/UnitTest
+clutter/demo/UnitTest.hi
+clutter/demo/UnitTest.o

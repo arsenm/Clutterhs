@@ -303,6 +303,9 @@ scoreLoop = newNamedAttr "score" scoreGetLoop scoreSetLoop
 
 
 instance Playable Score where
+  start = scoreStart
+  pause = scorePause
+  stop = scoreStop
   started = Signal (connect_NONE__NONE "started")
   onStarted = connect_NONE__NONE "started" False
   afterStarted = connect_NONE__NONE "started" True

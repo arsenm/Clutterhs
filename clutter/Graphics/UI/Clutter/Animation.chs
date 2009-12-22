@@ -93,6 +93,7 @@ module Graphics.UI.Clutter.Animation (
 
 {# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Timeline #}
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.StoreValue #}
 {# import Graphics.UI.Clutter.Utility #}
@@ -100,6 +101,7 @@ module Graphics.UI.Clutter.Animation (
 import C2HS
 import Prelude
 import qualified Prelude as P
+import Data.Maybe (maybe)
 
 import Control.Monad (liftM, foldM_)
 
@@ -668,7 +670,13 @@ animationTimeline :: Attr (Animation a) (Maybe Timeline)
 animationTimeline = newNamedAttr "timeline" animationGetTimeline animationSetTimeline
 
 
+--CHECKME: Does it make sense to have start, stop, pause for
+-- Animation, even though there might not be a set timeline?  If so,
+-- does it make sense to just do nothing if one isn't set?
 instance (GObjectClass a) => Playable (Animation a) where
+  start a = animationGetTimeline a >>= maybe (return ()) start
+  pause a = animationGetTimeline a >>= maybe (return ()) pause
+  stop a = animationGetTimeline a >>= maybe (return ()) stop
   started = Signal (connect_NONE__NONE "started")
   onStarted = connect_NONE__NONE "started" False
   afterStarted = connect_NONE__NONE "started" True

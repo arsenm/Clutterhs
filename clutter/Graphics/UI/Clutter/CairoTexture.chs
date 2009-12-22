@@ -142,8 +142,7 @@ import Graphics.Rendering.Cairo.Types (Cairo)
        { withCairoTexture* `CairoTexture', alloca- `Int' peekIntConv*, alloca- `Int' peekIntConv* } -> `()' #}
 
 
-
---CHECKME: the cairo_destroy to upload the contents?
+--FIXME: Should not have to deal with cairo context?
 -- | Creates a new Cairo context for the cairo texture. It is similar
 --   to using 'cairoTextureCreateRegion' with x_offset and y_offset of
 --   0, width equal to the cairo texture surface width and height
@@ -156,7 +155,7 @@ import Graphics.Rendering.Cairo.Types (Cairo)
 --
 -- [@self@] a 'CairoTexture'
 --
--- [@Returns@] a newly created Cairo context. Use cairo_destroy() to
+-- [@Returns@] a newly created Cairo context. Use 'cairoDestroy' to
 -- upload the contents of the context when done drawing
 --
 -- * Since 1.0

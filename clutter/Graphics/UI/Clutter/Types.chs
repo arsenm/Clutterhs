@@ -1447,6 +1447,9 @@ class Activatable a where
 --   etc.
 --
 class (GObjectClass a) => Playable a where
+  start :: a -> IO ()
+  pause :: a -> IO ()
+  stop :: a -> IO ()
   started :: Signal a (IO ())
   onStarted :: a -> IO () -> IO (ConnectId a)
   afterStarted :: a -> IO () -> IO (ConnectId a)

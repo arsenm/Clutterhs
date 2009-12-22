@@ -100,7 +100,7 @@ import qualified Prelude as P
 import C2HS
 import System.Glib.Signals
 import System.Glib.Flags
-import Control.Monad (liftM)
+import Control.Monad (liftM, liftM2)
 import Control.Monad.Trans (liftIO)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Data.List (isPrefixOf)
@@ -229,9 +229,7 @@ eventCoordinates = ask >>= \ptr ->
   liftIO $ alloca $ \xptr ->
              alloca $ \yptr -> do
                {# call unsafe event_get_coords #} (castPtr ptr) xptr yptr
-               x <- peekFloatConv xptr
-               y <- peekFloatConv yptr
-               return (x,y)
+               liftM2 (,) (peekFloatConv xptr) (peekFloatConv yptr)
 
 -- | The time of the event, or CLUTTER_CURRENT_TIME
 --

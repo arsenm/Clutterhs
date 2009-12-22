@@ -27,7 +27,7 @@ module Graphics.UI.Clutter.Scriptable (
 -- |
 -- @
 -- |  'GInterface'
--- |   +----'Scriptable'
+-- |    +----'Scriptable'
 -- @
 
 -- * Types

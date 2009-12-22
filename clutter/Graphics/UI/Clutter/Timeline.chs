@@ -482,6 +482,9 @@ newFrame = Signal (connect_INT__NONE "new-frame")
 
 
 instance Playable Timeline where
+  start = timelineStart
+  pause = timelinePause
+  stop = timelineStop
   started = Signal (connect_NONE__NONE "started")
   onStarted = connect_NONE__NONE "started" False
   afterStarted = connect_NONE__NONE "started" True

@@ -57,7 +57,7 @@ Library
               EmptyDataDecls,
               UndecidableInstances,
               FlexibleInstances
-
+  GHC-Options: -funbox-strict-fields
   Build-Depends:  base >= 4 && < 5,
                   haskell98,
                   mtl,
@@ -77,6 +77,7 @@ Library
                    Graphics.UI.Clutter.GTypes,
                    Graphics.UI.Clutter.Event,
                    Graphics.UI.Clutter.StoreValue,
+                   Graphics.UI.Clutter.Timeline,
                    Graphics.UI.Clutter.Animation,
                    Graphics.UI.Clutter.CustomSignals,
                    Graphics.UI.Clutter.General,
@@ -89,7 +90,6 @@ Library
                    Graphics.UI.Clutter.Text,
                    Graphics.UI.Clutter.Stage,
                    Graphics.UI.Clutter.Animatable,
-                   Graphics.UI.Clutter.Timeline,
                    Graphics.UI.Clutter.Score,
                    Graphics.UI.Clutter.CairoTexture,
                    Graphics.UI.Clutter.Alpha,

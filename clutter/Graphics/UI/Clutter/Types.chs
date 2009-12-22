@@ -23,7 +23,7 @@
              MultiParamTypeClasses,
              ScopedTypeVariables,
              FlexibleInstances #-}
-
+{-# OPTIONS_GHC -funbox-strict-fields #-}
 #include <clutter/clutter.h>
 
 {# context lib="clutter" prefix="clutter" #}

@@ -285,6 +285,10 @@ module Graphics.UI.Clutter.Types (
                                   CModelForeachFunc,
                                   newModelForeachFunc,
 
+                                  ModelFilterFunc,
+                                  CModelFilterFunc,
+                                  newModelFilterFunc,
+
                                   RGBData,
                                   mkRGBData,
                                   rgbDataHasAlpha,
@@ -1375,6 +1379,22 @@ newModelForeachFunc userfunc = mkModelForeachFunc (newModelForeachFunc' userfunc
 
 foreign import ccall "wrapper"
     mkModelForeachFunc :: (Ptr Model -> Ptr ModelIter -> IO Bool) -> IO CModelForeachFunc
+
+-- *** ModelFilterFunc
+
+-- this seems to be the same type as modelforeachfunc
+
+type ModelFilterFunc = Model -> ModelIter -> IO Bool
+type CModelFilterFunc = FunPtr (Ptr Model -> Ptr ModelIter -> Ptr () -> IO CInt)
+
+newModelFilterFunc :: ModelFilterFunc -> IO CModelFilterFunc
+newModelFilterFunc userfunc = mkModelFilterFunc (newModelFilterFunc' userfunc)
+    where
+      newModelFilterFunc' :: ModelFilterFunc -> Ptr Model -> Ptr ModelIter -> IO Bool
+      newModelFilterFunc' userfunc modPtr miPtr = join $ liftM2 userfunc (newModel modPtr) (newModelIter miPtr)
+
+foreign import ccall "wrapper"
+    mkModelFilterFunc :: (Ptr Model -> Ptr ModelIter -> IO Bool) -> IO CModelFilterFunc
 
 -- *** TimeoutPool
 

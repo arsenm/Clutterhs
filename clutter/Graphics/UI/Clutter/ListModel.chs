@@ -30,8 +30,8 @@ module Graphics.UI.Clutter.ListModel (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Model'
--- |         +----'ListModel'
+-- |    +----'Model'
+-- |           +----'ListModel'
 -- @
 
 -- * Types
@@ -43,15 +43,15 @@ module Graphics.UI.Clutter.ListModel (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import System.Glib.GType
 
-listModelNew :: [(GType, String)] -> IO ListModel
+listModelNew :: [(GType, Maybe String)] -> IO ListModel
 listModelNew lst = let (types, names) = unzip lst
-                   in withMany withCString names $ \cstrs ->
-                       withArrayLen cstrs $ \len namesPtr ->
-                       withArray types $ \typesPtr ->
-                          newListModel =<< {# call unsafe list_model_newv #} (cIntConv len) typesPtr namesPtr
-
+                   in withMany withMaybeString names $ \cstrs ->
+                        withArrayLen cstrs $ \len namesPtr ->
+                          withArray types $ \typesPtr ->
+                            newListModel =<< {# call unsafe list_model_newv #} (cIntConv len) typesPtr namesPtr
 

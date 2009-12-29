@@ -88,6 +88,7 @@ module Graphics.UI.Clutter.Model (
 {# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
+import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.GType
@@ -128,15 +129,14 @@ modelForeach b func = withModelClass b $ \mptr -> do
 {# fun unsafe model_resort as ^
        `(ModelClass model)' => { withModelClass* `model' } -> `()' #}
 
-{-
-TODO: need the mkModelFilterFunc part
-modelSetFilter :: (ModelClass model) => model -> ModelFilterFunc
-modelSetFilter model filterFunc = withModelClass model $ \mdlPtr -> do
-                                    fFuncPtr <- mkModelFilterFunc
-                                    gdestroy <- mkFunPtrDestroyNotify fFuncPtr
-                                    --CHECKME: unsafe?
-                                    {# call unsafe model_set_filter #} mdpPtr fFuncPtr nullPtr gdestroy
--}
+
+modelSetFilter :: (ModelClass model) => model -> ModelFilterFunc -> IO ()
+modelSetFilter model filterFunc = let func = {# call unsafe model_set_filter #}
+                                  in withModelClass model $ \mdlPtr -> do
+                                       fFuncPtr <- newModelFilterFunc filterFunc
+                                       --CHECKME: unsafe?
+                                       func mdlPtr fFuncPtr (castFunPtrToPtr fFuncPtr) destroyFunPtr
+
 
 {# fun unsafe model_get_filter_set as ^
        `(ModelClass model)' => { withModelClass* `model' } -> `Bool' #}

@@ -25,13 +25,18 @@
 
 -- | Unit conversion — A logical distance unit
 module Graphics.UI.Clutter.Units (
+-- * Types
   Units,
   UnitType,
+
+-- * Constructors
   unitsFromMm,
   unitsFromPt,
   unitsFromEm,
   unitsFromEmForFont,
   unitsFromPixels,
+
+-- * Conversions
   unitsToPixels,
   unitsCopy,
   unitsGetUnitType,

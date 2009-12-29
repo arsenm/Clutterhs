@@ -30,8 +30,8 @@ module Graphics.UI.Clutter.Model (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Model'
--- |         +----'ListModel'
+-- |    +----'Model'
+-- |           +----'ListModel'
 -- @
 
 -- * Types
@@ -41,7 +41,7 @@ module Graphics.UI.Clutter.Model (
 
 -- * Methods
 
---modelSetNames,
+--modelSetNames,  -- I don't think these 2 make sense to bind
 --modelSetTypes,
 
   modelGetColumnName,
@@ -68,7 +68,6 @@ module Graphics.UI.Clutter.Model (
 -- * Attributes
   modelFilterSet,
 
---TODO: Signals
 -- * Signals
   onFilterChanged,
   afterFilterChanged,
@@ -112,29 +111,24 @@ import Data.Word
 {# fun unsafe model_set_sorting_column as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `()' #}
 
-
---CHECKME: unsafe?
-{# fun unsafe model_remove as ^
+{# fun unsafe remove as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `()' #}
 
 
 modelForeach :: (ModelClass b) => b -> ModelForeachFunc -> IO ()
 modelForeach b func = withModelClass b $ \mptr -> do
                         funcPtr <- newModelForeachFunc func
-                        {# call unsafe model_foreach #} mptr funcPtr nullPtr
+                        {# call model_foreach #} mptr funcPtr nullPtr
                         freeHaskellFunPtr funcPtr
-                      --CHECKME: unsafe?
-
 
 {# fun unsafe model_resort as ^
        `(ModelClass model)' => { withModelClass* `model' } -> `()' #}
 
 
 modelSetFilter :: (ModelClass model) => model -> ModelFilterFunc -> IO ()
-modelSetFilter model filterFunc = let func = {# call unsafe model_set_filter #}
+modelSetFilter model filterFunc = let func = {# call model_set_filter #}
                                   in withModelClass model $ \mdlPtr -> do
                                        fFuncPtr <- newModelFilterFunc filterFunc
-                                       --CHECKME: unsafe?
                                        func mdlPtr fFuncPtr (castFunPtrToPtr fFuncPtr) destroyFunPtr
 
 

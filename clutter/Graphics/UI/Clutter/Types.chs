@@ -1019,6 +1019,8 @@ instance GObjectClass Shader where
 
 {# pointer *ClutterModel as Model foreign newtype #}
 
+--TODO: Maybe check size, also /
+
 class GObjectClass o => ModelClass o
 toModel :: ModelClass o => o -> Model
 toModel = unsafeCastGObject . toGObject

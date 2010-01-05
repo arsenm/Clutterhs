@@ -61,7 +61,11 @@ module Graphics.UI.Clutter.StoreValue (
                                        unsetGValue,
                                        unsetOneGVal,
                                        genericValuePtrGetType,
-                                       allocaTypedGValue
+                                       allocaTypedGValue,
+
+                                       TypeCast,
+                                       TypeCast',
+                                       TypeCast''
                                       ) where
 
 import C2HS

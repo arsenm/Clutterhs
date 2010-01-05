@@ -43,6 +43,7 @@ module Graphics.UI.Clutter.Model (
   EOC(..),
   ColList,
   (##),
+  single,
 
 -- * Methods
 
@@ -53,10 +54,10 @@ module Graphics.UI.Clutter.Model (
   modelGetColumnType,
   modelGetNColumns,
   modelGetNRows,
---modelAppend,
---modelPrepend,
---modelInsert,
---modelInsertValue,
+  modelAppend,
+  modelPrepend,
+  modelInsert,
+  modelInsertValue,
   modelRemove,
   modelForeach,
   modelSetSortingColumn,
@@ -113,16 +114,45 @@ import Control.Monad (when)
        `(ModelClass model)' => { withModelClass* `model' } -> `Word' cIntConv #}
 
 
-modelAppend :: (ModelClass self, GenericValueClass a, ColList a w) => self -> a -> [Int] -> IO ()
+modelAppend :: (ModelClass self, ColList a w) => self -> a -> [Int] -> IO ()
 modelAppend model cols nums = let func = {# call model_appendv #}
                                   gvs = toHomoGVList cols
                                   l = length gvs
                               in withModelClass model $ \modelPtr ->
                                    withArray gvs $ \gvPtr ->
                                      withArrayLen nums $ \len iPtr -> do
-                                       when (l /= len) (fail "modelAppend: Length of column \
-                                                             \\does not match columns to update")
+                                       when (l /= len) (fail "modelAppend: Length of column does not match columns to update")
                                        func modelPtr (cIntConv l) (castPtr iPtr) gvPtr
+
+modelPrepend :: (ModelClass self, ColList a w) => self -> a -> [Int] -> IO ()
+modelPrepend model cols nums = let func = {# call model_prependv #}
+                                   gvs = toHomoGVList cols
+                                   l = length gvs
+                               in withModelClass model $ \modelPtr ->
+                                    withArray gvs $ \gvPtr ->
+                                      withArrayLen nums $ \len iPtr -> do
+                                        when (l /= len) (fail "modelPrepend: Length of column does not match columns to update")
+                                        func modelPtr (cIntConv l) (castPtr iPtr) gvPtr
+
+
+
+
+modelInsert :: (ModelClass self, ColList a w) => self -> Word -> a -> [Int] -> IO ()
+modelInsert model row cols nums = let func = {# call model_insertv #}
+                                      gvs = toHomoGVList cols
+                                      l = length gvs
+                                  in withModelClass model $ \modelPtr ->
+                                       withArray gvs $ \gvPtr ->
+                                         withArrayLen nums $ \len iPtr -> do
+                                           when (l /= len) (fail "modelInsert: Length of column does not match columns to update")
+                                           func modelPtr (cIntConv row) (cIntConv len) (castPtr iPtr) gvPtr
+
+--FIXME: No checking for correct type
+modelInsertValue :: (ModelClass self, GenericValueClass val) => self -> Word -> Word -> val -> IO ()
+modelInsertValue model row col val = let func = {# call unsafe model_insert_value #}
+                                     in withModelClass model $ \modelPtr ->
+                                          withGenericValue val $ \valPtr ->
+                                            func modelPtr (cIntConv row) (cIntConv col) valPtr
 
 
 {# fun unsafe model_get_sorting_column as ^
@@ -233,8 +263,6 @@ infixr 0 ##
 single :: (GenericValueClass a) => a -> ColCons a EOC
 single = (## EOC)
 
-
--- is this functional depencency ok?
 class ColList c d | c -> d where
   toHomoGVList :: c -> [GenericValue]
 

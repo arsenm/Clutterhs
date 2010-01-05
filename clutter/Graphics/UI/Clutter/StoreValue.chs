@@ -289,7 +289,6 @@ freeGValue p = unsetGValue (castPtr p) >> free p
 withGenericValue :: (GenericValueClass arg) => arg -> (GenericValuePtr -> IO a) -> IO a
 withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) freeGValue
 
-
 --This madness is almost straight from Haskell wiki on AdvancedOverlap
 -- I only halfway understand it. It should pick the GObjectClass
 -- instance for any gobject, and the others for anything else.
@@ -302,6 +301,7 @@ withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) fre
 class GenericValueClass a where
   toGenericValue :: a -> GenericValue
   unsafeExtractGenericValue :: GenericValue -> a
+  genericValueType :: a -> GType
 
 class GenericValueClass' flag a where
   toGenericValue' :: flag -> a -> GenericValue

@@ -39,6 +39,11 @@ module Graphics.UI.Clutter.Model (
   ModelClass,
   ModelForeachFunc,
 
+  ColCons,
+  EOC(..),
+  ColList,
+  (##),
+
 -- * Methods
 
 --modelSetNames,  -- I don't think these 2 make sense to bind
@@ -85,6 +90,7 @@ module Graphics.UI.Clutter.Model (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.StoreValue #}
 
 import C2HS
 import System.Glib.GObject
@@ -92,6 +98,7 @@ import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.GType
 import Data.Word
+import Control.Monad (when)
 
 {# fun unsafe model_get_column_name as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `String' #}
@@ -106,12 +113,25 @@ import Data.Word
        `(ModelClass model)' => { withModelClass* `model' } -> `Word' cIntConv #}
 
 
-{# fun unsafe model_get_sorting_column as ^
-       `(ModelClass model)' => { withModelClass* `model' } -> `Word' cIntConv #}
-{# fun unsafe model_set_sorting_column as ^
-       `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `()' #}
+modelAppend :: (ModelClass self, GenericValueClass a, ColList a w) => self -> a -> [Int] -> IO ()
+modelAppend model cols nums = let func = {# call model_appendv #}
+                                  gvs = toHomoGVList cols
+                                  l = length gvs
+                              in withModelClass model $ \modelPtr ->
+                                   withArray gvs $ \gvPtr ->
+                                     withArrayLen nums $ \len iPtr -> do
+                                       when (l /= len) (fail "modelAppend: Length of column \
+                                                             \\does not match columns to update")
+                                       func modelPtr (cIntConv l) (castPtr iPtr) gvPtr
 
-{# fun unsafe remove as ^
+
+{# fun unsafe model_get_sorting_column as ^
+       `(ModelClass model)' => { withModelClass* `model' } -> `Int' #}
+
+{# fun unsafe model_set_sorting_column as ^
+       `(ModelClass model)' => { withModelClass* `model', `Int' } -> `()' #}
+
+{# fun unsafe model_remove as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `()' #}
 
 
@@ -185,7 +205,7 @@ onRowRemoved, afterRowRemoved :: Model -> (ModelIter -> IO ()) -> IO (ConnectId 
 onRowRemoved = connect_OBJECT__NONE "row-removed" False
 afterRowRemoved = connect_OBJECT__NONE "row-removed" True
 
-rowRemoved :: Signal Model (ModelIter ->IO ())
+rowRemoved :: Signal Model (ModelIter -> IO ())
 rowRemoved = Signal (connect_OBJECT__NONE "row-removed")
 
 
@@ -193,6 +213,35 @@ onSortChanged, afterSortChanged :: Model -> IO () -> IO (ConnectId Model)
 onSortChanged = connect_NONE__NONE "sort-changed" False
 afterSortChanged = connect_NONE__NONE "sort-changed" True
 
-sortChanged :: Signal Model (ModelIter ->IO ())
+sortChanged :: Signal Model (ModelIter -> IO ())
 sortChanged = Signal (connect_OBJECT__NONE "sort-changed")
+
+
+-- | end of heterogenous list of types for a column
+data EOC = EOC deriving (Read, Show)
+
+-- | heterogenous list of types for a column
+data ColCons a b = ColCons a b deriving (Read, Show)
+
+-- it looks kind of like columns or something
+infixr 0 ##
+-- | Prepend an element to a heterogeneous list. Used to build columns
+(##) :: (GenericValueClass a, ColList b w) => a -> b -> ColCons a b
+(##) = ColCons
+
+-- | Construct a singleton list of columns
+single :: (GenericValueClass a) => a -> ColCons a EOC
+single = (## EOC)
+
+
+-- is this functional depencency ok?
+class ColList c d | c -> d where
+  toHomoGVList :: c -> [GenericValue]
+
+instance ColList EOC w where
+  toHomoGVList EOC = []
+
+instance (GenericValueClass a, ColList b w) => ColList (ColCons a b) w where
+  toHomoGVList (ColCons x xs) = toGenericValue x:(toHomoGVList xs)
+
 

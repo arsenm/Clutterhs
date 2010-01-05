@@ -73,3 +73,15 @@ clutter/demo/SpinningBobDylanShaderGame.o
 clutter/demo/UnitTest
 clutter/demo/UnitTest.hi
 clutter/demo/UnitTest.o
+clutter/demo/ModelTest
+clutter/demo/ModelTest.hi
+clutter/demo/ModelTest.o
+clutter/demo/behaviourellipsetest
+clutter/demo/cluttergame
+clutter/demo/intervaltest
+clutter/demo/pathtest
+clutter/demo/rectangletest
+clutter/demo/scoretest
+clutter/demo/texttest
+clutter/demo/texturetest
+clutter/demo/timelinetest

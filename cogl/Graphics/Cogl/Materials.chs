@@ -1,11 +1,11 @@
 -- -*-haskell-*-
---  COGL
+--  COGL Primitives
 --
 --  Author : Matthew Arsenault
 --
---  Created: 13 Dec 2009
+--  Created: 5 Jan 2010
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -18,18 +18,26 @@
 --  Lesser General Public License for more details.
 --
 
-module Graphics.Cogl (
-  module Graphics.Cogl.Color,
-  module Graphics.Cogl.Enums,
-  module Graphics.Cogl.Primitives,
-  module Graphics.Cogl.General,
-    module Graphics.Cogl.Materials
+{-# LANGUAGE ForeignFunctionInterface #-}
+
+#include <cogl/cogl.h>
+
+{# context lib="cogl" prefix="cogl" #}
+
+-- | Materials — Fuctions for creating and manipulating materials
+module Graphics.Cogl.Materials (
+  materialNew
 ) where
 
-import Graphics.Cogl.Color
-import Graphics.Cogl.Enums
-import Graphics.Cogl.General
-import Graphics.Cogl.Primitives
-import Graphics.Cogl.Materials
+import C2HS
+
+{# import Graphics.Cogl.Types #}
+
+{# fun unsafe material_new as ^ { } -> `Handle' newHandle* #}
+
+--{# fun unsafe is_material as ^ { withHandle* `Handle' } -> `Bool' #}
+
+
+
 
 

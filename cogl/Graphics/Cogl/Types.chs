@@ -48,8 +48,8 @@ import Data.Word
 
 {# pointer *CoglHandle as Handle foreign newtype #}
 
-newHandle :: Ptr Handle -> IO Handle
-newHandle = liftM Handle . newForeignPtr handleUnref
+newHandle :: Ptr () -> IO Handle
+newHandle = liftM Handle . newForeignPtr handleUnref . castPtr
 
 foreign import ccall unsafe "&cogl_hangle_unref"
   handleUnref :: FinalizerPtr Handle

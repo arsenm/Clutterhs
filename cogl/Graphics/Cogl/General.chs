@@ -158,6 +158,7 @@ longFromFlags = cIntConv . fromFlags
 
 -- wtf cast.
 withHandleCast :: Handle -> (Ptr () -> IO a) -> IO a
+
 withHandleCast h f = withHandle h (f . castPtr)
 
 {# fun unsafe set_source as ^ { withHandleCast* `Handle' } -> `()' #}

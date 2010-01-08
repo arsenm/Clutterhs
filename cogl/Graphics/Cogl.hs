@@ -23,7 +23,12 @@ module Graphics.Cogl (
   module Graphics.Cogl.Enums,
   module Graphics.Cogl.Primitives,
   module Graphics.Cogl.General,
-    module Graphics.Cogl.Materials
+  module Graphics.Cogl.Materials,
+  module Graphics.Cogl.Matrices,
+  module Graphics.Cogl.OffscreenBuffers,
+  module Graphics.Cogl.VertexBuffers,
+  module Graphics.Cogl.ShadersPipeline,
+  module Graphics.Cogl.Textures
 ) where
 
 import Graphics.Cogl.Color
@@ -31,5 +36,10 @@ import Graphics.Cogl.Enums
 import Graphics.Cogl.General
 import Graphics.Cogl.Primitives
 import Graphics.Cogl.Materials
+import Graphics.Cogl.Matrices
+import Graphics.Cogl.OffscreenBuffers
+import Graphics.Cogl.VertexBuffers
+import Graphics.Cogl.ShadersPipeline
+import Graphics.Cogl.Textures
 
 

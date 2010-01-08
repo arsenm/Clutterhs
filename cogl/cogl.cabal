@@ -47,6 +47,11 @@ Library
                    Graphics.Cogl.General,
                    Graphics.Cogl.Primitives,
                    Graphics.Cogl.Materials,
+                   Graphics.Cogl.Matrices,
+                   Graphics.Cogl.OffscreenBuffers,
+                   Graphics.Cogl.VertexBuffers,
+                   Graphics.Cogl.ShadersPipeline,
+                   Graphics.Cogl.Textures,
                    Graphics.Cogl.Color
   Exposed: True
   if flag(debug)

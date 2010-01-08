@@ -33,8 +33,10 @@ module Graphics.Cogl.Enums (
 
   TextureFlags(..),
   BlendStringError(..),
+  MaterialAlphaFunc(..),
+  MaterialLayerType(..),
   MaterialFilter(..),
-  ShaderType(..)
+  ShaderType(..),
 ) where
 
 import C2HS
@@ -278,4 +280,45 @@ instance Flags TextureFlags
 {# enum CoglShaderType as ShaderType {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 
+
+
+-- | Alpha testing happens before blending primitives with the
+-- framebuffer and gives an opportunity to discard fragments based on
+-- a comparison with the incoming alpha value and a reference alpha
+-- value. The 'MaterialAlphaFunc' determines how the comparison is
+-- done.
+--
+-- [@MaterialAlphaFuncNever@] Never let the fragment through.
+--
+-- [@MaterialAlphaFuncLess@] Let the fragment through if the incoming
+-- alpha value is less than the reference alpha value.
+--
+-- [@MaterialAlphaFuncEqual@] Let the fragment through if the incoming
+-- alpha value equals the reference alpha value.
+--
+-- [@MaterialAlphaFuncLequal@] Let the fragment through if the
+-- incoming alpha value is less than or equal to the reference alpha
+-- value.
+--
+-- [@MaterialAlphaFuncGreater@] Let the fragment through if the
+-- incoming alpha value is greater than the reference alpha value.
+--
+-- [@MaterialAlphaFuncNotequal@] Let the fragment through if the
+-- incoming alpha value does not equal the reference alpha value.
+--
+-- [@MaterialAlphaFuncGequal@] Let the fragment through if the
+-- incoming alpha value is greater than or equal to the reference
+-- alpha value.
+--
+-- [@MaterialAlphaFuncAlways@] Always let the fragment through.
+--
+{# enum CoglMaterialAlphaFunc as MaterialAlphaFunc {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+
+-- | Available types of layers for a 'Material'. This enumeration
+-- might be expanded in later versions.
+--
+-- * Since 1.0
+--
+{# enum CoglMaterialLayerType as MaterialLayerType {underscoreToCase} deriving (Show, Eq, Bounded) #}
 

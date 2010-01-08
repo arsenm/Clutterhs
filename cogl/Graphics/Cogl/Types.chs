@@ -31,6 +31,7 @@ module Graphics.Cogl.Types (
   newHandle,
 
   Color,
+  allocColor,
   newColor,
   withColor,
 
@@ -46,12 +47,22 @@ import Data.Word
 
 -- *** Handle
 
-{# pointer *CoglHandle as Handle foreign newtype #}
+-- what I mean is
+-- {# pointer *CoglHandle as Handle foreign newtype #}
+--
+-- but then everything complains of expecting Ptr () and getting Ptr
+-- Handle, so cast. It might
+-- it might be because that CoglHandle is just a typedef for gpointer
+
+newtype Handle = Handle (ForeignPtr Handle)
+
+withHandle :: Handle -> (Ptr () -> IO b) -> IO b
+withHandle (Handle fptr) = withForeignPtr (castForeignPtr fptr)
 
 newHandle :: Ptr () -> IO Handle
 newHandle = liftM Handle . newForeignPtr handleUnref . castPtr
 
-foreign import ccall unsafe "&cogl_hangle_unref"
+foreign import ccall unsafe "&cogl_handle_unref"
   handleUnref :: FinalizerPtr Handle
 
 -- *** Color
@@ -64,6 +75,9 @@ newColor = liftM Color . newForeignPtr colorFree
 foreign import ccall unsafe "&cogl_color_free"
   colorFree :: FinalizerPtr Color
 
+allocColor :: (Ptr Color -> IO a) -> IO a
+allocColor act = act =<< mallocBytes {# sizeof CoglColor #}
+
 
 -- *** Matrix
 
@@ -72,5 +86,4 @@ foreign import ccall unsafe "&cogl_color_free"
 --CHECKME: Free
 newMatrix :: Ptr Matrix -> IO Matrix
 newMatrix = liftM Matrix . newForeignPtr finalizerFree
-
 

@@ -27,6 +27,10 @@
 -- | Vertex Buffers — An API for submitting extensible arrays of
 -- vertex attributes to be mapped into the GPU for fast drawing.
 module Graphics.Cogl.VertexBuffers (
+  VertexBuffer,
+  VertexIndices,
+  IndicesType(..),
+
   vertexBufferNew,
   vertexBufferGetNVertices,
 --vertexBufferAdd,
@@ -36,8 +40,8 @@ module Graphics.Cogl.VertexBuffers (
   vertexBufferEnable,
   vertexBufferDraw,
   isVertexBuffer,
---vertexBufferIndicesNew,
---vertexBufferDrawElements,
+
+  vertexBufferDrawElements,
   vertexBufferIndicesGetForQuads
 ) where
 
@@ -68,13 +72,39 @@ import C2HS
 
 {# fun unsafe is_vertex_buffer as ^ { withVertexBuffer* `VertexBuffer' } -> `Bool' #}
 
--- buffer_indices_new
---bufferIndicesNew :: IndicesType -> [graah
+class IndicesType a where
+  vertexBufferIndicesNew :: [a] -> IO (VertexIndices a)
+
+instance IndicesType Word8 where
+  vertexBufferIndicesNew indices = let func = {# call unsafe vertex_buffer_indices_new #}
+                                   in withArrayLen indices $ \len iPtr -> do
+                                        h <- func (cFromEnum IndicesTypeUnsignedByte)
+                                                   (castPtr iPtr)
+                                                   (cIntConv len)
+                                        vi <- newVertexIndicesRaw h
+                                        return $ mkVertexIndices (undefined :: Word8) vi
+
+instance IndicesType Word16 where
+  vertexBufferIndicesNew indices = let func = {# call unsafe vertex_buffer_indices_new #}
+                                   in withArrayLen indices $ \len iPtr -> do
+                                        h <- func (cFromEnum IndicesTypeUnsignedShort)
+                                                   (castPtr iPtr)
+                                                   (cIntConv len)
+                                        vi <- newVertexIndicesRaw h
+                                        return $ mkVertexIndices (undefined :: Word16) vi
 
 
--- {# fun unsafe vertex_buffer_draw_elements as ^
+{# fun unsafe vertex_buffer_draw_elements as ^
+  { withVertexBuffer* `VertexBuffer',
+    cFromEnum `VerticesMode',
+    withVertexIndices* `VertexIndices a',
+    `Int',
+    `Int',
+    `Int',
+    `Int' } -> `()' #}
 
 
+--FIXME: This should not be unreffed
 {# fun unsafe vertex_buffer_indices_get_for_quads as ^
   { cIntConv `Word' } -> `VertexBuffer' newVertexBuffer* #}
 

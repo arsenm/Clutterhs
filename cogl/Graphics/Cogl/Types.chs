@@ -18,7 +18,7 @@
 --  Lesser General Public License for more details.
 --
 
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, ScopedTypeVariables #-}
 
 #include <cogl/cogl.h>
 
@@ -39,8 +39,9 @@ module Graphics.Cogl.Types (
   newVertexBuffer,
 
   VertexIndices,
+  mkVertexIndices,
   withVertexIndices,
-  newVertexIndices,
+  newVertexIndicesRaw,
 
   Color,
   allocColor,
@@ -132,17 +133,20 @@ foreign import ccall unsafe "&cogl_vertex_buffer_unref"
 
 -- *** VertexIndices
 
--- same issue as for Handle and others.
+data VertexIndices a = VertexIndices a VertexIndicesRaw
 
-newtype VertexIndices = VertexIndices (ForeignPtr VertexIndices)
+newtype VertexIndicesRaw = VertexIndicesRaw (ForeignPtr VertexIndicesRaw)
 
-withVertexIndices :: VertexIndices -> (Ptr () -> IO b) -> IO b
-withVertexIndices (VertexIndices fptr) = withForeignPtr (castForeignPtr fptr)
+withVertexIndices :: VertexIndices a -> (Ptr () -> IO b) -> IO b
+withVertexIndices (VertexIndices _ (VertexIndicesRaw fptr)) = withForeignPtr (castForeignPtr fptr)
 
-newVertexIndices :: Ptr () -> IO VertexIndices
-newVertexIndices = liftM VertexIndices . newForeignPtr vertexIndicesUnref . castPtr
+newVertexIndicesRaw :: Ptr () -> IO VertexIndicesRaw
+newVertexIndicesRaw = liftM VertexIndicesRaw . newForeignPtr vertexIndicesUnref . castPtr
+
+mkVertexIndices :: a -> VertexIndicesRaw -> VertexIndices a
+mkVertexIndices _ raw = VertexIndices (undefined :: a) raw
 
 foreign import ccall unsafe "&cogl_handle_unref"
-  vertexIndicesUnref :: FinalizerPtr VertexIndices
+  vertexIndicesUnref :: FinalizerPtr VertexIndicesRaw
 
 

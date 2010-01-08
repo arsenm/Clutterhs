@@ -37,7 +37,7 @@ module Graphics.Cogl.Enums (
   MaterialLayerType(..),
   MaterialFilter(..),
   ShaderType(..),
-  IndicesType(..),
+  IndicesTypeEnum(..),
   VerticesMode(..)
 ) where
 
@@ -325,6 +325,8 @@ instance Flags TextureFlags
 {# enum CoglMaterialLayerType as MaterialLayerType {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 
+-- FIXME: This is actually handled by the IndicesType class, so this isn't needed
+
 -- | You should aim to use the smallest data type that gives you
 -- enough range, since it reduces the size of your index array and can
 -- help reduce the demand on memory bandwidth.
@@ -333,7 +335,7 @@ instance Flags TextureFlags
 --
 -- [@IndicesTypeUnsignedShort@] Your indices are unsigned shorts
 --
-{# enum CoglIndicesType as IndicesType {underscoreToCase} deriving (Show, Eq, Bounded) #}
+{# enum CoglIndicesType as IndicesTypeEnum {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 
 

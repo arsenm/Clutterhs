@@ -30,6 +30,10 @@ module Graphics.Cogl.Types (
   withHandle,
   newHandle,
 
+  Material,
+  withMaterial,
+  newMaterial,
+
   Color,
   allocColor,
   newColor,
@@ -86,4 +90,20 @@ allocColor act = act =<< mallocBytes {# sizeof CoglColor #}
 --CHECKME: Free
 newMatrix :: Ptr Matrix -> IO Matrix
 newMatrix = liftM Matrix . newForeignPtr finalizerFree
+
+
+-- *** Material
+
+-- same issue as for Handle and others.
+
+newtype Material = Material (ForeignPtr Material)
+
+withMaterial :: Material -> (Ptr () -> IO b) -> IO b
+withMaterial (Material fptr) = withForeignPtr (castForeignPtr fptr)
+
+newMaterial :: Ptr () -> IO Material
+newMaterial = liftM Material . newForeignPtr materialUnref . castPtr
+
+foreign import ccall unsafe "&cogl_material_unref"
+  materialUnref :: FinalizerPtr Material
 

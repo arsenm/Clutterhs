@@ -26,12 +26,13 @@
 
 -- | Materials — Fuctions for creating and manipulating materials
 module Graphics.Cogl.Materials (
+  Material,
   BlendStringError(..),
   MaterialFilter(..),
   MaterialLayerType(..),
 
   materialNew,
-  isMaterial,
+  isMaterial,   -- does it make sense to keep this?
   materialSetColor,
   materialSetColor4ub,
   materialSetColor4f,
@@ -74,118 +75,115 @@ import System.Glib.GList
 {# import Graphics.Cogl.Types #}
 {# import Graphics.Cogl.Enums #}
 
---FIXME: I wasn't paying attention and these should be using Material,
---not Handle
+{# fun unsafe material_new as ^ { } -> `Material' newMaterial* #}
 
-{# fun unsafe material_new as ^ { } -> `Handle' newHandle* #}
+{# fun unsafe is_material as ^ { withMaterial* `Material' } -> `Bool' #}
 
-{# fun unsafe is_material as ^ { withHandle* `Handle' } -> `Bool' #}
-
-{# fun unsafe material_set_color as ^ { withHandle* `Handle', withColor* `Color' } -> `()' #}
+{# fun unsafe material_set_color as ^ { withMaterial* `Material', withColor* `Color' } -> `()' #}
 
 {# fun unsafe material_set_color4ub as ^
-  { withHandle* `Handle', `Word8', `Word8', `Word8', `Word8' } -> `()' #}
+  { withMaterial* `Material', `Word8', `Word8', `Word8', `Word8' } -> `()' #}
 
 {# fun unsafe material_set_color4f as ^
-  { withHandle* `Handle', `Float', `Float', `Float', `Float' } -> `()' #}
+  { withMaterial* `Material', `Float', `Float', `Float', `Float' } -> `()' #}
 
 {# fun unsafe material_get_color as ^
-  { withHandle* `Handle', allocColor- `Color' newColor* } -> `()' #}
+  { withMaterial* `Material', allocColor- `Color' newColor* } -> `()' #}
 
 
-{# fun unsafe material_set_ambient as ^ { withHandle* `Handle', withColor* `Color' } -> `()' #}
+{# fun unsafe material_set_ambient as ^ { withMaterial* `Material', withColor* `Color' } -> `()' #}
 
 {# fun unsafe material_get_ambient as ^
-  { withHandle* `Handle', allocColor- `Color' newColor* } -> `()' #}
+  { withMaterial* `Material', allocColor- `Color' newColor* } -> `()' #}
 
-{# fun unsafe material_set_diffuse as ^ { withHandle* `Handle', withColor* `Color' } -> `()' #}
+{# fun unsafe material_set_diffuse as ^ { withMaterial* `Material', withColor* `Color' } -> `()' #}
 
 {# fun unsafe material_get_diffuse as ^
-  { withHandle* `Handle', allocColor- `Color' newColor* } -> `()' #}
+  { withMaterial* `Material', allocColor- `Color' newColor* } -> `()' #}
 
 {# fun unsafe material_set_ambient_and_diffuse as ^
-  { withHandle* `Handle', withColor* `Color' } -> `()' #}
+  { withMaterial* `Material', withColor* `Color' } -> `()' #}
 
 {# fun unsafe material_set_emission as ^
-  { withHandle* `Handle', withColor* `Color' } -> `()' #}
+  { withMaterial* `Material', withColor* `Color' } -> `()' #}
 
 {# fun unsafe material_get_emission as ^
-  { withHandle* `Handle', allocColor- `Color' newColor* } -> `()' #}
+  { withMaterial* `Material', allocColor- `Color' newColor* } -> `()' #}
 
 {# fun unsafe material_set_specular as ^
-  { withHandle* `Handle', withColor* `Color' } -> `()' #}
+  { withMaterial* `Material', withColor* `Color' } -> `()' #}
 
 {# fun unsafe material_get_specular as ^
-  { withHandle* `Handle', allocColor- `Color' newColor* } -> `()' #}
+  { withMaterial* `Material', allocColor- `Color' newColor* } -> `()' #}
 
 {# fun unsafe material_set_shininess as ^
-  { withHandle* `Handle', `Float' } -> `()' #}
+  { withMaterial* `Material', `Float' } -> `()' #}
 
-{# fun unsafe material_get_shininess as ^ { withHandle* `Handle' } -> `Float' #}
+{# fun unsafe material_get_shininess as ^ { withMaterial* `Material' } -> `Float' #}
 
 {# fun unsafe material_set_alpha_test_function as ^
-  { withHandle* `Handle', cFromEnum `MaterialAlphaFunc', `Float' } -> `()' #}
+  { withMaterial* `Material', cFromEnum `MaterialAlphaFunc', `Float' } -> `()' #}
 
 
-materialSetBlend :: Handle -> String -> IO Bool
+materialSetBlend :: Material -> String -> IO Bool
 materialSetBlend h str = let func = {# call unsafe material_set_blend #}
                          in liftM cToBool $ propagateGError $ \gerrorPtr ->
-                              withHandle h $ \hPtr ->
+                              withMaterial h $ \hPtr ->
                                 withCString str $ \strPtr ->
                                   func hPtr strPtr (castPtr gerrorPtr)
 
 
 
 {# fun unsafe material_set_blend_constant as ^
-  { withHandle* `Handle', withColor* `Color' } -> `()' #}
+  { withMaterial* `Material', withColor* `Color' } -> `()' #}
 
 
 {# fun unsafe material_set_layer as ^
-  { withHandle* `Handle', `Int', withHandle* `Handle' } -> `()' #}
+  { withMaterial* `Material', `Int', withMaterial* `Material' } -> `()' #}
 
 
-{# fun unsafe material_remove_layer as ^ { withHandle* `Handle', `Int' } -> `()' #}
+{# fun unsafe material_remove_layer as ^ { withMaterial* `Material', `Int' } -> `()' #}
 
 
 
 
 
-materialSetLayerCombine :: Handle -> Int -> String -> IO Bool
+materialSetLayerCombine :: Material -> Int -> String -> IO Bool
 materialSetLayerCombine h i str = let func = {# call unsafe material_set_layer_combine #}
                                   in liftM cToBool $ propagateGError $ \gerrorPtr ->
-                                       withHandle h $ \hPtr ->
+                                       withMaterial h $ \hPtr ->
                                          withCString str $ \strPtr ->
                                            func hPtr (cIntConv i) strPtr (castPtr gerrorPtr)
 
 {# fun unsafe material_set_layer_combine_constant as ^
-  { withHandle* `Handle', `Int', withColor* `Color' } -> `()' #}
+  { withMaterial* `Material', `Int', withColor* `Color' } -> `()' #}
 
 {# fun unsafe material_set_layer_matrix as ^
-  { withHandle* `Handle', `Int', withMatrix* `Matrix' } -> `()' #}
+  { withMaterial* `Material', `Int', withMatrix* `Matrix' } -> `()' #}
 
 
-{# fun unsafe material_get_layers as ^ { withHandle* `Handle' } -> `[Handle]' readHandleList* #}
+{# fun unsafe material_get_layers as ^ { withMaterial* `Material' } -> `[Material]' readMaterialList* #}
 
-readHandleList :: GList -> IO [Handle]
-readHandleList gsl = (readGList gsl :: IO [Ptr Handle]) >>= mapM (newHandle  . castPtr)
+readMaterialList :: GList -> IO [Material]
+readMaterialList gsl = (readGList gsl :: IO [Ptr Material]) >>= mapM (newMaterial  . castPtr)
 
 
-{# fun unsafe material_get_n_layers as ^ { withHandle* `Handle' } -> `Int' #}
+{# fun unsafe material_get_n_layers as ^ { withMaterial* `Material' } -> `Int' #}
 
 
 
 {# fun unsafe material_set_layer_filters as ^
-  { withHandle* `Handle', `Int', cFromEnum `MaterialFilter', cFromEnum `MaterialFilter' } -> `()' #}
+  { withMaterial* `Material', `Int', cFromEnum `MaterialFilter', cFromEnum `MaterialFilter' } -> `()' #}
 
 
 {# fun unsafe material_layer_get_type as ^
-  { withHandle* `Handle' } -> `MaterialLayerType' cToEnum #}
+  { withMaterial* `Material' } -> `MaterialLayerType' cToEnum #}
 
-{# fun unsafe material_layer_get_texture as ^ { withHandle* `Handle' } -> `Handle' newHandle* #}
+{# fun unsafe material_layer_get_texture as ^ { withMaterial* `Material' } -> `Material' newMaterial* #}
 
 {# fun unsafe material_layer_get_min_filter as ^
-  { withHandle* `Handle' } -> `MaterialFilter' cToEnum #}
+  { withMaterial* `Material' } -> `MaterialFilter' cToEnum #}
 
 {# fun unsafe material_layer_get_mag_filter as ^
-  { withHandle* `Handle' } -> `MaterialFilter' cToEnum #}
+  { withMaterial* `Material' } -> `MaterialFilter' cToEnum #}
 

@@ -26,15 +26,30 @@
 
 -- | Offscreen Buffers — Fuctions for creating and manipulating
 -- offscreen frame buffer objects
-module Graphics.Cogl.OffscreenBuffers (
+module Graphics.Cogl.Offscreen (
   Offscreen,
 
-  offscreenNewToTexture
+--  offscreenNewToTexture,
+
+--  setDrawBuffer,
+  popDrawBuffer,
+  pushDrawBuffer
 ) where
 
 import C2HS
 
+
 {# import Graphics.Cogl.Types #}
+{# import Graphics.Cogl.Enums #}
+
+-- {# fun unsafe is_offscreen
+
+-- this handle can be different things?
+-- {# fun unsafe set_draw_buffer as ^ { cFromEnum `BufferTarget', withSomething
+
+{# fun unsafe pop_draw_buffer as ^ { } -> `()' #}
+
+{# fun unsafe push_draw_buffer as ^ { } -> `()' #}
 
 
 

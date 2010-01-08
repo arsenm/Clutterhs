@@ -28,6 +28,7 @@ module Graphics.Cogl.Enums (
   FogMode(..),
   PixelFormat(..),
   BufferBit(..),
+  BufferTarget(..),
   AttributeType(..),
   FeatureFlags(..),
 

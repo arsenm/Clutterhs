@@ -42,6 +42,14 @@ module Graphics.Cogl.Types (
   withOffscreen,
   newOffscreen,
 
+  Shader,
+  withShader,
+  newShader,
+
+  Program,
+  withProgram,
+  newProgram,
+
   VertexIndices,
   mkVertexIndices,
   withVertexIndices,
@@ -155,7 +163,7 @@ foreign import ccall unsafe "&cogl_handle_unref"
 
 
 
--- *** OffscreenBuffer
+-- *** Offscreen
 
 newtype Offscreen = Offscreen (ForeignPtr Offscreen)
 
@@ -163,8 +171,35 @@ withOffscreen :: Offscreen -> (Ptr () -> IO b) -> IO b
 withOffscreen (Offscreen fptr) = withForeignPtr (castForeignPtr fptr)
 
 newOffscreen :: Ptr () -> IO Offscreen
-newOffscreen = liftM Offscreen . newForeignPtr vertexUnref . castPtr
+newOffscreen = liftM Offscreen . newForeignPtr offscreenUnref . castPtr
 
 foreign import ccall unsafe "&cogl_offscreen_unref"
   offscreenUnref :: FinalizerPtr Offscreen
 
+
+-- *** Shader
+
+newtype Shader = Shader (ForeignPtr Shader)
+
+withShader :: Shader -> (Ptr () -> IO b) -> IO b
+withShader (Shader fptr) = withForeignPtr (castForeignPtr fptr)
+
+newShader :: Ptr () -> IO Shader
+newShader = liftM Shader . newForeignPtr shaderUnref . castPtr
+
+foreign import ccall unsafe "&cogl_shader_unref"
+  shaderUnref :: FinalizerPtr Shader
+
+
+-- *** Program
+
+newtype Program = Program (ForeignPtr Program)
+
+withProgram :: Program -> (Ptr () -> IO b) -> IO b
+withProgram (Program fptr) = withForeignPtr (castForeignPtr fptr)
+
+newProgram :: Ptr () -> IO Program
+newProgram = liftM Program . newForeignPtr programUnref . castPtr
+
+foreign import ccall unsafe "&cogl_program_unref"
+  programUnref :: FinalizerPtr Program

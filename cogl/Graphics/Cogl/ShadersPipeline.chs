@@ -27,12 +27,63 @@
 -- | Shaders and Programmable Pipeline — Fuctions for accessing the
 -- programmable GL pipeline
 module Graphics.Cogl.ShadersPipeline (
+  shaderSource,
+  shaderCompile,
+  shaderGetInfoLog,
+  shaderGetType,
+  shaderIsCompiled,
 
+  createProgram,
+  programAttachShader,
+  programLink,
+  programUse,
+  programGetUniformLocation,
+  programUniform1f,
+  programUniform1i,
+--programUniformFloat,
+--programUniformInt,
+--programUniformMatrix
 ) where
 
 import C2HS
 
 {# import Graphics.Cogl.Types #}
+{# import Graphics.Cogl.Enums #}
+
+{# fun unsafe shader_source as ^ { withShader* `Shader', `String' } -> `()' #}
+
+{# fun unsafe shader_compile as ^ { withShader* `Shader' } -> `()' #}
+
+{# fun unsafe shader_get_info_log as ^ { withShader* `Shader' } -> `String' peekNFreeString* #}
+
+{# fun unsafe shader_get_type as ^ { withShader* `Shader' } -> `ShaderType' cToEnum #}
+
+{# fun unsafe shader_is_compiled as ^ { withShader* `Shader' } -> `Bool' #}
 
 
 
+peekNFreeString :: Ptr CChar -> IO String
+peekNFreeString p = do
+                ret <- peekCString p
+                free p
+                return ret
+
+
+{# fun unsafe create_program as ^ { } -> `Program' newProgram* #}
+
+{# fun unsafe program_attach_shader as ^
+  { withProgram* `Program', withShader* `Shader' } -> `()' #}
+
+{# fun unsafe program_link as ^ { withProgram* `Program' } -> `()' #}
+
+{# fun unsafe program_use as ^ { withProgram* `Program' } -> `()' #}
+
+{# fun unsafe program_get_uniform_location as ^ { withProgram* `Program', `String' } -> `Int' #}
+
+{# fun unsafe program_uniform_1f as ^ { `Int', `Float' } -> `()' #}
+
+{# fun unsafe program_uniform_1i as ^ { `Int', `Int' } -> `()' #}
+
+-- program_uniform_float
+-- program_uniform_int
+-- program_uniform_matrix

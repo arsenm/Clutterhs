@@ -48,7 +48,7 @@ Library
                    Graphics.Cogl.Primitives,
                    Graphics.Cogl.Materials,
                    Graphics.Cogl.Matrices,
-                   Graphics.Cogl.OffscreenBuffers,
+                   Graphics.Cogl.Offscreen,
                    Graphics.Cogl.VertexBuffers,
                    Graphics.Cogl.ShadersPipeline,
                    Graphics.Cogl.Textures,

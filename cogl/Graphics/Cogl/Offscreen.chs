@@ -27,12 +27,15 @@
 -- | Offscreen Buffers — Fuctions for creating and manipulating
 -- offscreen frame buffer objects
 module Graphics.Cogl.OffscreenBuffers (
+  Offscreen,
 
+  offscreenNewToTexture
 ) where
 
 import C2HS
 
 {# import Graphics.Cogl.Types #}
+
 
 
 

@@ -38,6 +38,10 @@ module Graphics.Cogl.Types (
   withVertexBuffer,
   newVertexBuffer,
 
+  Offscreen,
+  withOffscreen,
+  newOffscreen,
+
   VertexIndices,
   mkVertexIndices,
   withVertexIndices,
@@ -149,4 +153,18 @@ mkVertexIndices _ raw = VertexIndices (undefined :: a) raw
 foreign import ccall unsafe "&cogl_handle_unref"
   vertexIndicesUnref :: FinalizerPtr VertexIndicesRaw
 
+
+
+-- *** OffscreenBuffer
+
+newtype Offscreen = Offscreen (ForeignPtr Offscreen)
+
+withOffscreen :: Offscreen -> (Ptr () -> IO b) -> IO b
+withOffscreen (Offscreen fptr) = withForeignPtr (castForeignPtr fptr)
+
+newOffscreen :: Ptr () -> IO Offscreen
+newOffscreen = liftM Offscreen . newForeignPtr vertexUnref . castPtr
+
+foreign import ccall unsafe "&cogl_offscreen_unref"
+  offscreenUnref :: FinalizerPtr Offscreen
 

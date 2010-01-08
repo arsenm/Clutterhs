@@ -27,12 +27,57 @@
 -- | Vertex Buffers — An API for submitting extensible arrays of
 -- vertex attributes to be mapped into the GPU for fast drawing.
 module Graphics.Cogl.VertexBuffers (
-
+  vertexBufferNew,
+  vertexBufferGetNVertices,
+--vertexBufferAdd,
+  vertexBufferDelete,
+  vertexBufferSubmit,
+  vertexBufferDisable,
+  vertexBufferEnable,
+  vertexBufferDraw,
+  isVertexBuffer,
+--vertexBufferIndicesNew,
+--vertexBufferDrawElements,
+  vertexBufferIndicesGetForQuads
 ) where
 
 import C2HS
 
 {# import Graphics.Cogl.Types #}
+{# import Graphics.Cogl.Enums #}
+
+
+{# fun unsafe vertex_buffer_new as ^ { cIntConv `Word' } -> `VertexBuffer' newVertexBuffer* #}
+
+{# fun unsafe vertex_buffer_get_n_vertices as ^
+  { withVertexBuffer* `VertexBuffer' } -> `Word' cIntConv #}
+
+-- buffer_add
+
+{# fun unsafe vertex_buffer_delete as ^ { withVertexBuffer* `VertexBuffer', `String' } -> `()' #}
+
+{# fun unsafe vertex_buffer_submit as ^ { withVertexBuffer* `VertexBuffer' } -> `()' #}
+
+{# fun unsafe vertex_buffer_disable as ^ { withVertexBuffer* `VertexBuffer', `String' } -> `()' #}
+
+{# fun unsafe vertex_buffer_enable as ^ { withVertexBuffer* `VertexBuffer', `String' } -> `()' #}
+
+
+{# fun unsafe vertex_buffer_draw as ^
+  { withVertexBuffer* `VertexBuffer', cFromEnum `VerticesMode', `Int', `Int' } -> `()' #}
+
+{# fun unsafe is_vertex_buffer as ^ { withVertexBuffer* `VertexBuffer' } -> `Bool' #}
+
+-- buffer_indices_new
+--bufferIndicesNew :: IndicesType -> [graah
+
+
+-- {# fun unsafe vertex_buffer_draw_elements as ^
+
+
+{# fun unsafe vertex_buffer_indices_get_for_quads as ^
+  { cIntConv `Word' } -> `VertexBuffer' newVertexBuffer* #}
+
 
 
 

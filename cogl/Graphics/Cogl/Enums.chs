@@ -37,6 +37,8 @@ module Graphics.Cogl.Enums (
   MaterialLayerType(..),
   MaterialFilter(..),
   ShaderType(..),
+  IndicesType(..),
+  VerticesMode(..)
 ) where
 
 import C2HS
@@ -321,4 +323,38 @@ instance Flags TextureFlags
 -- * Since 1.0
 --
 {# enum CoglMaterialLayerType as MaterialLayerType {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+
+-- | You should aim to use the smallest data type that gives you
+-- enough range, since it reduces the size of your index array and can
+-- help reduce the demand on memory bandwidth.
+--
+-- [@IndicesTypeUnsignedByte@] Your indices are unsigned bytes
+--
+-- [@IndicesTypeUnsignedShort@] Your indices are unsigned shorts
+--
+{# enum CoglIndicesType as IndicesType {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+
+
+-- | How vertices passed to 'vertexBufferDraw' and
+-- 'vertexBufferDrawElements' should be interpreted
+--
+-- [@VerticesModePoints@] FIXME, equivalent to %GL_POINTS
+--
+-- [@VerticesModeLineStrip@] FIXME, equivalent to %GL_LINE_STRIP
+--
+-- [@VerticesModeLineLoop@] FIXME, equivalent to %GL_LINE_LOOP
+--
+-- [@VerticesModeLines@] FIXME, equivalent to %GL_LINES
+--
+-- [@VerticesModeTriangleStrip@] FIXME, equivalent to %GL_TRIANGLE_STRIP
+--
+-- [@VerticesModeTriangleFan@] FIXME, equivalent to %GL_TRIANGLE_FAN
+--
+-- [@VerticesModeTriangles@] FIXME, equivalent to %GL_TRIANGLES
+--
+-- * Since 1.0
+--
+{# enum CoglVerticesMode as VerticesMode {underscoreToCase} deriving (Show, Eq, Bounded) #}
 

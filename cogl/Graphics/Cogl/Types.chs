@@ -5,7 +5,7 @@
 --
 --  Created: 13 Dec 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,14 @@ module Graphics.Cogl.Types (
   Material,
   withMaterial,
   newMaterial,
+
+  VertexBuffer,
+  withVertexBuffer,
+  newVertexBuffer,
+
+  VertexIndices,
+  withVertexIndices,
+  newVertexIndices,
 
   Color,
   allocColor,
@@ -106,4 +114,35 @@ newMaterial = liftM Material . newForeignPtr materialUnref . castPtr
 
 foreign import ccall unsafe "&cogl_material_unref"
   materialUnref :: FinalizerPtr Material
+
+-- *** VertexBuffer
+
+-- same issue as for Handle and others.
+
+newtype VertexBuffer = VertexBuffer (ForeignPtr VertexBuffer)
+
+withVertexBuffer :: VertexBuffer -> (Ptr () -> IO b) -> IO b
+withVertexBuffer (VertexBuffer fptr) = withForeignPtr (castForeignPtr fptr)
+
+newVertexBuffer :: Ptr () -> IO VertexBuffer
+newVertexBuffer = liftM VertexBuffer . newForeignPtr vertexBufferUnref . castPtr
+
+foreign import ccall unsafe "&cogl_vertex_buffer_unref"
+  vertexBufferUnref :: FinalizerPtr VertexBuffer
+
+-- *** VertexIndices
+
+-- same issue as for Handle and others.
+
+newtype VertexIndices = VertexIndices (ForeignPtr VertexIndices)
+
+withVertexIndices :: VertexIndices -> (Ptr () -> IO b) -> IO b
+withVertexIndices (VertexIndices fptr) = withForeignPtr (castForeignPtr fptr)
+
+newVertexIndices :: Ptr () -> IO VertexIndices
+newVertexIndices = liftM VertexIndices . newForeignPtr vertexIndicesUnref . castPtr
+
+foreign import ccall unsafe "&cogl_handle_unref"
+  vertexIndicesUnref :: FinalizerPtr VertexIndices
+
 

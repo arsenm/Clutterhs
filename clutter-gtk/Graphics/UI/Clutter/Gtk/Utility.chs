@@ -54,6 +54,7 @@ import System.Environment (getArgs, getProgName)
 
 import Graphics.UI.Gtk.Types
 import Graphics.UI.Clutter.Types
+import Graphics.UI.Clutter.Enums
 import System.Glib.UTFString
 import Graphics.UI.Gtk.General.Enums
 import Graphics.UI.Gtk.General.IconFactory (IconSize(..))

@@ -72,17 +72,17 @@ module Graphics.UI.Clutter.Texture (
 --textureSetAreaFromRgbData,
   textureGetBaseSize,
 
---textureGetPixelFormat,
+  textureGetPixelFormat,
   textureGetMaxTileWaste,
 
   textureGetFilterQuality,
   textureSetFilterQuality,
 
---textureGetCoglTexture,
---textureSetCoglTexture,
+  textureGetCoglTexture,
+  textureSetCoglTexture,
 
---textureSetCoglMaterial,
---textureGetCoglMaterial,
+  textureSetCoglMaterial,
+  textureGetCoglMaterial,
 
   textureGetSyncSize,
   textureSetSyncSize,
@@ -100,15 +100,15 @@ module Graphics.UI.Clutter.Texture (
   textureSetLoadDataAsync,
 
 -- * Attributes
---textureCoglMaterial,
---textureCoglTexture,
+  textureCoglMaterial,
+  textureCoglTexture,
   textureDisableSlicing,
   textureFilename,
   textureFilterQuality,
   textureKeepAspectRatio,
   textureLoadAsync,
   textureLoadDataAsync,
---texturePixelFormat,
+  texturePixelFormat,
   textureRepeatX,
   textureRepeatY,
   textureSyncSize,
@@ -132,6 +132,8 @@ module Graphics.UI.Clutter.Texture (
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}
+import Graphics.Cogl.Enums hiding (TextureFlags)
+import qualified Graphics.Cogl.Types as Cogl
 
 import Data.Array.Base (getBounds)
 
@@ -314,10 +316,10 @@ texture_set_area_from_rgb_data
          alloca- `Int' peekIntConv*,
          alloca- `Int' peekIntConv* } -> `()' #}
 
-{- TODO: Requires cogl
-{# fun unsafe texture_get_pixel_format as ^
-       { withTexture* `Texture' } -> `CoglPixelFormat' cToEnum #}
--}
+
+{# fun unsafe texture_get_pixel_format as ^ `(TextureClass self)' =>
+  { withTextureClass* `self' } -> `PixelFormat' cToEnum #}
+
 
 --CHECKME: Wrap the -1 thing somehow?
 -- | Gets the maximum waste that will be used when creating a texture
@@ -362,16 +364,85 @@ texture_set_area_from_rgb_data
 {# fun unsafe texture_set_filter_quality as ^ `(TextureClass self)' =>
        { withTextureClass* `self', cFromEnum `TextureQuality' } -> `()' #}
 
-{-
+-- c2hs limitation
+coglNewTexture = Cogl.newTexture
+coglWithTexture = Cogl.withTexture
+
+coglNewMaterial = Cogl.newMaterial
+coglWithMaterial = Cogl.withMaterial
+
+--FIXME: ref?
+
+-- | Retrieves the handle to the underlying COGL texture used for
+-- drawing the actor. No extra reference is taken so if you need to
+-- keep the handle then you should call cogl_handle_ref() on it.
+--
+-- The texture handle returned is the first layer of the material
+-- handle used by the ClutterTexture. If you need to access the other
+-- layers you should use 'textureGetCoglMaterial' instead and use the
+-- 'Cogl.Material' API.
+--
+-- [@texture@] A 'Texture'
+--
+-- [@Returns@] COGL texture handle
+--
+--  * Since 0.8
+--
 {# fun unsafe texture_get_cogl_texture as ^ `(TextureClass self)' =>
-       { withTexture* `Texture' } -> `CoglTexture' newCoglTexture #}
+       { withTextureClass* `self' } -> `Cogl.Texture' coglNewTexture* #}
+
+-- | Replaces the underlying COGL texture drawn by this actor with
+-- cogl_tex. A reference to the texture is taken so if the handle is
+-- no longer needed it should be deref'd with cogl_handle_unref.
+--
+-- This should not be called on an unrealizable texture (one that
+-- isn't inside a stage). (Currently the Clutter.Texture
+-- implementation relies on being able to have a GL texture while
+-- unrealized, which means you can get away with it, but it's not
+-- correct and may change in the future.)
+--
+-- [@texture@] A Clutter.Texture
+--
+-- [@cogl_tex@] A CoglHandle for a texture
+--
+-- * Since 0.8
+--
 {# fun unsafe texture_set_cogl_texture as ^ `(TextureClass self)' =>
-       { withTexture* `Texture', withCoglTexture `CoglTexture' } -> `()' #}
+       { withTextureClass* `self', coglWithTexture* `Cogl.Texture' } -> `()' #}
+
+
+
+-- | Returns a handle to the underlying COGL material used for drawing
+-- the actor. No extra reference is taken so if you need to keep the
+-- handle then you should call cogl_handle_ref() on it.
+--
+-- [@texture@] A Clutter.Texture
+--
+-- [@Returns@] COGL material handle
+--
+-- * Since 1.0
+--
 {# fun unsafe texture_get_cogl_material as ^ `(TextureClass self)' =>
-       { withTexture* `Texture' } -> `CoglMaterial' newCoglMaterial #}
+       { withTextureClass* `self' } -> `Cogl.Material' coglNewMaterial* #}
+
+
+-- | Replaces the underlying Cogl material drawn by this actor with
+-- cogl_material. A reference to the material is taken so if the
+-- handle is no longer needed it should be deref'd with
+-- cogl_handle_unref. Texture data is attached to the material so
+-- calling this function also replaces the Cogl
+-- texture. 'Clutter.Texture' requires that the material have a texture
+-- layer so you should set one on the material before calling this
+-- function.
+--
+-- [@texture@] A 'Clutter.Texture'
+--
+-- [@cogl_material@] A CoglHandle for a material
+--
+-- * Since 0.8
+--
 {# fun unsafe texture_set_cogl_material as ^ `(TextureClass self)' =>
-       { withTexture* `Texture', withCoglMaterial `CoglMaterial' } -> `()' #}
--}
+       { withTextureClass* `self', coglWithMaterial* `Cogl.Material' } -> `()' #}
 
 
 -- | Retrieves the value set with 'textureGetSyncSize'
@@ -514,12 +585,12 @@ texture_set_area_from_rgb_data
 -- attributes
 
 -- | The underlying COGL material handle used to draw this actor.
---textureCoglMaterial :: (TextureClass self) => Attr self CoglMaterial
---textureCoglMaterial = newAttr textureGetCoglMaterial textureSetCoglMaterial
+textureCoglMaterial :: (TextureClass self) => Attr self Cogl.Material
+textureCoglMaterial = newNamedAttr "cogl-material" textureGetCoglMaterial textureSetCoglMaterial
 
 -- | The underlying COGL texture handle used to draw this actor.
---textureCoglTexture :: (TextureClass self) => Attr self CoglTexture
---textureCoglTexture = newAttr textureGetCoglTexture textureSetCoglTexture
+textureCoglTexture :: (TextureClass self) => Attr self Cogl.Texture
+textureCoglTexture = newNamedAttr "cogl-texture" textureGetCoglTexture textureSetCoglTexture
 
 -- | Force the underlying texture to be singlularand not made of of
 --   smaller space saving inidivual textures.
@@ -584,12 +655,12 @@ textureLoadAsync = newNamedAttr "load-async" textureGetLoadAsync textureSetLoadA
 textureLoadDataAsync :: (TextureClass self) => Attr self Bool
 textureLoadDataAsync = newAttr textureGetLoadDataAsync textureSetLoadDataAsync
 
--- | CoglPixelFormat to use.
+-- | 'Cogl.PixelFormat' to use.
 --
 -- Default value: CoglPixelFormatRgba8888
 --
---textureCoglPixelFormat :: (TextureClass self) => Attr self CoglPixelFormat
---textureCoglPixelFormat = newAttr textureGetCoglPixelFormat textureSetCoglPixelFormat
+texturePixelFormat :: (TextureClass self) => ReadAttr self PixelFormat
+texturePixelFormat = readNamedAttr "pixel-format" textureGetPixelFormat
 
 
 -- | Repeat underlying pixbuf rather than scale in x direction.

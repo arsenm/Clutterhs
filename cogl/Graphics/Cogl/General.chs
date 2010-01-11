@@ -30,7 +30,6 @@ module Graphics.Cogl.General (
   featuresAvailable,
   checkExtension,
 
-
   pushMatrix,
   popMatrix,
   scale,
@@ -61,7 +60,7 @@ module Graphics.Cogl.General (
   setSourceColor4ub,
   setSourceColor4f,
   setSourceTexture,
---  readPixels,
+--readPixels,
 
   flush,
   beginGl,

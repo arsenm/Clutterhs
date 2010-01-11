@@ -62,6 +62,7 @@ Library
               FlexibleInstances
   GHC-Options: -funbox-strict-fields
   Build-Depends:  base >= 4 && < 5,
+                  cogl,
                   haskell98,
                   mtl,
                   cairo,

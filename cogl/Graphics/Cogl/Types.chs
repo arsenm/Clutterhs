@@ -50,6 +50,10 @@ module Graphics.Cogl.Types (
   withProgram,
   newProgram,
 
+  Texture,
+  withTexture,
+  newTexture,
+
   VertexIndices,
   mkVertexIndices,
   withVertexIndices,
@@ -207,3 +211,17 @@ newProgram = liftM Program . newForeignPtr programUnref . castPtr
 
 foreign import ccall unsafe "&cogl_program_unref"
   programUnref :: FinalizerPtr Program
+
+-- *** Texture
+
+newtype Texture = Texture (ForeignPtr Texture)
+
+withTexture :: Texture -> (Ptr () -> IO b) -> IO b
+withTexture (Texture fptr) = withForeignPtr (castForeignPtr fptr)
+
+newTexture :: Ptr () -> IO Texture
+newTexture = liftM Texture . newForeignPtr textureUnref . castPtr
+
+foreign import ccall unsafe "&cogl_texture_unref"
+  textureUnref :: FinalizerPtr Texture
+

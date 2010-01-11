@@ -399,19 +399,19 @@ stageReadPixels stage x y w h = let cx = cIntConv x
 -- | Sets the fog (also known as "depth cueing") settings for the stage.
 --
 --  A 'Stage' will only use a linear fog progression, which depends
---  solely on the distance from the viewer. The cogl_set_fog() function in
---  COGL exposes more of the underlying implementation, and allows
+--  solely on the distance from the viewer. The 'Cogl.setFog' function
+--  in COGL exposes more of the underlying implementation, and allows
 --  changing the for progression function. It can be directly used by
---  disabling the "use-fog" property and connecting a signal handler to
---  the "paint" signal on the stage, like:
--- TODO: The equivalent example
+--  disabling the "use-fog" property and connecting a signal handler
+--  to the "paint" signal on the stage, like: TODO: The equivalent
+--  example
 --
 --  Note: The fogging functions only work correctly when the visible
---  actors use unmultiplied alpha colors. By default Cogl will premultiply
---  textures and cogl_set_source_color will premultiply colors, so unless
---  you explicitly load your textures requesting an unmultiplied
---  internal_format and use cogl_material_set_color you can only use
---  fogging with fully opaque actors.
+--  actors use unmultiplied alpha colors. By default Cogl will
+--  premultiply textures and 'Cogl.setSourceColor' will premultiply
+--  colors, so unless you explicitly load your textures requesting an
+--  unmultiplied internal_format and use cogl_material_set_color you
+--  can only use fogging with fully opaque actors.
 --
 -- We can look to improve this in the future when we can depend on
 --  fragment shaders.

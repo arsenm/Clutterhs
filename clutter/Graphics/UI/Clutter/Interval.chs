@@ -74,6 +74,7 @@ module Graphics.UI.Clutter.Interval (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.StoreValue #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
@@ -228,15 +229,12 @@ newProgressFunc :: (GenericValueClass a) => ProgressFunc a -> IO CProgressFunc
 newProgressFunc userfunc = mkProgressFunc (newProgressFunc' userfunc)
     where
       newProgressFunc' :: (GenericValueClass a) => ProgressFunc a -> GenericValuePtr -> GenericValuePtr -> Double -> GenericValuePtr -> IO Bool
-      newProgressFunc' userfunc aPtr bPtr p retPtr = do let retGV = GValue (castPtr retPtr)
-                                                            toReal = liftM unsafeExtractGenericValue . valueGetGenericValue . GValue . castPtr
-
-                                                        a <- toReal aPtr
-                                                        b <- toReal bPtr
+      newProgressFunc' userfunc aPtr bPtr p retPtr = do a <- gvPtrToRealValue aPtr
+                                                        b <- gvPtrToRealValue bPtr
                                                         let (stat, retVal) = userfunc a b p
+                                                            retGV = GValue (castPtr retPtr)
                                                         valueSetGenericValueNoInit retGV (toGenericValue retVal)
                                                         return stat
-
 foreign import ccall "wrapper"
     mkProgressFunc :: (GenericValuePtr -> GenericValuePtr -> Double -> GenericValuePtr -> IO Bool) -> IO CProgressFunc
 

@@ -62,9 +62,9 @@ module Graphics.UI.Clutter.Model (
   modelForeach,
   modelSetSortingColumn,
   modelGetSortingColumn,
---modelSetSort,
+  modelSetSort,
   modelResort,
---modelSetFilter,
+  modelSetFilter,
   modelGetFilterSet,
   modelFilterIter,
   modelFilterRow,
@@ -92,14 +92,16 @@ module Graphics.UI.Clutter.Model (
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.StoreValue #}
+{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
+import System.Glib.GValue
 import System.Glib.GType
 import Data.Word
-import Control.Monad (when)
+import Control.Monad (when, liftM)
 
 {# fun unsafe model_get_column_name as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `String' #}
@@ -160,6 +162,16 @@ modelInsertValue model row col val = let func = {# call unsafe model_insert_valu
 
 {# fun unsafe model_set_sorting_column as ^
        `(ModelClass model)' => { withModelClass* `model', `Int' } -> `()' #}
+
+
+--FIXME: Type checking...
+modelSetSort :: (ModelClass model, GenericValueClass a) => model -> Word -> ModelSortFunc model a -> IO ()
+modelSetSort model col userfunc = let func = {# call model_set_sort #}
+                                  in withModelClass model $ \mPtr -> do
+                                    fPtr <- newModelSortFunc userfunc
+                                    func mPtr (cIntConv col) fPtr (castFunPtrToPtr fPtr) destroyFunPtr
+
+
 
 {# fun unsafe model_remove as ^
        `(ModelClass model)' => { withModelClass* `model', cIntConv `Word' } -> `()' #}
@@ -272,4 +284,21 @@ instance ColList EOC w where
 instance (GenericValueClass a, ColList b w) => ColList (ColCons a b) w where
   toHomoGVList (ColCons x xs) = toGenericValue x:(toHomoGVList xs)
 
+
+-- *** ModelSortFunc
+
+type ModelSortFunc m a = m -> a -> a -> IO Int
+type CModelSortFunc = FunPtr (Ptr Model -> GenericValuePtr -> GenericValuePtr -> Ptr () -> IO CInt)
+
+newModelSortFunc :: (ModelClass m, GenericValueClass a) => ModelSortFunc m a -> IO CModelSortFunc
+newModelSortFunc userfunc = mkModelSortFunc (newModelSortFunc' userfunc)
+    where
+      newModelSortFunc' :: (GenericValueClass a, ModelClass model) => (model -> a -> a -> IO Int) -> Ptr Model -> GenericValuePtr -> GenericValuePtr -> IO CInt
+      newModelSortFunc' userfunc mPtr aPtr bPtr = do a <- gvPtrToRealValue aPtr
+                                                     b <- gvPtrToRealValue bPtr
+                                                     model <- liftM (unsafeCastGObject . toGObject) (newModel mPtr)
+                                                     liftM cIntConv (userfunc model a b)
+
+foreign import ccall "wrapper"
+    mkModelSortFunc :: (Ptr Model -> GenericValuePtr -> GenericValuePtr -> IO CInt) -> IO CModelSortFunc
 

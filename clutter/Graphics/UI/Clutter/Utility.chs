@@ -58,17 +58,22 @@ module Graphics.UI.Clutter.Utility (
   maybeNewShader,
 
   clutterNewAttrFromUIntProperty,
-  unsafeCastActor
+  unsafeCastActor,
+
+  gvPtrToRealValue
  ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.StoreValue #}
 
 import C2HS
 import Data.Maybe (catMaybes)
+import Control.Monad (liftM)
 
 import System.Glib.Flags
 import System.Glib.Attributes
 import System.Glib.Properties
+import System.Glib.GValue
 import System.Glib.GValueTypes
 import System.Glib.GObject (makeNewGObject, GObjectClass, toGObject, unsafeCastGObject)
 import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
@@ -223,4 +228,7 @@ clutterObjectSetPropertyUInt = objectSetPropertyInternal GType.uint valueSetUInt
 
 unsafeCastActor :: (ActorClass a, ActorClass b) => a -> b
 unsafeCastActor = unsafeCastGObject . toGObject
+
+gvPtrToRealValue :: (GenericValueClass a) => GenericValuePtr -> IO a
+gvPtrToRealValue = liftM unsafeExtractGenericValue . valueGetGenericValue . GValue . castPtr
 

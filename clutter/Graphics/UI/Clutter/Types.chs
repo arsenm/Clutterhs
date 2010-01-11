@@ -1500,3 +1500,4 @@ class (GObjectClass a) => Playable a where
   onPaused :: a -> IO () -> IO (ConnectId a)
   afterPaused :: a -> IO () -> IO (ConnectId a)
 
+

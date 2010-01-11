@@ -85,3 +85,4 @@ clutter/demo/scoretest
 clutter/demo/texttest
 clutter/demo/texturetest
 clutter/demo/timelinetest
+clutter/csrc/hsgthread.o

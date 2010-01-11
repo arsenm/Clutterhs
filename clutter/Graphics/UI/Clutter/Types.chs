@@ -328,6 +328,11 @@ import Control.Exception (bracket)
 
 {# import Graphics.UI.Clutter.Enums #}
 
+--TODO: This isn't turning out to be different than gtk, so this could
+--probably go away
+foreign import ccall unsafe "hsclutterthread.h &clutterhs_g_object_unref_from_mainloop"
+  objectUnrefFromMainloop :: FinalizerPtr a
+
 
 -- gtk2hs changed mkGObject to be a tuple (GObject, objectUnref)
 --TODO: Move this

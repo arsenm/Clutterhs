@@ -42,9 +42,12 @@ Flag Debug
 Library
   pkgconfig-depends: glib-2.0, gobject-2.0, clutter-1.0, pango
   Build-Tools: c2hs >= 0.16
-  Includes: csrc/clutter-macros.h
-  C-Sources: ./csrc/clutter-macros.c
-  Install-Includes: ./csrc/clutter-macros.h
+  Includes: csrc/clutter-macros.h,
+            csrc/hsclutterthread.h
+  C-Sources: ./csrc/clutter-macros.c,
+             ./csrc/hsclutterthread.c
+  Install-Includes: ./csrc/clutter-macros.h,
+                    ./csrc/hsclutterthread.h
   Hs-Source-Dirs: .
   Extensions: ForeignFunctionInterface,
               ExistentialQuantification,

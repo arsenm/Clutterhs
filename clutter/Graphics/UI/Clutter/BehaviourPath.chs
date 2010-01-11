@@ -76,12 +76,11 @@ behaviourPathNewWithKnots alp knots = let func = {# call unsafe behaviour_path_n
                                           withArrayLen knots $ \len knotptr ->
                                           newBehaviourPath =<< func aptr knotptr (cIntConv len)
 
-
 {# fun unsafe behaviour_path_set_path as ^
        { withBehaviourPath* `BehaviourPath', withPath* `Path'} -> `()' #}
+
 {# fun unsafe behaviour_path_get_path as ^
        { withBehaviourPath* `BehaviourPath' } -> `Path' newPath* #}
-
 
 -- Attributes
 
@@ -102,6 +101,6 @@ afterKnotReached = connect_WORD__NONE "knot-reached" True
 -- * Since 0.2
 --
 knotReached :: Signal BehaviourPath (Word -> IO ())
-knotReached = Signal (connect_WORD__NONE "knot_reached")
+knotReached = Signal (connect_WORD__NONE "knot-reached")
 
 

@@ -50,7 +50,9 @@ import C2HS
 import System.Glib.Attributes
 
 {# fun unsafe scriptable_get_id as ^ `(ScriptableClass o)' => { withScriptableClass* `o'} -> `String' #}
+
 {# fun unsafe scriptable_set_id as ^ `(ScriptableClass o)' => { withScriptableClass* `o', `String'} -> `()' #}
+
 scriptableId :: (ScriptableClass self) => Attr self String
 scriptableId = newAttr scriptableGetId scriptableSetId
 

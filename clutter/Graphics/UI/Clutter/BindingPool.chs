@@ -99,7 +99,7 @@ module Graphics.UI.Clutter.BindingPool (
 -- |
 -- @
 -- |  'GObject'
--- |   +----'BindingPool'
+--  |   +----'BindingPool'
 -- @
 
 -- * Types
@@ -259,7 +259,6 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
 --
 -- * Since 1.0
 --
-
 {# fun unsafe binding_pool_activate as ^ `(GObjectClass gobject)' =>
        { withBindingPool* `BindingPool',
          cIntConv `KeyVal',

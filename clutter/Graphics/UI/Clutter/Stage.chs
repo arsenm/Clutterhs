@@ -55,8 +55,8 @@ module Graphics.UI.Clutter.Stage (
 -- @
 -- |  'GObject'
 -- |    +----'Actor'
--- |          +----'Group'
--- |                 +----'Stage'
+-- |           +----'Group'
+-- |                  +----'Stage'
 -- @
 
 -- * Types

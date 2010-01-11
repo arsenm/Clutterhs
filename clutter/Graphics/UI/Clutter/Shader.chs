@@ -180,7 +180,7 @@ shaderSetFragmentSource shader str= let func = {# call unsafe shader_set_fragmen
 shaderCompile :: Shader -> IO Bool
 shaderCompile shader = withShader shader $ \sPtr ->
                          propagateGError $ \gerrorPtr ->
-                             liftM cToBool $ {# call unsafe shader_compile #} sPtr gerrorPtr
+                           liftM cToBool $ {# call unsafe shader_compile #} sPtr gerrorPtr
 
 
 -- | Frees up any GL context resources held by the shader.

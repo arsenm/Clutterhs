@@ -23,7 +23,8 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
--- | Path — An object describing a path with straight lines and Bezier curves.
+-- | Path — An object describing a path with straight lines and Bezier
+-- curves.
 module Graphics.UI.Clutter.Path (
 -- * Detail
 -- | A 'Path' contains a description of a path

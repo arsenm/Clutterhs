@@ -3,7 +3,9 @@ version: 0.2
 license: LGPL
 license-file: COPYING
 maintainer: arsenm2@rpi.edu
-stability: lol
+author: Matthew Arsenault
+stability: alpha
+copyright: (c) 2009-2010 Matthew Arsenault
 homepage: http://example.com
 category: Graphics
 Synopsis: Clutter-Gtk bindings

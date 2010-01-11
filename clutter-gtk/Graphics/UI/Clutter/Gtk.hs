@@ -5,7 +5,7 @@
 --
 --  Created: 13 Nov 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -17,8 +17,6 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface #-}
-
 
 -- | Clutter-Gtk is an integration library for the Clutter toolkit
 --   providing access and integration for the GTK+ library.
@@ -29,11 +27,11 @@
 -- structures and object classes with Clutter actors.
 --
 module Graphics.UI.Clutter.Gtk (
-                                module Graphics.UI.Clutter.Gtk.Embed,
-                                module Graphics.UI.Clutter.Gtk.Scrollable,
-                                module Graphics.UI.Clutter.Gtk.Zoomable,
-                                module Graphics.UI.Clutter.Gtk.Utility
-                               ) where
+  module Graphics.UI.Clutter.Gtk.Embed,
+  module Graphics.UI.Clutter.Gtk.Scrollable,
+  module Graphics.UI.Clutter.Gtk.Zoomable,
+  module Graphics.UI.Clutter.Gtk.Utility
+  ) where
 
 import Graphics.UI.Clutter.Gtk.Embed
 import Graphics.UI.Clutter.Gtk.Scrollable

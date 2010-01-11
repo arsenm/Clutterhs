@@ -89,7 +89,7 @@ module Graphics.UI.Clutter.Model (
   sortChanged
   ) where
 
-{# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Types #} hiding (Nothing)
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.StoreValue #}
 {# import Graphics.UI.Clutter.Utility #}
@@ -163,13 +163,18 @@ modelInsertValue model row col val = let func = {# call unsafe model_insert_valu
 {# fun unsafe model_set_sorting_column as ^
        `(ModelClass model)' => { withModelClass* `model', `Int' } -> `()' #}
 
+nullFptr :: FunPtr a
+nullFptr = castPtrToFunPtr nullPtr
 
 --FIXME: Type checking...
-modelSetSort :: (ModelClass model, GenericValueClass a) => model -> Word -> ModelSortFunc model a -> IO ()
+modelSetSort :: (ModelClass model, GenericValueClass a) => model -> Word -> Maybe (ModelSortFunc model a) -> IO ()
 modelSetSort model col userfunc = let func = {# call model_set_sort #}
                                   in withModelClass model $ \mPtr -> do
-                                    fPtr <- newModelSortFunc userfunc
-                                    func mPtr (cIntConv col) fPtr (castFunPtrToPtr fPtr) destroyFunPtr
+                                    case userfunc of
+                                      Nothing -> func mPtr (cIntConv col) nullFptr nullPtr nullFptr
+                                      Just x -> do
+                                        fPtr <- newModelSortFunc x
+                                        func mPtr (cIntConv col) fPtr (castFunPtrToPtr fPtr) destroyFunPtr
 
 
 
@@ -187,11 +192,14 @@ modelForeach b func = withModelClass b $ \mptr -> do
        `(ModelClass model)' => { withModelClass* `model' } -> `()' #}
 
 
-modelSetFilter :: (ModelClass model) => model -> ModelFilterFunc -> IO ()
+modelSetFilter :: (ModelClass model) => model -> Maybe ModelFilterFunc -> IO ()
 modelSetFilter model filterFunc = let func = {# call model_set_filter #}
                                   in withModelClass model $ \mdlPtr -> do
-                                       fFuncPtr <- newModelFilterFunc filterFunc
-                                       func mdlPtr fFuncPtr (castFunPtrToPtr fFuncPtr) destroyFunPtr
+                                    case filterFunc of
+                                      Nothing -> func mdlPtr nullFptr nullPtr nullFptr
+                                      Just x -> do
+                                        fFuncPtr <- newModelFilterFunc x
+                                        func mdlPtr fFuncPtr (castFunPtrToPtr fFuncPtr) destroyFunPtr
 
 
 {# fun unsafe model_get_filter_set as ^

@@ -62,7 +62,8 @@ module Graphics.Cogl.Types (
 
   Matrix,
   withMatrix,
-  newMatrix
+  newMatrix,
+  allocMatrix
 ) where
 
 import C2HS
@@ -111,6 +112,9 @@ allocColor act = act =<< mallocBytes {# sizeof CoglColor #}
 --CHECKME: Free
 newMatrix :: Ptr Matrix -> IO Matrix
 newMatrix = liftM Matrix . newForeignPtr finalizerFree
+
+allocMatrix :: (Ptr Matrix -> IO a) -> IO a
+allocMatrix act = act =<< mallocBytes {# sizeof CoglMatrix #}
 
 
 -- *** Material

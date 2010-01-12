@@ -42,8 +42,11 @@ module Graphics.UI.Clutter.Gtk.Utility (
 
   clutterTextureNewFromPixbuf,
   clutterTextureNewFromStock,
-  clutterTextureNewFromIconName
+  clutterTextureNewFromIconName,
 
+  textureSetFromPixbuf,
+  textureSetFromStock,
+  textureSetFromIconName
   ) where
 
 import C2HS
@@ -56,6 +59,7 @@ import Graphics.UI.Gtk.Types
 import Graphics.UI.Clutter.Types
 import Graphics.UI.Clutter.Enums
 import System.Glib.UTFString
+import System.Glib.GError
 import Graphics.UI.Gtk.General.Enums
 import Graphics.UI.Gtk.General.IconFactory (IconSize(..))
 import Graphics.UI.Clutter.Types
@@ -64,6 +68,7 @@ import Graphics.UI.Clutter.Utility
 {# pointer *GtkWidget as WidgetPtr foreign -> Widget nocode #}
 {# pointer *ClutterColor as ColorPtr foreign -> Color nocode #}
 {# pointer *ClutterActor as ActorPtr foreign -> Actor nocode #}
+{# pointer *ClutterTexture as TexturePtr foreign -> Texture nocode #}
 {# pointer *GdkPixbuf as PixbufPtr foreign -> Pixbuf nocode #}
 
 -- CHECKME: Unicode?
@@ -119,6 +124,31 @@ withPixbuf = withForeignPtr . unPixbuf
     { withWidgetClass* `widget', `String', cFromEnum `IconSize' } -> `Maybe Texture' maybeNewTexture* #}
 
 
---TODO: setFromPixbuf, setFromStock, etc.
+-- CHECKME: Is the returned bool really useful here?
+textureSetFromPixbuf :: (TextureClass texture) => texture -> Pixbuf -> IO Bool
+textureSetFromPixbuf texture pixbuf = let func = {# call unsafe clutter_texture_set_from_pixbuf #}
+                                      in propagateGError $ \gerrorPtr ->
+                                           withTextureClass texture $ \texPtr ->
+                                             withPixbuf pixbuf $ \pbPtr ->
+                                               liftM cToBool (func texPtr pbPtr gerrorPtr)
 
+
+textureSetFromStock :: (TextureClass texture, WidgetClass widget) => texture -> widget -> String -> IconSize -> IO Bool
+textureSetFromStock texture widget str size = let func = {# call unsafe clutter_texture_set_from_stock #}
+                                                  csize = cFromEnum size
+                                              in propagateGError $ \gerrorPtr ->
+                                                   withTextureClass texture $ \texPtr ->
+                                                     withWidgetClass widget $ \widPtr ->
+                                                       withCString str $ \strPtr ->
+                                                         liftM cToBool (func texPtr widPtr strPtr csize gerrorPtr)
+
+
+textureSetFromIconName :: (TextureClass texture, WidgetClass widget) => texture -> widget -> String -> IconSize -> IO Bool
+textureSetFromIconName texture widget str size = let func = {# call unsafe clutter_texture_set_from_icon_name #}
+                                                     csize = cFromEnum size
+                                                 in propagateGError $ \gerrorPtr ->
+                                                      withTextureClass texture $ \texPtr ->
+                                                        withWidgetClass widget $ \widPtr ->
+                                                          withCString str $ \strPtr ->
+                                                           liftM cToBool (func texPtr widPtr strPtr csize gerrorPtr)
 

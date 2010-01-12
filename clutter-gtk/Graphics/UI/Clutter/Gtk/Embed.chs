@@ -37,7 +37,7 @@ module Graphics.UI.Clutter.Gtk.Embed (
 -- |           +----'Gtk.Widget'
 -- |                  +----'Gtk.Container'
 -- |                        +----'ClutterEmbed'
----
+-- |
 -- @
 
 -- * Types

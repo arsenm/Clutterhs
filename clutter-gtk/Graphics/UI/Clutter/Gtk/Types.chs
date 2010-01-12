@@ -55,6 +55,8 @@ module Graphics.UI.Clutter.Gtk.Types (
 
   GtkInitError(..),
   GtkTextureError(..),
+
+  withMaybeWidgetClass
   ) where
 
 import C2HS
@@ -177,4 +179,7 @@ instance (GObjectClass a) => GObjectClass (ClutterViewport a) where
 {# enum ClutterGtkInitError as GtkInitError {underscoreToCase} deriving (Show, Eq) #}
 {# enum ClutterGtkTextureError as GtkTextureError {underscoreToCase} deriving (Show, Eq) #}
 
+
+withMaybeWidgetClass :: (WidgetClass a) => Maybe a -> (Ptr Widget -> IO b) -> IO b
+withMaybeWidgetClass = maybeWith withWidgetClass
 

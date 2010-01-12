@@ -43,7 +43,7 @@ module Graphics.UI.Clutter.Gtk.Viewport (
 -- |  'GObject'
 -- |    +----'Actor'
 -- |           +----'ClutterViewport'
----
+-- |
 -- @
 
 -- * Types

@@ -87,47 +87,189 @@ gtkClutterInit = do
 
 --TODO: init_with_args
 
+
+
+-- | Retrieves the foreground color of widget for the given state
+--
+-- [@widget@] a 'Widget'
+--
+-- [@state@] a state
+---
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_fg_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
+
+-- | Retrieves the background color of widget for the given state
+--
+-- [@widget@] a Widget
+--
+-- [@state@] a state
+--
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_bg_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
+
+-- | Retrieves the text color of widget for the given state
+--
+-- [@widget@] a Widget
+--
+-- [@state@] a state
+--
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_text_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
+
+
+-- | Retrieves the base color of widget for the given state
+--
+-- [@widget@] a Widget
+--
+-- [@state@] a state
+--
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_base_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
+
+-- | Retrieves the text-aa color of widget for the given state
+--
+-- [@widget@] a Widget
+--
+-- [@state@] a state
+--
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_text_aa_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
+
+-- | Retrieves the light color of widget for the given state
+--
+-- [@widget@] a Widget
+--
+-- [@state@] a state
+--
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_light_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
+
+-- | Retrieves the mid color of widget for the given state
+--
+-- [@widget@] a Widget
+--
+-- [@state@] a state
+--
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_mid_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
+
+-- | Retrieves the dark color of widget for the given state
+--
+-- [@widget@] a Widget
+--
+-- [@state@] a state
+--
+-- [@Returns@] a 'Color'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_get_dark_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
 
 withPixbuf = withForeignPtr . unPixbuf
 
+
+
+-- | Creates a new 'Texture' and sets its contents with a copy of
+-- pixbuf.
+--
+-- [@pixbuf@] a 'Pixbuf'
+--
+-- [@Returns@] the newly created 'Texture'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_texture_new_from_pixbuf as ^
     { withPixbuf* `Pixbuf' } -> `Texture' newTexture* #}
 
 
+-- | Creates a new 'Texture' and sets its contents using the stock
+-- icon stock_id as rendered by widget.
+--
+-- [@widget@] a Widget
+--
+-- [@stock_id@] the stock id of the icon
+--
+-- [@size@] the size of the icon, or -1
+--
+-- [@Returns@] the newly created 'Texture'
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_texture_new_from_stock as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', `String', cFromEnum `IconSize' } -> `Maybe Texture' maybeNewTexture* #}
 
+
+
+
+
+-- | Creates a new 'Texture' and sets its contents to be the icon_name
+-- from the current icon theme.
+--
+-- [@widget@] @Just@ a Widget or @Nothing@
+--
+-- [@icon_name@] the name of the icon
+--
+-- [@size@] the size of the icon, or -1
+--
+-- [@Returns@] @Just@ the newly created texture, or @Nothing@ if
+-- @widget@ was @Nothing@ and icon_name was not found.
+--
+-- * Since 0.8
+--
 {# fun unsafe clutter_texture_new_from_icon_name as ^ `(WidgetClass widget)' =>
     { withMaybeWidgetClass* `Maybe widget', `String', cFromEnum `IconSize' } -> `Maybe Texture' maybeNewTexture* #}
 
 
-withMaybeWidgetClass :: (WidgetClass a) => Maybe a -> (Ptr Widget -> IO b) -> IO b
-withMaybeWidgetClass = maybeWith withWidgetClass
 
 -- CHECKME: Is the returned bool really useful here?
+
+-- | Sets the contents of texture with a copy of pixbuf. Throws an
+-- exception in event of an error.
+--
+-- [@texture@] a Texture
+--
+-- [@pixbuf@] a Pixbuf
+--
+-- [@Returns@] @True@ on success, @False@ on failure.
+--
+-- * Since 0.8
+--
 textureSetFromPixbuf :: (TextureClass texture) => texture -> Pixbuf -> IO Bool
 textureSetFromPixbuf texture pixbuf = let func = {# call unsafe clutter_texture_set_from_pixbuf #}
                                       in propagateGError $ \gerrorPtr ->
@@ -136,6 +278,22 @@ textureSetFromPixbuf texture pixbuf = let func = {# call unsafe clutter_texture_
                                                liftM cToBool (func texPtr pbPtr gerrorPtr)
 
 
+
+-- | Sets the contents of texture using the stock icon stock_id, as
+-- rendered by widget. Throws an exception in event of an error.
+--
+-- [@texture@] a Texture
+--
+-- [@widget@] a Widget
+--
+-- [@stock_id@] the stock id of the icon
+--
+-- [@size@] the size of the icon, or -1
+--
+-- [@Returns@] @True@ on success, @False@ on failure.
+--
+-- * Since 0.8
+--
 textureSetFromStock :: (TextureClass texture, WidgetClass widget) => texture -> widget -> String -> IconSize -> IO Bool
 textureSetFromStock texture widget str size = let func = {# call unsafe clutter_texture_set_from_stock #}
                                                   csize = cFromEnum size
@@ -146,6 +304,23 @@ textureSetFromStock texture widget str size = let func = {# call unsafe clutter_
                                                          liftM cToBool (func texPtr widPtr strPtr csize gerrorPtr)
 
 
+
+
+-- | Sets the contents of texture using the icon_name from the current
+-- icon theme. Throws an exception in event of an error.
+--
+-- [@texture@] a Texture
+--
+-- [@widget@] @Just@ a Widget or @Nothing@
+--
+-- [@icon_name@] the name of the icon
+--
+-- [@size@] the icon size or -1
+--
+-- [@Returns@] @True@ on success, @False@ on failure.
+--
+-- * Since 0.8
+--
 textureSetFromIconName :: (TextureClass texture, WidgetClass widget) => texture -> Maybe widget -> String -> IconSize -> IO Bool
 textureSetFromIconName texture widget str size = let func = {# call unsafe clutter_texture_set_from_icon_name #}
                                                      csize = cFromEnum size

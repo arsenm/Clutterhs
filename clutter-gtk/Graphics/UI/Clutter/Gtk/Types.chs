@@ -48,6 +48,7 @@ module Graphics.UI.Clutter.Gtk.Types (
 
   ClutterViewport,
   ClutterViewportRaw,
+  toClutterViewportRaw,
   mkClutterViewport,
   newClutterViewportRaw,
   withClutterViewport,
@@ -145,9 +146,8 @@ withWidgetClass = withForeignPtr . unWidget . toWidget
 {# pointer *GtkClutterViewport as ClutterViewportRaw foreign newtype #}
 
 class (GObjectClass o) => ClutterViewportClass o
-toClutterViewport :: ClutterViewportClass o => o -> ClutterViewportRaw
-toClutterViewport = unsafeCastGObject . toGObject
-
+toClutterViewportRaw :: ClutterViewportClass o => o -> ClutterViewportRaw
+toClutterViewportRaw = unsafeCastGObject . toGObject
 
 data ClutterViewport a = ClutterViewport a ClutterViewportRaw
 
@@ -158,9 +158,14 @@ withClutterViewport (ClutterViewport _ raw) = withClutterViewportRaw raw
 
 newClutterViewportRaw a = makeNewGObject (ClutterViewportRaw, objectUnref) $ return (castPtr a)
 
+instance ActorClass ClutterViewportRaw where
+instance ClutterZoomableClass ClutterViewportRaw where
 instance GObjectClass ClutterViewportRaw where
   toGObject (ClutterViewportRaw i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = ClutterViewportRaw (castForeignPtr o)
+
+instance (ActorClass a) => ClutterZoomableClass (ClutterViewport a)
+instance (ActorClass a) => ActorClass (ClutterViewport a)
 
 --CHECKME:
 instance (GObjectClass a) => GObjectClass (ClutterViewport a) where

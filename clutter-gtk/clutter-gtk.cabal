@@ -28,12 +28,13 @@ Library
   Build-Tools: c2hs
   Includes: clutter/clutter.h,
             clutter-gtk/clutter-gtk.h
-  Extensions: CPP, ForeignFunctionInterface
+  Extensions: CPP, ForeignFunctionInterface, ScopedTypeVariables
   Build-Depends: base, glib, gtk, haskell98, mtl, array, clutterhs
   Other-modules:   C2HS
   Exposed-modules: Graphics.UI.Clutter.Gtk.Types,
                    Graphics.UI.Clutter.Gtk.Embed,
                    Graphics.UI.Clutter.Gtk.Scrollable,
+                   Graphics.UI.Clutter.Gtk.Viewport,
                    Graphics.UI.Clutter.Gtk.Zoomable,
                    Graphics.UI.Clutter.Gtk.Utility,
                    Graphics.UI.Clutter.Gtk

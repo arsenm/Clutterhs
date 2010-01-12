@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, ScopedTypeVariables #-}
 
 #include <clutter-gtk/clutter-gtk.h>
 
@@ -42,15 +42,19 @@ module Graphics.UI.Clutter.Gtk.Types (
   withClutterZoomable,
   toClutterZoomable,
 
-
   newAdjustment,
   withAdjustment,
   withWidgetClass,
 
+  ClutterViewport,
+  ClutterViewportRaw,
+  mkClutterViewport,
+  newClutterViewportRaw,
+  withClutterViewport,
+
   GtkInitError(..),
   GtkTextureError(..),
   ) where
-
 
 import C2HS
 import Graphics.UI.Clutter.Types
@@ -136,6 +140,32 @@ withAdjustment = withForeignPtr . unAdjustment
 withWidgetClass :: (WidgetClass widget) => widget -> (Ptr Widget -> IO a) -> IO a
 withWidgetClass = withForeignPtr . unWidget . toWidget
 
+-- *** Viewport
+
+{# pointer *GtkClutterViewport as ClutterViewportRaw foreign newtype #}
+
+class (GObjectClass o) => ClutterViewportClass o
+toClutterViewport :: ClutterViewportClass o => o -> ClutterViewportRaw
+toClutterViewport = unsafeCastGObject . toGObject
+
+
+data ClutterViewport a = ClutterViewport a ClutterViewportRaw
+
+mkClutterViewport :: a -> ClutterViewportRaw -> ClutterViewport a
+mkClutterViewport _ raw = ClutterViewport (undefined :: a) raw
+
+withClutterViewport (ClutterViewport _ raw) = withClutterViewportRaw raw
+
+newClutterViewportRaw a = makeNewGObject (ClutterViewportRaw, objectUnref) $ return (castPtr a)
+
+instance GObjectClass ClutterViewportRaw where
+  toGObject (ClutterViewportRaw i) = constrGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = ClutterViewportRaw (castForeignPtr o)
+
+--CHECKME:
+instance (GObjectClass a) => GObjectClass (ClutterViewport a) where
+  toGObject (ClutterViewport _ (ClutterViewportRaw p)) = constrGObject (castForeignPtr p)
+  unsafeCastGObject (GObject o) = ClutterViewport (undefined :: a) (ClutterViewportRaw (castForeignPtr o))
 
 -- *** Utility
 

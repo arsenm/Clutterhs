@@ -39,7 +39,7 @@ module Graphics.UI.Clutter.Gtk.Scrollable (
 -- @
 -- |  'GObject'
 -- |    +----'GInterface'
--- |          +----'ClutterScrollable'
+-- |           +----'ClutterScrollable'
 ---
 -- @
 

@@ -30,11 +30,13 @@ module Graphics.UI.Clutter.Gtk (
   module Graphics.UI.Clutter.Gtk.Embed,
   module Graphics.UI.Clutter.Gtk.Scrollable,
   module Graphics.UI.Clutter.Gtk.Zoomable,
+  module Graphics.UI.Clutter.Gtk.Viewport,
   module Graphics.UI.Clutter.Gtk.Utility
   ) where
 
 import Graphics.UI.Clutter.Gtk.Embed
 import Graphics.UI.Clutter.Gtk.Scrollable
 import Graphics.UI.Clutter.Gtk.Zoomable
+import Graphics.UI.Clutter.Gtk.Viewport
 import Graphics.UI.Clutter.Gtk.Utility
 

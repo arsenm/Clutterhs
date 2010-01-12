@@ -24,6 +24,7 @@
              ScopedTypeVariables,
              FlexibleInstances #-}
 {-# OPTIONS_GHC -funbox-strict-fields #-}
+
 #include <clutter/clutter.h>
 
 {# context lib="clutter" prefix="clutter" #}
@@ -254,12 +255,9 @@ module Graphics.UI.Clutter.Types (
                                   GeometryPtr,
                                   withGeometry,
 
-                                  Vertex,
+                                  Vertex(..),
                                   VertexPtr,
                                   withVertex,
-                                  vertexX,
-                                  vertexY,
-                                  vertexZ,
 
                                   ActorBox(..),
                                   ActorBoxPtr,

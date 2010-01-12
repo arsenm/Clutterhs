@@ -34,9 +34,9 @@ module Graphics.UI.Clutter.Gtk.Embed (
 -- @
 -- |  'GObject'
 -- |    +----'Gtk.Object'
--- |          +----'Gtk.Widget'
--- |                +----'Gtk.Container'
--- |                      +----'ClutterEmbed'
+-- |           +----'Gtk.Widget'
+-- |                  +----'Gtk.Container'
+-- |                        +----'ClutterEmbed'
 ---
 -- @
 

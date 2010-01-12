@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface #-}
+{-# LANGUAGE ForeignFunctionInterface, ScopedTypeVariables #-}
 
 #include <clutter/clutter.h>
 #include <clutter-gtk/clutter-gtk.h>
@@ -48,7 +48,6 @@ module Graphics.UI.Clutter.Gtk.Viewport (
 
 -- * Types
   ClutterViewport,
-  ClutterViewportClass,
 
 -- * Constructors
   clutterViewportNew,
@@ -62,40 +61,39 @@ module Graphics.UI.Clutter.Gtk.Viewport (
   ) where
 
 import C2HS
+import Control.Monad (liftM3)
 
 import Graphics.UI.Gtk.Types
 import Graphics.UI.Clutter.Types
+import qualified Graphics.UI.Clutter.GTypes as CGT
+import System.Glib.Attributes
+import System.Glib.Properties
 
 {# import Graphics.UI.Clutter.Gtk.Types #}
 
+{# pointer *GtkAdjustment as AdjustmentPtr foreign -> Adjustment nocode #}
 
---CHECKME: Maybe these
-
+withMaybeAdjustment = maybeWith withAdjustment
 
 -- | Creates a new 'ClutterViewport' with the given adjustments.
 --
--- [@h_adjust@] horizontal adjustment, or NULL
+-- [@h_adjust@] @Just@ horizontal adjustment, or @Nothing@
 --
--- [@v_adjust@] vertical adjustment, or NULL
+-- [@v_adjust@] @Just@ vertical adjustment, or @Nothing@
 --
--- [@z_adjust@] zoom adjustment, or NULL
+-- [@z_adjust@] @Just@ zoom adjustment, or @Nothing@
 --
 -- [@Returns@] the newly created viewport actor
 --
 -- * Since 0.10
 --
-{# fun unsafe clutter_viewport_new as ^
-   `(ActorClass a)' =>
-    { withAdjustment* `Adjustment',
-      withAdjustment* `Adjustment',
-      withAdjustment* `Adjustment' } -> `Viewport a' #}
-clutterViewportNew :: (ActorClass a) => Adjustment -> Adjustment -> Adjustment -> IO (Viewport a)
+clutterViewportNew :: (ActorClass a) => Maybe Adjustment -> Maybe Adjustment -> Maybe Adjustment -> IO (ClutterViewport a)
 clutterViewportNew adj1 adj2 adj3 = let func = {# call unsafe clutter_viewport_new #}
-                                    in withAdjustment adj1 $ \adjPtr1 ->
-                                         withAdjustment adj3 $ \adjPtr2 ->
-                                           withAdjustment adj3 $ \adjPtr3 ->
-                                           raw <- newViewportRaw =<< func adjPtr1 adjPtr2 adjPtr3
-
+                                    in withMaybeAdjustment adj1 $ \adjPtr1 ->
+                                         withMaybeAdjustment adj2 $ \adjPtr2 ->
+                                           withMaybeAdjustment adj3 $ \adjPtr3 ->
+                                               return . mkClutterViewport (undefined :: a)
+                                                   =<< newClutterViewportRaw =<< func adjPtr1 adjPtr2 adjPtr3
 
 
 
@@ -110,29 +108,24 @@ clutterViewportNew adj1 adj2 adj3 = let func = {# call unsafe clutter_viewport_n
 --
 -- * Since 0.10
 --
-clutterViewportGetOrigin :: Viewport -> IO Vertex
+clutterViewportGetOrigin :: ClutterViewport a -> IO Vertex
 clutterViewportGetOrigin viewport = let func = {# call unsafe clutter_viewport_get_origin #}
-                                        in withViewport viewport $ \viewPtr ->
+                                        in withClutterViewport viewport $ \viewPtr ->
                                              alloca $ \xPtr ->
                                                alloca $ \yPtr ->
-                                                 alloca $ \zPtr -> do
-                                                     func xPtr yPtr zPtr
-                                                     x <- peekFloatConv x
-                                                     y <- peekFloatConv y
-                                                     z <- peekFloatConv z
-                                                     return (Vertex x y z)
+                                                 alloca $ \zPtr ->
+                                                   func viewPtr xPtr yPtr zPtr
+                                                    >> liftM3 Vertex (peekFloatConv xPtr)
+                                                                     (peekFloatConv yPtr)
+                                                                     (peekFloatConv zPtr)
 
-
-
-
---TODO: Wrapper type for type of child
 
 -- | The 'Actor' inside the viewport.
 --
 -- * Since 0.10
 --
-clutterViewportChild :: Attr Viewport Actor
-clutterViewportChild = newAttrFromObjectProperty "child" gTypeActor
+clutterViewportChild :: (ActorClass a) => Attr (ClutterViewport a) a
+clutterViewportChild = newAttrFromObjectProperty "child" CGT.actor
 
 
 -- | The current origin of the viewport. You should use the vertex to
@@ -140,7 +133,7 @@ clutterViewportChild = newAttrFromObjectProperty "child" gTypeActor
 --
 -- * Since 0.10
 --
-clutterViewportOrigin :: Attr Viewport Vertex
-clutterViewportOrigin = newAttrFromBoxedStorableProperty "origin" gTypeVertex
+clutterViewportOrigin :: (ActorClass a) => Attr (ClutterViewport a) Vertex
+clutterViewportOrigin = newAttrFromBoxedStorableProperty "origin" CGT.vertex
 
 

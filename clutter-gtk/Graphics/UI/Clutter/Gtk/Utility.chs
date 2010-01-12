@@ -85,7 +85,7 @@ gtkClutterInit = do
                 when (res /= InitSuccess) $ error ("Cannot initialize ClutterGtk." ++ show res)
                 return res
 
-
+--TODO: init_with_args
 
 {# fun unsafe clutter_get_fg_color as ^ `(WidgetClass widget)' =>
     { withWidgetClass* `widget', cFromEnum `StateType', alloca- `Color' peek* } -> `()' #}
@@ -121,8 +121,11 @@ withPixbuf = withForeignPtr . unPixbuf
     { withWidgetClass* `widget', `String', cFromEnum `IconSize' } -> `Maybe Texture' maybeNewTexture* #}
 
 {# fun unsafe clutter_texture_new_from_icon_name as ^ `(WidgetClass widget)' =>
-    { withWidgetClass* `widget', `String', cFromEnum `IconSize' } -> `Maybe Texture' maybeNewTexture* #}
+    { withMaybeWidgetClass* `Maybe widget', `String', cFromEnum `IconSize' } -> `Maybe Texture' maybeNewTexture* #}
 
+
+withMaybeWidgetClass :: (WidgetClass a) => Maybe a -> (Ptr Widget -> IO b) -> IO b
+withMaybeWidgetClass = maybeWith withWidgetClass
 
 -- CHECKME: Is the returned bool really useful here?
 textureSetFromPixbuf :: (TextureClass texture) => texture -> Pixbuf -> IO Bool
@@ -143,12 +146,12 @@ textureSetFromStock texture widget str size = let func = {# call unsafe clutter_
                                                          liftM cToBool (func texPtr widPtr strPtr csize gerrorPtr)
 
 
-textureSetFromIconName :: (TextureClass texture, WidgetClass widget) => texture -> widget -> String -> IconSize -> IO Bool
+textureSetFromIconName :: (TextureClass texture, WidgetClass widget) => texture -> Maybe widget -> String -> IconSize -> IO Bool
 textureSetFromIconName texture widget str size = let func = {# call unsafe clutter_texture_set_from_icon_name #}
                                                      csize = cFromEnum size
                                                  in propagateGError $ \gerrorPtr ->
                                                       withTextureClass texture $ \texPtr ->
-                                                        withWidgetClass widget $ \widPtr ->
+                                                        withMaybeWidgetClass widget $ \widPtr ->
                                                           withCString str $ \strPtr ->
                                                            liftM cToBool (func texPtr widPtr strPtr csize gerrorPtr)
 

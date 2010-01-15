@@ -29,9 +29,9 @@
 module Graphics.Cogl.Offscreen (
   Offscreen,
 
---  offscreenNewToTexture,
+  offscreenNewToTexture,
 
---  setDrawBuffer,
+  setDrawBuffer,
   popDrawBuffer,
   pushDrawBuffer
 ) where
@@ -42,10 +42,17 @@ import C2HS
 {# import Graphics.Cogl.Types #}
 {# import Graphics.Cogl.Enums #}
 
--- {# fun unsafe is_offscreen
+--{# fun unsafe is_offscreen
 
--- this handle can be different things?
--- {# fun unsafe set_draw_buffer as ^ { cFromEnum `BufferTarget', withSomething
+{# fun unsafe offscreen_new_to_texture as ^
+  { withOffscreen* `Offscreen' } -> `Texture' newTexture* #}
+
+-- If handle is nothing, window buffer
+setDrawBuffer :: Maybe Offscreen -> IO ()
+setDrawBuffer Nothing = {# call unsafe set_draw_buffer #} (cFromEnum WindowBuffer) nullPtr
+setDrawBuffer (Just h) = withOffscreen h $ \hPtr ->
+  {# call unsafe set_draw_buffer #} (cFromEnum OffscreenBuffer) hPtr
+
 
 {# fun unsafe pop_draw_buffer as ^ { } -> `()' #}
 

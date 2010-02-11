@@ -203,22 +203,6 @@ module Graphics.UI.Clutter.Types (
                                   withShader,
                                   newShader,
 
-                                  Model,
-                                  ModelClass,
-                                  withModel,
-                                  withModelClass,
-                                  newModel,
-
-                                  ModelIter,
-                                  ModelIterClass,
-                                  withModelIter,
-                                  newModelIter,
-
-                                  ListModel,
-                                  ListModelClass,
-                                  withListModel,
-                                  newListModel,
-
                                   Script,
                                   ScriptClass,
                                   withScript,
@@ -278,14 +262,6 @@ module Graphics.UI.Clutter.Types (
                                   Callback,
                                   CCallback,
                                   newCallback,
-
-                                  ModelForeachFunc,
-                                  CModelForeachFunc,
-                                  newModelForeachFunc,
-
-                                  ModelFilterFunc,
-                                  CModelFilterFunc,
-                                  newModelFilterFunc,
 
                                   RGBData,
                                   mkRGBData,
@@ -1018,57 +994,6 @@ instance GObjectClass Shader where
   toGObject (Shader i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Shader (castForeignPtr o)
 
--- *** Model
-
-{# pointer *ClutterModel as Model foreign newtype #}
-
---TODO: Maybe check size, also /
-
-class GObjectClass o => ModelClass o
-toModel :: ModelClass o => o -> Model
-toModel = unsafeCastGObject . toGObject
-
-withModelClass::ModelClass o => o -> (Ptr Model -> IO b) -> IO b
-withModelClass o = (withModel . toModel) o
-
-newModel a = makeNewGObject (Model, objectUnref) $ return (castPtr a)
-
-instance ModelClass Model
-instance GObjectClass Model where
-  toGObject (Model i) = constrGObject (castForeignPtr i)
-  unsafeCastGObject (GObject o) = Model (castForeignPtr o)
-
--- *** ListModel
-
-{# pointer *ClutterListModel as ListModel foreign newtype #}
-
-class GObjectClass o => ListModelClass o
-toListModel :: ListModelClass o => o -> ListModel
-toListModel = unsafeCastGObject . toGObject
-
-newListModel a = makeNewGObject (ListModel, objectUnref) $ return (castPtr a)
-
-instance ModelClass ListModel
-instance ListModelClass ListModel
-instance GObjectClass ListModel where
-  toGObject (ListModel i) = constrGObject (castForeignPtr i)
-  unsafeCastGObject (GObject o) = ListModel (castForeignPtr o)
-
--- *** ModelIter
-
-{# pointer *ClutterModelIter as ModelIter foreign newtype #}
-
-class GObjectClass o => ModelIterClass o
-toModelIter :: ModelIterClass o => o -> ModelIter
-toModelIter = unsafeCastGObject . toGObject
-
-newModelIter a = makeNewGObject (ModelIter, objectUnref) $ return (castPtr a)
-
-instance ModelIterClass ModelIter
-instance GObjectClass ModelIter where
-  toGObject (ModelIter i) = constrGObject (castForeignPtr i)
-  unsafeCastGObject (GObject o) = ModelIter (castForeignPtr o)
-
 -- *** Script
 
 {# pointer *ClutterScript as Script foreign newtype #}
@@ -1370,36 +1295,6 @@ newCallback userfunc = mkCallback (newCallback' userfunc)
 foreign import ccall "wrapper"
     mkCallback :: (Ptr Actor -> IO ()) -> IO CCallback
 
-
--- *** ModelForeachFunc
-
-type ModelForeachFunc = Model -> ModelIter -> IO Bool
-type CModelForeachFunc = FunPtr (Ptr Model -> Ptr ModelIter -> Ptr () -> IO CInt)
-
-newModelForeachFunc :: ModelForeachFunc -> IO CModelForeachFunc
-newModelForeachFunc userfunc = mkModelForeachFunc (newModelForeachFunc' userfunc)
-    where
-      newModelForeachFunc' :: ModelForeachFunc -> Ptr Model -> Ptr ModelIter -> IO Bool
-      newModelForeachFunc' userfunc modPtr miPtr = join $ liftM2 userfunc (newModel modPtr) (newModelIter miPtr)
-
-foreign import ccall "wrapper"
-    mkModelForeachFunc :: (Ptr Model -> Ptr ModelIter -> IO Bool) -> IO CModelForeachFunc
-
--- *** ModelFilterFunc
-
--- this seems to be the same type as modelforeachfunc
-
-type ModelFilterFunc = Model -> ModelIter -> IO Bool
-type CModelFilterFunc = FunPtr (Ptr Model -> Ptr ModelIter -> Ptr () -> IO CInt)
-
-newModelFilterFunc :: ModelFilterFunc -> IO CModelFilterFunc
-newModelFilterFunc userfunc = mkModelFilterFunc (newModelFilterFunc' userfunc)
-    where
-      newModelFilterFunc' :: ModelFilterFunc -> Ptr Model -> Ptr ModelIter -> IO Bool
-      newModelFilterFunc' userfunc modPtr miPtr = join $ liftM2 userfunc (newModel modPtr) (newModelIter miPtr)
-
-foreign import ccall "wrapper"
-    mkModelFilterFunc :: (Ptr Model -> Ptr ModelIter -> IO Bool) -> IO CModelFilterFunc
 
 -- *** TimeoutPool
 

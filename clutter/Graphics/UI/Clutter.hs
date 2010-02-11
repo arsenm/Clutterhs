@@ -78,10 +78,6 @@ module Graphics.UI.Clutter (
   module Graphics.UI.Clutter.Script,
   module Graphics.UI.Clutter.Scriptable,
 
--- ** Generic list model
-  module Graphics.UI.Clutter.Model,
-  module Graphics.UI.Clutter.ModelIter,
-  module Graphics.UI.Clutter.ListModel,
 -- * Backends
   module Graphics.UI.Clutter.X11,
 --module Graphics.UI.Clutter.GLX,
@@ -120,14 +116,11 @@ import Graphics.UI.Clutter.BehaviourPath
 import Graphics.UI.Clutter.Interval
 import Graphics.UI.Clutter.Path
 import Graphics.UI.Clutter.Shader
-import Graphics.UI.Clutter.Model
-import Graphics.UI.Clutter.ModelIter
 import Graphics.UI.Clutter.Script
 import Graphics.UI.Clutter.Units
 import Graphics.UI.Clutter.Scriptable
 import Graphics.UI.Clutter.BindingPool
 import Graphics.UI.Clutter.X11
 import Graphics.UI.Clutter.Utilities
-import Graphics.UI.Clutter.ListModel
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+1;2202;0c#!/usr/bin/env bash
 
 pushd cogl
 ./build.sh
@@ -7,6 +7,9 @@ pushd clutter
 ./build.sh
 popd
 pushd clutter-gtk
+./build.sh
+popd
+pushd clutter-gst
 ./build.sh
 popd
 

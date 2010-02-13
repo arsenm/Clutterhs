@@ -34,6 +34,7 @@
 --compile right now.
 
 module Graphics.UI.Clutter.Types (
+                                  objectUnrefFromMainloop,
                                   withGObject,
                                   newGObject,
                                   withGValue,

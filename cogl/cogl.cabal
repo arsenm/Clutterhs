@@ -32,6 +32,9 @@ Flag Debug
 Library
   pkgconfig-depends: glib-2.0, cogl-1.0
   Build-Tools: c2hs >= 0.16
+  C-Sources: ./csrc/cogl_workarounds.c
+  Includes: ./csrc/cogl_workarounds.h
+  Install-Includes: ./csrc/cogl_workarounds.h
   Hs-Source-Dirs: .
   Extensions: ForeignFunctionInterface
   Build-Depends:  base >= 4 && < 5,
@@ -54,6 +57,7 @@ Library
                    Graphics.Cogl.Textures,
                    Graphics.Cogl.Color
   Exposed: True
+  Include-dirs: ./csrc
   if flag(debug)
     GHC-options: -W
     CC-Options: "-DDEBUG -O0 -g"

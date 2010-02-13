@@ -21,6 +21,7 @@
 {-# LANGUAGE ForeignFunctionInterface, ScopedTypeVariables #-}
 
 #include <cogl/cogl.h>
+#include <cogl_workarounds.h>
 
 {# context lib="cogl" prefix="cogl" #}
 
@@ -49,6 +50,9 @@ module Graphics.Cogl.Types (
   Program,
   withProgram,
   newProgram,
+
+  TextureVertex(..),
+  TextureVertexPtr,
 
   Texture,
   withTexture,
@@ -96,6 +100,7 @@ foreign import ccall unsafe "&cogl_handle_unref"
   handleUnref :: FinalizerPtr Handle
 
 -- *** Color
+
 {# pointer *CoglColor as Color foreign newtype #}
 
 newColor :: Ptr Color -> IO Color
@@ -224,4 +229,60 @@ newTexture = liftM Texture . newForeignPtr textureUnref . castPtr
 
 foreign import ccall unsafe "&cogl_texture_unref"
   textureUnref :: FinalizerPtr Texture
+
+-- *** TextureVertex
+
+-- madness since struct in struct, and CoglColor is opaque
+
+data TextureVertex = TextureVertex { textureVertexX :: Float,
+                                     textureVertexY :: Float,
+                                     textureVertexZ :: Float,
+                                     textureVertexTx :: Float,
+                                     textureVertexTy :: Float,
+                                     textureVertexColor :: Color
+                                   }
+
+instance Show TextureVertex where
+  show (TextureVertex x y z tx ty _) = unwords ["TextureVertex",
+                                                show x,
+                                                show y,
+                                                show z,
+                                                show tx,
+                                                show ty,
+                                                "(CoglColor)"]
+
+{# pointer *CoglTextureVertex as TextureVertexPtr -> TextureVertex #}
+
+{# fun unsafe coglTextureVertexColorAccess { id `TextureVertexPtr' } -> `Color' newColor* #}
+{# fun unsafe coglTextureVertexColorWrite { id `TextureVertexPtr', withColor* `Color' } -> `()' #}
+
+
+--CHECKME: Very much checkme
+instance Storable TextureVertex where
+  sizeOf _ = {# sizeof CoglTextureVertex #}
+  alignment _ = alignment (undefined :: Float)
+  peek p = do
+      x <- {# get CoglTextureVertex->x #} p
+      y <- {# get CoglTextureVertex->y #} p
+      z <- {# get CoglTextureVertex->z #} p
+      tx <- {# get CoglTextureVertex->tx #} p
+      ty <- {# get CoglTextureVertex->ty #} p
+-- FIXME: Garbage if no color ?
+      cp <- coglTextureVertexColorAccess p
+      return $ TextureVertex (cFloatConv x)
+                             (cFloatConv y)
+                             (cFloatConv z)
+                             (cFloatConv tx)
+                             (cFloatConv ty)
+                             cp
+
+  poke p (TextureVertex x y z tx ty col) = do
+      {# set CoglTextureVertex->x #} p (cFloatConv x)
+      {# set CoglTextureVertex->y #} p (cFloatConv y)
+      {# set CoglTextureVertex->z #} p (cFloatConv z)
+      {# set CoglTextureVertex->tx #} p (cFloatConv tx)
+      {# set CoglTextureVertex->ty #} p (cFloatConv ty)
+      coglTextureVertexColorWrite p col
+
+
 

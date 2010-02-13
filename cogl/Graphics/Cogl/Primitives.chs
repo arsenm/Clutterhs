@@ -27,12 +27,14 @@
 -- | Primitives — Functions that draw various primitive shapes and
 -- allow for construction of more complex paths.
 module Graphics.Cogl.Primitives (
+  TextureVertex(..),
+
   rectangle,
   rectangles,
   rectangleWithTextureCoords,
 --rectanglesWithTextureCoords,
   rectangleWithMultitextureCoords,
---polygon,
+  polygon,
 
   pathNew,
   pathMoveTo,
@@ -155,6 +157,14 @@ rectangleWithMultitextureCoords x1 y1 x2 y2 coords = let func = {# call unsafe r
                                                          cy2 = cFloatConv y2
                                                      in withArrayLen coords $ \len ptr ->
                                                           func cx1 cy1 cx2 cy2 (castPtr ptr) (cIntConv len)
+
+
+polygon :: [TextureVertex] -> Bool -> IO ()
+polygon vs uc = let func = {# call unsafe cogl_polygon #}
+                    cb = cFromBool uc
+                in withArrayLen vs $ \len ptr ->
+                     func ptr (cIntConv len) cb
+
 
 -- | Clears the current path and starts a new one.
 --

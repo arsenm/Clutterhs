@@ -24,17 +24,29 @@
 
 {# context lib="clutter_gst" prefix="clutter_gst" #}
 
+--TODO: GTypes for everything
+
 module Graphics.UI.Clutter.Gst.Types (
   VideoTexture,
   VideoTextureClass,
   newVideoTexture,
   toVideoTexture,
-  withVideoTexture
+  withVideoTexture,
+
+  VideoSink,
+  VideoSinkClass,
+  newVideoSink,
+  withVideoSink,
+  toVideoSink,
+
+  newPipeline
   ) where
 
 import C2HS
 import Graphics.UI.Clutter.Types
 import System.Glib.GObject
+
+import Media.Streaming.GStreamer.Core.Types
 
 -- *** VideoTexture
 
@@ -50,10 +62,38 @@ newVideoTexture a = makeNewActor (VideoTexture, objectUnrefFromMainloop) $ retur
 
 
 instance ActorClass VideoTexture
+instance MediaClass VideoTexture
 instance VideoTextureClass VideoTexture
 instance ScriptableClass VideoTexture
 instance GObjectClass VideoTexture where
   toGObject (VideoTexture s) = constrGObject (castForeignPtr s)
   unsafeCastGObject (GObject o) = VideoTexture (castForeignPtr o)
+
+
+newPipeline :: Ptr Pipeline -> IO Pipeline
+newPipeline = takeObject
+
+
+
+-- *** VideoSink
+
+{# pointer *ClutterGstVideoSink as VideoSink foreign newtype #}
+
+class (GObjectClass o) => VideoSinkClass o
+toVideoSink :: VideoSinkClass o => o -> VideoSink
+toVideoSink = unsafeCastGObject . toGObject
+
+--newVideoSink :: Ptr VideoSink -> IO VideoSink
+newVideoSink :: Ptr () -> IO VideoSink
+newVideoSink = takeObject . castPtr
+
+instance VideoSinkClass VideoSink
+instance BaseSinkClass VideoSink
+instance ElementClass VideoSink
+instance ObjectClass VideoSink
+instance GObjectClass VideoSink where
+  toGObject (VideoSink s) = constrGObject (castForeignPtr s)
+  unsafeCastGObject (GObject o) = VideoSink (castForeignPtr o)
+
 
 

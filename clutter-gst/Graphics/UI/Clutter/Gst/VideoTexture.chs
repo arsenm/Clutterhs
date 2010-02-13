@@ -45,6 +45,10 @@ module Graphics.UI.Clutter.Gst.VideoTexture (
 
 -- * Methods
 
+#if CLUTTER_GST_CHECK_VERSION(1,0,0)
+  videoTextureGetPipeline,
+#endif
+
 -- * Attributes
 
 -- * Signals
@@ -54,8 +58,41 @@ module Graphics.UI.Clutter.Gst.VideoTexture (
   ) where
 
 import C2HS
-import Graphics.UI.Clutter.Gst.Types
+import Media.Streaming.GStreamer.Core.Types
 
+{# import Graphics.UI.Clutter.Gst.Types #}
+
+
+
+
+-- | Creates a video texture.
+--
+-- * Note
+--
+-- This function has to be called from Clutter's main thread. While
+-- GStreamer will spawn threads to do its work, we want all the GL
+-- calls to happen in the same thread. Clutter-gst knows which thread
+-- it is by assuming this constructor is called from the Clutter
+-- thread.
+--
+-- [@Returns@] the newly created video texture actor
+--
 {# fun unsafe video_texture_new as ^ { } -> `VideoTexture' newVideoTexture* #}
+
+
+
+#if CLUTTER_GST_CHECK_VERSION(1,0,0)
+
+-- | Retrieves the 'Gst.Pipeline' used by the texture, for direct use
+-- with GStreamer API.
+--
+-- [@texture@] a 'VideoTexture'
+--
+-- [@Returns@] the pipeline element used by the video texture
+--
+{# fun unsafe video_texture_get_pipeline as ^
+  { withVideoTexture* `VideoTexture' } -> `Pipeline' newPipeline* #}
+
+#endif
 
 

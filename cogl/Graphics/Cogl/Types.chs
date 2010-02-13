@@ -57,6 +57,7 @@ module Graphics.Cogl.Types (
   Texture,
   withTexture,
   newTexture,
+  maybeNewTexture,
 
   VertexIndices,
   mkVertexIndices,
@@ -78,6 +79,14 @@ import C2HS
 import Control.Monad (liftM)
 
 import Data.Word
+
+
+maybeNullNew :: (Ptr a -> IO b) -> Ptr a -> IO (Maybe b)
+maybeNullNew marshal ptr = do
+  if ptr == nullPtr
+    then return Prelude.Nothing
+    else marshal ptr >>= return . Just
+
 
 -- *** Handle
 
@@ -226,6 +235,9 @@ withTexture (Texture fptr) = withForeignPtr (castForeignPtr fptr)
 
 newTexture :: Ptr () -> IO Texture
 newTexture = liftM Texture . newForeignPtr textureUnref . castPtr
+
+maybeNewTexture :: Ptr () -> IO (Maybe Texture)
+maybeNewTexture = maybeNullNew newTexture
 
 foreign import ccall unsafe "&cogl_texture_unref"
   textureUnref :: FinalizerPtr Texture

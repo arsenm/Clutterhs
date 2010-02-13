@@ -32,7 +32,6 @@ module Graphics.Cogl.Materials (
   MaterialLayerType(..),
 
   materialNew,
-  isMaterial,   -- does it make sense to keep this?
   materialSetColor,
   materialSetColor4ub,
   materialSetColor4f,
@@ -77,7 +76,7 @@ import System.Glib.GList
 
 {# fun unsafe material_new as ^ { } -> `Material' newMaterial* #}
 
-{# fun unsafe is_material as ^ { withMaterial* `Material' } -> `Bool' #}
+-- {# fun unsafe is_material as ^ { withMaterial* `Material' } -> `Bool' #}
 
 {# fun unsafe material_set_color as ^ { withMaterial* `Material', withColor* `Color' } -> `()' #}
 

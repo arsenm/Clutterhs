@@ -44,20 +44,44 @@ import C2HS
 
 --{# fun unsafe is_offscreen
 
-{# fun unsafe offscreen_new_to_texture as ^
-  { withOffscreen* `Offscreen' } -> `Texture' newTexture* #}
 
--- If handle is nothing, window buffer
+-- | This creates an offscreen buffer object using the given texture
+-- as the primary color buffer. It doesn't just initialize the
+-- contents of the offscreen buffer with the texture; they are tightly
+-- bound so that drawing to the offscreen buffer effectivly updates
+-- the contents of the given texture. You don't need to destroy the
+-- offscreen buffer before you can use the texture again.
+--
+-- Note: This does not work with sliced Cogl textures.
+--
+-- [@handle@] A CoglHandle for a Cogl texture
+--
+-- [@Returns@] @Just@ a CoglHandle for the new offscreen buffer or
+-- @Nothing@ if it wasn't possible to create the buffer.
+--
+{# fun unsafe offscreen_new_to_texture as ^
+  { withOffscreen* `Offscreen' } -> `Maybe Texture' maybeNewTexture* #}
+
+
+-- | This redirects all subsequent drawing to the specified draw
+-- buffer. This can either be an offscreen buffer created with
+-- 'offscreenNewToTexture' or you can revert to your original on
+-- screen window buffer.
+--
+-- [@offscreen@] If you are setting a draw buffer of type
+-- COGL_OFFSCREEN_BUFFER then this is @Just@ a CoglHandle for the offscreen
+-- buffer. @Nothing@ for a window buffer.
+--
 setDrawBuffer :: Maybe Offscreen -> IO ()
 setDrawBuffer Nothing = {# call unsafe set_draw_buffer #} (cFromEnum WindowBuffer) nullPtr
 setDrawBuffer (Just h) = withOffscreen h $ \hPtr ->
   {# call unsafe set_draw_buffer #} (cFromEnum OffscreenBuffer) hPtr
 
 
+-- | Restore 'setDrawBuffer' state.
 {# fun unsafe pop_draw_buffer as ^ { } -> `()' #}
 
+-- | Save 'setDrawBuffer' state.
 {# fun unsafe push_draw_buffer as ^ { } -> `()' #}
-
-
 
 

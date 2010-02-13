@@ -30,6 +30,7 @@ Library
   Exposed-modules: Graphics.UI.Clutter.Gst,
                    Graphics.UI.Clutter.Gst.Types,
                    Graphics.UI.Clutter.Gst.VideoSink,
+                   Graphics.UI.Clutter.Gst.Utilities,
                    Graphics.UI.Clutter.Gst.VideoTexture
   Exposed: True
   GHC-options: -W

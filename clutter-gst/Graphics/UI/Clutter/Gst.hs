@@ -22,6 +22,12 @@
 -- implementation using GStreamer for basic video and audio playback.
 --
 module Graphics.UI.Clutter.Gst (
-
+  module Graphics.UI.Clutter.Gst.VideoTexture,
+  module Graphics.UI.Clutter.Gst.VideoSink,
+  module Graphics.UI.Clutter.Gst.Utilities
   ) where
+
+import Graphics.UI.Clutter.Gst.VideoTexture
+import Graphics.UI.Clutter.Gst.VideoSink
+import Graphics.UI.Clutter.Gst.Utilities
 

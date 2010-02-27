@@ -76,11 +76,11 @@ Library
 --X11 and gtk should also be optional
   Exposed-modules: Graphics.UI.Clutter.Enums,
                    Graphics.UI.Clutter.Types,
+                   Graphics.UI.Clutter.GTypes,
+                   Graphics.UI.Clutter.StoreValue,
                    Graphics.UI.Clutter.Signals,
                    Graphics.UI.Clutter.Utility,
-                   Graphics.UI.Clutter.GTypes,
                    Graphics.UI.Clutter.Event,
-                   Graphics.UI.Clutter.StoreValue,
                    Graphics.UI.Clutter.Timeline,
                    Graphics.UI.Clutter.Animation,
                    Graphics.UI.Clutter.CustomSignals,

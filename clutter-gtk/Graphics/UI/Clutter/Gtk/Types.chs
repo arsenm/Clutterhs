@@ -61,11 +61,15 @@ module Graphics.UI.Clutter.Gtk.Types (
 
 import C2HS
 import Graphics.UI.Clutter.Types
+import qualified Graphics.UI.Clutter.Types as Cltr
 import Graphics.UI.Gtk.Types
+import qualified Graphics.UI.Gtk.Types as Gtk
 import Graphics.UI.Gtk.Abstract.Object
-import System.Glib.GObject
+
+--CHECKME: Which unrefFromMainloop should I be using?
 
 -- *** Embed
+
 
 {# pointer *GtkClutterEmbed as ClutterEmbed foreign newtype #}
 
@@ -75,7 +79,7 @@ toClutterEmbed :: ClutterEmbedClass o => o -> ClutterEmbed
 toClutterEmbed = unsafeCastGObject . toGObject
 
 newClutterEmbed :: (WidgetClass widget) => Ptr widget -> IO ClutterEmbed
-newClutterEmbed a = makeNewObject (ClutterEmbed, objectUnrefFromMainloop) $ return (castPtr a)
+newClutterEmbed a = makeNewObject (ClutterEmbed, Gtk.objectUnrefFromMainloop) $ return (castPtr a)
 
 --CHECKME:
 -- GtkClutterEmbed implements AtkImplementorIface and GtkBuildable.

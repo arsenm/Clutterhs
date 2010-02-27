@@ -305,7 +305,6 @@ withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) fre
 class GenericValueClass a where
   toGenericValue :: a -> GenericValue
   unsafeExtractGenericValue :: GenericValue -> a
-  genericValueType :: a -> GType
 
 class GenericValueClass' flag a where
   toGenericValue' :: flag -> a -> GenericValue

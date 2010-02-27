@@ -58,7 +58,7 @@ module Graphics.UI.Clutter.Gst.VideoTexture (
   ) where
 
 import C2HS
-import Media.Streaming.GStreamer.Core.Types
+
 
 {# import Graphics.UI.Clutter.Gst.Types #}
 

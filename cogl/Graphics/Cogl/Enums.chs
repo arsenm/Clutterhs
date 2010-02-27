@@ -42,8 +42,6 @@ module Graphics.Cogl.Enums (
   VerticesMode(..)
 ) where
 
-import C2HS
-import Control.Monad (liftM)
 import System.Glib.Flags
 
 

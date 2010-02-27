@@ -28,6 +28,7 @@
 -- | Matrices — Fuctions for initializing and manipulating 4x4
 -- matrices.
 module Graphics.Cogl.Matrices (
+  matrixNewInitIdentity,
   matrixInitIdentity,
   matrixFrustum,
   matrixOrtho,

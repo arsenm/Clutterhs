@@ -98,7 +98,7 @@ module Graphics.UI.Clutter.Path (
   pathAddClose,
   pathAddString,
   pathAddNode,
-  pathAddCairoPath,
+  --pathAddCairoPath,
   pathGetNNodes,
   pathGetNode,
   pathGetNodes,
@@ -292,6 +292,9 @@ import Graphics.Rendering.Cairo.Internal (Render)
 -- * Since 1.0
 {# fun unsafe path_add_node as ^ { withPath* `Path', withPathNode* `PathNode' } -> `()' #}
 
+{-
+CairoPath seems to only sort of exist in the Cairo binding...
+
 -- | Add the nodes of the Cairo path to the end of path
 --
 --  [@path@] a Path
@@ -301,6 +304,7 @@ import Graphics.Rendering.Cairo.Internal (Render)
 -- * Since 1.0
 --
 {# fun unsafe path_add_cairo_path as ^ { withPath* `Path', withCairoPath `Cairo.Path' } -> `()' #}
+-}
 
 -- | Retrieves the number of nodes in the path.
 --

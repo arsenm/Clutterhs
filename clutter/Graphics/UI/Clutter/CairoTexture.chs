@@ -225,9 +225,6 @@ renderWithCairoTextureRegion ct xOff yOff w h m =
              (\context -> runReaderT (Cairo.Internal.runRender m) context)
 
 
-
-
-
 -- | Utility function for setting the source color of cr using a
 --  'Graphics.UI.Clutter.Color'.
 --

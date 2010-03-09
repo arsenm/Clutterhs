@@ -1,4 +1,4 @@
-1;2202;0c#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 pushd cogl
 ./build.sh

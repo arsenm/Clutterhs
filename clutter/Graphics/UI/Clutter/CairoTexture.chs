@@ -5,7 +5,7 @@
 --
 --  Created: 2 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -31,16 +31,16 @@ module Graphics.UI.Clutter.CairoTexture (
 -- surface which will then be uploaded to a GL texture when needed.
 --
 -- 'CairoTexture' will provide a 'Cairo' context by using the
--- 'cairoTextureCreate' and 'cairoTextureCreateRegion' functions; you
--- can use the Cairo API to draw on the context.
+-- 'renderWithCairoTexture' and 'renderWithCairoTextureRegion'
+-- functions; you can use the Cairo API to draw on the context.
 --
 -- As soon as the context is destroyed, the contents of the surface
 -- will be uploaded into the 'CairoTexture' actor:
 --
 -- Although a new 'Cairo' is created each time you call
--- 'cairoTextureCreate' or 'cairoTextureCreateRegion', it uses the
--- same 'Surface' each time. You can call 'cairoTextureClear' to erase
--- the contents between calls.
+-- 'renderWithCairoTexture' or 'renderWithCairoTextureRegion', it uses
+-- the same 'Surface' each time. You can call 'cairoTextureClear' to
+-- erase the contents between calls.
 --
 -- * Warning
 --
@@ -77,13 +77,12 @@ module Graphics.UI.Clutter.CairoTexture (
 -- * Methods
   cairoTextureSetSurfaceSize,
   cairoTextureGetSurfaceSize,
-
-  cairoTextureCreate,
-
-  cairoTextureCreateRegion,
   cairoTextureClear,
 
-  cairoSetSourceColor,
+-- * Functions for the 'Render' monad.
+  renderWithCairoTexture,
+  renderWithCairoTextureRegion,
+  setSourceColor,
 
 -- * Attributes
   cairoTextureSurfaceHeight,
@@ -95,13 +94,14 @@ module Graphics.UI.Clutter.CairoTexture (
 
 import C2HS
 import System.Glib.Attributes
-import System.Glib.Properties
-import Graphics.Rendering.Cairo.Types (Cairo)
 
---TODO: CairoTextureClass
-
--- stop c2hs complaining about Ptr () not being Ptr Cairo
-{# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
+-- Cairo stuff
+import Control.Exception (bracket)
+import Graphics.Rendering.Cairo.Types (Cairo(Cairo))
+import qualified Graphics.Rendering.Cairo.Internal as Cairo.Internal
+import qualified Graphics.Rendering.Cairo as Cairo
+import Graphics.Rendering.Cairo.Internal (Render)
+import Control.Monad.Reader
 
 -- | Creates a new 'CairoTexture' actor, with a surface of width by
 --   height pixels.
@@ -142,11 +142,30 @@ import Graphics.Rendering.Cairo.Types (Cairo)
        { withCairoTexture* `CairoTexture', alloca- `Int' peekIntConv*, alloca- `Int' peekIntConv* } -> `()' #}
 
 
---FIXME: Should not have to deal with cairo context?
--- | Creates a new Cairo context for the cairo texture. It is similar
---   to using 'cairoTextureCreateRegion' with x_offset and y_offset of
---   0, width equal to the cairo texture surface width and height
---   equal to the cairo texture surface height.
+-- | Clears self's internal drawing surface, so that the next upload
+--   will replace the previous contents of the 'CairoTexture' rather
+--   than adding to it.
+--
+-- [@self@] a 'CairoTexture'
+--
+-- * Since 1.0
+--
+{# fun unsafe cairo_texture_clear as ^ { withCairoTexture* `CairoTexture' } -> `()' #}
+
+
+cairoTextureSurfaceHeight :: (CairoTextureClass self) => Attr self Word
+cairoTextureSurfaceHeight = clutterNewAttrFromUIntProperty "surface-height"
+
+
+cairoTextureSurfaceWidth :: (CairoTextureClass self) => Attr self Word
+cairoTextureSurfaceWidth = clutterNewAttrFromUIntProperty "surface-width"
+
+
+
+-- | Creates a new Cairo context for drawing to a 'CairoTexture'. It
+-- is similar to using 'renderWithCairoTextureRegion' with x_offset and
+-- y_offset of 0, width equal to the cairo texture surface width and
+-- height equal to the cairo texture surface height.
 --
 -- * Warning
 --
@@ -155,17 +174,23 @@ import Graphics.Rendering.Cairo.Types (Cairo)
 --
 -- [@self@] a 'CairoTexture'
 --
--- [@Returns@] a newly created Cairo context. Use 'cairoDestroy' to
--- upload the contents of the context when done drawing
+-- [@Context@] A new Cairo context.
 --
 -- * Since 1.0
 --
-{# fun unsafe cairo_texture_create as ^
-       { withCairoTexture* `CairoTexture' } -> `Cairo' newCairo #}
+renderWithCairoTexture :: CairoTexture -> Render a -> IO a
+renderWithCairoTexture ct m =
+  bracket (withCairoTexture ct $ \ctPtr ->
+            liftM Cairo $ {# call unsafe cairo_texture_create #} ctPtr)
+          (\context -> do status <- Cairo.Internal.status context
+                          Cairo.Internal.destroy context
+                          unless (status == Cairo.StatusSuccess) $
+                            fail =<< Cairo.Internal.statusToString status)
+          (\context -> runReaderT (Cairo.Internal.runRender m) context)
 
 
--- | Creates a new Cairo context that will updat the region defined by
---  x_offset, y_offset, width and height.
+-- | Creates a new Cairo context that will update the region defined by
+-- x_offset, y_offset, width and height.
 --
 -- * Warning
 --
@@ -182,26 +207,28 @@ import Graphics.Rendering.Cairo.Types (Cairo)
 --
 -- [@height@] height of the region, or -1 for the full surface height
 --
--- [@Returns@] a newly created Cairo context. Use cairo_destroy() to
--- upload the contents of the context when done drawing
---
 -- * Since 1.0
 --
-{# fun unsafe cairo_texture_create_region as ^
-       { withCairoTexture* `CairoTexture', `Int', `Int', `Int', `Int' } -> `Cairo' newCairo #}
+renderWithCairoTextureRegion :: CairoTexture -> Int -> Int -> Int -> Int -> Render a -> IO a
+renderWithCairoTextureRegion ct xOff yOff w h m =
+  let cx = cIntConv xOff
+      cy = cIntConv yOff
+      cw = cIntConv w
+      ch = cIntConv h
+  in bracket (withCairoTexture ct $ \ctPtr ->
+               liftM Cairo $ {# call unsafe cairo_texture_create_region #} ctPtr cx cy cw ch)
+             (\context -> do status <- Cairo.Internal.status context
+                             Cairo.Internal.destroy context
+                             unless (status == Cairo.StatusSuccess) $
+                              fail =<< Cairo.Internal.statusToString status)
+             (\context -> runReaderT (Cairo.Internal.runRender m) context)
 
--- | Clears self's internal drawing surface, so that the next upload
---   will replace the previous contents of the 'CairoTexture' rather
---   than adding to it.
---
--- [@self@] a 'CairoTexture'
---
--- * Since 1.0
---
-{# fun unsafe cairo_texture_clear as ^ { withCairoTexture* `CairoTexture' } -> `()' #}
+
+
+
 
 -- | Utility function for setting the source color of cr using a
---  'Color'.
+--  'Graphics.UI.Clutter.Color'.
 --
 -- [@cr@] a Cairo context
 --
@@ -209,13 +236,14 @@ import Graphics.Rendering.Cairo.Types (Cairo)
 --
 -- * Since 1.0
 --
-{# fun unsafe cairo_set_source_color as ^
-       { withCairo `Cairo', withColor* `Color' } -> `()' #}
-
-
-cairoTextureSurfaceHeight :: (CairoTextureClass self) => Attr self Word
-cairoTextureSurfaceHeight = clutterNewAttrFromUIntProperty "surface-height"
-
-cairoTextureSurfaceWidth :: (CairoTextureClass self) => Attr self Word
-cairoTextureSurfaceWidth = clutterNewAttrFromUIntProperty "surface-width"
+setSourceColor :: Color -> Render ()
+setSourceColor (Color r g b a) =
+  if a == 0xff
+    then Cairo.setSourceRGB (realToFrac r / 255.0)
+                            (realToFrac g / 255.0)
+                            (realToFrac b / 255.0)
+    else Cairo.setSourceRGBA (realToFrac r / 255.0)
+                             (realToFrac g / 255.0)
+                             (realToFrac b / 255.0)
+                             (realToFrac a / 255.0)
 

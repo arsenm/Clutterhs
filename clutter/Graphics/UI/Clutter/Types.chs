@@ -737,6 +737,8 @@ toCairoTexture = unsafeCastGObject . toGObject
 newCairoTexture a = makeNewGObject (CairoTexture, objectUnref) $ return (castPtr a)
 
 instance CairoTextureClass CairoTexture
+instance ScriptableClass CairoTexture
+instance ActorClass CairoTexture
 instance GObjectClass CairoTexture where
   toGObject (CairoTexture i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = CairoTexture (castForeignPtr o)

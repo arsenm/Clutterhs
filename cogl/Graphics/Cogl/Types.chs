@@ -43,9 +43,15 @@ module Graphics.Cogl.Types (
   withOffscreen,
   newOffscreen,
 
-  Shader,
-  withShader,
-  newShader,
+  ShaderClass(..),
+
+  VertexShader,
+  withVertexShader,
+  newVertexShader,
+
+  FragmentShader,
+  withFragmentShader,
+  newFragmentShader,
 
   Program,
   withProgram,
@@ -199,19 +205,42 @@ foreign import ccall unsafe "&cogl_offscreen_unref"
   offscreenUnref :: FinalizerPtr Offscreen
 
 
--- *** Shader
+-- *** VertexShader
 
-newtype Shader = Shader (ForeignPtr Shader)
+newtype VertexShader = VertexShader (ForeignPtr VertexShader)
 
-withShader :: Shader -> (Ptr () -> IO b) -> IO b
-withShader (Shader fptr) = withForeignPtr (castForeignPtr fptr)
+withVertexShader :: VertexShader -> (Ptr () -> IO b) -> IO b
+withVertexShader (VertexShader fptr) = withForeignPtr (castForeignPtr fptr)
 
-newShader :: Ptr () -> IO Shader
-newShader = liftM Shader . newForeignPtr shaderUnref . castPtr
+newVertexShader :: Ptr () -> IO VertexShader
+newVertexShader = liftM VertexShader . newForeignPtr vertexShaderUnref . castPtr
 
 foreign import ccall unsafe "&cogl_shader_unref"
-  shaderUnref :: FinalizerPtr Shader
+  vertexShaderUnref :: FinalizerPtr VertexShader
 
+-- *** FragmentShader
+
+newtype FragmentShader = FragmentShader (ForeignPtr FragmentShader)
+
+withFragmentShader :: FragmentShader -> (Ptr () -> IO b) -> IO b
+withFragmentShader (FragmentShader fptr) = withForeignPtr (castForeignPtr fptr)
+
+newFragmentShader :: Ptr () -> IO FragmentShader
+newFragmentShader = liftM FragmentShader . newForeignPtr fragmentShaderUnref . castPtr
+
+foreign import ccall unsafe "&cogl_shader_unref"
+  fragmentShaderUnref :: FinalizerPtr FragmentShader
+
+-- *** Shaders
+
+class ShaderClass a where
+  withShader :: a -> (Ptr () -> IO b) -> IO b
+
+instance ShaderClass VertexShader where
+  withShader = withVertexShader
+
+instance ShaderClass FragmentShader where
+    withShader = withFragmentShader
 
 -- *** Program
 

@@ -27,10 +27,12 @@
 -- | Shaders and Programmable Pipeline — Fuctions for accessing the
 -- programmable GL pipeline
 module Graphics.Cogl.ShadersPipeline (
+  createVertexShader,
+  createFragmentShader,
   shaderSource,
   shaderCompile,
   shaderGetInfoLog,
-  shaderGetType,
+--shaderGetType,
   shaderIsCompiled,
 
   createProgram,
@@ -50,16 +52,21 @@ import C2HS
 {# import Graphics.Cogl.Types #}
 {# import Graphics.Cogl.Enums #}
 
-{# fun unsafe shader_source as ^ { withShader* `Shader', `String' } -> `()' #}
+createVertexShader :: IO VertexShader
+createVertexShader = newVertexShader =<< {# call unsafe create_shader #} (cFromEnum ShaderTypeVertex)
 
-{# fun unsafe shader_compile as ^ { withShader* `Shader' } -> `()' #}
+createFragmentShader :: IO FragmentShader
+createFragmentShader = newFragmentShader =<< {# call unsafe create_shader #} (cFromEnum ShaderTypeFragment)
 
-{# fun unsafe shader_get_info_log as ^ { withShader* `Shader' } -> `String' peekNFreeString* #}
+{# fun unsafe shader_source as ^ `(ShaderClass shader)' => { withShader* `shader', `String' } -> `()' #}
 
-{# fun unsafe shader_get_type as ^ { withShader* `Shader' } -> `ShaderType' cToEnum #}
+{# fun unsafe shader_compile as ^ `(ShaderClass shader)' => { withShader* `shader' } -> `()' #}
 
-{# fun unsafe shader_is_compiled as ^ { withShader* `Shader' } -> `Bool' #}
+{# fun unsafe shader_get_info_log as ^ `(ShaderClass shader)' => { withShader* `shader' } -> `String' peekNFreeString* #}
 
+--{# fun unsafe shader_get_type as ^ `(ShaderClass shader)' => { withShader* `shader' } -> `ShaderType' cToEnum #}
+
+{# fun unsafe shader_is_compiled as ^ `(ShaderClass shader)' => { withShader* `shader' } -> `Bool' #}
 
 
 peekNFreeString :: Ptr CChar -> IO String
@@ -71,8 +78,8 @@ peekNFreeString p = do
 
 {# fun unsafe create_program as ^ { } -> `Program' newProgram* #}
 
-{# fun unsafe program_attach_shader as ^
-  { withProgram* `Program', withShader* `Shader' } -> `()' #}
+{# fun unsafe program_attach_shader as ^ `(ShaderClass shader)' =>
+  { withProgram* `Program', withShader* `shader' } -> `()' #}
 
 {# fun unsafe program_link as ^ { withProgram* `Program' } -> `()' #}
 

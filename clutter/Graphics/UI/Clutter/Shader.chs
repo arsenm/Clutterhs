@@ -45,6 +45,10 @@ module Graphics.UI.Clutter.Shader (
   ShaderClass,
   ShaderError(..),
 
+  CoglVertexShader,
+  CoglFragmentShader,
+  CoglProgram,
+
 -- * Constructors
   shaderNew,
 
@@ -63,10 +67,10 @@ module Graphics.UI.Clutter.Shader (
   shaderSetIsEnabled,
   shaderGetIsEnabled,
 
---shaderSetUniform,
---shaderGetCoglProgram,
---shaderGetCoglFragmentShader,
---shaderGetCoglVertexShader,
+  shaderSetUniform,
+  shaderGetCoglProgram,
+  shaderGetCoglFragmentShader,
+  shaderGetCoglVertexShader,
 
 --valueHoldsShaderFloat,
 
@@ -94,6 +98,10 @@ module Graphics.UI.Clutter.Shader (
 {# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
+{# import Graphics.UI.Clutter.StoreValue #}
+
+import qualified Graphics.Cogl.Types as Cogl.Types
+import Graphics.Cogl.Types (Program, newProgram)
 
 import C2HS
 import Control.Monad (liftM)
@@ -101,6 +109,11 @@ import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.GError
 
+-- C2HS is being a pain in the ass about using .'s, and this might be
+-- less confusing anyway.
+type CoglVertexShader = Cogl.Types.VertexShader
+type CoglFragmentShader = Cogl.Types.FragmentShader
+type CoglProgram = Cogl.Types.Program
 
 -- | Create a new 'Shader' instance.
 --
@@ -231,9 +244,25 @@ shaderCompile shader = withShader shader $ \sPtr ->
 --TODO: GValue
 --{# fun unsafe shader_set_uniform as ^ { withShader* `Shader', `String',  } -> `()' #}
 
---{# fun unsafe shader_get_cogl_program as ^ { withShader* `Shader' } -> `CoglHandle' #}
+shaderSetUniform :: (GenericValueClass a) => Shader -> String -> a -> IO ()
+shaderSetUniform shdr name val = withShader shdr $ \shdrPtr ->
+                                   withCString name $ \strPtr ->
+                                     withGenericValue val $ \valPtr ->
+                                       {# call unsafe shader_set_uniform #} shdrPtr strPtr valPtr
 
---{# fun unsafe shader_get_cogl_fragment_shader as ^ { withShader* `Shader' } -> `CoglHandle' #}
+
+{# fun unsafe shader_get_cogl_program as ^ { withShader* `Shader' } -> `Program' newProgram* #}
+
+-- C2HS is being a pain in the ass with qualified imports and the
+-- multiple Shader types.
+
+shaderGetCoglFragmentShader :: Shader -> IO (Maybe CoglFragmentShader)
+shaderGetCoglFragmentShader shdr = withShader shdr $ \shdrPtr ->
+  maybeNullNew Cogl.Types.newFragmentShader =<< {# call unsafe shader_get_cogl_fragment_shader #} shdrPtr
+
+shaderGetCoglVertexShader :: Shader -> IO (Maybe CoglVertexShader)
+shaderGetCoglVertexShader shdr = withShader shdr $ \shdrPtr ->
+  maybeNullNew Cogl.Types.newVertexShader =<< {# call unsafe shader_get_cogl_vertex_shader #} shdrPtr
 
 --{# fun unsafe shader_get_cogl_vertex_shader as ^ { withShader* `Shader' } -> `CoglHandle' #}
 

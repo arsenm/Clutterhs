@@ -5,7 +5,7 @@
 --
 --  Created: 11 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -264,5 +264,4 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
          cIntConv `KeyVal',
          cFromModFlags `[ModifierType]',
          withGObject* `gobject' } -> `Bool' #}
-
 

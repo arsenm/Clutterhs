@@ -5,7 +5,7 @@
 --
 --  Created: 19 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface  #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 {-# OPTIONS_HADDOCK prune #-}
 
 #include <clutter/clutter.h>
@@ -93,13 +93,11 @@ module Graphics.UI.Clutter.Event (
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}
 
---FIXME: Conflict with EventType Nothing
 import Prelude hiding (Nothing, catch)
 import qualified Prelude as P
 
 import C2HS
 import System.Glib.Signals
-import System.Glib.Flags
 import Control.Monad (liftM, liftM2)
 import Control.Monad.Trans (liftIO)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
@@ -109,10 +107,6 @@ import Control.Exception (Handler(..),
                           catches,
                           throw)
 import System.IO.Error (isUserError, ioeGetErrorString)
-
---TODO: Move keyval
-
---Taken almost straight from Gtk. Should I try something else?
 
 -- | A monad providing access to data in an event.
 --
@@ -139,7 +133,6 @@ data EStageState = EStageState
 -- | A tag for /Crossing/ events.
 data ECrossing = ECrossing
 
---Clutter seems to not have the event mask stuff
 eventM :: ActorClass a => SignalName ->
   ConnectAfter -> a -> (EventM t Bool) -> IO (ConnectId a)
 eventM name after obj fun = connect_PTR__BOOL name after obj (runReaderT fun)
@@ -220,7 +213,6 @@ eventSource = ask >>= \ptr ->
 eventRelated :: EventM ECrossing (Maybe Actor)
 eventRelated = ask >>= \ptr ->
   liftIO $ maybeNewActor =<< {# call unsafe event_get_related #} (castPtr ptr)
-
 
 
 -- | Retrieve the @(x,y)@ coordinates of the mouse.
@@ -308,8 +300,6 @@ eventKeyUnicode :: EventM EKey Word32
 eventKeyUnicode = ask >>= \ptr ->
                  liftIO $ liftM cIntConv ({# get ClutterKeyEvent->unicode_value #} ptr)
 
-
-
 -- | Retrieves the direction of the scrolling of event
 --
 -- the scrolling direction
@@ -320,10 +310,8 @@ eventScrollDirection :: EventM EScroll ScrollDirection
 eventScrollDirection = ask >>= \ptr ->
               liftIO $ liftM cToEnum ({# get ClutterScrollEvent->direction #} ptr)
 
-
 --TODO: Should this happen automatically? unicode char?
 {# fun unsafe keysym_to_unicode as ^ { cIntConv `Word' } -> `Word' cIntConv #}
-
 
 
 -- | Retrieves the 'InputDevice' from its id.
@@ -412,7 +400,6 @@ eventDeviceType = ask >>= \ptr ->
 -- * Since 1.0
 --
 {# fun unsafe get_current_event_time as ^ { } -> `Timestamp' cIntConv #}
-
 
 
 -- | Checks if events are pending in the event queue.

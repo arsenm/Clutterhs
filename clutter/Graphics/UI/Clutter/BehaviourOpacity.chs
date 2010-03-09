@@ -5,7 +5,7 @@
 --
 --  Created: 3 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -114,8 +114,6 @@ import System.Glib.Properties
 --
 behaviourOpacityOpacityEnd :: Attr BehaviourOpacity Word
 behaviourOpacityOpacityEnd = clutterNewAttrFromUIntProperty "opacity-end"
-
-
 
 -- | Initial opacity level of the behaviour.
 --

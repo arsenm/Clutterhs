@@ -5,7 +5,7 @@
 --
 --  Created: 12 Dec 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,6 @@
 #include <clutter/clutter.h>
 
 {# context lib="clutter" prefix="clutter" #}
-
---CHECKME: gtk2hs change broke everything. I need to double check what
---they are doing to get the referencing right, but I just want it to
---compile right now.
 
 module Graphics.UI.Clutter.Enums (
   PickMode(..),
@@ -80,7 +76,6 @@ import Control.Monad (when, liftM2, join)
 import Control.Exception (bracket)
 
 
-
 -- | Error conditions returned by 'clutterInit'
 --
 -- [@InitSuccess@] Initialisation successful
@@ -96,7 +91,6 @@ import Control.Exception (bracket)
 -- * Since 0.2
 --
 {# enum ClutterInitError as InitError {underscoreToCase} deriving (Show, Eq) #}
-
 
 
 -- | Controls the paint cycle of the scene graph when in pick mode
@@ -155,7 +149,6 @@ import Control.Exception (bracket)
 {# enum ClutterGravity as Gravity {underscoreToCase} deriving (Show, Eq) #}
 
 
-
 -- | Flags used to signal the state of an actor.
 --
 -- [@ActorMapped@] the actor will be painted (is visible, and inside a
@@ -173,7 +166,6 @@ import Control.Exception (bracket)
 {# enum ClutterActorFlags as ActorFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 
-
 -- | Specifies the type of requests for a ClutterActor.
 --
 -- [@RequestHeightForWidth@] Height for width requests
@@ -183,7 +175,6 @@ import Control.Exception (bracket)
 -- * Since 0.8
 --
 {# enum ClutterRequestMode as RequestMode {underscoreToCase} deriving (Show, Eq) #}
-
 
 
 -- | Axis of a rotation.
@@ -197,7 +188,6 @@ import Control.Exception (bracket)
 -- * Since 0.4
 --
 {# enum ClutterRotateAxis as RotateAxis {underscoreToCase} deriving (Show, Eq) #}
-
 
 
 -- | Types of events.
@@ -244,7 +234,6 @@ import Control.Exception (bracket)
 {# enum ClutterEventFlags as EventFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 
-
 -- | Masks applied to a 'Event' by modifiers.
 --
 -- [@ShiftMask@] Mask applied by the Shift key
@@ -288,7 +277,6 @@ import Control.Exception (bracket)
 {# enum ClutterModifierType as ModifierType {underscoreToCase} deriving (Show, Eq) #}
 
 
-
 -- | Stage state masks
 --
 -- [@StageStateFullscreen@] Fullscreen mask
@@ -300,7 +288,6 @@ import Control.Exception (bracket)
 -- * Since 0.4
 --
 {# enum ClutterStageState as StageState {underscoreToCase} deriving (Show, Eq) #}
-
 
 
 -- | Direction of a pointer scroll event.
@@ -318,7 +305,6 @@ import Control.Exception (bracket)
 {# enum ClutterScrollDirection as ScrollDirection {underscoreToCase} deriving (Show, Eq) #}
 
 
-
 -- | The direction of a 'Timeline'
 --
 -- [@TimelineForward@] forward direction for a timeline
@@ -328,8 +314,6 @@ import Control.Exception (bracket)
 -- * Since 0.6
 --
 {# enum ClutterTimelineDirection as TimelineDirection {underscoreToCase} deriving (Show, Eq) #}
-
-
 
 
 -- | The animation modes used by 'Alpha' and 'Animation'. This
@@ -425,7 +409,6 @@ import Control.Exception (bracket)
 {# enum ClutterAnimationMode as AnimationMode {underscoreToCase} deriving (Show, Eq) #}
 
 
-
 -- | Direction of a rotation.
 --
 -- [@RotateCw@] Clockwise rotation
@@ -453,8 +436,6 @@ import Control.Exception (bracket)
 {# enum ClutterTextureQuality as TextureQuality {underscoreToCase} deriving (Show, Eq) #}
 
 
-
-
 -- | Flags for 'textureSetFromRgbData' and 'textureSetFromYuvData'.
 --
 -- [@TextureNone@] No flags
@@ -470,7 +451,6 @@ import Control.Exception (bracket)
 {# enum ClutterTextureFlags as TextureFlags {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 
-
 -- | 'Shader' error enumeration
 --
 -- [@ShaderErrorNoAsm@] No ASM shaders support
@@ -482,8 +462,6 @@ import Control.Exception (bracket)
 -- * Since 0.6
 --
 {# enum ClutterShaderError as ShaderError {underscoreToCase} deriving (Show, Eq) #}
-
-
 
 
 -- | Types of nodes in a 'Path'.
@@ -513,7 +491,6 @@ import Control.Exception (bracket)
 {# enum ClutterPathNodeType as PathNodeType {underscoreToCase} deriving (Show, Eq) #}
 
 
-
 -- | The type of unit in which a value is expressed
 --
 -- This enumeration might be expanded at later date
@@ -529,7 +506,6 @@ import Control.Exception (bracket)
 -- * Since 1.0
 --
 {# enum ClutterUnitType as UnitType {underscoreToCase} deriving (Show, Eq) #}
-
 
 
 -- | The types of input devices available.
@@ -550,7 +526,6 @@ import Control.Exception (bracket)
 {# enum ClutterInputDeviceType as InputDeviceType {underscoreToCase} deriving (Show, Eq) #}
 
 
-
 -- | 'Script' error enumeration.
 --
 -- [@ScriptErrorInvalidTypeFunction@] Type function not found or invalid
@@ -562,7 +537,6 @@ import Control.Exception (bracket)
 -- * Since 0.6
 --
 {# enum ClutterScriptError as ScriptError {underscoreToCase} deriving (Show, Eq) #}
-
 
 
 -- | Runtime flags to change the font quality. To be used with
@@ -581,5 +555,4 @@ instance Flags ActorFlags
 instance Flags TextureFlags
 instance Flags AllocationFlags
 instance Flags FontFlags
-
 

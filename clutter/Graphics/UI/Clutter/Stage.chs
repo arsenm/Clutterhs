@@ -5,7 +5,7 @@
 --
 --  Created: 11 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -24,11 +24,11 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
---FIXME: remove reference to freeing stuff
 -- | 'Stage' — Top level visual element to which actors are placed.
 module Graphics.UI.Clutter.Stage (
 -- * Detail
--- | ClutterStage is a top level 'window' on which child actors are placed and manipulated.
+-- | 'Stage' is a top level 'window' on which child actors are placed
+-- and manipulated.
 --
 -- Clutter creates a default stage upon initialization, which can be
 -- retrieved using 'stageGetDefault'. Clutter always
@@ -49,6 +49,7 @@ module Graphics.UI.Clutter.Stage (
 -- implementation of the windowing system. It is possible to subclass
 -- 'Stage', as long as every overridden virtual function chains up
 -- to the parent class corresponding function.
+--
 
 -- * Class Hierarchy
 -- |

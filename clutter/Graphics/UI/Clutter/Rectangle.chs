@@ -5,7 +5,7 @@
 --
 --  Created: 11 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -64,7 +64,6 @@ module Graphics.UI.Clutter.Rectangle (
 {# import Graphics.UI.Clutter.Types #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Properties
 import System.Glib.Attributes
 

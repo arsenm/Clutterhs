@@ -5,7 +5,7 @@
 --
 --  Created: 2 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -56,10 +56,8 @@ module Graphics.UI.Clutter.BehaviourScale (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.Properties
 
@@ -119,7 +117,6 @@ import System.Glib.Properties
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*,
          alloca- `Double' peekFloatConv*} -> `()' #}
-
 
 
 -- | The final scaling factor on the X axis for the actors.

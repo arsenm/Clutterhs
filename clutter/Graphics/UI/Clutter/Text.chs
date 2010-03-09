@@ -5,7 +5,7 @@
 --
 --  Created: 17 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -211,7 +211,6 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 -- * Since 1.0
 --
 {# fun unsafe text_new as ^ { } -> `Text' newText* #}
-
 
 
 -- | Creates a new 'Text' actor, using font_name as the font
@@ -1364,6 +1363,5 @@ afterTextChanged = connect_NONE__NONE "text-changed" True
 --
 textChanged :: Signal Text (IO ())
 textChanged = Signal (connect_NONE__NONE "text-changed")
-
 
 

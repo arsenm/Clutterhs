@@ -5,7 +5,7 @@
 --
 --  Created: 6 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -76,8 +76,6 @@ import System.Glib.GError
 {# fun unsafe script_new as ^ { } -> `Script' newScript* #}
 
 type MergeID = Word
-
-
 
 
 -- | Loads the definitions from data into script and merges with the
@@ -243,5 +241,4 @@ scriptFilename = readAttrFromMaybeStringProperty "filename"
 --
 scriptFilenameSet :: ReadAttr Script Bool
 scriptFilenameSet = readAttrFromBoolProperty "filename-set"
-
 

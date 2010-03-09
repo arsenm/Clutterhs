@@ -5,7 +5,7 @@
 --
 --  Created: 13 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -44,7 +44,6 @@ module Graphics.UI.Clutter.BehaviourPath (
   behaviourPathNewWithKnots,
 
 -- * Methods
-
   behaviourPathSetPath,
   behaviourPathGetPath,
 
@@ -81,6 +80,7 @@ behaviourPathNewWithKnots alp knots = let func = {# call unsafe behaviour_path_n
 
 {# fun unsafe behaviour_path_get_path as ^
        { withBehaviourPath* `BehaviourPath' } -> `Path' newPath* #}
+
 
 -- Attributes
 

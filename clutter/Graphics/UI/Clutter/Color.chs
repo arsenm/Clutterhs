@@ -106,8 +106,6 @@ colorFromString name = unsafePerformIO $ withCString name $ \cstr ->
        { alloca- `Color' peek*, `Float', `Float', `Float' } -> `()' #}
 
 
-
-
 -- | Converts color to the HLS format.
 --
 -- The hue value is in the 0 .. 360 range. The luminance and
@@ -223,5 +221,4 @@ colorSubtract (Color ra ga ba aa) (Color rb gb bb ab) = let lim = clamp 0 255
 {# fun pure unsafe color_shade as ^
        { withColor* `Color', `Double', alloca- `Color' peek* } -> `()' #}
 
--- TODO: ClutterParamSpecColor stuff
 

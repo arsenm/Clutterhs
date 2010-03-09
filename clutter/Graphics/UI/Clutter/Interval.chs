@@ -82,10 +82,7 @@ import Prelude
 import qualified Prelude as P
 
 import System.Glib.GValue
-import System.Glib.GValueTypes
-import System.Glib.Types
 import System.Glib.GType
-
 
 
 -- | Creates a new 'Interval' of type gtype, between initial and
@@ -107,8 +104,6 @@ intervalNew initial final = let func = {# call unsafe interval_new_with_values #
                                    interval <- newIntervalRaw =<< func gtype iniPtr finPtr
                                    return (mkInterval (undefined :: a) interval)
 
-
-
 -- | Creates a copy of interval.
 --
 -- [@interval@] an 'Interval'
@@ -121,9 +116,6 @@ intervalClone :: Interval a -> IO (Interval a)
 intervalClone interval = withInterval interval $ \intervalPtr ->
                            liftM (mkInterval (undefined :: a))
                                  (newIntervalRaw =<< {# call unsafe interval_clone #} intervalPtr)
-
-
-
 
 -- | Sets the initial value of interval to value.
 --
@@ -139,7 +131,6 @@ intervalSetInitialValue interval val = withInterval interval $ \intervalPtr ->
                                           {# call unsafe interval_set_initial_value #} intervalPtr valPtr
 
 
-
 -- | Sets the final value of interval to value.
 --
 -- [@interval@] an 'Interval'
@@ -153,9 +144,7 @@ intervalSetFinalValue interval val = withInterval interval $ \intervalPtr ->
                                          withGenericValue val $ \valPtr ->
                                           {# call unsafe interval_set_initial_value #} intervalPtr valPtr
 
-
 --TODO: Cleanup
-
 
 -- | Retrieves the initial value of interval and copies it into value.
 --
@@ -172,8 +161,6 @@ intervalGetInitialValue interval = withInterval interval $ \intervalPtr -> do
                                                        {# call unsafe interval_get_initial_value #} intervalPtr gvPtr
                                      return (unsafeExtractGenericValue generic)
 
-
-
 -- | Retrieves the final value of interval and copies it into value.
 --
 -- [@interval@] an 'Interval'
@@ -188,8 +175,6 @@ intervalGetFinalValue interval = withInterval interval $ \intervalPtr -> do
                                      (generic, _) <- allocaTypedGValue gtype $ \gvPtr ->
                                                        {# call unsafe interval_get_final_value #} intervalPtr gvPtr
                                      return (unsafeExtractGenericValue generic)
-
-
 
 
 -- | Computes the value between the interval boundaries given the

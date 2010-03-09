@@ -269,11 +269,10 @@ import System.Glib.Signals
 --
 {# fun unsafe timeline_get_elapsed_time as ^ { withTimeline* `Timeline' } -> `Word' cIntConv #}
 
-
---TODO: Links to all the signals in the doc
--- | Retrieves the amount of time elapsed since the last 'Timeline'::new-frame signal.
+-- | Retrieves the amount of time elapsed since the last 'Timeline'::
+-- 'newFrame' signal.
 --
--- This function is only useful inside handlers for the ::new-frame
+-- This function is only useful inside handlers for the 'newFrame'
 -- signal, and its behaviour is undefined if the timeline is not
 -- playing.
 --
@@ -307,7 +306,7 @@ import System.Glib.Signals
 -- | Adds a named marker that will be hit when the timeline has been
 --   running for msecs milliseconds. Markers are unique string
 --   identifiers for a given time. Once timeline reaches msecs, it
---   will emit a ::marker-reached signal for each marker attached to
+--   will emit a ::'markerReached' signal for each marker attached to
 --   that time.
 --
 -- A marker can be removed with 'timelineRemoveMarker'. The timeline
@@ -372,9 +371,9 @@ timelineListMarkers tml time = withTimeline tml $ \tmlptr ->
 --
 -- * Note
 --
--- Like 'timelineAdvance', this function will not emit the "new-frame"
--- for the time where marker_name is set, nor it will emit
--- "marker-reached" for marker_name.
+-- Like 'timelineAdvance', this function will not emit the 'newFrame'
+-- signal for the time where marker_name is set, nor it will emit
+-- 'markerReached' for marker_name.
 --
 -- [@timeline@] a 'Timeline'
 --
@@ -415,10 +414,10 @@ timelineDelay :: Attr Timeline Word
 timelineDelay = newNamedAttr "delay" timelineGetDelay timelineSetDelay
 
 
--- | The direction of the timeline, either TimelineForward
---   or TimelineBackward.
+-- | The direction of the timeline, either 'TimelineForward'
+--   or 'TimelineBackward'.
 --
--- Default value: TimelineForward
+-- Default value: 'TimelineForward'
 --
 -- * Since 0.6
 --
@@ -431,9 +430,10 @@ timelineDirection = newNamedAttr "direction" timelineGetDirection timelineSetDir
 
 --onCompleted, afterCompleted :: Timeline -> IO () -> IO (ConnectId Timeline)
 
--- | The ::completed signal is emitted when the timeline reaches the
+-- | The 'completed' signal is emitted when the timeline reaches the
 --   number of frames specified by the 'Timeline':num-frames
 --   property.
+
 --completed :: Signal Timeline (IO ())
 
 onMarkerReached, afterMarkerReached :: Timeline -> (String -> Word -> IO ()) -> IO (ConnectId Timeline)
@@ -469,9 +469,9 @@ onNewFrame = connect_INT__NONE "new-frame" False
 afterNewFrame = connect_INT__NONE "new-frame" True
 
 
--- | The ::new-frame signal is emitted for each timeline running
---   timeline before a new frame is drawn to give animations a chance
---   to update the scene.
+-- | The 'newFrame' signal is emitted for each timeline running
+-- timeline before a new frame is drawn to give animations a chance to
+-- update the scene.
 --
 -- [@timeline@] the timeline which received the signal
 --

@@ -5,7 +5,7 @@
 --
 --  Created: 9 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface  #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -43,7 +43,6 @@ module Graphics.UI.Clutter.Units (
   unitsGetUnitValue,
   unitsFromString,
   unitsToString
---paramSpecUnits,
 --valueSetUnits,
 --valueGetUnits
   ) where
@@ -52,8 +51,6 @@ module Graphics.UI.Clutter.Units (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
-
 
 -- | Stores a value in millimiters inside units
 --
@@ -64,7 +61,6 @@ import Control.Monad (liftM)
 -- * Since 1.0
 --
 {# fun unsafe units_from_mm as ^ { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
-
 
 
 -- | Stores a value in typographic points inside units
@@ -220,4 +216,29 @@ unitsFromString str = withCString str $ \strPtr ->
 -- * Since 1.0
 --
 {# fun unsafe units_to_string as ^ { withUnits* `Units' } -> `String' peekNFreeString* #}
+
+
+{-
+-- | Sets value to units
+--
+-- [@value@] a GValue initialized to 'Graphics.UI.Clutter.GTypes.unit'
+--
+-- [@units@] the units to set
+--
+--  * Since 0.8
+--
+{# fun unsafe value_set_units as ^ { withGValue `GValue', withUnits* `Units' } -> `()'  #}
+
+
+
+-- | Gets the 'Units' contained in value.
+--
+-- [@value@] a GValue initialized to 'Graphics.UI.Clutter.GTypes.unit'
+--
+-- [@Returns@] the units inside the passed GValue
+--
+-- * Since 0.8
+--
+{# fun unsafe value_get_units as ^ { withGValue `GValue' } -> `Units' newUnits* #}
+-}
 

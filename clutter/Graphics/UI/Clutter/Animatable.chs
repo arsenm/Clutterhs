@@ -5,7 +5,7 @@
 --
 --  Created: 25 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -39,34 +39,31 @@ module Graphics.UI.Clutter.Animatable (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.StoreValue #}
 
 import C2HS
-import System.Glib.GObject
-{-
-animatableAnimateProperty :: (AnimatableClass animatable, GValueArgClass val) =>
+import System.Glib.GValue
+
+--TODO: Get rid of string usage.
+animatableAnimateProperty :: (AnimatableClass animatable, GenericValueClass val) =>
                              animatable ->
-                             Animation ->
+                             Animation animatable ->
                              String ->
                              val ->
                              val ->
                              Double ->
-                             val ->
                              IO (Maybe val)
--}
-animatableAnimateProperty = undefined
-{-
 animatableAnimateProperty animAble anim pName initial final prog =
---CHECKME: unsafe?
-    let func = {# call unsafe animatable_animate_property #}
+    let func = {# call animatable_animate_property #}
     in withAnimatableClass animAble $ \animAblePtr ->
          withAnimation anim $ \animPtr ->
            withCString pName $ \strPtr ->
-             withGValueArg initial $ \initPtr ->
-               withGValueArg final $ \finPtr ->
-                 allocaGValue $ \valPtr -> do
-                   res <- func animAblePtr animPtr strPtr initPtr finPtr (cFloatConv prog) valPtr
-                   return $ if res
-                              then Just valPtr
-                              else Prelude.Nothing
--}
+             withGenericValue initial $ \initPtr ->
+               withGenericValue final $ \finPtr ->
+                 allocaGValue $ \gv@(GValue valPtr) -> do
+                   res <- func animAblePtr animPtr strPtr initPtr finPtr (cFloatConv prog) (castPtr valPtr)
+                   if cToBool res
+                     then (Just . unsafeExtractGenericValue) `fmap` valueGetGenericValue gv
+                     else return Prelude.Nothing
+
 

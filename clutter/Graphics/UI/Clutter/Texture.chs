@@ -5,7 +5,7 @@
 --
 --  Created: 3 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -67,7 +67,7 @@ module Graphics.UI.Clutter.Texture (
 
 -- * Methods
   textureSetFromFile,
-  textureSetFromRgbData,  --TODO: RGB??? vs. Rgb
+  textureSetFromRGBData,  --TODO: RGB??? vs. Rgb
 --textureSetFromYuvData,
 --textureSetAreaFromRgbData,
   textureGetBaseSize,
@@ -243,9 +243,9 @@ textureNewFromFile filename = let func = {# call unsafe texture_new_from_file #}
 --
 -- If "load-async" is set to @True@, this function will return as soon
 -- as possible, and the actual image loading from disk will be
--- performed asynchronously. "size-change" will be emitten when the
--- size of the texture is available and "load-finished" will be
--- emitted when the image has been loaded or if an error occurred.
+-- performed asynchronously. 'sizeChange' will be emitten when the
+-- size of the texture is available and 'loadFinished' will be emitted
+-- when the image has been loaded or if an error occurred.
 --
 -- [@texture@] A 'Texture'
 --
@@ -270,12 +270,12 @@ textureSetFromFile txt fname = let func = {# call texture_set_from_file #}
 --FIXME: Proper rowstride
 --CHECKME: Ix i, Word8
 --textureSetFromRgbData :: (TextureClass self, Storable e) => self ->
-textureSetFromRgbData :: (TextureClass self) => self ->
+textureSetFromRGBData :: (TextureClass self) => self ->
 --                         RGBData (Int, Int) e ->
                          RGBData (Int, Int) Word8 ->
                          [TextureFlags] ->
                          IO Bool
-textureSetFromRgbData txt dat flags =
+textureSetFromRGBData txt dat flags =
     let func = {# call texture_set_from_rgb_data #}
         hasA = rgbDataHasAlpha dat
         bpp = if hasA then 4 else 3
@@ -320,20 +320,23 @@ texture_set_area_from_rgb_data
 {# fun unsafe texture_get_pixel_format as ^ `(TextureClass self)' =>
   { withTextureClass* `self' } -> `PixelFormat' cToEnum #}
 
-
---CHECKME: Wrap the -1 thing somehow?
 -- | Gets the maximum waste that will be used when creating a texture
 --   or -1 if slicing is disabled.
 --
 -- [@texture@] A 'Texture'
 --
--- [@Returns@] The maximum waste or -1 if the texture waste is
--- unlimited.
+-- [@Returns@] @Just@ The maximum waste or @Nothing@ if the texture
+-- waste is unlimited.
 --
 -- * Since 0.8
 --
-{# fun unsafe texture_get_max_tile_waste as ^ `(TextureClass self)' =>
-       { withTextureClass* `self' } -> `Int' #}
+
+textureGetMaxTileWaste :: (TextureClass self) => self -> IO (Maybe Int)
+textureGetMaxTileWaste tx = withTextureClass tx $ \txPtr -> do
+  r <- {# call unsafe texture_get_max_tile_waste #} txPtr
+  return $ if r == (-1)
+             then Prelude.Nothing
+             else Just (cIntConv r)
 
 -- | Gets the filter quality used when scaling a texture.
 --
@@ -411,12 +414,12 @@ coglWithMaterial = Cogl.withMaterial
        { withTextureClass* `self', coglWithTexture* `Cogl.Texture' } -> `()' #}
 
 
-
+--CHECKME: referencing
 -- | Returns a handle to the underlying COGL material used for drawing
 -- the actor. No extra reference is taken so if you need to keep the
 -- handle then you should call cogl_handle_ref() on it.
 --
--- [@texture@] A Clutter.Texture
+-- [@texture@] A 'Graphics.UI.Clutter.Texture'
 --
 -- [@Returns@] COGL material handle
 --
@@ -431,13 +434,13 @@ coglWithMaterial = Cogl.withMaterial
 -- handle is no longer needed it should be deref'd with
 -- cogl_handle_unref. Texture data is attached to the material so
 -- calling this function also replaces the Cogl
--- texture. 'Clutter.Texture' requires that the material have a texture
--- layer so you should set one on the material before calling this
--- function.
+-- texture. 'Graphics.UI.Clutter.Texture' requires that the material
+-- have a texture layer so you should set one on the material before
+-- calling this function.
 --
--- [@texture@] A 'Clutter.Texture'
+-- [@texture@] A 'Graphics.UI.Clutter.Texture'
 --
--- [@cogl_material@] A CoglHandle for a material
+-- [@cogl_material@] A 'Graphics.Cogl.Material'
 --
 -- * Since 0.8
 --
@@ -582,7 +585,7 @@ coglWithMaterial = Cogl.withMaterial
        { withTextureClass* `self', `Bool'} -> `()' #}
 
 
--- attributes
+-- Attributes
 
 -- | The underlying COGL material handle used to draw this actor.
 textureCoglMaterial :: (TextureClass self) => Attr self Cogl.Material
@@ -684,14 +687,13 @@ textureRepeatY = newAttrFromBoolProperty "repeat-y"
 textureSyncSize :: (TextureClass self) => Attr self Bool
 textureSyncSize = newNamedAttr "sync-size" textureGetSyncSize textureSetSyncSize
 
---CHECKME:
 -- | Maximum waste area of a sliced texture.
 --
 -- Allowed values: >= -1
 --
 -- Default value: 127
 --
-textureTileWaste :: (TextureClass self) => ReadAttr self Int
+textureTileWaste :: (TextureClass self) => ReadAttr self (Maybe Int)
 textureTileWaste = readNamedAttr "tile-waste" textureGetMaxTileWaste
 
 -- signals
@@ -720,8 +722,8 @@ onPixbufChange, afterPixbufChange :: Texture -> IO () -> IO (ConnectId Texture)
 onPixbufChange = connect_NONE__NONE "pixbuf-change" False
 afterPixbufChange = connect_NONE__NONE "pixbuf-change" True
 
--- | The ::pixbuf-change signal is emitted each time the pixbuf used
---   by texture changes.
+-- | The ::'pixbufChange' signal is emitted each time the pixbuf used
+-- by texture changes.
 --
 pixbufChange :: (TextureClass self) => Signal self (IO ())
 pixbufChange = Signal (connect_NONE__NONE "pixbuf-change")
@@ -732,7 +734,7 @@ onSizeChange = connect_INT_INT__NONE "size-change" False
 afterSizeChange = connect_INT_INT__NONE "size-change" True
 
 
--- | The ::size-change signal is emitted each time the size of the
+-- | The ::'sizeChange' signal is emitted each time the size of the
 -- pixbuf used by texture changes. The new size is given as argument
 -- to the callback.
 --

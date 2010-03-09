@@ -68,7 +68,7 @@ module Graphics.UI.Clutter.Animation (
 
   animationHasProperty,
   animationUnbindProperty,
---animationGetInterval,
+  animationGetInterval,
   actorGetAnimation,
   actorAnimation,
 

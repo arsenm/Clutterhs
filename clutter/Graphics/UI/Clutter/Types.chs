@@ -137,10 +137,6 @@ module Graphics.UI.Clutter.Types (
                                   withMedia,
                                   withMediaClass,
 
-                                  ChildMeta,
-                                  ChildMetaClass,
-                                  newChildMeta,
-
                                   Clone,
                                   CloneRaw,
                                   mkClone,
@@ -452,6 +448,7 @@ newRectangle a = makeNewActor (Rectangle, objectUnref) $ return (castPtr a)
 
 instance RectangleClass Rectangle
 instance ActorClass Rectangle
+
 instance GObjectClass Rectangle where
   toGObject (Rectangle r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = Rectangle (castForeignPtr o)
@@ -760,21 +757,6 @@ instance MediaClass Media
 instance GObjectClass Media where
   toGObject (Media i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = Media (castForeignPtr o)
-
--- *** ChildMeta
-
-{# pointer *ClutterChildMeta as ChildMeta foreign newtype #}
-
-class GObjectClass o => ChildMetaClass o
-toChildMeta :: ChildMetaClass o => o -> Media
-toChildMeta = unsafeCastGObject . toGObject
-
-newChildMeta a = makeNewGObject (ChildMeta, objectUnref) $ return (castPtr a)
-
-instance ChildMetaClass ChildMeta
-instance GObjectClass ChildMeta where
-  toGObject (ChildMeta i) = constrGObject (castForeignPtr i)
-  unsafeCastGObject (GObject o) = ChildMeta (castForeignPtr o)
 
 -- *** Clone
 

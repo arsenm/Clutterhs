@@ -98,7 +98,6 @@ Library
                    Graphics.UI.Clutter.CairoTexture,
                    Graphics.UI.Clutter.Alpha,
                    Graphics.UI.Clutter.Media,
-                   Graphics.UI.Clutter.ChildMeta,
                    Graphics.UI.Clutter.Clone,
                    Graphics.UI.Clutter.Behaviour,
                    Graphics.UI.Clutter.BehaviourScale,

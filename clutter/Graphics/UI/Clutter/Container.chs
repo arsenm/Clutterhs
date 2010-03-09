@@ -62,7 +62,6 @@ module Graphics.UI.Clutter.Container (
 --containerClassListChildProperties,
   containerChildSet,
   containerChildGet,
-  containerGetChildMeta
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -154,14 +153,6 @@ We don't care about GParamSpec stuff
 -}
 --
 
-
--- | Retrieves the 'ChildMeta' which contains the data about the
---   container specific state for actor.
-{# fun unsafe container_get_child_meta as ^
-       `(ContainerClass container)' =>
-       { withContainerClass* `container',
-         withActor* `Actor' } ->
-        `ChildMeta' newChildMeta* #}
 
 --CHECKME: unsafe?
 --CHECKME: What are "container specific properties" and does this make sense?

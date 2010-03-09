@@ -27,7 +27,6 @@ module Graphics.UI.Clutter (
 -- ** Abstract classes and interfaces
   module Graphics.UI.Clutter.Actor,
   module Graphics.UI.Clutter.Container,
-  module Graphics.UI.Clutter.ChildMeta,
   module Graphics.UI.Clutter.Media,
 
 -- ** Base actors
@@ -104,7 +103,6 @@ import Graphics.UI.Clutter.StoreValue
 import Graphics.UI.Clutter.Alpha
 import Graphics.UI.Clutter.CairoTexture
 import Graphics.UI.Clutter.Media
-import Graphics.UI.Clutter.ChildMeta
 import Graphics.UI.Clutter.Clone
 import Graphics.UI.Clutter.Behaviour
 import Graphics.UI.Clutter.BehaviourScale

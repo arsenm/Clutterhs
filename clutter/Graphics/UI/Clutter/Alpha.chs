@@ -5,7 +5,7 @@
  --
  --  Created: 22 Sep 2009
  --
- --  Copyright (C) 2009 Matthew Arsenault
+ --  Copyright (C) 2009-2010 Matthew Arsenault
  --
  --  This library is free software; you can redistribute it and/or
  --  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
  --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  --  Lesser General Public License for more details.
  --
- {-# LANGUAGE ForeignFunctionInterface, TypeSynonymInstances #-}
+ {-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -73,8 +73,8 @@ module Graphics.UI.Clutter.Alpha (
   alphaNew,
   alphaNewFull,
   alphaNewWithFunc,
--- * Methods
 
+-- * Methods
   alphaSetTimeline,
   alphaGetTimeline,
 
@@ -83,9 +83,6 @@ module Graphics.UI.Clutter.Alpha (
 
   alphaGetAlpha,
   alphaSetFunc,
-
---alphaSetClosure,
---alphaRegisterClosure,
   alphaRegisterFunc,
 
 -- * Attributes
@@ -141,7 +138,7 @@ import System.Glib.Attributes
 --
 alphaNewWithFunc :: Timeline    -- ^ a 'Timeline'
                  -> AlphaFunc   -- ^ an 'AlphaFunc'
-                  -> IO Alpha   -- ^ The newly created 'Alpha'
+                 -> IO Alpha    -- ^ The newly created 'Alpha'
 alphaNewWithFunc tl af = withTimeline tl $ \tlptr -> do
                          afptr <- newAlphaFunc af
                          a <- {# call unsafe alpha_new_with_func #} tlptr afptr (castFunPtrToPtr afptr) destroyFunPtr
@@ -252,7 +249,6 @@ alphaAlpha = readNamedAttr "alpha" alphaGetAlpha
 --
 alphaMode :: Attr Alpha AnimationMode
 alphaMode = newNamedAttr "mode" alphaGetMode alphaSetMode
-
 
 
 -- | A 'Timeline' instance used to drive the alpha function

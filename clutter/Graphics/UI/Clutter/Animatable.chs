@@ -44,7 +44,8 @@ module Graphics.UI.Clutter.Animatable (
 import C2HS
 import System.Glib.GValue
 
---TODO: Get rid of string usage.
+-- I don' think this is useful....
+--TODO: Get rid of string usage. Also not sure about constraint on animatable
 animatableAnimateProperty :: (AnimatableClass animatable, GenericValueClass val) =>
                              animatable ->
                              Animation animatable ->

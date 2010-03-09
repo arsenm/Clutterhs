@@ -52,3 +52,22 @@ In general, anything in the Clutter C API that takes a string name of
 a property and a Gvalue uses an Attribute.
 
 
+Unbound:
+
+  * ClutterModel
+  * ClutterModelIter
+  * ClutterListModel
+  * ClutterChildMeta
+  * Anything involving ParamSpec or low level gobject stuff
+  * pathAddCairoPath - Path type in Cairo seems unbound
+
+  TODO:
+  * Most of ClutterScriptable
+  * Most of X11 specifics
+  * Windows specifics
+  * OS X specifics
+  * EGL, EGLX specifics
+
+Broken:
+  * BindingPool?
+

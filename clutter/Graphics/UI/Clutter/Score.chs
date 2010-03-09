@@ -5,7 +5,7 @@
 --
 --  Created: 9 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -131,7 +131,7 @@ import System.Glib.Attributes
 {# fun unsafe score_new as ^ { } -> `Score' newScore* #}
 
 -- | Sets whether score should loop. A looping 'Score' will start from
---   its initial state after the ::complete signal has been fired.
+--   its initial state after the ::'completed' signal has been fired.
 --
 -- [@score@] a 'Score'
 --
@@ -283,7 +283,7 @@ scoreLoop = newNamedAttr "score" scoreGetLoop scoreSetLoop
 --onCompleted, afterCompleted :: Score -> IO () -> IO (ConnectId Score)
 
 
--- | The ::completed signal is emitted each time a 'Score' terminates.
+-- | The ::'completed' signal is emitted each time a 'Score' terminates.
 --
 -- * Since 0.6
 --
@@ -291,7 +291,7 @@ scoreLoop = newNamedAttr "score" scoreGetLoop scoreSetLoop
 -- onPaused, afterPaused :: Score -> IO () -> IO (ConnectId Score)
 
 
--- | The ::paused signal is emitted each time a 'Score' is paused.
+-- | The ::'paused' signal is emitted each time a 'Score' is paused.
 --
 -- * Since 0.6
 --
@@ -322,7 +322,7 @@ onTimelineCompleted = connect_OBJECT__NONE "timeline-completed" False
 afterTimelineCompleted = connect_OBJECT__NONE "timeline-completed" True
 
 
--- | The ::timeline-completed signal is emitted each time a timeline
+-- | The ::'timelineCompleted' signal is emitted each time a timeline
 --   inside a 'Score' terminates.
 --
 -- [@timeline@] the completed timeline
@@ -338,7 +338,7 @@ onTimelineStarted = connect_OBJECT__NONE "timeline-started" False
 afterTimelineStarted = connect_OBJECT__NONE "timeline-started" True
 
 
--- | The ::timeline-started signal is emitted each time a new timeline
+-- | The ::'timelineStarted' signal is emitted each time a new timeline
 --   inside a 'Score' starts playing.
 --
 -- [@timeline@] the current timeline

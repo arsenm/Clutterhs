@@ -61,7 +61,7 @@ module Graphics.UI.Clutter.Container (
 --containerClassFindChildProperty,
 --containerClassListChildProperties,
   containerChildSet,
-  containerChildGet,
+  containerChildGet
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -79,7 +79,7 @@ import Graphics.UI.Clutter.Signals
 import Control.Monad (forM_)
 
 --CHECKME: unsafe
--- | Adds an Actor to container. This function will emit the "actor-added" signal.
+-- | Adds an Actor to container. This function will emit the 'actorAdded' signal.
 --   The actor should be parented to container. You cannot add a 'Actor' to more
 --   than one 'Container'.
 {# fun unsafe container_add_actor as ^

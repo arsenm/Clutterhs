@@ -5,7 +5,7 @@
 --
 --  Created: 6 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -31,13 +31,13 @@ module Graphics.UI.Clutter.Shader (
 -- override the drawing pipeline by using small programs also known as
 -- "shaders".
 --
--- ClutterShader is available since Clutter 0.6
+-- 'Shader' is available since Clutter 0.6
 --
 -- * Class Hierarchy
 -- |
 -- @
 -- |  'GObject'
--- |   +----'Shader'
+-- |    +----'Shader'
 -- @
 
 -- * Types

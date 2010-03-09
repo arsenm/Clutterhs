@@ -126,8 +126,11 @@ import C2HS
 import System.Glib.Attributes
 import System.Glib.Properties
 import Control.Monad (liftM2)
-import Graphics.Rendering.Cairo.Types (Cairo)
+import Control.Monad.Reader (ask)
+import Control.Monad.Trans (liftIO)
+import Graphics.Rendering.Cairo.Types (Cairo, unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
+import Graphics.Rendering.Cairo.Internal (Render)
 
 -- | Creates a new 'Path' instance with no nodes.
 {# fun unsafe path_new as ^ { } -> `Path' newPath* #}
@@ -406,7 +409,8 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --
 {# fun unsafe path_set_description as ^ { withPath* `Path', `String' } -> `Bool' #}
 
--- | Add the nodes of the ClutterPath to the path in the Cairo context.
+-- | Add the nodes of the 'Graphics.UI.Clutter.Path' to the path in
+-- the Cairo context.
 --
 -- [@path@] a 'Path'
 --
@@ -414,7 +418,11 @@ pathForeach path cpcb = withPath path $ \pathPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe path_to_cairo_path as ^ { withPath* `Path', withCairo `Cairo' } -> `()' #}
+pathToCairoPath :: Path -> Render ()
+pathToCairoPath p = let fun = {# call unsafe path_to_cairo_path #}
+                    in ask >>= \ctx -> liftIO $
+                         withPath p (\pPtr -> fun pPtr (unCairo ctx))
+
 
 -- | Removes all nodes from the path.
 --

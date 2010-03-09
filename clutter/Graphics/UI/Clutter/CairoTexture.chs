@@ -103,6 +103,7 @@ import qualified Graphics.Rendering.Cairo as Cairo
 import Graphics.Rendering.Cairo.Internal (Render)
 import Control.Monad.Reader
 
+
 -- | Creates a new 'CairoTexture' actor, with a surface of width by
 --   height pixels.
 --

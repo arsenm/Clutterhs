@@ -32,8 +32,6 @@ module Graphics.UI.Clutter.Utility (
   cFromModFlags,
 
 --TODO: Move some of this stuff to types
-  newCairo,
-  withCairo,
   withCairoPath,
   withPangoLayoutRaw,
 
@@ -92,12 +90,7 @@ cFromFlags = cIntConv . fromFlags
 
 {# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
 
---convenient marshalling not provided by gtk2hs
-newCairo :: Ptr Cairo -> Cairo
-newCairo = Cairo
-
 withCairoPath = castPtr . Cairo.unPath
-withCairo = castPtr . unCairo
 
 peekNFree :: (Storable a) => Ptr a -> IO a
 peekNFree p = do

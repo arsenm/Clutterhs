@@ -5,7 +5,7 @@
 --
 --  Created: 5 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -219,7 +219,6 @@ module Graphics.UI.Clutter.Types (
                                   withScore,
                                   newScore,
 
-
                                   ScriptableClass,
                                   Scriptable,
                                   withScriptableClass,
@@ -227,6 +226,13 @@ module Graphics.UI.Clutter.Types (
                                   BindingPool,
                                   newBindingPool,
                                   withBindingPool,
+
+                                  BindingActionFunc,
+                                  newBindingActionFunc,
+
+                                  cFromModFlags,
+                                  toModFlags,
+                                  fromModFlags,
 
                                   GCallback,
                                   CGCallback,
@@ -270,9 +276,10 @@ module Graphics.UI.Clutter.Types (
                                   Playable(..)
                                  ) where
 
---FIXME: Conflict with EventType Nothing
-import Prelude hiding (Nothing)
+import Prelude
+import qualified Prelude as P
 import Data.Word
+import Data.Maybe (catMaybes)
 
 --RGBData stuff
 import Data.Ix
@@ -1130,6 +1137,26 @@ instance GObjectClass BindingPool where
   toGObject (BindingPool i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = BindingPool (castForeignPtr o)
 
+-- *** BindingActionFunc
+
+type BindingActionFunc a = a -> String -> Word -> [ModifierType] -> IO Bool
+type CBindingActionFunc = FunPtr (Ptr GObject -> Ptr CChar -> CUInt -> CInt -> IO CInt)
+
+newBindingActionFunc :: (GObjectClass a) => BindingActionFunc a -> IO CBindingActionFunc
+newBindingActionFunc userfunc = mkBindingActionFunc (newBindingActionFunc' userfunc)
+    where
+      newBindingActionFunc' :: (GObjectClass a) => (a -> String -> Word -> [ModifierType] -> IO Bool) -> Ptr GObject -> Ptr CChar -> CUInt -> CInt -> IO CInt
+      newBindingActionFunc' userfunc objPtr strPtr ckc cms = do obj <- newGObject objPtr
+                                                                str <- peekCString strPtr
+                                                                let kc = cIntConv ckc
+                                                                    ms = toModFlags (cIntConv cms)
+                                                                liftM cFromEnum $ userfunc (unsafeCastGObject obj) str kc ms
+
+foreign import ccall "wrapper"
+    mkBindingActionFunc :: (Ptr GObject -> Ptr CChar -> CUInt -> CInt -> IO CInt) -> IO CBindingActionFunc
+
+
+
 -- *** GCallback
 
 type GCallback = IO ()
@@ -1378,4 +1405,42 @@ class (GObjectClass a) => Playable a where
   onPaused :: a -> IO () -> IO (ConnectId a)
   afterPaused :: a -> IO () -> IO (ConnectId a)
 
+
+cFromModFlags :: [ModifierType] -> CInt
+cFromModFlags = cIntConv . fromModFlags
+
+--can't just make instance of flags for this, since toModFlags must be different
+fromModFlags :: [ModifierType] -> Int
+fromModFlags is = cIntConv (orNum 0 is)
+  where orNum n []     = n
+        orNum n (i:is) = orNum (n .|. fromEnum i) is
+
+
+--The normal one from gtk2hs does not work here. there is a
+--discontinuity in the enum of unused bits and also an internally used
+--bit, therefore minBound .. maxBound fails, so do this shitty listing
+--of all options
+toModFlags :: Int -> [ModifierType]
+toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
+                            then Just flag
+                            else P.Nothing
+                          | flag <- [ShiftMask,
+                                     LockMask,
+                                     ControlMask,
+                                     Mod1Mask,
+                                     Mod2Mask,
+                                     Mod3Mask,
+                                     Mod4Mask,
+                                     Mod5Mask,
+                                     Button1Mask,
+                                     Button2Mask,
+                                     Button3Mask,
+                                     Button4Mask,
+                                     Button5Mask,
+                                     SuperMask,
+                                     HyperMask,
+                                     MetaMask,
+                                     ReleaseMask,
+                                     ModifierMask]
+                         ]
 

@@ -105,7 +105,7 @@ module Graphics.UI.Clutter.BindingPool (
 -- * Types
   BindingPool,
   KeyVal,
---BindingActionFunc,
+  BindingActionFunc,
 
 -- * Constructors
   bindingPoolNew,
@@ -156,27 +156,25 @@ maybeBindingPool = maybeNullNew newBindingPool
 
 {# fun unsafe binding_pool_find as ^ { `String' } -> `Maybe BindingPool' maybeBindingPool* #}
 
-bindingPoolInstallAction :: BindingPool -> String -> KeyVal -> [ModifierType] -> GCallback -> IO ()
-bindingPoolInstallAction bp name keyval modif gCB = withBindingPool bp $ \bpPtr ->
-                                                    withCString name $ \namePtr ->
-                                                    --CHECKME: unsafe? Most likely safe, callback
-                                                    let func = {# call binding_pool_install_action #}
-                                                        mod = cFromModFlags modif
-                                                        kc = cIntConv keyval
-                                                    in do
-                                                      gcbPtr <- newGCallback gCB
-                                                      func bpPtr namePtr kc mod gcbPtr (castFunPtrToPtr gcbPtr) destroyFunPtr
+bindingPoolInstallAction :: GObjectClass a => BindingPool -> String -> KeyVal -> [ModifierType] -> BindingActionFunc a -> IO ()
+bindingPoolInstallAction bp name keyval modif cb = withBindingPool bp $ \bpPtr ->
+                                                     withCString name $ \namePtr ->
+                                                       let func = {# call binding_pool_install_action #}
+                                                           mod = cFromModFlags modif
+                                                           kc = cIntConv keyval
+                                                       in do
+                                                            cbPtr <- newBindingActionFunc cb
+                                                            func bpPtr namePtr kc mod (castFunPtr cbPtr) (castFunPtrToPtr cbPtr) destroyFunPtr
 
 
-bindingPoolOverrideAction :: BindingPool -> KeyVal -> [ModifierType] -> GCallback -> IO ()
-bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
-                                                --CHECKME: unsafe? Most likely safe, callback
-                                                let func = {# call binding_pool_override_action #}
-                                                    mod = cFromModFlags modif
-                                                    kc = cIntConv keyval
-                                                in do
-                                                  gcbPtr <- newGCallback gCB
-                                                  func bpPtr kc mod gcbPtr (castFunPtrToPtr gcbPtr) destroyFunPtr
+bindingPoolOverrideAction :: GObjectClass a => BindingPool -> KeyVal -> [ModifierType] -> BindingActionFunc a -> IO ()
+bindingPoolOverrideAction bp keyval modif cb = withBindingPool bp $ \bpPtr ->
+                                                 let func = {# call binding_pool_override_action #}
+                                                     mod = cFromModFlags modif
+                                                     kc = cIntConv keyval
+                                                 in do
+                                                   cbPtr <- newBindingActionFunc cb
+                                                   func bpPtr kc mod (castFunPtr cbPtr) (castFunPtrToPtr cbPtr) destroyFunPtr
 
 {# fun unsafe binding_pool_find_action as ^
        { withBindingPool* `BindingPool', cIntConv `KeyVal', cFromModFlags `[ModifierType]' } -> `Maybe String' maybeString* #}
@@ -257,7 +255,7 @@ bindingPoolOverrideAction bp keyval modif gCB = withBindingPool bp $ \bpPtr ->
 --
 -- * Since 1.0
 --
-{# fun unsafe binding_pool_activate as ^ `(GObjectClass gobject)' =>
+{# fun binding_pool_activate as ^ `(GObjectClass gobject)' =>
        { withBindingPool* `BindingPool',
          cIntConv `KeyVal',
          cFromModFlags `[ModifierType]',

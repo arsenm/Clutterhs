@@ -5,7 +5,7 @@
 --
 --  Created: 23 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -28,8 +28,6 @@ module Graphics.UI.Clutter.Utility (
 
   cFromFlags,
   cToFlags,
-  toModFlags,
-  cFromModFlags,
 
 --TODO: Move some of this stuff to types
   withCairoPath,
@@ -87,8 +85,6 @@ cToFlags = toFlags . cIntConv
 
 cFromFlags :: (Flags a) => [a] -> CInt
 cFromFlags = cIntConv . fromFlags
-
-{# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
 
 withCairoPath = castPtr . Cairo.unPath
 
@@ -156,46 +152,6 @@ withMaybeColor = maybeWith withColor
 
 withMaybeActorClass :: (ActorClass a) => Maybe a -> (Ptr Actor -> IO b) -> IO b
 withMaybeActorClass = maybeWith withActorClass
-
-
-cFromModFlags :: [ModifierType] -> CInt
-cFromModFlags = cIntConv . fromModFlags
-
---can't just make instance of flags for this, since toModFlags must be different
-fromModFlags :: [ModifierType] -> Int
-fromModFlags is = cIntConv (orNum 0 is)
-  where orNum n []     = n
-        orNum n (i:is) = orNum (n .|. fromEnum i) is
-
-
---The normal one from gtk2hs does not work here. there is a
---discontinuity in the enum of unused bits and also an internally used
---bit, therefore minBound .. maxBound fails, so do this shitty listing
---of all options
-toModFlags :: Int -> [ModifierType]
-toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
-                            then Just flag
-                            else Prelude.Nothing
-                          | flag <- [ShiftMask,
-                                     LockMask,
-                                     ControlMask,
-                                     Mod1Mask,
-                                     Mod2Mask,
-                                     Mod3Mask,
-                                     Mod4Mask,
-                                     Mod5Mask,
-                                     Button1Mask,
-                                     Button2Mask,
-                                     Button3Mask,
-                                     Button4Mask,
-                                     Button5Mask,
-                                     SuperMask,
-                                     HyperMask,
-                                     MetaMask,
-                                     ReleaseMask,
-                                     ModifierMask]
-                         ]
-
 
 withPangoLayoutRaw = withForeignPtr . unPangoLayoutRaw
 

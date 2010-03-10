@@ -222,4 +222,3 @@ newProgressFunc userfunc = mkProgressFunc (newProgressFunc' userfunc)
                                                         return stat
 foreign import ccall "wrapper"
     mkProgressFunc :: (GenericValuePtr -> GenericValuePtr -> Double -> GenericValuePtr -> IO Bool) -> IO CProgressFunc
-

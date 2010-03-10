@@ -5,7 +5,7 @@
 --
 --  Created: 12 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -61,39 +61,45 @@ module Graphics.UI.Clutter.Container (
 --containerClassFindChildProperty,
 --containerClassListChildProperties,
   containerChildSet,
-  containerChildGet
+  containerChildGet,
+
+-- * Signals
+  actorAdded,
+  onActorAdded,
+  afterActorAdded,
+
+  actorRemoved,
+  onActorRemoved,
+  afterActorRemoved
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Animation #}
 {# import Graphics.UI.Clutter.StoreValue #}
+{# import Graphics.UI.Clutter.Signals #}
 
 import C2HS
 import Prelude
 import qualified Prelude as P
-import System.Glib.GObject
 import System.Glib.Attributes
-import System.Glib.Signals
 import qualified System.Glib.GTypeConstants as GType
-import Graphics.UI.Clutter.Signals
+
 import Control.Monad (forM_)
 
---CHECKME: unsafe
 -- | Adds an Actor to container. This function will emit the 'actorAdded' signal.
 --   The actor should be parented to container. You cannot add a 'Actor' to more
 --   than one 'Container'.
-{# fun unsafe container_add_actor as ^
+{# fun container_add_actor as ^
        `(ContainerClass container, ActorClass actor)' =>
            { withContainerClass* `container', withActorClass* `actor' } -> `()' #}
+
 --TODO: add/removeList as var args function, to allow multiple types of the actor class in the list
 
 
-
---TODO: Does this doc make sense?
 -- | Removes actor from container. The
 --   actor should be unparented When the actor has been removed, the
---  "actor-removed" signal is emitted by container.
-{# fun unsafe container_remove_actor as ^
+--  'actorRemoved' signal is emitted by container.
+{# fun container_remove_actor as ^
        `(ContainerClass container, ActorClass actor)' =>
            { withContainerClass* `container', withActorClass* `actor' } -> `()' #}
 
@@ -139,19 +145,10 @@ containerForeachWithInternals c func = withContainerClass c $ \cptr -> do
              withActorClass* `actor',
              withActorClass* `sibling' } -> `()' #}
 
--- | Sorts a container's children using their depth. This function should not be normally used by applications.
+-- | Sorts a container's children using their depth. This function
+-- should not be normally used by applications.
 {# fun unsafe container_sort_depth_order as ^
        `(ContainerClass container)' => { withContainerClass* `container' } -> `()' #}
-
-{-
-We don't care about GParamSpec stuff
-{# fun unsafe container_class_find_child_property as ^
-       `(GObjectClass gobj)' => { withGObjectClass* `gobj', `String' } -> `GParamSpec' #}
-
-{# fun unsafe container_class_list_child_properties as ^
-       `(GObjectClass gobj)' => { withGObjectClass* `gobj', `Word' } -> `[GParamSpec]' #}
--}
---
 
 
 --CHECKME: unsafe?
@@ -194,14 +191,20 @@ containerChildGet ctr chld attr =  let func = {# call unsafe container_child_get
                                          return (unsafeExtractGenericValue generic)
 
 
-
 actorAdded :: (ContainerClass container) => Signal container (Actor -> IO ())
 actorAdded = Signal (connect_OBJECT__NONE "actor-added")
+
+onActorAdded, afterActorAdded :: ContainerClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
+onActorAdded = connect_OBJECT__NONE "actor-added" False
+afterActorAdded = connect_OBJECT__NONE "actor-added" True
 
 
 actorRemoved :: (ContainerClass container) => Signal container (Actor -> IO ())
 actorRemoved = Signal (connect_OBJECT__NONE "actor-removed")
 
--- child notify? gparamspec.
+onActorRemoved, afterActorRemoved :: ContainerClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
+onActorRemoved = connect_OBJECT__NONE "actor-removed" False
+afterActorRemoved = connect_OBJECT__NONE "actor-removed" True
+
 
 

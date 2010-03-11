@@ -693,7 +693,6 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
                                 cFromFlags `[AllocationFlags]'
                               } -> `()' #}
 
---TODO: Redo the example function
 -- | Allocates self taking into account the Actor's preferred
 --   size, but limiting it to the maximum available width and height
 --   provided.
@@ -735,11 +734,6 @@ import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 -- An allocation does not incorporate the actor's scale or anchor
 -- point; those transformations do not affect layout, only rendering.
 --
--- Note
---
--- Do not call any of the actorGetAllocation* family of
--- functions inside the implementation of the 'getPreferredWidth' or
--- 'getPreferredHeight' virtual functions.
 --
 -- [@self@] An Actor
 --

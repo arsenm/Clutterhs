@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface  #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 
@@ -29,7 +29,7 @@ module Graphics.UI.Clutter.Score (
 -- | 'Score' is a base class for sequencing multiple timelines in
 --  order. Using 'Score' it is possible to start multiple timelines at
 --  the same time or launch multiple timelines when a particular
---  timeline has emitted the 'Timeline'::completed signal.
+--  timeline has emitted the 'Timeline'::'completed' signal.
 --
 -- Each time a 'Timeline' is started and completed, a signal will be
 -- emitted.

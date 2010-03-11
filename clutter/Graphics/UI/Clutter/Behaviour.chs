@@ -5,7 +5,7 @@
 --
 --  Created: 2 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -263,7 +263,7 @@ onApplied = connect_OBJECT__NONE "applied" False
 afterApplied = connect_OBJECT__NONE "applied" True
 
 
--- | The ::apply signal is emitted each time the behaviour is applied to an actor.
+-- | The ::'apply' signal is emitted each time the behaviour is applied to an actor.
 --
 --  [@actor@] the actor the behaviour was applied to.
 --
@@ -278,7 +278,7 @@ onRemoved = connect_OBJECT__NONE "removed" False
 afterRemoved = connect_OBJECT__NONE "removed" True
 
 
--- | The ::removed signal is emitted each time a behaviour is not
+-- | The ::'removed' signal is emitted each time a behaviour is not
 --   applied to an actor anymore.
 --
 -- [@actor@] the removed actor

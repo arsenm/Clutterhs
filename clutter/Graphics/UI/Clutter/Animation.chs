@@ -5,7 +5,7 @@
 --
 --  Created: 20 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,51 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | Implicit Animations — Simple implicit animations
 module Graphics.UI.Clutter.Animation (
+-- * Description
+-- | 'Animation' is an object providing simple, implicit animations
+-- for GObjects.
+--
+-- 'Animation' instances will bind one or more GObject properties
+-- belonging to a GObject to an 'Interval', and will then use an
+-- 'Alpha' to interpolate the property between the initial and final
+-- values of the interval.
+--
+-- The duration of the animation is set using
+-- 'animationSetDuration'. The easing mode of the animation is set
+-- using 'animationSetMode'.
+--
+-- If you want to control the animation you should retrieve the
+-- 'Timeline' using 'animationGetTimeline' and then use 'Timeline'
+-- functions like 'timelineStart', 'timelinePause' or 'timelineStop'.
+--
+-- An 'Animation' will emit the 'completed' signal when the 'Timeline'
+-- used by the animation is completed; unlike 'Timeline', though, the
+-- 'completed' will not be emitted if 'animationLoop' is set to @True@
+-- - that is, a looping animation never completes.
+--
+-- If your animation depends on user control you can force its
+-- completion using 'animationCompleted'.
+--
+-- If the GObject instance bound to an 'Animation' implements the
+-- 'Animatable' interface it is possible for that instance to control
+-- the way the initial and final states are interpolated.
+--
+-- 'Animation's are distinguished from 'Behaviours' because the former
+-- can only control GObject properties of a single GObject instance,
+-- while the latter can control multiple properties using accessor
+-- functions inside the "alpha_notify" virtual function, and can
+-- control multiple ClutterActors as well.
+--
+-- For convenience, it is possible to use the 'animate' function call
+-- which will take care of setting up and tearing down a 'Animation'
+-- instance and animate an actor between its current state and the
+-- specified final state.
+--
+-- 'Animation' is available since Clutter 1.0
+--
+
 -- * Class Hierarchy
 -- |
 -- @
@@ -79,16 +123,6 @@ module Graphics.UI.Clutter.Animation (
   animationLoop,
   animationTimeline,
   animationAlpha
-
-
---TODO: Playable class
--- * Signals
---onCompleted,
---afterCompleted,
---completed,
---onStarted,
---afterStarted,
---started
   ) where
 
 {# import Graphics.UI.Clutter.Enums #}
@@ -468,7 +502,7 @@ actorGetAnimation actor =  withActorClass actor $ \actorPtr -> do
 --onStarted, afterStarted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
 
 
--- | The ::started signal is emitted once the animation has been
+-- | The ::'started' signal is emitted once the animation has been
 --   started
 --
 -- * Since 1.0

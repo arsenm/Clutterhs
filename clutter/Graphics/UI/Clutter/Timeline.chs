@@ -5,7 +5,7 @@
 --
 --  Created: 21 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -440,18 +440,8 @@ onMarkerReached, afterMarkerReached :: Timeline -> (String -> Word -> IO ()) -> 
 onMarkerReached = connect_STRING_WORD__NONE "marker-reached" False
 afterMarkerReached = connect_STRING_WORD__NONE "marker-reached" True
 
---TODO: Code part of this doc
--- | The ::marker-reached signal is emitted each time a timeline
---   reaches a marker set with 'timelineAddMarkerAtTime'. This signal
---   is detailed with the name of the marker as well, so it is
---   possible to connect a callback to the ::marker-reached signal for
---   a specific marker with:
---
--- TODO: The example
---
--- In the example, the first callback will be invoked for both the
--- \"foo\" and \"bar\" marker, while the second and third callbacks
--- will be invoked for the \"foo\" or \"bar\" markers, respectively.
+-- | The ::'markerReached' signal is emitted each time a timeline
+-- reaches a marker set with 'timelineAddMarkerAtTime'.
 --
 -- [@timeline@] the 'Timeline' which received the signal
 --

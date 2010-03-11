@@ -397,21 +397,37 @@ stageReadPixels stage x y w h = let cx = cIntConv x
 {# fun unsafe stage_get_use_fog as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `Bool' #}
 
 
--- | Sets the fog (also known as "depth cueing") settings for the stage.
+--TODO: I may change Cogl to not have colorNew usage for example
+-- | Sets the fog \(also known as "depth cueing"\) settings for the stage.
 --
 --  A 'Stage' will only use a linear fog progression, which depends
 --  solely on the distance from the viewer. The 'Cogl.setFog' function
 --  in COGL exposes more of the underlying implementation, and allows
 --  changing the for progression function. It can be directly used by
---  disabling the "use-fog" property and connecting a signal handler
---  to the "paint" signal on the stage, like: TODO: The equivalent
---  example
+--  disabling the 'stageUseFog' property and connecting a signal
+--  handler to the 'paint' signal on the stage. The paint signal
+--  handler will call Cogl.setFog with the desired settings, like:
+--
+-- @
+--
+--  do
+--    stageSetUseFog stage True
+--    stage `on` paint $ do fogColor <- Cogl.colorNew
+--                        \(Color r g b a\) \<- stageGetColor stage
+--                   \-\- set the fog color from the stage background color
+--                        fogColor \<\- Cogl.colorSetFromFrom4ub fogColor r g b a
+--                   \-\- enable fog
+--                        Cogl.setFog fogColor
+--                                    Cogl.FogModeModeExponential -- mode
+--                                    0.5       -- Density
+--                                    5.0 30.0  -- z_near and z_far
+-- @
 --
 --  Note: The fogging functions only work correctly when the visible
 --  actors use unmultiplied alpha colors. By default Cogl will
 --  premultiply textures and 'Cogl.setSourceColor' will premultiply
 --  colors, so unless you explicitly load your textures requesting an
---  unmultiplied internal_format and use cogl_material_set_color you
+--  unmultiplied internal_format and use Cogl.materialSetColor you
 --  can only use fogging with fully opaque actors.
 --
 -- We can look to improve this in the future when we can depend on

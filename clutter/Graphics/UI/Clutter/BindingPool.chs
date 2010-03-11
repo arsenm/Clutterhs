@@ -26,70 +26,36 @@
 -- | Key Bindings — Pool for key bindings
 module Graphics.UI.Clutter.BindingPool (
 -- * Description
-
--- | BindingPool is a data structure holding a
--- set of key bindings. Each key binding associates a key symbol
--- (eventually with modifiers) to an action. A callback function is
--- associated to each action.
+-- | 'BindingPool' is a data structure holding a set of key
+-- bindings. Each key binding associates a key symbol (eventually with
+-- modifiers) to an action. A callback function is associated to each
+-- action.
 --
 -- For a given key symbol and modifier mask combination there can be
 -- only one action; for each action there can be only one
 -- callback. There can be multiple actions with the same name, and the
 -- same callback can be used to handle multiple key bindings.
 --
--- Actors requiring key bindings should create a new
--- 'BindingPool' inside their class initialization function and
--- then install actions like this:
 --
--- TODO: Replace C example
-{-
--- @
--- static void
--- foo_class_init (FooClass *klass)
--- {
---   ClutterBindingPool *binding_pool;
---
---   binding_pool = clutter_binding_pool_get_for_class (klass);
---
---   clutter_binding_pool_install_action (binding_pool, "move-up",
---                                        CLUTTER_Up, 0,
---                                        G_CALLBACK (foo_action_move_up),
---                                        NULL, NULL);
---   clutter_binding_pool_install_action (binding_pool, "move-up",
---                                        CLUTTER_KP_Up, 0,
---                                        G_CALLBACK (foo_action_move_up),
---                                        NULL, NULL);
--- }
--- The callback has a signature of:
---
---    gboolean (* callback) (GObject             *instance,
---                           const gchar         *action_name,
---                           guint                key_val,
---                           ClutterModifierType  modifiers,
---                           gpointer             user_data);
---
--- The actor should then override the \"key-press-event\" and use
--- 'bindingPoolActivate' to match a 'KeyEvent'
--- structure to one of the actions:
---
---   ClutterBindingPool *pool;
---
---   /* retrieve the binding pool for the type of the actor */
---   pool = clutter_binding_pool_find (G_OBJECT_TYPE_NAME (actor));
---
---   /* activate any callback matching the key symbol and modifiers
---    * mask of the key event. the returned value can be directly
---    * used to signal that the actor has handled the event.
---    */
---   return clutter_binding_pool_activate (pool, G_OBJECT (actor),
---                                         key_event->keyval,
---                                         key_event->modifier_state);
+-- The callback has a signature of :: GObjectClass obj => obj \->
+-- String \-> KeyVal \-> [ModifierType] \-> IO Bool The actor should then
+-- override the 'keyPressEvent' and use 'bindingPoolActivate' to
+-- match a 'KeyEvent' structure to one of the actions:
 --
 -- @
--}
+--
+--   {-  Activate any callback matching the key symbol and modifiers
+--    mask of the key event. The returned value can be directly
+--    used to signal that the actor has handled the event.   -}
+--
+--   actor \`on\` keyPressEvent $ do modifiers \<\- eventState
+--                              keyval    \<\- eventKeyCode
+--                              liftIO \(bindingPoolActivate pool actor keyval modifiers\)
+-- @
+--
 -- The 'bindingPoolActivate' function will return @False@ if no action
 -- for the given key binding was found, if the action was blocked
--- (using 'bindingPoolBlockAction') or if the key binding handler
+-- \(using 'bindingPoolBlockAction'\) or if the key binding handler
 -- returned @False@.
 --
 -- 'BindingPool' is available since Clutter 1.0

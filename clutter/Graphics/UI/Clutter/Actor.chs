@@ -425,17 +425,12 @@ import System.Glib.Signals
 import Graphics.UI.Gtk.Types (PangoContext, PangoLayoutRaw, mkPangoLayoutRaw)
 import Graphics.UI.Gtk.Pango.Types
 import Graphics.UI.Gtk.Pango.Layout
-import Graphics.UI.Gtk.Pango.Attributes
-import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
 
 {# fun unsafe actor_is_mapped as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
 {# fun unsafe actor_is_realized as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
 {# fun unsafe actor_is_visible as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
 {# fun unsafe actor_is_reactive as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
-
-
---FIXME: A lot of these need to be marked as safe, not unsafe for callbacks to work
 
 -- | Sets flags on self
 --
@@ -1205,7 +1200,6 @@ actorGetAllocationVertices self ancestor = let func = {# call unsafe actor_get_a
 {# fun unsafe actor_set_z_rotation_from_gravity as ^
    `(ActorClass self)' => { withActorClass* `self', `Double', cFromEnum `Gravity' } -> `()' #}
 
--- TODO: Return something else, such as (angle, (x,y,z)) or anything not (angle,x,y,z)?
 -- | Retrieves the angle and center of rotation on the given axis, set
 --   using 'actorSetRotation'.
 --
@@ -1679,8 +1673,6 @@ actorApplyRelativeTransformToPoint self ancestor point =
                             alloca- `Float' peekFloatConv*
                           } -> `()' #}
 
-
---TODO: Properly format "Note" in doc
 -- | Gets the absolute size of an actor in pixels, taking into account
 --   the scaling factors.
 --

@@ -18,6 +18,7 @@
 --  Lesser General Public License for more details.
 --
 {-# LANGUAGE ForeignFunctionInterface #-}
+{-# OPTIONS_HADDOCK prune #-}
 
 #include <clutter/clutter.h>
 #include <pango/pango.h>
@@ -135,7 +136,6 @@ module Graphics.UI.Clutter.Text (
   textSetPreeditString,
 #endif
 
---TODO: Title for this
 -- * Related Types
   --TODO: Export more of Pango?
   PangoLayout,
@@ -191,7 +191,7 @@ import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.UTFString
 
-import Control.Monad (liftM)
+import Control.Monad (liftM, liftM3)
 import Data.IORef
 
 import Graphics.UI.Gtk.Types (PangoLayoutRaw, mkPangoLayoutRaw)
@@ -439,7 +439,7 @@ textGetAttributes text = withTextClass text $ \txtPtr -> do
     { withTextClass* `self' } -> `Maybe String' maybeString* #}
 
 --TODO: Do something with unicode stuff
---TODO: Maybe this
+
 -- | Sets the character to use in place of the actual text in a password text actor.
 --
 -- If wc is 0 the text will be displayed as it is entered in the ClutterText actor.
@@ -451,9 +451,10 @@ textGetAttributes text = withTextClass text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_set_password_char as ^ `(TextClass self)' =>
-    {withTextClass* `self', cIntConv `GUnichar' } -> `()' #}
-
+textSetPasswordChar :: (TextClass self) => self -> Maybe Unichar -> IO ()
+textSetPasswordChar self c = let cc = maybe 0 cIntConv c
+                             in withTextClass self $ \txtPtr ->
+                                  {# call unsafe text_set_password_char #} txtPtr cc
 
 -- | Retrieves the character to use in place of the actual text as set
 --   by 'textSetPasswordChar'.
@@ -465,8 +466,13 @@ textGetAttributes text = withTextClass text $ \txtPtr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_get_password_char as ^ `(TextClass self)' =>
-    { withTextClass* `self' } -> `GUnichar' cIntConv #}
+textGetPasswordChar :: (TextClass self) => self -> IO (Maybe Unichar)
+textGetPasswordChar self = let fun = {# call unsafe text_get_password_char #}
+                           in withTextClass self $ \txtPtr -> do
+                                r <- fun txtPtr
+                                return $ if r == 0
+                                           then Prelude.Nothing
+                                           else Just (cIntConv r)
 
 
 -- | Sets whether the text of the 'Text' actor should be justified on
@@ -818,7 +824,7 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
 -- * Since 1.0
 --
 {# fun unsafe text_insert_unichar as ^ `(TextClass self)' =>
-    { withTextClass* `self', cIntConv `GUnichar' } -> `()' #}
+    { withTextClass* `self', cIntConv `Unichar' } -> `()' #}
 
 -- | Deletes n_chars inside a 'Text' actor, starting from the current
 --   cursor position.
@@ -1034,7 +1040,6 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
 {# fun text_activate as ^ `(TextClass self)' => { withTextClass* `self' } -> `Bool' #}
 
 
---TODO: This return type is messy
 -- | Retrieves the coordinates of the given position.
 --
 -- [@self@] a 'Text'
@@ -1045,12 +1050,20 @@ textGetLayout self = withTextClass self $ \ctextptr -> do
 --
 -- * Since 1.0
 --
-{# fun unsafe text_position_to_coords as ^ `(TextClass self)' =>
-       { withTextClass* `self',
-         `Int',
-         alloca- `Float' peekFloatConv*,
-         alloca- `Float' peekFloatConv*,
-         alloca- `Float' peekFloatConv*} -> `Bool' #}
+textPositionToCoords :: TextClass self => self -> Int -> IO (Maybe (Float, Float, Float))
+textPositionToCoords self p = let fun = {# call unsafe text_position_to_coords #}
+                                  cp = cIntConv p
+                              in withTextClass self $ \txtPtr ->
+                                   alloca $ \xPtr ->
+                                     alloca $ \yPtr ->
+                                       alloca $ \zPtr -> do
+                                         r <- fun txtPtr cp xPtr yPtr zPtr
+                                         if cToBool r
+                                            then Just `liftM` peekTripleFloatConv xPtr yPtr zPtr
+                                            else return Prelude.Nothing
+
+peekTripleFloatConv x y z = liftM3 (,,) (peekFloatConv x) (peekFloatConv y) (peekFloatConv z)
+
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
 --CHECKME: I've never used Pango, and not really sure if this is good
@@ -1230,7 +1243,7 @@ textMaxLength = newNamedAttr "max-length" textGetMaxLength textSetMaxLength
 --
 -- * Since 1.0
 --
-textPasswordChar :: (TextClass self) => Attr self GUnichar
+textPasswordChar :: (TextClass self) => Attr self (Maybe Unichar)
 textPasswordChar = newNamedAttr "password-char" textGetPasswordChar textSetPasswordChar
 
 -- | The current input cursor position. -1 is taken to be the end of

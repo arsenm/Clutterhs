@@ -141,10 +141,6 @@ import Control.Monad (liftM, foldM_)
 
 import System.Glib.GObject
 import System.Glib.Attributes
-import System.Glib.Properties
-import System.Glib.GValue
-
-
 
 
 -- | Creates a new 'Animation' instance. You should set the GObject to

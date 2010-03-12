@@ -67,8 +67,8 @@ module Graphics.UI.Clutter.Texture (
 
 -- * Methods
   textureSetFromFile,
-  textureSetFromRGBData,  --TODO: RGB??? vs. Rgb
---textureSetFromYuvData,
+  textureSetFromRGBData,
+--textureSetFromYUVData,
 --textureSetAreaFromRgbData,
   textureGetBaseSize,
 

@@ -40,9 +40,8 @@ module Graphics.UI.Clutter.Types (
                                   withGValue,
                                   constrGObject,
                                   makeNewActor,
-                                  --TODO: Exports need organizing and stuff
 
-                                  GUnichar,
+                                  Unichar,
                                   Word,
                                   GID,
                                   Timestamp,
@@ -313,16 +312,10 @@ foreign import ccall unsafe "hsclutterthread.h &clutterhs_g_object_unref_from_ma
 
 
 -- gtk2hs changed mkGObject to be a tuple (GObject, objectUnref)
---TODO: Move this
 constrGObject = fst mkGObject
-
---also why the flipped newForeignPtr there?
---from foreign.concurrent or something, and also flipped in System.Glib.FFI
-
 
 --The name makeNewActor is unfortunate since Path technically isn't an
 -- actor but has a floating reference
-
 
 -- Get rid of the floating
 -- reference to get a normal reference clutter actors and gtk widgets
@@ -359,8 +352,8 @@ withGValue (GValue gval) = castPtr gval
 -- {# pointer *GObject newtype nocode #}
 -- {# class GObjectClass GObject #}
 
---TODO: Make this go away.
-type GUnichar = {# type gunichar #}
+-- TODO: Make this go away?
+type Unichar = Word32
 
 -- *** Misc
 

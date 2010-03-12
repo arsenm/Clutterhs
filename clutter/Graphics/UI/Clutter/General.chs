@@ -5,7 +5,7 @@
 --
 --  Created: 11 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface  #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 #include <pango/pango.h>
@@ -25,7 +25,6 @@
 {# context lib="clutter" prefix="clutter" #}
 
 module Graphics.UI.Clutter.General (
-
 -- * Types
   InitError(..),
   FontFlags(..),
@@ -68,7 +67,6 @@ module Graphics.UI.Clutter.General (
 
 import C2HS
 import System.Glib.GObject
-import Graphics.UI.Gtk.Pango.Types
 import Graphics.UI.Gtk.Types (FontMap, mkFontMap)
 import System.Glib.UTFString
 import System.Environment (getProgName, getArgs)

@@ -5,7 +5,7 @@
 --
 --  Created: 12 Sep 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@ module Graphics.UI.Clutter.Group (
 -- * Description
 
 -- | A 'Group' is an Actor which contains multiple child actors
---   positioned relative to the ClutterGroup position. Other
+--   positioned relative to the 'Group' position. Other
 --   operations such as scaling, rotating and clipping of the group
 --   will apply to the child actors.
 --
@@ -59,6 +59,7 @@ module Graphics.UI.Clutter.Group (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Utility #} (maybeNewActor)
 
 import C2HS
 
@@ -92,9 +93,9 @@ import C2HS
 --
 -- [@index@] the position of the requested actor.
 --
--- [@Returns@] transfer none. transfer none.
+-- [@Returns@] @Just@ The nth child, or @Nothing@ if the index is invalid.
 --
 -- * Since 0.2
 --
-{# fun unsafe group_get_nth_child as ^ { withGroup* `Group', `Int' } -> `Actor' newActor* #}
+{# fun unsafe group_get_nth_child as ^ { withGroup* `Group', `Int' } -> `Maybe Actor' maybeNewActor* #}
 

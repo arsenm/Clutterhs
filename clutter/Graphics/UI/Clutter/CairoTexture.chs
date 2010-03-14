@@ -103,6 +103,8 @@ import qualified Graphics.Rendering.Cairo as Cairo
 import Graphics.Rendering.Cairo.Internal (Render)
 import Control.Monad.Reader
 
+-- stop c2hs complaining about Ptr () not being Ptr Cairo
+{# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
 
 -- | Creates a new 'CairoTexture' actor, with a surface of width by
 --   height pixels.

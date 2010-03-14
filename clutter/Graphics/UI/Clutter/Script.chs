@@ -68,7 +68,6 @@ import C2HS
 import Control.Monad (liftM)
 import System.Glib.GObject
 import System.Glib.GType
-import System.Glib.GTypeConstants
 import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.GError

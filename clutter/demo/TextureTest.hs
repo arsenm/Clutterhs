@@ -84,7 +84,7 @@ but this ends in assertion failures
 
   pixTx <- textureNew
   putStrLn "Attempting to set from rgb data"
-  success <- catchGError (textureSetFromRgbData pixTx pixels [TextureNone])
+  success <- catchGError (textureSetFromRGBData pixTx pixels [TextureNone])
                          (\(GError a b c) -> P.error $ P.show a ++ " " ++ P.show b ++ " " ++ P.show c)
   putStrLn $ "Set from rgb sucess: " ++ P.show success
 

@@ -132,6 +132,8 @@ import Graphics.Rendering.Cairo.Types (Cairo, unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 import Graphics.Rendering.Cairo.Internal (Render)
 
+{# pointer *cairo_t as CairoPtr foreign -> Cairo nocode #}
+
 -- | Creates a new 'Path' instance with no nodes.
 {# fun unsafe path_new as ^ { } -> `Path' newPath* #}
 

@@ -26,7 +26,7 @@ main = do
   pwText <- textNewFull "Sans 10" "This is a secret password" black
 --  set pwText [ textPasswordChar := '*' ]
   --FIXME: Take  a charactor
-  set pwText [ textPasswordChar := 0x2665,
+  set pwText [ textPasswordChar := Just 0x2665,
                actorX := 50,
                actorY := 300 ]
 

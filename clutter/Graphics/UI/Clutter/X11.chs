@@ -5,7 +5,7 @@
 --
 --  Created: 25 Oct 2009
 --
---  Copyright (C) 2009 Matthew Arsenault
+--  Copyright (C) 2009-2010 Matthew Arsenault
 --
 --  This library is free software; you can redistribute it and/or
 --  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 --  Lesser General Public License for more details.
 --
-{-# LANGUAGE ForeignFunctionInterface  #-}
+{-# LANGUAGE ForeignFunctionInterface #-}
 
 #include <clutter/clutter.h>
 #include <clutter/x11/clutter-x11.h>
@@ -46,19 +46,20 @@ module Graphics.UI.Clutter.X11 (
 --x11GetInputDevices,
   x11HasXinput,
   x11EnableXinput,
---x11TexturePixmapNew,
---x11TexturePixmapNewWithPixmap,
---x11TexturePixmapNewWithWindow,
---xllTexturePixmapSetPixmap,
---xllTexturePixmapSetWindow,
---x11TexturePixmapSyncWindow,
---x11TexturePixmapUpdateArea,
---x11TexturePixmapSetAutomatic,
+  x11TexturePixmapNew,
+  x11TexturePixmapNewWithPixmap,
+  x11TexturePixmapNewWithWindow,
+  x11TexturePixmapSetPixmap,
+  x11TexturePixmapSetWindow,
+  x11TexturePixmapSyncWindow,
+  x11TexturePixmapUpdateArea,
+  x11TexturePixmapSetAutomatic,
   X11FilterReturn(..),
 --X11FilterFunc,
-  X11XInputEventTypes(..)
---X11TexturePixmap,
---X11TexturePixmapClass
+  X11XInputEventTypes(..),
+  X11TexturePixmap,
+  X11TexturePixmapClass,
+  toX11TexturePixmap
 ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -66,6 +67,7 @@ module Graphics.UI.Clutter.X11 (
 import C2HS
 import Graphics.X11
 import Graphics.X11.Xlib.Types (Display(..))
+import System.Glib.GObject
 
 {# pointer *Display as DisplayPtr foreign -> Display nocode #}
 
@@ -232,14 +234,135 @@ not bound in X11?
 --
 {# fun unsafe x11_enable_xinput as ^ { } -> `()' #}
 
+-- *** X11TexturePixmap
 
--- {# fun x11_texture_pixmap_new
--- {# fun x11_texture_pixmap_new_with_pixmap
--- {# fun x11_texture_pixmap_new_with_window
--- {# fun x11_texture_pixmap_set_pixmap
--- {# fun x11_texture_pixmap_set_window
--- {# fun x11_texture_pixmap_syn_window
+{# pointer *ClutterX11TexturePixmap as X11TexturePixmap foreign newtype #}
 
--- {# fun x11_texture_pixmap_update_area
--- {# fun x11_texture_pixmap_set_automatic
+class GObjectClass o => X11TexturePixmapClass o
+toX11TexturePixmap::X11TexturePixmapClass o => o -> X11TexturePixmap
+toX11TexturePixmap = unsafeCastGObject . toGObject
+
+newX11TexturePixmap :: Ptr Actor -> IO X11TexturePixmap
+newX11TexturePixmap a = makeNewActor (X11TexturePixmap, objectUnref) $ return (castPtr a)
+
+instance X11TexturePixmapClass X11TexturePixmap
+instance ActorClass X11TexturePixmap
+
+instance GObjectClass X11TexturePixmap where
+  toGObject (X11TexturePixmap r) = constrGObject (castForeignPtr r)
+  unsafeCastGObject (GObject o) = X11TexturePixmap (castForeignPtr o)
+
+
+
+-- | Creates a new 'X11TexturePixmap' which can be used to display the
+-- contents of an X11 Pixmap inside a Clutter scene graph
+--
+-- [@Returns@] A new 'X11TexturePixmap'
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_new as ^ { } -> `X11TexturePixmap' newX11TexturePixmap* #}
+
+
+
+
+-- | Creates a new 'X11TexturePixmap' for pixmap
+--
+-- [@pixmap@] the X Pixmap to which this texture should be bound
+--
+-- [@Returns@] A new 'X11TexturePixmap' bound to the given X Pixmap
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_new_with_pixmap as ^
+    { cIntConv `Pixmap' } -> `X11TexturePixmap' newX11TexturePixmap* #}
+
+
+-- | Creates a new 'X11TexturePixmap' for window
+--
+-- [@window@] the X window to which this texture should be bound
+--
+-- [@Returns@] A new 'X11TexturePixmap' bound to the given X window.
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_new_with_window as ^
+    { cIntConv `Window' } -> `X11TexturePixmap' newX11TexturePixmap* #}
+
+
+-- | Sets the X Pixmap to which the texture should be bound.
+--
+-- [@texture@] the texture to bind
+--
+-- [@pixmap@] the X Pixmap to which the texture should be bound
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_set_pixmap as ^
+    { withX11TexturePixmap* `X11TexturePixmap', cIntConv `Pixmap' } -> `()' #}
+
+
+-- | Sets up a suitable pixmap for the window, using the composite and
+-- damage extensions if possible, and then calls
+-- 'x11TexturePixmapSetPixmap'.
+--
+-- If you want to display a window in a 'Texture', you probably want
+-- this function, or its older sister, 'glxTexturePixmapSetWindow'
+--
+-- [@texture@] the texture to bind
+--
+-- [@window@] the X window to which the texture should be bound
+--
+-- [@automatic@] @True@ for automatic window updates, @False@ for
+-- manual.
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_set_window as ^
+    { withX11TexturePixmap* `X11TexturePixmap', cIntConv `Window', `Bool' } -> `()' #}
+
+
+-- | Resets the texture's pixmap from its window, perhaps in response
+-- to the pixmap's invalidation as the window changed size.
+--
+-- [@texture@] the texture to bind
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_sync_window as ^
+    { withX11TexturePixmap* `X11TexturePixmap' } -> `()' #}
+
+
+-- | Performs the actual binding of texture to the current content of
+-- the pixmap. Can be called to update the texture if the pixmap
+-- content has changed.
+--
+-- [@texture@] The texture whose content shall be updated.
+--
+-- [@x@] the X coordinate of the area to update
+--
+-- [@y@] the Y coordinate of the area to update
+--
+-- [@width@] the width of the area to update
+--
+-- [@height@] the height of the area to update
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_update_area as ^
+    { withX11TexturePixmap* `X11TexturePixmap', `Int', `Int', `Int', `Int' } -> `()' #}
+
+
+-- | Enables or disables the automatic updates ot texture in case the
+-- backing pixmap or window is damaged
+--
+-- [@texture@] an 'X11TexturePixmap'
+--
+-- [@setting@] @True@ to enable automatic updates
+--
+-- * Since 0.8
+--
+{# fun unsafe x11_texture_pixmap_set_automatic as ^
+    { withX11TexturePixmap* `X11TexturePixmap', `Bool' } -> `()' #}
+
 

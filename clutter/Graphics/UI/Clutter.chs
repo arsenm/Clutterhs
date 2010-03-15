@@ -17,6 +17,8 @@
 --  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 --  Lesser General Public License for more details.
 
+#include <clutter/clutter.h>
+
 -- | This module gathers all publicly available functions from the Clutter binding.
 --
 module Graphics.UI.Clutter (
@@ -28,6 +30,9 @@ module Graphics.UI.Clutter (
   module Graphics.UI.Clutter.Actor,
   module Graphics.UI.Clutter.Container,
   module Graphics.UI.Clutter.Media,
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  module Graphics.UI.Clutter.LayoutManager,
+#endif
 
 -- ** Base actors
   module Graphics.UI.Clutter.Rectangle,
@@ -120,5 +125,9 @@ import Graphics.UI.Clutter.Scriptable
 import Graphics.UI.Clutter.BindingPool
 import Graphics.UI.Clutter.X11
 import Graphics.UI.Clutter.Utilities
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+import Graphics.UI.Clutter.LayoutManager
+#endif
 
 

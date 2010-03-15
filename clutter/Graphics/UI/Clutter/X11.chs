@@ -366,3 +366,6 @@ instance GObjectClass X11TexturePixmap where
     { withX11TexturePixmap* `X11TexturePixmap', `Bool' } -> `()' #}
 
 
+--type CX11FilterFunc = XEventPtr -> ClutterEventPtr -> IO ()
+
+

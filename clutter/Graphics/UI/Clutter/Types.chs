@@ -272,7 +272,14 @@ module Graphics.UI.Clutter.Types (
                                   withRGBData,
 
                                   Activatable(..),
-                                  Playable(..)
+                                  Playable(..),
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  LayoutManager,
+  LayoutManagerClass(..),
+  newLayoutManager,
+  withLayoutManager,
+  withLayoutManagerClass
+#endif
                                  ) where
 
 import Prelude
@@ -1436,4 +1443,27 @@ toModFlags n = catMaybes [ if n .&. fromEnum flag == fromEnum flag
                                      ReleaseMask,
                                      ModifierMask]
                          ]
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- *** LayoutManager
+
+{# pointer *ClutterLayoutManager as LayoutManager foreign newtype #}
+
+class GObjectClass o => LayoutManagerClass o
+toLayoutManager::LayoutManagerClass o => o -> LayoutManager
+toLayoutManager = unsafeCastGObject . toGObject
+
+newLayoutManager :: Ptr LayoutManager -> IO LayoutManager
+newLayoutManager a = makeNewActor (LayoutManager, objectUnref) $ return (castPtr a)
+
+withLayoutManagerClass :: LayoutManagerClass o => o -> (Ptr LayoutManager -> IO b) -> IO b
+withLayoutManagerClass o = (withLayoutManager . toLayoutManager) o
+
+instance LayoutManagerClass LayoutManager
+instance GObjectClass LayoutManager where
+  toGObject (LayoutManager r) = constrGObject (castForeignPtr r)
+  unsafeCastGObject (GObject o) = LayoutManager (castForeignPtr o)
+
+#endif
 

@@ -115,16 +115,8 @@ module Graphics.UI.Clutter.Texture (
   textureTileWaste,
 
 -- * Signals
-  onLoadFinished,
-  afterLoadFinished,
   loadFinished,
-
-  onPixbufChange,
-  afterPixbufChange,
   pixbufChange,
-
-  onSizeChange,
-  afterSizeChange,
   sizeChange
   ) where
 
@@ -143,8 +135,6 @@ import Control.Monad (liftM)
 import System.Glib.Attributes
 import System.Glib.Properties
 import System.Glib.GError
-import System.Glib.FFI
-
 
 -- | Creates a new empty 'Texture' object.
 --
@@ -700,12 +690,6 @@ textureTileWaste = readNamedAttr "tile-waste" textureGetMaxTileWaste
 
 --CHECKME: Exception in handler?
 
-onLoadFinished, afterLoadFinished :: Texture -> (Maybe GError -> IO ()) -> IO (ConnectId Texture)
-onLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek False
-afterLoadFinished = connect_BOXED__NONE "load-finished" maybeNullPeek True
-
-
-
 -- | The ::'loadFinished' signal is emitted when a texture load has
 -- completed. If there was an error during loading, error will be set,
 -- otherwise it will be @Nothing@
@@ -718,20 +702,11 @@ loadFinished :: (TextureClass self) => Signal self (GError -> IO ())
 loadFinished = Signal (connect_BOXED__NONE "load-finished" peek)
 
 
-onPixbufChange, afterPixbufChange :: Texture -> IO () -> IO (ConnectId Texture)
-onPixbufChange = connect_NONE__NONE "pixbuf-change" False
-afterPixbufChange = connect_NONE__NONE "pixbuf-change" True
-
 -- | The ::'pixbufChange' signal is emitted each time the pixbuf used
 -- by texture changes.
 --
 pixbufChange :: (TextureClass self) => Signal self (IO ())
 pixbufChange = Signal (connect_NONE__NONE "pixbuf-change")
-
-
-onSizeChange, afterSizeChange :: Texture -> (Int -> Int -> IO ()) -> IO (ConnectId Texture)
-onSizeChange = connect_INT_INT__NONE "size-change" False
-afterSizeChange = connect_INT_INT__NONE "size-change" True
 
 
 -- | The ::'sizeChange' signal is emitted each time the size of the

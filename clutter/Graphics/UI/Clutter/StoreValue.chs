@@ -76,8 +76,6 @@ import Control.Exception
 {# import Graphics.UI.Clutter.Types #}
 {# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 
-import System.Glib.FFI
-import System.Glib.Flags
 import System.Glib.GValue
 import System.Glib.GValueTypes
 import qualified System.Glib.GTypeConstants as GType

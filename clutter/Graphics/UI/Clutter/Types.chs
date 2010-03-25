@@ -305,9 +305,8 @@ import System.Glib.GObject
 import System.Glib.Signals
 import System.Glib.GValue (GValue(GValue))
 import System.Glib.GList
-import System.Glib.Flags
 import System.Glib.FFI
-import Control.Monad (when, liftM, liftM2, join)
+import Control.Monad (when, liftM)
 import Control.Exception (bracket)
 
 {# import Graphics.UI.Clutter.Enums #}
@@ -1384,8 +1383,6 @@ instance (Storable e) => MArray RGBData e IO where
 -- * Since 0.6
 --
 class Activatable a where
-  onActivate :: a -> IO () -> IO (ConnectId a)
-  afterActivate :: a -> IO () -> IO (ConnectId a)
   activate :: Signal a (IO ())
 
 -- | Class of things that have signals related to starting, pausing
@@ -1396,15 +1393,8 @@ class (GObjectClass a) => Playable a where
   pause :: a -> IO ()
   stop :: a -> IO ()
   started :: Signal a (IO ())
-  onStarted :: a -> IO () -> IO (ConnectId a)
-  afterStarted :: a -> IO () -> IO (ConnectId a)
   completed :: Signal a (IO ())
-  onCompleted :: a -> IO () -> IO (ConnectId a)
-  afterCompleted :: a -> IO () -> IO (ConnectId a)
   paused :: Signal a (IO ())
-  onPaused :: a -> IO () -> IO (ConnectId a)
-  afterPaused :: a -> IO () -> IO (ConnectId a)
-
 
 cFromModFlags :: [ModifierType] -> CInt
 cFromModFlags = cIntConv . fromModFlags

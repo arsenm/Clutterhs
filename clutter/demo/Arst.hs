@@ -102,9 +102,7 @@ main = do
   stageSetPerspective stg pers
   performGC
 
---either of these work
-  onShow stg (putStrLn "I'm shown!")
---  on stg C.show (putStrLn "I'm shown!")
+  stg `on` C.show $ putStrLn "I'm shown!"
 
   out <- stageGetPerspective stg
   putStrLn $ "got out: " ++ show out

@@ -51,8 +51,6 @@ module Graphics.UI.Clutter.BehaviourPath (
   behaviourPathPath,
 
 -- * Signals
-  onKnotReached,
-  afterKnotReached,
   knotReached
   ) where
 
@@ -86,11 +84,6 @@ behaviourPathNewWithKnots alp knots = let func = {# call unsafe behaviour_path_n
 
 behaviourPathPath :: Attr BehaviourPath Path
 behaviourPathPath = newNamedAttr "path" behaviourPathGetPath behaviourPathSetPath
-
-
-onKnotReached, afterKnotReached :: BehaviourPath -> (Word -> IO ()) -> IO (ConnectId BehaviourPath)
-onKnotReached = connect_WORD__NONE "knot-reached" False
-afterKnotReached = connect_WORD__NONE "knot-reached" True
 
 
 -- | This signal is emitted each time a node defined inside the path

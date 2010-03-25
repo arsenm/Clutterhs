@@ -99,11 +99,7 @@ module Graphics.UI.Clutter.Behaviour (
   behaviourAlpha,
 
 -- * Signals
-  onApplied,
-  afterApplied,
   applied,
-  onRemoved,
-  afterRemoved,
   removed
   ) where
 
@@ -258,10 +254,6 @@ behaviourActorsForeach b func = withBehaviourClass b $ \bptr -> do
 behaviourAlpha :: (BehaviourClass self) => Attr self (Maybe Alpha)
 behaviourAlpha = newNamedAttr "alpha" behaviourGetAlpha behaviourSetAlpha
 
-onApplied, afterApplied :: (BehaviourClass behave) => behave -> (Actor -> IO ()) -> IO (ConnectId behave)
-onApplied = connect_OBJECT__NONE "applied" False
-afterApplied = connect_OBJECT__NONE "applied" True
-
 
 -- | The ::'apply' signal is emitted each time the behaviour is applied to an actor.
 --
@@ -271,11 +263,6 @@ afterApplied = connect_OBJECT__NONE "applied" True
 --
 applied :: (BehaviourClass behave) => Signal behave (Actor ->IO ())
 applied = Signal (connect_OBJECT__NONE "applied")
-
-
-onRemoved, afterRemoved :: (BehaviourClass behave) => behave -> (Actor -> IO ()) -> IO (ConnectId behave)
-onRemoved = connect_OBJECT__NONE "removed" False
-afterRemoved = connect_OBJECT__NONE "removed" True
 
 
 -- | The ::'removed' signal is emitted each time a behaviour is not

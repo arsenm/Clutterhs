@@ -65,12 +65,7 @@ module Graphics.UI.Clutter.Container (
 
 -- * Signals
   actorAdded,
-  onActorAdded,
-  afterActorAdded,
-
-  actorRemoved,
-  onActorRemoved,
-  afterActorRemoved
+  actorRemoved
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -194,17 +189,6 @@ containerChildGet ctr chld attr =  let func = {# call unsafe container_child_get
 actorAdded :: (ContainerClass container) => Signal container (Actor -> IO ())
 actorAdded = Signal (connect_OBJECT__NONE "actor-added")
 
-onActorAdded, afterActorAdded :: ContainerClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
-onActorAdded = connect_OBJECT__NONE "actor-added" False
-afterActorAdded = connect_OBJECT__NONE "actor-added" True
-
-
 actorRemoved :: (ContainerClass container) => Signal container (Actor -> IO ())
 actorRemoved = Signal (connect_OBJECT__NONE "actor-removed")
-
-onActorRemoved, afterActorRemoved :: ContainerClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
-onActorRemoved = connect_OBJECT__NONE "actor-removed" False
-afterActorRemoved = connect_OBJECT__NONE "actor-removed" True
-
-
 

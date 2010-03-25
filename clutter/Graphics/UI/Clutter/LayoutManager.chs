@@ -243,13 +243,6 @@ import System.Glib.Attributes
   { withLayoutManagerClass* `manager' } -> `Double' #}
 
 
-
-
-onLayoutChanged, afterLayoutChanged :: (LayoutManagerClass manager) => manager  -> IO () -> IO (ConnectId manager)
-onLayoutChanged = connect_NONE__NONE "layout-changed" False
-afterLayoutChanged = connect_NONE__NONE "layout-changed" True
-
-
 -- | The ::'layoutChanged' signal is emitted each time a layout
 -- manager has been changed. Every ClutterActor using the manager
 -- instance as a layout manager should connect a handler to the

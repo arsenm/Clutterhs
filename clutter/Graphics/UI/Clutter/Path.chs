@@ -125,7 +125,6 @@ module Graphics.UI.Clutter.Path (
 import C2HS
 import System.Glib.Attributes
 import System.Glib.Properties
-import Control.Monad (liftM2)
 import Control.Monad.Reader (ask)
 import Control.Monad.Trans (liftIO)
 import Graphics.Rendering.Cairo.Types (Cairo, unCairo)

@@ -128,20 +128,9 @@ module Graphics.UI.Clutter.Stage (
 
 -- * Signals
 --FIXME: Export conflicts with Text's signals and probably other signals
-  onActivate,
-  afterActivate,
   activate,
-
-  onDeactivate,
-  afterDeactivate,
   deactivate,
-
-  onFullscreen,
-  afterFullscreen,
   fullscreen,
-
-  onUnfullscreen,
-  afterUnfullscreen,
   unfullscreen
   ) where
 
@@ -155,10 +144,9 @@ import C2HS
 import Control.Monad (liftM)
 import Data.Array.MArray
 import Data.Array.Storable
-import Data.Ix
+--import Data.Ix
 import System.Glib.Attributes
 import System.Glib.Properties
-import System.Glib.FFI (maybeNull)
 
 -- debugging, this shouldn't still be here.
 import GHC.Arr
@@ -533,13 +521,8 @@ stageFog = newNamedAttr "fog" stageGetFog stageSetFog
 --See note in Types of Activatable
 -- | The 'activate' signal is emitted when the stage receives key focus from the underlying window system.
 instance Activatable Stage where
-  onActivate = connect_NONE__NONE "activate" False
-  afterActivate = connect_NONE__NONE "activate" True
   activate = Signal (connect_NONE__NONE "activate")
 
-onDeactivate, afterDeactivate :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
-onDeactivate = connect_NONE__NONE "deactivate" False
-afterDeactivate = connect_NONE__NONE "deactivate" True
 
 -- | The 'deactivate' signal is emitted when the stage loses key focus
 --   from the underlying window system.
@@ -547,18 +530,9 @@ deactivate :: (StageClass stage) => Signal stage (IO ())
 deactivate = Signal (connect_NONE__NONE "deactivate")
 
 
-onFullscreen, afterFullscreen :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
-onFullscreen = connect_NONE__NONE "fullscreen" False
-afterFullscreen = connect_NONE__NONE "fullscreen" True
-
 -- | The 'fullscreen' signal is emitted when the stage is made fullscreen.
 fullscreen :: (StageClass stage) => Signal stage (IO ())
 fullscreen = Signal (connect_NONE__NONE "fullscreen")
-
-
-onUnfullscreen, afterUnfullscreen :: (StageClass stage) => stage -> IO () -> IO (ConnectId stage)
-onUnfullscreen = connect_NONE__NONE "unfullscreen" False
-afterUnfullscreen = connect_NONE__NONE "unfullscreen" True
 
 -- | The 'unfullscreen' signal is emitted when the stage leaves a fullscreen state.
 unfullscreen :: (StageClass stage) => Signal stage (IO ())

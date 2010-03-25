@@ -82,24 +82,10 @@ module Graphics.UI.Clutter.Timeline (
   timelineDirection,
 
 -- * Signals
-  onCompleted,
-  afterCompleted,
   completed,
-
-  onMarkerReached,
-  afterMarkerReached,
   markerReached,
-
-  onNewFrame,
-  afterNewFrame,
   newFrame,
-
-  onPaused,
-  afterPaused,
   paused,
-
-  onStarted,
-  afterStarted,
   started
   ) where
 
@@ -428,17 +414,11 @@ timelineDirection = newNamedAttr "direction" timelineGetDirection timelineSetDir
 
 --TODO: Check these
 
---onCompleted, afterCompleted :: Timeline -> IO () -> IO (ConnectId Timeline)
-
 -- | The 'completed' signal is emitted when the timeline reaches the
 --   number of frames specified by the 'Timeline':num-frames
 --   property.
 
 --completed :: Signal Timeline (IO ())
-
-onMarkerReached, afterMarkerReached :: Timeline -> (String -> Word -> IO ()) -> IO (ConnectId Timeline)
-onMarkerReached = connect_STRING_WORD__NONE "marker-reached" False
-afterMarkerReached = connect_STRING_WORD__NONE "marker-reached" True
 
 -- | The ::'markerReached' signal is emitted each time a timeline
 -- reaches a marker set with 'timelineAddMarkerAtTime'.
@@ -453,10 +433,6 @@ afterMarkerReached = connect_STRING_WORD__NONE "marker-reached" True
 --
 markerReached :: Signal Timeline (String -> Word -> IO ())
 markerReached = Signal (connect_STRING_WORD__NONE "marker-reached")
-
-onNewFrame, afterNewFrame :: Timeline -> (Int -> IO ()) -> IO (ConnectId Timeline)
-onNewFrame = connect_INT__NONE "new-frame" False
-afterNewFrame = connect_INT__NONE "new-frame" True
 
 
 -- | The 'newFrame' signal is emitted for each timeline running
@@ -476,22 +452,12 @@ instance Playable Timeline where
   pause = timelinePause
   stop = timelineStop
   started = Signal (connect_NONE__NONE "started")
-  onStarted = connect_NONE__NONE "started" False
-  afterStarted = connect_NONE__NONE "started" True
   completed = Signal (connect_NONE__NONE "completed")
-  onCompleted = connect_NONE__NONE "completed" False
-  afterCompleted = connect_NONE__NONE "completed" True
   paused = Signal (connect_NONE__NONE "paused")
-  onPaused = connect_NONE__NONE "paused" False
-  afterPaused = connect_NONE__NONE "paused" True
 
 
 -- | The ::paused signal is emitted when 'timelinePause' is invoked.
 -- paused :: Signal Timeline (IO ())
-
-
--- onStarted, afterStarted :: Timeline -> IO () -> IO (ConnectId Timeline)
-
 
 
 -- | The ::started signal is emitted when the timeline starts its

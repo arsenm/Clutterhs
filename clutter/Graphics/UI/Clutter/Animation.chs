@@ -127,7 +127,7 @@ module Graphics.UI.Clutter.Animation (
 
 {# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.Timeline #}
+{# import Graphics.UI.Clutter.Timeline #} ()
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.StoreValue #}
 {# import Graphics.UI.Clutter.Utility #}
@@ -135,7 +135,6 @@ module Graphics.UI.Clutter.Animation (
 import C2HS
 import Prelude
 import qualified Prelude as P
-import Data.Maybe (maybe)
 
 import Control.Monad (liftM, foldM_)
 
@@ -482,9 +481,6 @@ actorGetAnimation actor =  withActorClass actor $ \actorPtr -> do
      then return P.Nothing
      else newAnimationRaw raw >>= return . Just . mkAnimation (undefined :: a)
 
-
---onCompleted, afterCompleted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
-
 -- | The ::'completed' signal is emitted once the animation has been
 --   completed.
 --
@@ -494,9 +490,6 @@ actorGetAnimation actor =  withActorClass actor $ \actorPtr -> do
 -- * Since 1.0
 --
 --completed :: (GObjectClass a) => Signal (Animation a) (IO ())
-
---onStarted, afterStarted :: (GObjectClass a) => Animation a -> IO () -> IO (ConnectId (Animation a))
-
 
 -- | The ::'started' signal is emitted once the animation has been
 --   started
@@ -708,13 +701,7 @@ instance (GObjectClass a) => Playable (Animation a) where
   pause a = animationGetTimeline a >>= maybe (return ()) pause
   stop a = animationGetTimeline a >>= maybe (return ()) stop
   started = Signal (connect_NONE__NONE "started")
-  onStarted = connect_NONE__NONE "started" False
-  afterStarted = connect_NONE__NONE "started" True
   completed = Signal (connect_NONE__NONE "completed")
-  onCompleted = connect_NONE__NONE "completed" False
-  afterCompleted = connect_NONE__NONE "completed" True
   paused = Signal (connect_NONE__NONE "paused")
-  onPaused = connect_NONE__NONE "paused" False
-  afterPaused = connect_NONE__NONE "paused" True
 
 

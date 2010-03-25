@@ -339,52 +339,17 @@ module Graphics.UI.Clutter.Actor (
   actorY,
 
 -- * Signals
-  onAllocationChanged,
-  afterAllocationChanged,
   allocationChanged,
-
-  onDestroy,
-  afterDestroy,
   destroy,
-
-  onHide,
-  afterHide,
   hide,
-
-  onKeyFocusIn,
-  afterKeyFocusIn,
   keyFocusIn,
-
-  onKeyFocusOut,
-  afterKeyFocusOut,
   keyFocusOut,
-
-  onPaint,
-  afterPaint,
   paint,
-
-  onParentSet,
-  afterParentSet,
   parentSet,
-
-  onPick,
-  afterPick,
   pick,
-
-  onQueueRedraw,
-  afterQueueRedraw,
   queueRedraw,
-
-  onRealize,
-  afterRealize,
   realize,
-
-  onShow,
-  afterShow,
   show,
-
-  onUnrealize,
-  afterUnrealize,
   unrealize,
 
 -- * Events
@@ -413,18 +378,14 @@ module Graphics.UI.Clutter.Actor (
 import Prelude hiding (show)
 
 import C2HS
-import Foreign
-import Foreign.Ptr
 import Data.IORef
 import System.Glib.GObject
 import System.Glib.Attributes
 import System.Glib.Properties
-import System.Glib.Signals
 
 --TODO: Export pango from types so you don't need this
 import Graphics.UI.Gtk.Types (PangoContext, PangoLayoutRaw, mkPangoLayoutRaw)
 import Graphics.UI.Gtk.Pango.Types
-import Graphics.UI.Gtk.Pango.Layout
 
 
 {# fun unsafe actor_is_mapped as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
@@ -2473,13 +2434,6 @@ actorY = newNamedAttr "y" actorGetY actorSetY
 
 --CHECKME
 
-onAllocationChanged, afterAllocationChanged :: ActorClass a => a
-                                            -> (ActorBox -> [AllocationFlags] -> IO ())
-                                            -> IO (ConnectId a)
-onAllocationChanged = connect_BOXED_FLAGS__NONE "allocation-changed" peek False
-afterAllocationChanged = connect_BOXED_FLAGS__NONE "allocation-changed" peek True
-
-
 -- | The ::'allocationChanged' signal is emitted when the "allocation"
 --   property changes. Usually, application code should just use the
 --   notifications for the :allocation property but if you want to
@@ -2497,10 +2451,6 @@ allocationChanged :: ActorClass self => Signal self (ActorBox -> [AllocationFlag
 allocationChanged = Signal (connect_BOXED_FLAGS__NONE "allocation-changed" peek)
 
 
-onDestroy, afterDestroy :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onDestroy = connect_NONE__NONE "destroy" False
-afterDestroy = connect_NONE__NONE "destroy" True
-
 -- | The \"destroy\" signal is emitted when an actor is destroyed,
 --   either by direct invocation of 'actorDestroy' or when the 'Group'
 --   that contains the actor is destroyed.
@@ -2509,11 +2459,6 @@ afterDestroy = connect_NONE__NONE "destroy" True
 --
 destroy :: ActorClass self => Signal self (IO ())
 destroy = Signal (connect_NONE__NONE "destroy")
-
-
-onHide, afterHide :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onHide = connect_NONE__NONE "hide" False
-afterHide = connect_NONE__NONE "hide" True
 
 
 -- | The \"hide\" signal is emitted when an actor is no longer
@@ -2525,21 +2470,12 @@ hide :: ActorClass self => Signal self (IO ())
 hide = Signal (connect_NONE__NONE "hide")
 
 
-onKeyFocusIn, afterKeyFocusIn :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onKeyFocusIn = connect_NONE__NONE "key_focus_in" False
-afterKeyFocusIn = connect_NONE__NONE "key_focus_in" True
-
 -- | The \"key-focus-in\" signal is emitted when actor recieves key focus.
 --
 -- * Since 0.6
 --
 keyFocusIn :: ActorClass self => Signal self (IO ())
 keyFocusIn = Signal (connect_NONE__NONE "key_focus_in")
-
-
-onKeyFocusOut, afterKeyFocusOut :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onKeyFocusOut = connect_NONE__NONE "key_focus_out" False
-afterKeyFocusOut = connect_NONE__NONE "key_focus_out" True
 
 -- | The \"key-focus-out\" signal is emitted when actor loses key focus.
 --
@@ -2548,10 +2484,6 @@ afterKeyFocusOut = connect_NONE__NONE "key_focus_out" True
 keyFocusOut :: ActorClass self => Signal self (IO ())
 keyFocusOut = Signal (connect_NONE__NONE "key_focus_out")
 
-
-onPaint, afterPaint :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onPaint = connect_NONE__NONE "paint" False
-afterPaint = connect_NONE__NONE "paint" True
 
 -- | The \"paint\" signal is emitted each time an actor is being
 --   painted.
@@ -2568,11 +2500,6 @@ afterPaint = connect_NONE__NONE "paint" True
 paint :: ActorClass self => Signal self (IO ())
 paint = Signal (connect_NONE__NONE "paint")
 
-
-onParentSet, afterParentSet :: ActorClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
-onParentSet = connect_OBJECT__NONE "parent-set" False
-afterParentSet = connect_OBJECT__NONE "parent-set" True
-
 --CHECKME: Test if this signal works
 -- | This signal is emitted when the parent of the actor changes.
 --
@@ -2586,12 +2513,6 @@ afterParentSet = connect_OBJECT__NONE "parent-set" True
 --
 parentSet :: ActorClass self => Signal self (Maybe self -> IO ())
 parentSet = Signal (connect_MAYBEOBJECT__NONE "parent")
-
-
-onPick, afterPick :: ActorClass a => a -> (Color -> IO ()) -> IO (ConnectId a)
-onPick = connect_BOXED__NONE "pick" peek False
-afterPick = connect_BOXED__NONE "pick" peek True
-
 
 -- | The ::pick signal is emitted each time an actor is being painted
 --   in "pick mode". The pick mode is used to identify the actor
@@ -2614,18 +2535,8 @@ pick :: ActorClass self => Signal self (Color -> IO ())
 pick = Signal (connect_BOXED__NONE "pick" peek)
 
 
-onQueueRedraw, afterQueueRedraw :: ActorClass a => a -> (Actor -> IO ()) -> IO (ConnectId a)
-onQueueRedraw = connect_OBJECT__NONE "queue-redraw" False
-afterQueueRedraw = connect_OBJECT__NONE "queue-redraw" True
-
 queueRedraw :: ActorClass self => Signal self (Color -> IO ())
 queueRedraw = Signal (connect_BOXED__NONE "queue-redraw" peek)
-
-
-onRealize, afterRealize :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onRealize = connect_NONE__NONE "realize" False
-afterRealize = connect_NONE__NONE "realize" True
-
 
 -- | The \"realize\" signal is emitted each time an actor is being
 --   realized.
@@ -2635,10 +2546,6 @@ afterRealize = connect_NONE__NONE "realize" True
 realize :: ActorClass self => Signal self (IO ())
 realize = Signal (connect_NONE__NONE "realize")
 
-onShow, afterShow :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onShow = connect_NONE__NONE "show" False
-afterShow = connect_NONE__NONE "show" True
-
 
 -- | The \"show\" signal is emitted when an actor is visible and
 --   rendered on the stage.
@@ -2647,11 +2554,6 @@ afterShow = connect_NONE__NONE "show" True
 --
 show :: ActorClass self => Signal self (IO ())
 show = Signal (connect_NONE__NONE "show")
-
-onUnrealize, afterUnrealize :: ActorClass a => a -> IO () -> IO (ConnectId a)
-onUnrealize = connect_NONE__NONE "unrealize" False
-afterUnrealize = connect_NONE__NONE "unrealize" True
-
 
 -- | The \"unrealize\" signal is emitted each time an actor is being
 --   unrealized.

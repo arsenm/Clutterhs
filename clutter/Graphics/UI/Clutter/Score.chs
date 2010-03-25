@@ -104,11 +104,7 @@ module Graphics.UI.Clutter.Score (
   scoreLoop,
 
 -- * Signals
-  onTimelineCompleted,
-  afterTimelineCompleted,
   timelineCompleted,
-  onTimelineStarted,
-  afterTimelineStarted,
   timelineStarted
   ) where
 
@@ -117,9 +113,7 @@ module Graphics.UI.Clutter.Score (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
 import System.Glib.Attributes
-
 
 -- | Creates a new 'Score'. A 'Score' is an object that can hold
 --   multiple 'Timelines' in a sequential order.
@@ -280,16 +274,10 @@ scoreLoop = newNamedAttr "score" scoreGetLoop scoreSetLoop
 {# fun unsafe score_rewind as ^ { withScore* `Score' } -> `()' #}
 
 
---onCompleted, afterCompleted :: Score -> IO () -> IO (ConnectId Score)
-
-
 -- | The ::'completed' signal is emitted each time a 'Score' terminates.
 --
 -- * Since 0.6
 --
-
--- onPaused, afterPaused :: Score -> IO () -> IO (ConnectId Score)
-
 
 -- | The ::'paused' signal is emitted each time a 'Score' is paused.
 --
@@ -298,28 +286,13 @@ scoreLoop = newNamedAttr "score" scoreGetLoop scoreSetLoop
 -- paused :: Signal Score (IO ())
 
 
-
--- onStarted, afterStarted :: Score -> IO () -> IO (ConnectId Score)
-
-
 instance Playable Score where
   start = scoreStart
   pause = scorePause
   stop = scoreStop
   started = Signal (connect_NONE__NONE "started")
-  onStarted = connect_NONE__NONE "started" False
-  afterStarted = connect_NONE__NONE "started" True
   completed = Signal (connect_NONE__NONE "completed")
-  onCompleted = connect_NONE__NONE "completed" False
-  afterCompleted = connect_NONE__NONE "completed" True
   paused = Signal (connect_NONE__NONE "paused")
-  onPaused = connect_NONE__NONE "paused" False
-  afterPaused = connect_NONE__NONE "paused" True
-
-
-onTimelineCompleted, afterTimelineCompleted :: Score -> (Timeline -> IO ()) -> IO (ConnectId Score)
-onTimelineCompleted = connect_OBJECT__NONE "timeline-completed" False
-afterTimelineCompleted = connect_OBJECT__NONE "timeline-completed" True
 
 
 -- | The ::'timelineCompleted' signal is emitted each time a timeline
@@ -331,11 +304,6 @@ afterTimelineCompleted = connect_OBJECT__NONE "timeline-completed" True
 --
 timelineCompleted :: Signal Score (Timeline -> IO ())
 timelineCompleted = Signal (connect_OBJECT__NONE "timeline-completed")
-
-
-onTimelineStarted, afterTimelineStarted :: Score -> (Timeline -> IO ()) -> IO (ConnectId Score)
-onTimelineStarted = connect_OBJECT__NONE "timeline-started" False
-afterTimelineStarted = connect_OBJECT__NONE "timeline-started" True
 
 
 -- | The ::'timelineStarted' signal is emitted each time a new timeline

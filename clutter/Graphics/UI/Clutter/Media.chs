@@ -72,11 +72,7 @@ module Graphics.UI.Clutter.Media (
   mediaUri,
 
 -- * Signals
-  onEos,
-  afterEos,
   eos,
-  onError,
-  afterError,
   error
   ) where
 
@@ -248,20 +244,12 @@ mediaUri = newNamedAttr "uri" mediaGetUri mediaSetUri
 
 -- signals
 
-onEos, afterEos :: (MediaClass media) => media -> IO () -> IO (ConnectId media)
-onEos = connect_NONE__NONE "eos" False
-afterEos = connect_NONE__NONE "eos" True
-
 -- | The ::eos signal is emitted each time the media stream ends.
 --
 eos :: (MediaClass media) => Signal media (IO ())
 eos = Signal (connect_NONE__NONE "eos")
 
 --CHECKME:checky
-onError, afterError :: Timeline -> (GError -> IO ()) -> IO (ConnectId Timeline)
-onError = connect_BOXED__NONE "error" peek False
-afterError = connect_BOXED__NONE "error" peek True
-
 -- | The ::error signal is emitted each time an error occurred.
 --
 -- [@error@] : the GError

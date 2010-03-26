@@ -76,8 +76,11 @@ module Graphics.UI.Clutter.GTypes (
   texture,
   timeline,
   units,
-  vertex
+  vertex,
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  binLayout
+#endif
   ) where
 
 import C2HS
@@ -134,4 +137,10 @@ import System.Glib.GType
 {# fun pure unsafe timeline_get_type as timeline { } -> `GType' cToEnum #}
 {# fun pure unsafe units_get_type as units { } -> `GType' cToEnum #}
 {# fun pure unsafe vertex_get_type as vertex { } -> `GType' cToEnum #}
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+{# fun pure unsafe bin_layout_get_type as binLayout { } -> `GType' cToEnum #}
+
+#endif
 

@@ -53,7 +53,11 @@ module Graphics.UI.Clutter.Enums (
 
   InputDeviceType(..),
   ScriptError(..),
-  FontFlags(..)
+  FontFlags(..),
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  BinAlignment(..)
+#endif
   ) where
 
 
@@ -71,7 +75,6 @@ import System.Glib.Signals
 import System.Glib.GValue (GValue(GValue))
 import System.Glib.Flags
 import Control.Monad (when, liftM2, join)
-import Control.Exception (bracket)
 
 
 -- | Error conditions returned by 'clutterInit'
@@ -554,4 +557,32 @@ instance Flags TextureFlags
 instance Flags AllocationFlags
 instance Flags FontFlags
 
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | The alignment policies available on each axis for
+-- 'BinLayout'
+--
+-- [@BinAlignmentFixed@] Fixed position alignment; the 'BinLayout'
+-- will honour the fixed position provided by the actors themselves
+-- when allocating them
+--
+-- [@BinAlignmentFill@] Fill the allocation size
+--
+-- [@BinAlignmentStart@] Position the actors at the top or left side
+-- of the container, depending on the axis
+--
+-- [@BinAlignmentEnd@] Position the actors at the bottom or right side
+-- of the container, depending on the axis
+--
+-- [@BinAlignmentCenter@]
+--
+-- Position the actors at the center of the container, depending on the axis
+--
+-- * Since 1.2
+--
+
+{# enum ClutterBinAlignment as BinAlignment {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+#endif
 

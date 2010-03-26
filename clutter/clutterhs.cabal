@@ -117,6 +117,7 @@ Library
                    Graphics.UI.Clutter.X11,
                    Graphics.UI.Clutter.LayoutManager,
                    Graphics.UI.Clutter.FixedLayout,
+                   Graphics.UI.Clutter.BinLayout,
                    Graphics.UI.Clutter
   Exposed: True
   Include-dirs: ./csrc

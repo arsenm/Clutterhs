@@ -284,7 +284,14 @@ module Graphics.UI.Clutter.Types (
   FixedLayoutClass,
   newFixedLayout,
   withFixedLayout,
-  withFixedLayoutClass
+  withFixedLayoutClass,
+
+  BinLayout,
+  BinLayoutClass,
+  newBinLayout,
+  withBinLayout,
+  withBinLayoutClass
+
 #endif
                                  ) where
 
@@ -1480,6 +1487,26 @@ instance FixedLayoutClass FixedLayout
 instance GObjectClass FixedLayout where
   toGObject (FixedLayout r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = FixedLayout (castForeignPtr o)
+
+
+-- *** BinLayout
+
+{# pointer *ClutterBinLayout as BinLayout foreign newtype #}
+
+class GObjectClass o => BinLayoutClass o
+toBinLayout::BinLayoutClass o => o -> BinLayout
+toBinLayout = unsafeCastGObject . toGObject
+
+newBinLayout :: Ptr LayoutManager -> IO BinLayout
+newBinLayout a = makeNewActor (BinLayout, objectUnref) $ return (castPtr a)
+
+withBinLayoutClass :: BinLayoutClass o => o -> (Ptr BinLayout -> IO b) -> IO b
+withBinLayoutClass o = (withBinLayout . toBinLayout) o
+
+instance BinLayoutClass BinLayout
+instance GObjectClass BinLayout where
+  toGObject (BinLayout r) = constrGObject (castForeignPtr r)
+  unsafeCastGObject (GObject o) = BinLayout (castForeignPtr o)
 
 #endif
 

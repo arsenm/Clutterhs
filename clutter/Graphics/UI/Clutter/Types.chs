@@ -278,7 +278,13 @@ module Graphics.UI.Clutter.Types (
   LayoutManagerClass,
   newLayoutManager,
   withLayoutManager,
-  withLayoutManagerClass
+  withLayoutManagerClass,
+
+  FixedLayout,
+  FixedLayoutClass,
+  newFixedLayout,
+  withFixedLayout,
+  withFixedLayoutClass
 #endif
                                  ) where
 
@@ -1454,6 +1460,26 @@ instance LayoutManagerClass LayoutManager
 instance GObjectClass LayoutManager where
   toGObject (LayoutManager r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = LayoutManager (castForeignPtr o)
+
+
+-- *** FixedLayout
+
+{# pointer *ClutterFixedLayout as FixedLayout foreign newtype #}
+
+class GObjectClass o => FixedLayoutClass o
+toFixedLayout::FixedLayoutClass o => o -> FixedLayout
+toFixedLayout = unsafeCastGObject . toGObject
+
+newFixedLayout :: Ptr LayoutManager -> IO FixedLayout
+newFixedLayout a = makeNewActor (FixedLayout, objectUnref) $ return (castPtr a)
+
+withFixedLayoutClass :: FixedLayoutClass o => o -> (Ptr FixedLayout -> IO b) -> IO b
+withFixedLayoutClass o = (withFixedLayout . toFixedLayout) o
+
+instance FixedLayoutClass FixedLayout
+instance GObjectClass FixedLayout where
+  toGObject (FixedLayout r) = constrGObject (castForeignPtr r)
+  unsafeCastGObject (GObject o) = FixedLayout (castForeignPtr o)
 
 #endif
 

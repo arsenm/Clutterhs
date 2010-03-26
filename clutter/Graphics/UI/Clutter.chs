@@ -32,6 +32,7 @@ module Graphics.UI.Clutter (
   module Graphics.UI.Clutter.Media,
 #if CLUTTER_CHECK_VERSION(1,2,0)
   module Graphics.UI.Clutter.LayoutManager,
+  module Graphics.UI.Clutter.FixedLayout,
 #endif
 
 -- ** Base actors
@@ -128,6 +129,7 @@ import Graphics.UI.Clutter.Utilities
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
 import Graphics.UI.Clutter.LayoutManager
+import Graphics.UI.Clutter.FixedLayout
 #endif
 
 

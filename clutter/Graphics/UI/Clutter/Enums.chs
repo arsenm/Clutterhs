@@ -56,7 +56,8 @@ module Graphics.UI.Clutter.Enums (
   FontFlags(..),
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
-  BinAlignment(..)
+  BinAlignment(..),
+  FlowOrientation(..)
 #endif
   ) where
 
@@ -64,17 +65,7 @@ module Graphics.UI.Clutter.Enums (
 --RGBData stuff
 
 import Prelude hiding (Nothing)
-
-import Data.Ix
-import Data.Array.Storable
-import Data.Array.MArray
-
-import C2HS hiding (newForeignPtr)
-import System.Glib.GObject
-import System.Glib.Signals
-import System.Glib.GValue (GValue(GValue))
 import System.Glib.Flags
-import Control.Monad (when, liftM2, join)
 
 
 -- | Error conditions returned by 'clutterInit'
@@ -583,6 +574,19 @@ instance Flags FontFlags
 --
 
 {# enum ClutterBinAlignment as BinAlignment {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+
+-- | The direction of the arrangement of the children inside a
+-- 'FlowLayout'
+--
+-- [@FlowHorizontal@] Arrange the children of the flow layout
+-- horizontally first
+--
+-- [@FlowVertical@] Arrange the children of the flow layout vertically first
+--
+-- * Since 1.2
+--
+{# enum ClutterFlowOrientation as FlowOrientation {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 #endif
 

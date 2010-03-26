@@ -95,11 +95,7 @@ module Graphics.UI.Clutter.Timeline (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
-import System.Glib.GObject
 import System.Glib.Attributes
-import System.Glib.Properties
-import System.Glib.Signals
 
 
 -- | Creates a new 'Timeline' with a duration of msecs.

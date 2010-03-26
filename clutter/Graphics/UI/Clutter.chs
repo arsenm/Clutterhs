@@ -34,6 +34,7 @@ module Graphics.UI.Clutter (
   module Graphics.UI.Clutter.LayoutManager,
   module Graphics.UI.Clutter.FixedLayout,
   module Graphics.UI.Clutter.BinLayout,
+  module Graphics.UI.Clutter.FlowLayout,
 #endif
 
 -- ** Base actors
@@ -132,6 +133,7 @@ import Graphics.UI.Clutter.Utilities
 import Graphics.UI.Clutter.LayoutManager
 import Graphics.UI.Clutter.FixedLayout
 import Graphics.UI.Clutter.BinLayout
+import Graphics.UI.Clutter.FlowLayout
 #endif
 
 

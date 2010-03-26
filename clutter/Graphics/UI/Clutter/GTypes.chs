@@ -79,7 +79,8 @@ module Graphics.UI.Clutter.GTypes (
   vertex,
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
-  binLayout
+  binLayout,
+  flowOrientation
 #endif
   ) where
 
@@ -141,6 +142,7 @@ import System.Glib.GType
 #if CLUTTER_CHECK_VERSION(1,2,0)
 
 {# fun pure unsafe bin_layout_get_type as binLayout { } -> `GType' cToEnum #}
+{# fun pure unsafe flow_orientation_get_type as flowOrientation { } -> `GType' cToEnum #}
 
 #endif
 

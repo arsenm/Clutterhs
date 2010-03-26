@@ -290,7 +290,13 @@ module Graphics.UI.Clutter.Types (
   BinLayoutClass,
   newBinLayout,
   withBinLayout,
-  withBinLayoutClass
+  withBinLayoutClass,
+
+  FlowLayout,
+  FlowLayoutClass,
+  newFlowLayout,
+  withFlowLayout,
+  withFlowLayoutClass
 
 #endif
                                  ) where
@@ -1507,6 +1513,26 @@ instance BinLayoutClass BinLayout
 instance GObjectClass BinLayout where
   toGObject (BinLayout r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = BinLayout (castForeignPtr o)
+
+
+-- *** FlowLayout
+
+{# pointer *ClutterFlowLayout as FlowLayout foreign newtype #}
+
+class GObjectClass o => FlowLayoutClass o
+toFlowLayout::FlowLayoutClass o => o -> FlowLayout
+toFlowLayout = unsafeCastGObject . toGObject
+
+newFlowLayout :: Ptr LayoutManager -> IO FlowLayout
+newFlowLayout a = makeNewActor (FlowLayout, objectUnref) $ return (castPtr a)
+
+withFlowLayoutClass :: FlowLayoutClass o => o -> (Ptr FlowLayout -> IO b) -> IO b
+withFlowLayoutClass o = (withFlowLayout . toFlowLayout) o
+
+instance FlowLayoutClass FlowLayout
+instance GObjectClass FlowLayout where
+  toGObject (FlowLayout r) = constrGObject (castForeignPtr r)
+  unsafeCastGObject (GObject o) = FlowLayout (castForeignPtr o)
 
 #endif
 

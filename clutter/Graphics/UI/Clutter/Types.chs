@@ -275,7 +275,7 @@ module Graphics.UI.Clutter.Types (
                                   Playable(..),
 #if CLUTTER_CHECK_VERSION(1,2,0)
   LayoutManager,
-  LayoutManagerClass(..),
+  LayoutManagerClass,
   newLayoutManager,
   withLayoutManager,
   withLayoutManagerClass

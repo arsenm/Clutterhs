@@ -59,25 +59,35 @@ module Graphics.UI.Clutter.LayoutManager (
   LayoutManager,
   LayoutManagerClass,
 
--- * Constructors
-
 -- * Methods
--- * Attributes
+  layoutManagerGetPreferredWidth,
+  layoutManagerGetPreferredHeight,
+  layoutManagerAllocate,
+  layoutManagerLayoutChanged,
+  layoutManagerSetContainer,
+--layoutManagerGetChildMeta,
+--layoutManagerChildSet,
+--layoutManagerChildSetProperty,
+--layoutManagerChildGetProperty,
+  layoutManagerBeginAnimation,
+  layoutManagerEndAnimation,
+  layoutManagerGetAnimationProgress,
+
 -- * Signals
+  layoutChanged
 #endif
   ) where
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
 
 {# import Graphics.UI.Clutter.Types #}
+{# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
 import Control.Monad (liftM)
 import System.Glib.Attributes
-
-
 
 
 -- | Computes the minimum and natural widths of the container
@@ -97,8 +107,11 @@ import System.Glib.Attributes
 --
 {# fun unsafe layout_manager_get_preferred_width as ^
   `(LayoutManagerClass manager, ContainerClass container)' =>
-    { withLayoutManager* `manager', withContainerClass* `container', `Float', alloca- `Float', alloca- `Float' } -> `()'  #}
-
+    { withLayoutManagerClass* `manager',
+      withContainerClass* `container',
+      `Float',
+      alloca- `Float',
+      alloca- `Float' } -> `()'  #}
 
 
 -- | Computes the minimum and natural heights of the container
@@ -120,9 +133,11 @@ import System.Glib.Attributes
 
 {# fun unsafe layout_manager_get_preferred_height as ^
   `(LayoutManagerClass manager, ContainerClass container)' =>
-    { withLayoutManager* `manager', withContainerClass* `container', `Float', alloca- `Float', alloca- `Float' } -> `()'  #}
-
-
+    { withLayoutManagerClass* `manager',
+      withContainerClass* `container',
+      `Float',
+      alloca- `Float',
+      alloca- `Float' } -> `()'  #}
 
 
 -- | Allocates the children of container given an area
@@ -158,7 +173,7 @@ import System.Glib.Attributes
 -- * Since 1.2
 --
 {# fun layout_manager_layout_changed as ^ `(LayoutManagerClass manager)' =>
-  { withManagerClass* `manager' } -> `()' #}
+  { withLayoutManagerClass* `manager' } -> `()' #}
 
 
 --CHECKME: What is this used for / I'm not sure to keep this. I'm
@@ -179,8 +194,7 @@ import System.Glib.Attributes
 --
 {# fun unsafe layout_manager_set_container as ^
   `(LayoutManagerClass manager, ContainerClass container)' =>
-    { withManagerClass* `manager', withContainerClass* `container' } -> `()' #}
-
+    { withLayoutManagerClass* `manager', withContainerClass* `container' } -> `()' #}
 
 
 -- {# fun unsafe layout_manager_get_child_meta
@@ -190,8 +204,6 @@ import System.Glib.Attributes
 -- {# fun unsafe layout_manager_child_get_property
 -- {# fun unsafe layout_manager_find_child_property
 -- {# fun unsafe layout_manager_list_child_properties
-
-
 
 
 -- | Begins an animation of duration milliseconds, using the provided
@@ -212,8 +224,8 @@ import System.Glib.Attributes
 --
 -- * Since 1.2
 --
-{# fun unsafe layout_manager_begin_animation as ^ `(LayoutManager manager)' =>
-  { withLayoutManagerClass* `manager', `Word', `Word' } -> `Alpha' newAlpha* #}
+{# fun unsafe layout_manager_begin_animation as ^ `(LayoutManagerClass manager)' =>
+  { withLayoutManagerClass* `manager', cIntConv `Word', cIntConv `Word' } -> `Alpha' newAlpha* #}
 
 
 -- | Ends an animation started by 'layoutManagerBeginAnimation'
@@ -224,7 +236,7 @@ import System.Glib.Attributes
 --
 -- * Since 1.2
 --
-{# fun unsafe layout_manager_end_animation as ^ `(LayoutManager manager)' =>
+{# fun unsafe layout_manager_end_animation as ^ `(LayoutManagerClass manager)' =>
   { withLayoutManagerClass* `manager' } -> `()' #}
 
 
@@ -239,7 +251,7 @@ import System.Glib.Attributes
 --
 -- * Since 1.2
 --
-{# fun unsafe layout_manager_get_animation_progress as ^ `(LayoutManager manager)' =>
+{# fun unsafe layout_manager_get_animation_progress as ^ `(LayoutManagerClass manager)' =>
   { withLayoutManagerClass* `manager' } -> `Double' #}
 
 

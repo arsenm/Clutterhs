@@ -69,9 +69,7 @@ import C2HS hiding (newForeignPtr)
 import System.Glib.GObject
 import System.Glib.Signals
 import System.Glib.GValue (GValue(GValue))
-import System.Glib.GList
 import System.Glib.Flags
-import System.Glib.FFI
 import Control.Monad (when, liftM2, join)
 import Control.Exception (bracket)
 

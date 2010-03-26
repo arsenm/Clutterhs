@@ -86,8 +86,6 @@ module Graphics.UI.Clutter.LayoutManager (
 {# import Graphics.UI.Clutter.Utility #}
 
 import C2HS
-import Control.Monad (liftM)
-import System.Glib.Attributes
 
 
 -- | Computes the minimum and natural widths of the container

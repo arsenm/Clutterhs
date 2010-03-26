@@ -85,11 +85,11 @@ module Graphics.UI.Clutter.Stage (
 
   stageGetActorAtPos,
 
-  stageEnsureCurrent,
-  stageEnsureViewport,
+--stageEnsureCurrent,
+--stageEnsureViewport,
 
-  stageEnsureRedraw,
-  stageQueueRedraw,
+--stageEnsureRedraw,
+--stageQueueRedraw,
 
 --stageEvent,
   stageSetKeyFocus,
@@ -221,6 +221,7 @@ import GHC.Arr
 {# fun unsafe stage_get_actor_at_pos as ^ `(StageClass stage)' =>
        { withStageClass* `stage', cFromEnum `PickMode', `Int', `Int'} -> `Actor' newActor* #}
 
+{-
 -- | This function essentially makes sure the right GL context is
 --   current for the passed stage. It is not intended to be used by
 --   applications.
@@ -236,12 +237,14 @@ import GHC.Arr
 -- system, like GTK+.
 {# fun unsafe stage_ensure_viewport as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 
+
 -- | Ensures that stage is redrawn
 --
 -- This function should not be called by applications: it is used when
 -- embedding a 'Stage' into a toolkit with another windowing
 -- system, like GTK+.
 {# fun unsafe stage_ensure_redraw as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
+
 
 -- | Queues a redraw for the passed stage.
 --
@@ -252,6 +255,8 @@ import GHC.Arr
 --
 -- This function is just a wrapper for 'actorQueueRedraw' and should probably go away.
 {# fun unsafe stage_queue_redraw as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
+
+-}
 
 --CHECKME this might fall under the category of low level event stuff we're not dealing with
 --{# fun unsafe stage_event as ^ `(StageClass stage)' => { withStageClass* `stage', withEvent* `Event' } -> `Bool' #}

@@ -133,7 +133,7 @@ module Graphics.UI.Clutter.Text (
   textPositionToCoords,
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
-  textSetPreeditString,
+--textSetPreeditString,
 #endif
 
 -- * Related Types
@@ -1061,6 +1061,7 @@ peekTripleFloatConv x y z = liftM3 (,,) (peekFloatConv x) (peekFloatConv y) (pee
 
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
+{-
 --CHECKME: I've never used Pango, and not really sure if this is good
 --also it seems weird.
 textSetPreeditString :: (TextClass self) => self -> String -> [PangoAttribute] -> Word -> IO ()
@@ -1070,6 +1071,7 @@ textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_p
                                                    pStr <- makeNewPangoString str
                                                    withAttrList pStr pattrs $ \attrPtr ->
                                                      func txtPtr strPtr attrPtr (cIntConv cpos)
+-}
 #endif
 
 

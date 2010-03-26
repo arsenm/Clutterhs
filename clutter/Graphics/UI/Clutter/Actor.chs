@@ -168,17 +168,17 @@ module Graphics.UI.Clutter.Actor (
   actorHideAll,
   actorRealize,
   actorUnrealize,
-  actorPaint,
+--actorPaint,
   actorQueueRedraw,
-  actorQueueRelayout,
+--actorQueueRelayout,
   actorDestroy,
 
   actorShouldPickPaint,
   actorMap,
   actorUnmap,
-  actorAllocate,
-  actorAllocatePreferredSize,
-  actorAllocateAvailableSize,
+--actorAllocate,
+--actorAllocatePreferredSize,
+--actorAllocateAvailableSize,
   actorGetAllocationBox,
   actorGetAllocationGeometry,
   actorGetAllocationVertices,
@@ -224,7 +224,7 @@ module Graphics.UI.Clutter.Actor (
   actorHasClip,
   actorGetClip,
 
-  actorSetParent,
+--actorSetParent,
   actorGetParent,
 
   actorReparent,
@@ -273,7 +273,7 @@ module Graphics.UI.Clutter.Actor (
   actorGetPangoContext,
   actorCreatePangoContext,
   actorCreatePangoLayout,
-  actorIsInClonePaint,
+--actorIsInClonePaint,
 
 --actorBoxNew,
 --actorBoxCopy,
@@ -489,7 +489,7 @@ import Graphics.UI.Gtk.Pango.Types
 --
 {# fun actor_unrealize as ^ `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
-
+{-
 -- | Renders the actor to display.
 --
 -- This function should not be called directly by applications. Call
@@ -498,6 +498,7 @@ import Graphics.UI.Gtk.Pango.Types
 -- This function will emit the 'paint' signal.
 --
 {# fun actor_paint as ^ `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
+-}
 
 -- | Queues up a redraw of an actor and any children. The redraw
 --   occurs once the main loop becomes idle (after the current batch
@@ -513,6 +514,8 @@ import Graphics.UI.Gtk.Pango.Types
 --
 {# fun actor_queue_redraw as ^ `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
+
+{-
 -- | Indicates that the actor's size request or other layout-affecting
 --   properties may have changed. This function is used inside
 --   'Actor' subclass implementations, not by applications
@@ -524,6 +527,7 @@ import Graphics.UI.Gtk.Pango.Types
 -- * Since 0.8
 --
 {# fun actor_queue_relayout as ^ `(ActorClass self)' => { withActorClass* `self'} -> `()' #}
+-}
 
 -- | Destroys an actor. When an actor is destroyed, it will break any
 --   references it holds to other objects. If the actor is inside a
@@ -600,7 +604,7 @@ import Graphics.UI.Gtk.Pango.Types
 --
 {# fun unsafe actor_unmap as ^ `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
-
+{-
 -- | Called by the parent of an actor to assign the actor its
 --   size. Should never be called by applications (except when
 --   implementing a container or layout manager).
@@ -649,6 +653,7 @@ import Graphics.UI.Gtk.Pango.Types
                                 cFromFlags `[AllocationFlags]'
                               } -> `()' #}
 
+
 -- | Allocates self taking into account the Actor's preferred
 --   size, but limiting it to the maximum available width and height
 --   provided.
@@ -681,6 +686,7 @@ import Graphics.UI.Gtk.Pango.Types
                                 `Float',
                                 cFromFlags `[AllocationFlags]'
                               } -> `()' #}
+-}
 
 
 -- | Gets the layout box an actor has been assigned. The allocation
@@ -1307,6 +1313,7 @@ actorGetAllocationVertices self ancestor = let func = {# call unsafe actor_get_a
 {# fun unsafe actor_remove_clip as ^
    `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
+{-
 -- | Sets the parent of self to parent. The opposite function is
 --  'actorUnparent'.
 --
@@ -1318,6 +1325,8 @@ actorGetAllocationVertices self ancestor = let func = {# call unsafe actor_get_a
 --
 {# fun unsafe actor_set_parent as ^
    `(ActorClass child, ActorClass parent)' => { withActorClass* `child', withActorClass* `parent' } -> `()' #}
+
+-}
 
 -- | Retrieves the parent of self.
 {# fun unsafe actor_get_parent as ^
@@ -1818,7 +1827,7 @@ actorCreatePangoLayout act str = let func = {# call unsafe actor_create_pango_la
                                          psRef <- newIORef ps
                                          return (PangoLayout psRef pl)
 
-
+{-
 
 -- | Checks whether self is being currently painted by a 'Clone'
 --
@@ -1835,6 +1844,7 @@ actorCreatePangoLayout act str = let func = {# call unsafe actor_create_pango_la
 --
 {# fun unsafe actor_is_in_clone_paint as ^
        `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+-}
 
 -- | Sets an anchor point for self. The anchor point is a point in the
 --   coordinate space of an actor to which the actor position within

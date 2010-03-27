@@ -115,6 +115,13 @@ module Graphics.UI.Clutter.Stage (
   stageSetFog,
   stageGetFog,
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  stageSetUseAlpha,
+  stageGetUseAlpha,
+  stageSetMinimumSize,
+  stageGetMinimumSize,
+#endif
+
 -- * Attributes
   stageColor,
   stageCursorVisible,
@@ -126,17 +133,29 @@ module Graphics.UI.Clutter.Stage (
   stageUseFog,
   stageUserResizable,
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  stageUseAlpha,
+  stageKeyFocus,
+#endif
+
 -- * Signals
 --FIXME: Export conflicts with Text's signals and probably other signals
   activate,
   deactivate,
   fullscreen,
-  unfullscreen
+  unfullscreen,
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+-- * Events
+  deleteEvent
+#endif
   ) where
 
 {# import Graphics.UI.Clutter.Enums #}
 {# import Graphics.UI.Clutter.Types #}
+{# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 {# import Graphics.UI.Clutter.Actor #}
+{# import Graphics.UI.Clutter.Event #}
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.Utility #}
 
@@ -212,8 +231,6 @@ import GHC.Arr
 {# fun unsafe stage_show_cursor as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
 -- | Makes the cursor invisible on the stage window
 {# fun unsafe stage_hide_cursor as ^ `(StageClass stage)' => { withStageClass* `stage' } -> `()' #}
-
---CHECKME: Should I even include non-application functions?
 
 -- | Checks the scene at the coordinates x and y and returns a pointer to the 'Actor' at those coordinates.
 --
@@ -351,6 +368,84 @@ stageReadPixels stage x y w h = let cx = cIntConv x
     { withStageClass* `stage' } -> `Bool' #}
 
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | Sets whether the stage should honour the 'actorOpacity' and the
+-- alpha channel of the 'stageColor'
+--
+-- [@stage@] a 'Stage'
+--
+-- [@use_alpha@] whether the stage should honour the opacity or the
+-- alpha channel of the stage color
+--
+-- * Since 1.2
+--
+{# fun unsafe stage_set_use_alpha as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', `Bool' } -> `()' #}
+
+
+-- | Retrieves the value set using 'stageSetUseAlpha'
+--
+-- [@stage@] a 'Stage'
+--
+-- [@Returns@] @True@ if the stage should honour the opacity and the
+-- alpha channel of the stage color
+--
+-- * Since 1.2
+--
+{# fun unsafe stage_get_use_alpha as ^ `(StageClass stage)' =>
+    { withStageClass* `stage' } -> `Bool' #}
+
+
+
+
+
+
+
+
+
+-- | Sets the minimum size for a stage window, if the default backend
+-- uses 'Stage' inside a window
+--
+-- If the current size of stage is smaller than the minimum size, the
+-- stage will be resized to the new width and height
+--
+-- This function has no effect if stage is fullscreen
+--
+-- [@stage@] a 'Stage'
+--
+-- [@width@] width, in pixels
+--
+-- [@height@] height, in pixels
+--
+-- * Since 1.2
+--
+{# fun unsafe stage_set_minimum_size as ^ `(StageClass stage)' =>
+    { withStageClass* `stage', cIntConv `Word', cIntConv `Word' } -> `()' #}
+
+
+-- | Retrieves the minimum size for a stage window as set using
+-- 'stageSetMinimumSize'.
+--
+-- The returned size may not correspond to the actual minimum size and
+-- it is specific to the 'Stage' implementation inside the Clutter
+-- backend
+--
+-- [@stage@] a 'Stage'
+--
+-- [@Returns@] (width, height)
+--
+-- * Since 1.2
+--
+{# fun unsafe stage_get_minimum_size as ^ `(StageClass stage)' =>
+    { withStageClass* `stage',
+      alloca- `Word' peekIntConv*,
+      alloca- `Word' peekIntConv*
+    } -> `()' #}
+
+#endif
+
+
 -- | Retrieves the stage perspective.
 {# fun unsafe stage_get_perspective as ^ `(StageClass stage)' =>
     { withStageClass* `stage', alloca- `Perspective' peek* } -> `()' #}
@@ -456,6 +551,35 @@ stageCursorVisible = newAttrFromBoolProperty "cursor-visible"
 stageFullscreenSet :: (StageClass stage) => ReadAttr stage Bool
 stageFullscreenSet = readAttrFromBoolProperty "fullscreen-set"
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+--CHECKME: ActorClass here? Would be sort of broken
+
+-- | The Actor that will receive key events from the underlying
+-- windowing system.
+--
+-- If @Nothing@, the 'Stage' will receive the events.
+--
+-- * Since 1.2
+--
+stageKeyFocus :: (StageClass stage) => Attr stage (Maybe Actor)
+stageKeyFocus = newAttrFromMaybeObjectProperty "key-focus" CGT.actor
+
+
+-- | Whether the 'Stage' should honour the alpha component of the
+-- "color" property when painting. If Clutter is run under a
+-- compositing manager this will result in the stage being blended
+-- with the underlying window(s)
+--
+-- Default value: @False@
+--
+-- * Since 1.2
+--
+stageUseAlpha :: (StageClass stage) => Attr stage Bool
+stageUseAlpha = newNamedAttr "use-alpha" stageGetUseAlpha stageSetUseAlpha
+
+#endif
+
 -- | Whether the stage should be rendered in an offscreen buffer.
 --
 -- * Warning
@@ -535,6 +659,32 @@ deactivate :: (StageClass stage) => Signal stage (IO ())
 deactivate = Signal (connect_NONE__NONE "deactivate")
 
 
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+-- | The ::'deleteEvent' signal is emitted when the user closes a
+-- 'Stage' window using the window controls.
+--
+-- Clutter by default will call 'clutterMainQuit' if stage is the
+-- default stage, and 'actorDestroy' for any other stage.
+--
+-- It is possible to override the default behaviour by connecting a
+-- new handler and returning @True@ there.
+--
+-- * Note
+--
+-- This signal is emitted only on Clutter backends that embed 'Stage'
+-- in native windows. It is not emitted for backends that use a static
+-- frame buffer.
+--
+--
+-- * Since 1.2
+--
+deleteEvent :: ActorClass self => Signal self (EventM EDelete Bool)
+deleteEvent = Signal (eventM "delete-event")
+
+#endif
+
+
 -- | The 'fullscreen' signal is emitted when the stage is made fullscreen.
 fullscreen :: (StageClass stage) => Signal stage (IO ())
 fullscreen = Signal (connect_NONE__NONE "fullscreen")
@@ -542,5 +692,4 @@ fullscreen = Signal (connect_NONE__NONE "fullscreen")
 -- | The 'unfullscreen' signal is emitted when the stage leaves a fullscreen state.
 unfullscreen :: (StageClass stage) => Signal stage (IO ())
 unfullscreen = Signal (connect_NONE__NONE "unfullscreen")
-
 

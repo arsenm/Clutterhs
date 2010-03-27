@@ -49,6 +49,9 @@ module Graphics.UI.Clutter.Event (
   EScroll,
   EStageState,
   ECrossing,
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  EDelete,
+#endif
 
 -- * Accessor functions for event information
   eventCoordinates,
@@ -132,6 +135,9 @@ data EStageState = EStageState
 
 -- | A tag for /Crossing/ events.
 data ECrossing = ECrossing
+
+-- | A tag for /Delete/ events.
+data EDelete = EDelete
 
 eventM :: ActorClass a => SignalName ->
   ConnectAfter -> a -> (EventM t Bool) -> IO (ConnectId a)

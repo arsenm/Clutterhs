@@ -62,6 +62,13 @@ module Graphics.UI.Clutter.Media (
   mediaGetDuration,
   mediaSetFilename,
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  mediaSetSubtitleURI,
+  mediaGetSubtitleURI,
+  mediaSetSubtitleFontName,
+  mediaGetSubtitleFontName,
+#endif
+
 -- * Attributes
   mediaAudioVolume,
   mediaBufferFill,
@@ -70,7 +77,10 @@ module Graphics.UI.Clutter.Media (
   mediaPlaying,
   mediaProgress,
   mediaUri,
-
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  mediaSubtitleURI,
+  mediaSubtitleFontName,
+#endif
 -- * Signals
   eos,
   error
@@ -218,6 +228,65 @@ import System.Glib.Attributes
        `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
 
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | Sets the location of a subtitle file to display while playing
+-- media.
+--
+-- [@media@] a 'Media'
+--
+-- [@uri@] the URI of a subtitle file
+--
+-- * Since 1.2
+--
+{# fun unsafe media_set_subtitle_uri as mediaSetSubtitleURI
+  `(MediaClass m)' => { withMediaClass* `m', withMaybeString* `Maybe String' } -> `()' #}
+
+
+-- | Retrieves the URI of the subtitle file in use.
+--
+-- [@media@] a 'Media'
+--
+-- [@Returns@] the URI of the subtitle file.
+--
+-- * Since 1.2
+--
+{# fun unsafe media_get_subtitle_uri as mediaGetSubtitleURI
+  `(MediaClass m)' => { withMediaClass* `m' } -> `Maybe String' peekNFreeMaybeString* #}
+
+
+-- | Sets the font used by the subtitle renderer. The font_name string
+-- must be either @Nothing@, which means that the default font name of
+-- the underlying implementation will be used; or must follow the
+-- grammar recognized by 'Pango.fontDescriptionFromString' like:
+--
+-- > 'mediaSetSubtitleFontName media "Sans 24pt"
+--
+-- [@media@] a 'Media'
+--
+-- [@font_name@] @Just@ a font name, or @Nothing@ to set the default
+-- font name
+--
+-- * Since 1.2
+--
+{# fun unsafe media_set_subtitle_font_name as ^
+  `(MediaClass m)' => { withMediaClass* `m', withMaybeString* `Maybe String' } -> `()' #}
+
+-- | Retrieves the font name currently used.
+--
+-- [@media@] a 'Media'
+--
+-- [@Returns@] a string containing the font name.
+--
+-- * Since 1.2
+--
+{# fun unsafe media_get_subtitle_font_name as ^
+  `(MediaClass m)' => { withMediaClass* `m' } -> `Maybe String' peekNFreeMaybeString* #}
+
+
+#endif
+
+
 -- attributes
 
 mediaAudioVolume :: (MediaClass media) => Attr media Double
@@ -258,4 +327,29 @@ eos = Signal (connect_NONE__NONE "eos")
 --
 error :: Signal Timeline (GError -> IO ())
 error = Signal (connect_BOXED__NONE "error" peek)
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | The font used to display subtitles. The font description has to
+-- follow the same grammar as the one recognized by
+-- Pango.fontDescriptionFromString'.
+--
+-- Default value: @Nothing@
+--
+-- * Since 1.2
+--
+mediaSubtitleFontName :: (MediaClass self) => Attr self (Maybe String)
+mediaSubtitleFontName = newNamedAttr "subtitle-font-name" mediaGetSubtitleFontName mediaSetSubtitleFontName
+
+
+-- | The location of a subtitle file, expressed as a valid URI.
+--
+-- Default value: @Nothing@
+--
+-- * Since 1.2
+--
+mediaSubtitleURI :: (MediaClass self) => Attr self (Maybe String)
+mediaSubtitleURI = newNamedAttr "subtitle-uri" mediaGetSubtitleURI mediaSetSubtitleURI
+
+#endif
 

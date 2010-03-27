@@ -75,7 +75,6 @@ module Graphics.UI.Clutter.Interval (
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.StoreValue #}
 {# import Graphics.UI.Clutter.Utility #}
-{# import Graphics.UI.Clutter.AnimOp #}
 
 import C2HS
 import Control.Monad (liftM)

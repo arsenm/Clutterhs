@@ -35,6 +35,7 @@ module Graphics.UI.Clutter.Utility (
 
   peekNFree,
   peekNFreeString,
+  peekNFreeMaybeString,
   maybeString,
   withMaybeString,
   maybeNullNew,
@@ -104,6 +105,8 @@ peekNFreeString p = do
                 free p
                 return ret
 
+peekNFreeMaybeString :: Ptr CChar -> IO (Maybe String)
+peekNFreeMaybeString = maybeNullNew peekNFreeString
 
 maybeNewActor :: Ptr Actor -> IO (Maybe Actor)
 maybeNewActor = maybeNullNew newActor

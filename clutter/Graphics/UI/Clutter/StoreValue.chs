@@ -32,7 +32,7 @@
              ScopedTypeVariables,
              FlexibleInstances,
              FunctionalDependencies,
-             EmptyDataDecls                #-} -- If this is on next line, GHC panic
+             EmptyDataDecls             #-}
 
 #include <clutter/clutter.h>
 #include <glib.h>
@@ -321,12 +321,13 @@ instance GVPred Int RegularGValue
 instance GVPred Word8 RegularGValue
 instance GVPred Int8 RegularGValue
 instance GVPred Bool RegularGValue
---Enum
+--Enum FIXME: Doing enum this way isn't good enough
 --Flags
 instance GVPred Float RegularGValue
 instance GVPred Double RegularGValue
 instance GVPred (Maybe String) RegularGValue
 instance GVPred Color RegularGValue
+instance (Enum a) => GVPred a RegularGValue
 
 data IsGObject
 data RegularGValue
@@ -356,12 +357,12 @@ instance GenericValueClass' RegularGValue Bool where
   unsafeExtractGenericValue' _ (GVboolean x) = x
   unsafeExtractGenericValue' _ _ = typeMismatchError
 
+instance (Enum a) => GenericValueClass' RegularGValue a where
+  toGenericValue'      _ x         = GVenum (fromEnum x)
+  unsafeExtractGenericValue' _ (GVenum x) = toEnum x
+  unsafeExtractGenericValue' _ _ = typeMismatchError
+
 -- TODO: Enum, Flags
-  {-
-instance GenericValueClass' RegularGValue Bool where
-  toGenericValue'      _ x         = GVboolean x
-  unsafeExtractGenericValue' _ (GVboolean x) = x
--}
 
 instance GenericValueClass' RegularGValue Float where
   toGenericValue'      _ x         = GVfloat x

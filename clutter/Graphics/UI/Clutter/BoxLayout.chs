@@ -23,6 +23,8 @@
 
 {# context lib="clutter" prefix="clutter" #}
 
+-- | 'BoxLayout' — A layout manager arranging children on a single
+-- line
 module Graphics.UI.Clutter.BoxLayout (
 #if CLUTTER_CHECK_VERSION(1,2,0)
 -- * Description

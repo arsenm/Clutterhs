@@ -56,6 +56,10 @@ module Graphics.UI.Clutter.Utility (
   clutterNewAttrFromUIntProperty,
   unsafeCastActor,
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  unsafeCastLayoutManager,
+#endif
+
   gvPtrToRealValue
  ) where
 
@@ -177,6 +181,9 @@ clutterObjectSetPropertyUInt = objectSetPropertyInternal GType.uint valueSetUInt
 
 unsafeCastActor :: (ActorClass a, ActorClass b) => a -> b
 unsafeCastActor = unsafeCastGObject . toGObject
+
+unsafeCastLayoutManager :: (LayoutManagerClass a, LayoutManagerClass b) => a -> b
+unsafeCastLayoutManager = unsafeCastGObject . toGObject
 
 gvPtrToRealValue :: (GenericValueClass a) => GenericValuePtr -> IO a
 gvPtrToRealValue = liftM unsafeExtractGenericValue . valueGetGenericValue . GValue . castPtr

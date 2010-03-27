@@ -302,8 +302,15 @@ module Graphics.UI.Clutter.Types (
   BoxLayoutClass,
   newBoxLayout,
   withBoxLayout,
-  withBoxLayoutClass
+  withBoxLayoutClass,
 
+  Box,
+  BoxRaw,
+  BoxClass,
+  toBox,
+  withBox,
+  newBox,
+  newBoxRaw
 #endif
                                  ) where
 
@@ -479,7 +486,6 @@ newRectangle a = makeNewActor (Rectangle, objectUnref) $ return (castPtr a)
 
 instance RectangleClass Rectangle
 instance ActorClass Rectangle
-
 instance GObjectClass Rectangle where
   toGObject (Rectangle r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = Rectangle (castForeignPtr o)
@@ -1563,6 +1569,40 @@ instance LayoutManagerClass BoxLayout
 instance GObjectClass BoxLayout where
   toGObject (BoxLayout r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = BoxLayout (castForeignPtr o)
+
+
+-- *** Box
+
+{# pointer *ClutterBox as BoxRaw foreign newtype #}
+
+-- Track the type of the interval with the 1st field
+data Box a = Box a BoxRaw
+
+class GObjectClass o => BoxClass o
+toBox :: (BoxClass o, LayoutManagerClass a) => o -> (Box a)
+toBox = unsafeCastGObject . toGObject
+
+instance (LayoutManagerClass a) => BoxClass (Box a)
+instance (LayoutManagerClass a) => ActorClass (Box a)
+instance (LayoutManagerClass a) => GObjectClass (Box a) where
+  toGObject (Box _ (BoxRaw i)) = constrGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Box (undefined::a) (BoxRaw (castForeignPtr o))
+
+
+mkBox :: (LayoutManagerClass a) => a -> BoxRaw -> Box a
+mkBox _ raw = Box (undefined :: a) raw
+
+withBox (Box _ raw) = withBoxRaw raw
+
+newBoxRaw a = makeNewGObject (BoxRaw, objectUnref) $ return (castPtr a)
+
+newBox manager boxptr = liftM (mkBox manager) (newBoxRaw boxptr)
+
+instance ActorClass BoxRaw
+instance GObjectClass BoxRaw where
+  toGObject (BoxRaw i) = constrGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = BoxRaw (castForeignPtr o)
+
 
 #endif
 

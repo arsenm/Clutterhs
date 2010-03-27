@@ -78,6 +78,7 @@ Library
                    Graphics.UI.Clutter.Types,
                    Graphics.UI.Clutter.GTypes,
                    Graphics.UI.Clutter.StoreValue,
+                   Graphics.UI.Clutter.AnimOp,
                    Graphics.UI.Clutter.Signals,
                    Graphics.UI.Clutter.Utility,
                    Graphics.UI.Clutter.Event,

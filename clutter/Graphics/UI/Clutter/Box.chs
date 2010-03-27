@@ -48,7 +48,7 @@ module Graphics.UI.Clutter.Box (
   boxGetLayoutManager,
   boxSetColor,
   boxGetColor,
---boxPack,
+  boxPack,
 --boxPackAfter,
 --boxPackBefore,
 --boxPackAt,
@@ -64,10 +64,12 @@ module Graphics.UI.Clutter.Box (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
+{# import Graphics.UI.Clutter.StoreValue #}
+{# import Graphics.UI.Clutter.AnimOp #}
 
 import System.Glib.Attributes
 import System.Glib.Properties
-import Control.Monad (liftM)
+import Control.Monad (liftM, foldM_)
 import C2HS
 
 -- | Creates a new 'Box'. The children of the box will be layed out by
@@ -149,6 +151,42 @@ boxGetColor b = withBox b $ \bPtr -> do
             Just `fmap` peek cPtr
      else return Prelude.Nothing
 
+
+
+-- | Adds actor to box and sets layout properties at the same time, if
+-- the 'LayoutManager' used by box has them
+--
+-- This function is a wrapper around 'containerAddActor' and
+-- 'layoutManagerChildSet'
+--
+-- [@box@] a 'Box'
+--
+-- [@actor@] an 'Actor'
+--
+-- [@properties@] List of attributes and values to set
+--
+-- * Since 1.2
+--
+boxPack :: (LayoutManagerClass a, ActorClass actor) => Box a -> actor -> [AnimOp a] -> IO ()
+boxPack box actor us =
+    let (names, gvals) = toPropertyLists us
+        boxPackv = {# call unsafe box_packv #}
+    in
+    withMany withCString names $ \cstrs ->
+      withArrayLen cstrs $ \len strptr ->
+        withBox box $ \boxPtr ->
+          withActorClass actor $ \actptr ->
+            withArray gvals $ \gvPtr -> do
+              boxPackv boxPtr actptr (cIntConv len) strptr gvPtr
+              foldM_ unsetOneGVal gvPtr gvals
+
+
+
+
+
+
+
+-- Attributes
 
 -- | The color to be used to paint the background of the
 -- 'Box'. Setting this property will set the 'boxColorSet' property as

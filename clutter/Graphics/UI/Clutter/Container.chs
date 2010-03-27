@@ -69,9 +69,9 @@ module Graphics.UI.Clutter.Container (
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.Animation #}
 {# import Graphics.UI.Clutter.StoreValue #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.AnimOp #}
 
 import C2HS
 import Prelude

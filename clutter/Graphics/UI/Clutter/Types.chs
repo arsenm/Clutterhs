@@ -338,6 +338,7 @@ import System.Glib.Signals
 import System.Glib.GValue (GValue(GValue))
 import System.Glib.GList
 import System.Glib.FFI
+import System.Glib.Attributes
 import Control.Monad (when, liftM)
 import Control.Exception (bracket)
 
@@ -398,6 +399,7 @@ type Unichar = Word32
 type GID = Word32
 type Timestamp = Word
 type DeviceID = Int
+
 
 {# pointer *ClutterUnits as Units foreign newtype #}
 

@@ -108,8 +108,8 @@ import C2HS
     { withLayoutManagerClass* `manager',
       withContainerClass* `container',
       `Float',
-      alloca- `Float',
-      alloca- `Float' } -> `()'  #}
+      alloca- `Float' peekFloatConv*,
+      alloca- `Float' peekFloatConv* } -> `()'  #}
 
 
 -- | Computes the minimum and natural heights of the container
@@ -134,8 +134,8 @@ import C2HS
     { withLayoutManagerClass* `manager',
       withContainerClass* `container',
       `Float',
-      alloca- `Float',
-      alloca- `Float' } -> `()'  #}
+      alloca- `Float' peekFloatConv*,
+      alloca- `Float' peekFloatConv* } -> `()'  #}
 
 
 -- | Allocates the children of container given an area

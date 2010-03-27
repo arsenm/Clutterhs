@@ -131,6 +131,7 @@ module Graphics.UI.Clutter.Animation (
 {# import Graphics.UI.Clutter.Signals #}
 {# import Graphics.UI.Clutter.StoreValue #}
 {# import Graphics.UI.Clutter.Utility #}
+{# import Graphics.UI.Clutter.AnimOp #}
 
 import C2HS
 import Prelude
@@ -498,21 +499,6 @@ actorGetAnimation actor =  withActorClass actor $ \actorPtr -> do
 --
 --started :: (GObjectClass a) => Signal (Animation a) (IO ())
 
--- CHECKME? allow WriteAttr?  Also, Animatable class? Not all
---attributes animatable. Especially the convenient ones I added like
---position and size
---TODO: Rename to be more general, since other stuff uses it too
---data AnimOp o = forall a b. ReadWriteAttr o a b :-> b
-data AnimOp o = forall a b. (GenericValueClass b) => ReadWriteAttr o a b :-> b
-
-infixr 0 :->
-
---TODO: Rename these
-toListAnim :: (ActorClass o) => [AnimOp o] -> ([String], [GenericValue])
-toListAnim = foldr step ([], [])
-    where step (attr :-> val) (strs, vals) = (show attr:strs, toGenericValue val:vals)
-
-
 
 -- | Animates the given list of attributes of actor between the
 --   current value for each property and a new final value. The
@@ -538,7 +524,7 @@ toListAnim = foldr step ([], [])
 animate :: (ActorClass actor) => actor -> AnimationMode -> Int -> [AnimOp actor] -> IO (Animation actor)
 animate _ _ _ [] = error "Need arguments to animate"
 animate actor mode duration us =
-    let (names, gvals) = toListAnim us
+    let (names, gvals) = toPropertyLists us
         animatev = {# call actor_animatev #}
         cmode = cFromEnum mode
         cdur = cIntConv duration
@@ -579,7 +565,7 @@ animate actor mode duration us =
 animateWithAlpha :: (ActorClass actor) => actor -> Alpha -> [AnimOp actor] -> IO (Animation actor)
 animateWithAlpha _ _ [] = error "Need arguments to animate with alpha"
 animateWithAlpha actor alpha us =
-    let (names, gvals) = toListAnim us
+    let (names, gvals) = toPropertyLists us
         animatev = {# call actor_animate_with_alphav #}
     in
     withMany withCString names $ \cstrs ->
@@ -622,7 +608,7 @@ animateWithTimeline :: (ActorClass actor) =>
                        -> IO (Animation actor)
 animateWithTimeline _ _ _ [] = error "Need arguments to animate with timeline"
 animateWithTimeline actor mode tml us =
-    let (names, gvals) = toListAnim us
+    let (names, gvals) = toPropertyLists us
         animatev = {# call actor_animate_with_timelinev #}
         cmode = cFromEnum mode
     in

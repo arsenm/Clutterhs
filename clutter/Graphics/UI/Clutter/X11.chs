@@ -59,7 +59,13 @@ module Graphics.UI.Clutter.X11 (
   X11XInputEventTypes(..),
   X11TexturePixmap,
   X11TexturePixmapClass,
-  toX11TexturePixmap
+  toX11TexturePixmap,
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  x11SetUseARGBVisual,
+  x11GetUseARGBVisual,
+--x11GetVisualInfo
+#endif
 ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -368,4 +374,56 @@ instance GObjectClass X11TexturePixmap where
 
 --type CX11FilterFunc = XEventPtr -> ClutterEventPtr -> IO ()
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | Sets whether the Clutter X11 backend should request ARGB visuals
+-- by default or not.
+--
+-- By default, Clutter requests RGB visuals.
+--
+-- * Note
+--
+-- If no ARGB visuals are found, the X11 backend will fall back to
+-- requesting a RGB visual instead.
+--
+-- ARGB visuals are required for the 'stageUseAlpha' property to work.
+--
+-- * Note
+--
+-- This function can only be called once, and before 'clutterInit' is
+-- called.
+--
+--
+-- [@use_argb@] @True@ if ARGB visuals should be requested by default
+--
+-- * Since 1.2
+--
+{# fun unsafe x11_set_use_argb_visual as  x11SetUseARGBVisual { `Bool' } -> `()' #}
+
+
+-- | Retrieves whether the Clutter X11 backend is using ARGB visuals
+-- by default
+--
+-- [@Returns@] @True@ if ARGB visuals are queried by default
+--
+-- * Since 1.2
+--
+{# fun unsafe x11_get_use_argb_visual as x11GetUseARGBVisual { } -> `Bool' #}
+
+{-
+
+not in xlib
+
+-- | Retrieves the XVisualInfo used by the Clutter X11 backend.
+--
+-- [@Returns@] a XVisualInfo, or None. The returned value should be
+-- freed using XFree() when done
+--
+-- * Since 1.2
+--
+
+ {# fun unsafe x11_get_visual_info as ^ { } ->
+-}
+
+#endif
 

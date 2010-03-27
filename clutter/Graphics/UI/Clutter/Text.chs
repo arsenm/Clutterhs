@@ -40,7 +40,6 @@ module Graphics.UI.Clutter.Text (
   Text,
   TextClass,
 
-
 -- * Constructors
   textNew,
   textNewFull,
@@ -134,6 +133,8 @@ module Graphics.UI.Clutter.Text (
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
 --textSetPreeditString,
+  textSetFontDescription,
+  textGetFontDescription,
 #endif
 
 -- * Related Types
@@ -169,10 +170,18 @@ module Graphics.UI.Clutter.Text (
   textText,
   textUseMarkup,
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  textFontDescription,
+#endif
+
 -- * Signals
   activate,
   cursorEvent,
-  textChanged
+  textChanged,
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  deleteText,
+--insertText
+#endif
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
@@ -189,7 +198,7 @@ import Control.Monad (liftM, liftM3)
 import Data.IORef
 
 import Graphics.UI.Gtk.Types (PangoLayoutRaw, mkPangoLayoutRaw)
-import Graphics.UI.Gtk.Pango.Types (PangoLayout(..), PangoAttribute, makeNewPangoString)
+import Graphics.UI.Gtk.Pango.Types (PangoLayout(..), PangoAttribute, makeNewPangoString, FontDescription(..), makeNewFontDescription)
 import Graphics.UI.Gtk.Pango.Layout (LayoutWrapMode(..), LayoutAlignment)
 import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
 
@@ -1061,7 +1070,43 @@ peekTripleFloatConv x y z = liftM3 (,,) (peekFloatConv x) (peekFloatConv y) (pee
 
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
+
+{# pointer *PangoFontDescription as FontDescriptionPtr foreign -> FontDescription nocode #}
+
+-- | Sets font_desc as the font description for a 'Text'
+--
+-- The 'Pango.FontDescription' is copied by the 'Text'
+--
+-- [@self@] a 'Text'
+--
+-- [@font_desc@] a 'Pango.FontDescription'
+--
+-- * Since 1.2
+--
+{# fun unsafe text_set_font_description as ^
+   `(TextClass self)' => { withTextClass* `self',
+                           withFontDescription* `FontDescription' } -> `()' #}
+
+withFontDescription :: FontDescription -> (Ptr FontDescription -> IO a) -> IO a
+withFontDescription (FontDescription p) = withForeignPtr p
+
+{# fun unsafe text_get_font_description as ^
+   `(TextClass self)' => { withTextClass* `self' }
+      -> `FontDescription' makeNewFontDescription* #}
+
+
+-- | The 'FontDescription' that should be used by the 'Text'
+--
+-- If you have a string describing the font then you should look at
+-- 'textFontName' instead
+--
+-- * Since 1.2
+--
+textFontDescription :: (TextClass self) => Attr self FontDescription
+textFontDescription = newNamedAttr "font-description" textGetFontDescription textSetFontDescription
+
 {-
+
 --CHECKME: I've never used Pango, and not really sure if this is good
 --also it seems weird.
 textSetPreeditString :: (TextClass self) => self -> String -> [PangoAttribute] -> Word -> IO ()
@@ -1072,6 +1117,8 @@ textSetPreeditString text str pattrs cpos = let func = {# call unsafe text_set_p
                                                    withAttrList pStr pattrs $ \attrPtr ->
                                                      func txtPtr strPtr attrPtr (cIntConv cpos)
 -}
+
+
 #endif
 
 
@@ -1362,4 +1409,23 @@ cursorEvent = Signal (connect_BOXED__NONE "cursor-event" peek)
 textChanged :: Signal Text (IO ())
 textChanged = Signal (connect_NONE__NONE "text-changed")
 
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | This signal is emitted when text is deleted from the actor by the
+-- user. It is emitted before self text changes.
+--
+-- [@start_pos@] the starting position
+--
+-- [@end_pos@] the end position
+--
+-- * Since 1.2
+--
+deleteText :: Signal Text (Int -> Int -> IO ())
+deleteText = Signal (connect_INT_INT__NONE "delete-text")
+
+--TODO:
+--insertText :: Signal Text (String -> Int -> IO String)
+
+#endif
 

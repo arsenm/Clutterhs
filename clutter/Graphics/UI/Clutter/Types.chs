@@ -728,6 +728,11 @@ withInterval (Interval _ raw) = withIntervalRaw raw
 
 newIntervalRaw a = makeNewGObject (IntervalRaw, objectUnref) $ return (castPtr a)
 
+instance GObjectClass (Interval a) where
+  toGObject (Interval _ (IntervalRaw i)) = constrGObject (castForeignPtr i)
+  unsafeCastGObject (GObject o) = Interval (undefined::a) (IntervalRaw (castForeignPtr o))
+
+
 instance GObjectClass IntervalRaw where
   toGObject (IntervalRaw i) = constrGObject (castForeignPtr i)
   unsafeCastGObject (GObject o) = IntervalRaw (castForeignPtr o)

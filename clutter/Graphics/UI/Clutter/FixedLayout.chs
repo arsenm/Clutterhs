@@ -59,10 +59,6 @@ module Graphics.UI.Clutter.FixedLayout (
 #if CLUTTER_CHECK_VERSION(1,2,0)
 
 {# import Graphics.UI.Clutter.Types #}
-{# import Graphics.UI.Clutter.Enums #}
-{# import Graphics.UI.Clutter.Signals #}
-{# import Graphics.UI.Clutter.Utility #}
-
 import C2HS
 
 -- | Creates a new 'FixedLayout'

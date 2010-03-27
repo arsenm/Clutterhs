@@ -117,12 +117,8 @@ module Graphics.UI.Clutter.BoxLayout (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Enums #}
-{# import Graphics.UI.Clutter.Signals #}
-{# import Graphics.UI.Clutter.Utility #}
 
 import System.Glib.Attributes
-import System.Glib.Properties
-
 import C2HS
 
 

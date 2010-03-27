@@ -170,7 +170,17 @@ module Graphics.UI.Clutter.Actor (
   actorUnrealize,
 --actorPaint,
   actorQueueRedraw,
---actorQueueRelayout,
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  actorQueueRelayout,
+  actorSetRequestMode,
+  actorGetRequestMode,
+  actorSetTextDirection,
+  actorGetTextDirection,
+  actorHasPointer,
+  actorBoxClampToPixel,
+  actorBoxInterpolate,
+#endif
+  actorQueueRelayout,
   actorDestroy,
 
   actorShouldPickPaint,
@@ -337,6 +347,9 @@ module Graphics.UI.Clutter.Actor (
   actorWidth,
   actorX,
   actorY,
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  actorHasPointer,
+#endif
 
 -- * Signals
   allocationChanged,
@@ -351,6 +364,9 @@ module Graphics.UI.Clutter.Actor (
   realize,
   show,
   unrealize,
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  queueRelayout,
+#endif
 
 -- * Events
   buttonPressEvent,
@@ -515,7 +531,6 @@ import Graphics.UI.Gtk.Pango.Types
 {# fun actor_queue_redraw as ^ `(ActorClass self)' => { withActorClass* `self' } -> `()' #}
 
 
-{-
 -- | Indicates that the actor's size request or other layout-affecting
 --   properties may have changed. This function is used inside
 --   'Actor' subclass implementations, not by applications
@@ -527,7 +542,7 @@ import Graphics.UI.Gtk.Pango.Types
 -- * Since 0.8
 --
 {# fun actor_queue_relayout as ^ `(ActorClass self)' => { withActorClass* `self'} -> `()' #}
--}
+
 
 -- | Destroys an actor. When an actor is destroyed, it will break any
 --   references it holds to other objects. If the actor is inside a
@@ -857,6 +872,37 @@ actorGetAllocationVertices self ancestor = let func = {# call unsafe actor_get_a
 --
 {# fun unsafe actor_get_fixed_position_set as ^
  `(ActorClass self)' => { withActorClass* `self' } -> `Bool' #}
+
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | Sets the geometry request mode of self.
+--
+-- The mode determines the order for invoking 'actorGetPreferredWidth'
+-- and 'actorGetPreferredHeight'
+--
+-- [@self@] an Actor
+--
+-- [@mode@] the request mode
+--
+-- * Since 1.2
+--
+{# fun unsafe actor_set_request_mode as ^ `(ActorClass actor)' =>
+  { withActorClass* `actor', cFromEnum `RequestMode' } -> `()' #}
+
+
+-- | Retrieves the geometry request mode of self
+--
+-- [@self@] a 'Actor'
+--
+-- [@Returns@] the request mode for the actor
+--
+-- * Since 1.2
+--
+{# fun unsafe actor_get_request_mode as ^ `(ActorClass actor)' =>
+  { withActorClass* `actor' } -> `RequestMode' cToEnum #}
+
+#endif
 
 -- | Gets the size and position of an actor relative to its parent
 --   actor. This is the same as calling 'actorGetPosition'
@@ -1968,6 +2014,34 @@ actorBoxContains (ActorBox x1 y1 x2 y2) x y = (x > x1 && x < x2) && (y > y1 && y
                                                   withArray* `[Vertex]'
                                                 } -> `()' #}
 
+-- | Clamps the components of box to the nearest integer
+--
+-- [@box@] the 'ActorBox' to clamp.
+--
+-- * Since 1.2
+--
+{# fun unsafe actor_box_clamp_to_pixel as ^
+  { withActorBox* `ActorBox' } -> `()' #}
+
+
+-- | Interpolates between initial and final 'ActorBox'es using
+-- progress
+--
+-- [@initial@] the initial 'ActorBox'
+--
+-- [@final@] the final 'ActorBox'
+--
+-- [@progress@] the interpolation progress
+--
+-- [@Returns@] return interpolation.
+--
+-- * Since 1.2
+--
+{# fun pure unsafe actor_box_interpolate as ^ { withActorBox* `ActorBox',
+                                                withActorBox* `ActorBox',
+                                                `Double',
+                                                alloca- `ActorBox' peek*
+                                              } -> `()' #}
 
 -- Attributes
 
@@ -2545,8 +2619,109 @@ pick :: ActorClass self => Signal self (Color -> IO ())
 pick = Signal (connect_BOXED__NONE "pick" peek)
 
 
-queueRedraw :: ActorClass self => Signal self (Color -> IO ())
-queueRedraw = Signal (connect_BOXED__NONE "queue-redraw" peek)
+
+-- | The ::'queueRedraw' signal is emitted when 'actorQueueRedraw'
+-- is called on origin.
+--
+-- The default implementation for ClutterActor chains up to the parent
+-- actor and queues a redraw on the parent, thus "bubbling" the redraw
+-- queue up through the actor graph. The default implementation for
+-- ClutterStage queues a 'redraw' in a main loop idle handler.
+--
+-- Note that the origin actor may be the stage, or a container; it
+-- does not have to be a leaf node in the actor graph.
+--
+-- * Note
+--
+-- This signal is emitted before the Clutter paint pipeline is
+-- executed. If you want to know when the pipeline has been completed
+-- you should connect to the ::'paint' signal on the Stage with 'after'
+--
+-- [@origin@] the actor which initiated the redraw request
+--
+-- * Since 1.0
+--
+queueRedraw :: ActorClass self => Signal self (Actor -> IO ())
+queueRedraw = Signal (connect_OBJECT__NONE "queue-redraw")
+
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+-- | The ::'queueLayout' signal is emitted when 'actorQueueRelayout'
+-- is called on an actor.
+--
+-- The default implementation for 'Actor' chains up to the parent
+-- actor and queues a relayout on the parent, thus "bubbling" the
+-- relayout queue up through the actor graph.
+--
+-- The main purpose of this signal is to allow relayout to be
+-- propagated properly in the procense of 'Clone' actors. Applications
+-- will not normally need to connect to this signal.
+--
+-- * Since 1.2
+--
+queueRelayout :: ActorClass self => Signal self (IO ())
+queueRelayout = Signal (connect_NONE__NONE "queue-relayout")
+
+
+-- | Sets the 'TextDirection' for an actor
+--
+-- The passed text direction must not be 'TextDirectionDefault'
+--
+-- If self implements 'Container' then this function will recurse
+-- inside all the children of self (including the internal ones).
+--
+-- Composite actors not implementing 'Container', or actors requiring
+-- special handling when the text direction changes, should connect to
+-- the "notify" signal for the 'actorTextDirection' property
+--
+-- [@self@] an Actor
+--
+-- [@text_dir@] the text direction for self
+--
+-- * Since 1.2
+--
+{# fun unsafe actor_set_text_direction as ^ `(ActorClass self)' =>
+   { withActorClass* `self', cFromEnum `TextDirection' } -> `()' #}
+
+-- | Retrieves the value set using 'actorSetTextDirection'
+--
+-- If no text direction has been previously set, the default text
+-- direction, as returned by 'getDefaultTextDirection', will be
+-- returned instead
+--
+-- [@self@] a 'Actor'
+--
+-- [@Returns@] the 'TextDirection' for the actor
+--
+-- * Since 1.2
+--
+{# fun unsafe actor_get_text_direction as ^ `(ActorClass self)' =>
+   { withActorClass* `self' } -> `TextDirection' cToEnum #}
+
+-- | Direction of the text.
+--
+-- Default value: 'TextDirectionLtr'
+--
+-- * Since 1.2
+--
+actorTextDirection :: (ActorClass self) => Attr self TextDirection
+actorTextDirection = newNamedAttr "text-direction" actorGetTextDirection actorSetTextDirection
+
+-- | Checks whether an actor contains the the pointer of an
+-- 'InputDevice'
+--
+-- [@self@] an Actor
+--
+-- [@Returns@] @True@ if the actor contains the pointer, and @False@
+-- otherwise
+--
+-- * Since 1.2
+--
+{# fun unsafe actor_has_pointer as ^ `(ActorClass self)' =>
+   { withActorClass* `self' } -> `Bool' #}
+
+#endif
+
 
 -- | The \"realize\" signal is emitted each time an actor is being
 --   realized.

@@ -58,7 +58,8 @@ module Graphics.UI.Clutter.Enums (
 #if CLUTTER_CHECK_VERSION(1,2,0)
   BinAlignment(..),
   FlowOrientation(..),
-  BoxAlignment(..)
+  BoxAlignment(..),
+  TextDirection(..)
 #endif
   ) where
 
@@ -603,6 +604,20 @@ instance Flags FontFlags
 -- * Since 1.2
 --
 {# enum ClutterBoxAlignment as BoxAlignment {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+
+-- | The text direction to be used by Actors
+--
+-- [@TextDirectionDefault@] Use the default setting, as returned by
+-- 'getDefaultTextDirection'
+--
+-- [@TextDirectionLtr@] Use left-to-right text direction
+--
+-- [@TextDirectionRtl@] Use right-to-left text direction
+--
+-- * Since 1.2
+--
+{# enum ClutterTextDirection as TextDirection {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 #endif
 

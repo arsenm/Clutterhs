@@ -118,8 +118,6 @@ module Graphics.UI.Clutter.FlowLayout (
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Enums #}
-{# import Graphics.UI.Clutter.Utility #}
-{# import qualified Graphics.UI.Clutter.GTypes #} as CGT
 
 import System.Glib.Attributes
 import System.Glib.Properties

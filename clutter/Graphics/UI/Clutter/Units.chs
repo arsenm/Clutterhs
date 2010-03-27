@@ -30,13 +30,13 @@ module Graphics.UI.Clutter.Units (
   UnitType,
 
 -- * Constructors
-  unitsFromMm,
-  unitsFromPt,
+  unitsFromMM,
+  unitsFromPT,
 #if CLUTTER_CHECK_VERSION(1,2,0)
-  unitsFromCm,
+  unitsFromCM,
 #endif
-  unitsFromEm,
-  unitsFromEmForFont,
+  unitsFromEM,
+  unitsFromEMForFont,
   unitsFromPixels,
 
 -- * Conversions
@@ -63,7 +63,8 @@ import C2HS
 --
 -- * Since 1.0
 --
-{# fun unsafe units_from_mm as ^ { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
+{# fun unsafe units_from_mm as unitsFromMM
+  { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
 
 
 -- | Stores a value in typographic points inside units
@@ -74,7 +75,8 @@ import C2HS
 --
 -- * Since 1.0
 --
-{# fun unsafe units_from_pt as ^ { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
+{# fun unsafe units_from_pt as unitsFromPT
+  { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
 
@@ -86,7 +88,8 @@ import C2HS
 --
 -- * Since 1.2
 --
-{# fun unsafe units_from_cm as ^ { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
+{# fun unsafe units_from_cm as unitsFromCM
+  { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
 
 #endif
 
@@ -100,7 +103,8 @@ import C2HS
 --
 -- * Since 1.0
 --
-{# fun unsafe units_from_em as ^ { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
+{# fun unsafe units_from_em as unitsFromEM
+  { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
 
 
 -- | Stores a value in em inside units using font_name
@@ -113,7 +117,8 @@ import C2HS
 --
 -- * Since 1.0
 --
-{# fun unsafe units_from_em_for_font as ^ { allocUnits- `Units' newUnits*, `String', `Float' } -> `()' #}
+{# fun unsafe units_from_em_for_font as unitsFromEMForFont
+  { allocUnits- `Units' newUnits*, `String', `Float' } -> `()' #}
 
 
 -- | Stores a value in pixels inside units

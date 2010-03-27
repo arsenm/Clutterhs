@@ -49,8 +49,8 @@ module Graphics.UI.Clutter.Media (
   MediaClass,
 
 -- * Methods
-  mediaSetUri,
-  mediaGetUri,
+  mediaSetURI,
+  mediaGetURI,
   mediaSetPlaying,
   mediaGetPlaying,
   mediaSetProgress,
@@ -76,7 +76,7 @@ module Graphics.UI.Clutter.Media (
   mediaDuration,
   mediaPlaying,
   mediaProgress,
-  mediaUri,
+  mediaURI,
 #if CLUTTER_CHECK_VERSION(1,2,0)
   mediaSubtitleURI,
   mediaSubtitleFontName,
@@ -104,7 +104,8 @@ import System.Glib.Attributes
 --
 -- * Since 0.2
 --
-{# fun unsafe media_set_uri as ^ `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
+{# fun unsafe media_set_uri as mediaSetURI
+  `(MediaClass m)' => { withMediaClass* `m', `String' } -> `()' #}
 
 -- | Retrieves the URI from media.
 --
@@ -114,7 +115,7 @@ import System.Glib.Attributes
 --
 -- * Since 0.2
 --
-{# fun unsafe media_get_uri as ^
+{# fun unsafe media_get_uri as mediaGetURI
        `(MediaClass m)' => { withMediaClass* `m' } -> `String' peekNFreeString* #}
 
 
@@ -307,8 +308,8 @@ mediaPlaying = newNamedAttr "playing" mediaGetPlaying mediaSetPlaying
 mediaProgress :: (MediaClass media) => Attr media Double
 mediaProgress = newNamedAttr "progress" mediaGetProgress mediaSetProgress
 
-mediaUri :: (MediaClass media) => Attr media String
-mediaUri = newNamedAttr "uri" mediaGetUri mediaSetUri
+mediaURI :: (MediaClass media) => Attr media String
+mediaURI = newNamedAttr "uri" mediaGetURI mediaSetURI
 
 
 -- signals
@@ -319,7 +320,7 @@ eos :: (MediaClass media) => Signal media (IO ())
 eos = Signal (connect_NONE__NONE "eos")
 
 --CHECKME:checky
--- | The ::error signal is emitted each time an error occurred.
+-- | The ::'error' signal is emitted each time an error occurred.
 --
 -- [@error@] : the GError
 --

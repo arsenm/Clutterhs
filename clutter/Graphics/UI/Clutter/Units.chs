@@ -32,6 +32,9 @@ module Graphics.UI.Clutter.Units (
 -- * Constructors
   unitsFromMm,
   unitsFromPt,
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  unitsFromCm,
+#endif
   unitsFromEm,
   unitsFromEmForFont,
   unitsFromPixels,
@@ -72,6 +75,20 @@ import C2HS
 -- * Since 1.0
 --
 {# fun unsafe units_from_pt as ^ { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
+
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+-- | Stores a value in centimeters inside units
+--
+-- [@cm@] centimeters
+--
+-- [@Returns@] a 'Units'
+--
+-- * Since 1.2
+--
+{# fun unsafe units_from_cm as ^ { allocUnits- `Units' newUnits*, `Float' } -> `()' #}
+
+#endif
 
 
 -- | Stores a value in em inside units, using the default font name as

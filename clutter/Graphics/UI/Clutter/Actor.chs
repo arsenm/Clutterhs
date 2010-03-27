@@ -154,6 +154,10 @@ module Graphics.UI.Clutter.Actor (
   GID,
   Callback,
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+  TextDirection(..),
+#endif
+
 -- * Methods,
   actorIsRealized,
   actorIsMapped,
@@ -349,6 +353,7 @@ module Graphics.UI.Clutter.Actor (
   actorY,
 #if CLUTTER_CHECK_VERSION(1,2,0)
   actorHasPointer,
+  actorTextDirection,
 #endif
 
 -- * Signals

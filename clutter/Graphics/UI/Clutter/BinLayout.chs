@@ -60,6 +60,7 @@ module Graphics.UI.Clutter.BinLayout (
 -- * Types
   BinLayout,
   BinLayoutClass,
+  BinAlignment(..),
 
 -- * Constructors
   binLayoutNew,

@@ -1496,6 +1496,7 @@ withFixedLayoutClass :: FixedLayoutClass o => o -> (Ptr FixedLayout -> IO b) -> 
 withFixedLayoutClass o = (withFixedLayout . toFixedLayout) o
 
 instance FixedLayoutClass FixedLayout
+instance LayoutManagerClass FixedLayout
 instance GObjectClass FixedLayout where
   toGObject (FixedLayout r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = FixedLayout (castForeignPtr o)
@@ -1516,6 +1517,7 @@ withBinLayoutClass :: BinLayoutClass o => o -> (Ptr BinLayout -> IO b) -> IO b
 withBinLayoutClass o = (withBinLayout . toBinLayout) o
 
 instance BinLayoutClass BinLayout
+instance LayoutManagerClass BinLayout
 instance GObjectClass BinLayout where
   toGObject (BinLayout r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = BinLayout (castForeignPtr o)
@@ -1536,6 +1538,7 @@ withFlowLayoutClass :: FlowLayoutClass o => o -> (Ptr FlowLayout -> IO b) -> IO 
 withFlowLayoutClass o = (withFlowLayout . toFlowLayout) o
 
 instance FlowLayoutClass FlowLayout
+instance LayoutManagerClass FlowLayout
 instance GObjectClass FlowLayout where
   toGObject (FlowLayout r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = FlowLayout (castForeignPtr o)
@@ -1556,6 +1559,7 @@ withBoxLayoutClass :: BoxLayoutClass o => o -> (Ptr BoxLayout -> IO b) -> IO b
 withBoxLayoutClass o = (withBoxLayout . toBoxLayout) o
 
 instance BoxLayoutClass BoxLayout
+instance LayoutManagerClass BoxLayout
 instance GObjectClass BoxLayout where
   toGObject (BoxLayout r) = constrGObject (castForeignPtr r)
   unsafeCastGObject (GObject o) = BoxLayout (castForeignPtr o)

@@ -79,6 +79,7 @@ module Graphics.UI.Clutter.FlowLayout (
 -- * Types
   FlowLayout,
   FlowLayoutClass,
+  FlowOrientation(..),
 
 -- * Constructors
   flowLayoutNew,

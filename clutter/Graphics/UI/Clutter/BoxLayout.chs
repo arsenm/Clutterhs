@@ -78,6 +78,7 @@ module Graphics.UI.Clutter.BoxLayout (
 -- * Types
   BoxLayout,
   BoxLayoutClass,
+  BoxAlignment(..),
 
 -- * Constructors
   boxLayoutNew,

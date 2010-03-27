@@ -57,7 +57,8 @@ module Graphics.UI.Clutter.Enums (
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
   BinAlignment(..),
-  FlowOrientation(..)
+  FlowOrientation(..),
+  BoxAlignment(..)
 #endif
   ) where
 
@@ -587,6 +588,21 @@ instance Flags FontFlags
 -- * Since 1.2
 --
 {# enum ClutterFlowOrientation as FlowOrientation {underscoreToCase} deriving (Show, Eq, Bounded) #}
+
+
+-- | The alignment policies available on each axis of the 'BoxLayout'
+--
+-- [@BoxAlignmentStart@] Align the child to the top or to to the left,
+-- depending on the used axis
+--
+-- [@BoxAlignmentEnd@] Align the child to the bottom or to the right,
+-- depending on the used axis
+--
+-- [@BoxAlignmentCenter@] Align the child to the center
+--
+-- * Since 1.2
+--
+{# enum ClutterBoxAlignment as BoxAlignment {underscoreToCase} deriving (Show, Eq, Bounded) #}
 
 #endif
 

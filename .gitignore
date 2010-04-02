@@ -86,3 +86,16 @@ clutter/demo/texttest
 clutter/demo/texturetest
 clutter/demo/timelinetest
 clutter/csrc/hsgthread.o
+clutter/demo/BindingPoolTest
+clutter/demo/BindingPoolTest.hi
+clutter/demo/BindingPoolTest.o
+clutter/demo/CairoTest
+clutter/demo/CairoTest.hi
+clutter/demo/CairoTest.o
+clutter/demo/Containers
+clutter/demo/Containers.hi
+clutter/demo/Containers.o
+clutter/demo/GroupTest
+clutter/demo/GroupTest.hi
+clutter/demo/GroupTest.o
+

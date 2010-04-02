@@ -18,7 +18,7 @@ Description: Clutterhs is a binding to the Clutter C library. Clutter
              efficient and flexible.
 Build-Type: Simple
 Extra-Source-Files: AUTHORS, INSTALL, README
-tested-with: GHC == 6.10.4
+tested-with: GHC == 6.10.4, GHC == 6.12.1
 Cabal-Version: >= 1.2
 build-depends: base >= 4 && <5,
                glib >= 0.10.1,

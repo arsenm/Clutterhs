@@ -185,8 +185,12 @@ clutterObjectSetPropertyUInt = objectSetPropertyInternal GType.uint valueSetUInt
 unsafeCastActor :: (ActorClass a, ActorClass b) => a -> b
 unsafeCastActor = unsafeCastGObject . toGObject
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
 unsafeCastLayoutManager :: (LayoutManagerClass a, LayoutManagerClass b) => a -> b
 unsafeCastLayoutManager = unsafeCastGObject . toGObject
+
+#endif
 
 gvPtrToRealValue :: (GenericValueClass a) => GenericValuePtr -> IO a
 gvPtrToRealValue = liftM unsafeExtractGenericValue . valueGetGenericValue . GValue . castPtr

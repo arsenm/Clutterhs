@@ -180,13 +180,14 @@ module Graphics.UI.Clutter.Text (
   textChanged,
 #if CLUTTER_CHECK_VERSION(1,2,0)
   deleteText,
---insertText
+  insertText
 #endif
   ) where
 
 {# import Graphics.UI.Clutter.Types #}
 {# import Graphics.UI.Clutter.Utility #}
 {# import Graphics.UI.Clutter.Signals #}
+{# import Graphics.UI.Clutter.CustomSignals #}
 
 import C2HS
 import System.Glib.GObject
@@ -1421,11 +1422,36 @@ textChanged = Signal (connect_NONE__NONE "text-changed")
 --
 -- * Since 1.2
 --
-deleteText :: Signal Text (Int -> Int -> IO ())
+deleteText :: TextClass self => Signal self (Int -> Int -> IO ())
 deleteText = Signal (connect_INT_INT__NONE "delete-text")
 
---TODO:
---insertText :: Signal Text (String -> Int -> IO String)
+
+-- | This signal is emitted when text is inserted into the actor by
+-- the user. It is emitted before self text changes.
+--
+-- [@new_text@] the new text to insert
+--
+-- [@new_text_length@] the length of the new text, in bytes, or -1 if
+-- new_text is nul-terminated
+--
+-- [@Returns@] the position, in characters, at which to insert the new
+-- text. After the signal emission is finished, it should point after
+-- the newly inserted text.
+--
+-- * Since 1.2
+--
+insertText :: TextClass self => Signal self (String -> Int -> IO Int)
+insertText = Signal connectInsertText
+ where connectInsertText after obj handler = connect_PTR_INT_PTR__NONE "insert-text" after obj marsh
+         where marsh strPtr strLen posPtr = do
+                 str  <- if strLen < 0
+                           then peekUTFString strPtr
+                           else peekUTFStringLen (strPtr, strLen)
+                 pos  <- peek (posPtr :: Ptr {#type gint#})
+                 pos' <- handler str (cIntConv pos)
+                 poke (posPtr :: Ptr {#type gint#}) (cIntConv pos')
+
+
 
 #endif
 

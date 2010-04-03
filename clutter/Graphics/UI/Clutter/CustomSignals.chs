@@ -1,4 +1,3 @@
-{-# OPTIONS_HADDOCK hide #-}
 -- -*-haskell-*-
 --
 --  Author : Matthew Arsenault
@@ -19,6 +18,12 @@
 --
 -- #hide
 
+
+{-# LANGUAGE ForeignFunctionInterface #-}
+{-# OPTIONS_HADDOCK hide #-}
+
+#include <clutter/clutter.h>
+
 --I needed signal handlers with checks for null, but I was too lazy to
 --modify the generator.
 module Graphics.UI.Clutter.CustomSignals (
@@ -33,6 +38,7 @@ import System.Glib.Flags
 import System.Glib.GError (failOnGError)
 import System.Glib.Signals
 import System.Glib.GObject
+
 
 {#context lib="clutter" prefix="clutter" #}
 
@@ -68,5 +74,6 @@ connect_BOXED_FLAGS__NONE signal boxedPre1 after obj user =
           failOnGError $
           boxedPre1 (castPtr box1) >>= \box1' ->
           user box1' (toFlags flags2)
+
 
 

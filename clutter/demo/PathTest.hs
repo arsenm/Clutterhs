@@ -118,7 +118,7 @@ main = do
   behaviourApply behav4 rect4
   behaviourApply behav5 rect5
 
-  onKnotReached behav5 $ \n -> putStrLn ("Path5: Knot " ++ P.show n ++ " reached")
+  behav5 `on` knotReached $ \n -> putStrLn ("Path5: Knot " ++ P.show n ++ " reached")
 
   actorShowAll stage
 

@@ -41,11 +41,14 @@ main = do
   putStr "Cursor color: "
   get textEdit textCursorColor >>= print
 
+  textEdit `on` insertText $ \str pos -> do putStrLn $ "InsertText: " ++ P.show (str,pos)
+                                            return 0
+
   coords <- textPositionToCoords textEdit 4
   putStrLn ("textPositionToCoords: " ++ P.show coords)
 
   on textEdit activate (putStrLn "I'm activated")
-  on textEdit cursorEvent (\geom -> putStrLn $ "Geom: " ++ P.show geom)
+--on textEdit cursorEvent (\geom -> putStrLn $ "Geom: " ++ P.show geom)
   on textEdit textChanged (get textEdit textText >>= putStrLn)
 
 

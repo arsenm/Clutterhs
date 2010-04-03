@@ -8,11 +8,11 @@ main = do
   clutterInit
   unitPx <- unitsFromPixels 9001
   unitStr <- fmap fromJust (unitsFromString "5.1 em")
-  unitMm <- unitsFromMm 42
+  unitMM <- unitsFromMM 42
 
   unitsToPixels unitStr >>= print
 
-  unitsToPixels unitMm >>= print
+  unitsToPixels unitMM >>= print
 
   unitsToString unitPx >>= print
   unitsToString unitStr >>= print

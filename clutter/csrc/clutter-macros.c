@@ -22,3 +22,22 @@ gboolean actor_is_mapped(ClutterActor* actor)
     return CLUTTER_ACTOR_IS_MAPPED(actor);
 }
 
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+guint clutterhs_clutter_major_version()
+{
+    return clutter_major_version;
+}
+
+guint clutterhs_clutter_minor_version()
+{
+    return clutter_minor_version;
+}
+
+guint clutterhs_clutter_micro_version()
+{
+    return clutter_micro_version;
+}
+
+#endif
+

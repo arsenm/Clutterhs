@@ -122,6 +122,7 @@ Library
                    Graphics.UI.Clutter.FlowLayout,
                    Graphics.UI.Clutter.BoxLayout,
                    Graphics.UI.Clutter.Box,
+                   Graphics.UI.Clutter.Version,
                    Graphics.UI.Clutter
   Exposed: True
   Include-dirs: ./csrc

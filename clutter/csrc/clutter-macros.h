@@ -9,5 +9,13 @@ gboolean actor_is_visible(ClutterActor* actor);
 gboolean actor_is_reactive(ClutterActor* actor);
 gboolean actor_is_mapped(ClutterActor* actor);
 
-#endif
+#if CLUTTER_CHECK_VERSION(1,2,0)
+
+guint clutterhs_clutter_major_version();
+guint clutterhs_clutter_minor_version();
+guint clutterhs_clutter_micro_version();
+
+#endif  /* CLUTTER_CHECK_VERSION(1,2,0) */
+
+#endif  /* CLUTTER_MACROS_H_ */
 

@@ -28,7 +28,7 @@ build-depends: base >= 4 && <5,
 
 source-repository head
   type: git
-  location: http://jayne.hortont.com/repo/clutterhs.Githas
+  location: http://jayne.hortont.com/repo/clutterhs.git
 
 
 Flag Debug
@@ -42,12 +42,18 @@ Flag Debug
 Library
   pkgconfig-depends: glib-2.0, gobject-2.0, clutter-1.0, pango
   Build-Tools: c2hs >= 0.16
-  Includes: csrc/clutter-macros.h,
-            csrc/hsclutterthread.h
-  C-Sources: ./csrc/clutter-macros.c,
+  Includes: ./csrc/hsgvalue.h,
+           ./csrc/clutter-macros.h,
+           ./csrc/hsclutterthread.h
+
+  C-Sources: ./csrc/hsgvalue.c,
+             ./csrc/clutter-macros.c,
              ./csrc/hsclutterthread.c
-  Install-Includes: ./csrc/clutter-macros.h,
+
+  Install-Includes: ./csrc/hsgvalue.h,
+                    ./csrc/clutter-macros.h,
                     ./csrc/hsclutterthread.h
+
   Hs-Source-Dirs: .
   Extensions: ForeignFunctionInterface,
               ExistentialQuantification,
@@ -115,6 +121,7 @@ Library
                    Graphics.UI.Clutter.Scriptable,
                    Graphics.UI.Clutter.BindingPool,
                    Graphics.UI.Clutter.Utilities,
+                   Graphics.UI.Clutter.KeySyms,
                    Graphics.UI.Clutter.X11,
                    Graphics.UI.Clutter.LayoutManager,
                    Graphics.UI.Clutter.FixedLayout,
@@ -125,7 +132,7 @@ Library
                    Graphics.UI.Clutter.Version,
                    Graphics.UI.Clutter
   Exposed: True
-  Include-dirs: ./csrc
+  Include-dirs: ./csrc, /usr/lib/ghc-6.12.1/include/
   if flag(debug)
     GHC-options: -W
     CC-Options: "-DDEBUG -O0 -g"

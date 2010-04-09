@@ -82,6 +82,7 @@ module Graphics.UI.Clutter (
   module Graphics.UI.Clutter.Units,
   module Graphics.UI.Clutter.Utilities,
   module Graphics.UI.Clutter.Version,
+  module Graphics.UI.Clutter.KeySyms,
 
 -- ** User interface definition
   module Graphics.UI.Clutter.Script,
@@ -131,6 +132,7 @@ import Graphics.UI.Clutter.BindingPool
 import Graphics.UI.Clutter.X11
 import Graphics.UI.Clutter.Utilities
 import Graphics.UI.Clutter.Version
+import Graphics.UI.Clutter.KeySyms
 
 #if CLUTTER_CHECK_VERSION(1,2,0)
 import Graphics.UI.Clutter.LayoutManager

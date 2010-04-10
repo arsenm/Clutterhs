@@ -298,6 +298,10 @@ freeGValue p = unsetGValue (castPtr p) >> free p
 withGenericValue :: (GenericValueClass arg) => arg -> (GenericValuePtr -> IO a) -> IO a
 withGenericValue gv = bracket (mkGValueFromGenericValue (toGenericValue gv)) freeGValue
 
+
+
+
+
 --This madness is almost straight from Haskell wiki on AdvancedOverlap
 -- I only halfway understand it. It should pick the GObjectClass
 -- instance for any gobject, and the others for anything else.
@@ -485,4 +489,109 @@ newWithGValueOut gt v fun =
     freeStablePtr sp
     freeStablePtr out
     return outV
+
+{-
+-- more playing
+moreWithGValueOut :: GenericValueClass a => GType -> a -> (Ptr GValue -> IO ()) -> IO a
+moreWithGValueOut gt v f = do
+  allocaGValue $ \gv@(GValue gvp) -> do
+    valueInit gv gt
+
+    f gv
+-}
+
+
+-- unsafe! This all assumes that you know the types from context. I
+-- think this works in all reasonable cases.
+class GValueClass a where
+  gtype :: a -> GType
+  gValueSet :: GValue -> a -> IO ()
+  gValueGet :: GValue -> IO a
+
+class GValueClass' flag a where
+  gtype' :: flag -> a -> GType
+  gValueSet' :: flag -> GValue -> a -> IO ()
+  gValueGet' :: flag -> GValue -> IO a
+
+instance (GVPred a flag, GValueClass' flag a) => GValueClass a where
+  gtype     = gtype'     (undefined::flag)
+  gValueSet = gValueSet' (undefined::flag)
+  gValueGet = gValueGet' (undefined::flag)
+
+
+
+instance GValueClass' RegularGValue Int where
+  gtype'     _ _    = GType.int
+  gValueSet' _ gv x = valueSetInt gv x
+  gValueGet' _ gv   = valueGetInt gv
+
+instance GValueClass' RegularGValue Double where
+  gtype'     _ _    = GType.double
+  gValueSet' _ gv x = valueSetDouble gv x
+  gValueGet' _ gv   = valueGetDouble gv
+
+
+
+withGValueClassOut :: GValueClass a => a -> (Ptr GValue -> IO ()) -> IO a
+withGValueClassOut val fun = allocaGValue $ \gv@(GValue gvp) -> do
+  valueInit gv (gtype val)
+  gValueSet gv val
+  fun gvp
+  gValueGet gv
+
+
+
+
+
+{-
+setGValue2 :: GValue -> GType -> a -> IO ()
+setGValue2 gv gt v = do
+  -- TODO: GTypeFundamental
+  case gt of
+    GType.int    -> valueSetInt    gv v
+    GType.uint   -> valueSetUInt   gv v
+    GType.char   -> valueSetChar   gv (cToEnum v)
+    GType.uchar  -> valueSetUChar  gv v
+    GType.bool   -> valueSetBool   gv v
+    GType.enum   -> valueSetUInt   gv (fromIntegral v)
+    GType.flags  -> valueSetUInt   gv (fromIntegral v)
+    GType.float  -> valueSetFloat  gv v
+    GType.double -> valueSetDouble gv v
+    GType.string -> valueSetMaybeString gv v
+    GType.object -> valueSetGObject gv v
+-}
+
+
+{-
+coercing would be unfortunate
+getGValue :: GValue -> IO a
+getGValue gv = do
+  gtype <- valueGetType gv
+  --TODO: GTypeFundamental
+  case gtype of
+    GType.int    -> valueGetInt         gv
+    GType.uint   -> valueGetUInt        gv
+    GType.char   -> valueGetChar        gv
+    GType.uchar  -> valueGetUChar       gv
+    GType.bool   -> valueGetBool        gv
+    GType.enum   -> valueGetUInt        gv
+    GType.flags  -> valueGetUInt        gv
+    GType.float  -> valueGetFloat       gv
+    GType.double -> valueGetDouble      gv
+    GType.string -> valueGetMaybeString gv
+    GType.object -> valueGetGObject     gv
+-}
+
+
+-- ???
+--valueSetGenericValue gvalue (GVcolor x)  =  do valueInit gvalue CGT.color
+--                                               valueSetColor gvalue x
+
+--valueSetGenericValue gvalue (GVboxed x)   = valueSetPointer gvalue x
+--valueSetGenericValue gvalue (GVpointer x) = valueSetPointer gvalue x
+--valueSetGenericValue gvalue (GVenum x)    = do valueInit gvalue GType.enum
+--                                               valueSetUInt    gvalue (fromIntegral x)
+
+
+--    TMenum	-> liftM (GVenum . fromIntegral)  $ valueGetUInt    gvalue
 

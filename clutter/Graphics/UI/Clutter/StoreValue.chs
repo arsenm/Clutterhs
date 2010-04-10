@@ -36,6 +36,7 @@
 
 #include <clutter/clutter.h>
 #include <glib.h>
+#include "hsgvalue.h"
 
 {# context lib="clutter" prefix="clutter" #}
 
@@ -50,6 +51,11 @@
 --
 
 module Graphics.UI.Clutter.StoreValue (
+                                       gValueToHaskellObj,
+                                       gValueFromHaskellObj,
+                                       newWithGValue,
+                                       newWithGValueOut,
+                                       newWithGValueOutRet,
                                        AnimType(..),
                                        GenericValue(..),
                                        GenericValuePtr,
@@ -81,6 +87,7 @@ import System.Glib.GValueTypes
 import qualified System.Glib.GTypeConstants as GType
 import System.Glib.Types
 import System.Glib.GType
+
 
 -- | A union with information about the currently stored type.
 --
@@ -411,4 +418,71 @@ typeMismatchError =  error "unsafeExtractGenericValue: Type mismatch"
 {# fun unsafe value_set_color as ^ { withGValue `GValue', withColor* `Color' } -> `()' #}
 
 
+
+
+
+--foreign import ccall unsafe "hsgvalue.h g_value_as_haskell_obj"
+--  gvToHaskellObj :: Ptr GValue -> IO a
+
+--foreign import ccall unsafe "hsgvalue.h applyGValueFunctionInt"
+--  hsObjToGValue :: StablePtr a -> IO Int
+-- testMagic :: Show a => a -> IO ()
+-- testMagic a = do
+--   putStrLn ("Original: " ++ show a)
+--   sp <- newStablePtr a
+--   i  <- hsObjToGValue sp
+--   putStrLn ("Haskell side: " ++ show i)
+--   freeStablePtr sp
+--
+
+
+-- Playing with these. Don't think I'll end up using it.
+
+
+foreign import ccall unsafe "hsgvalue.h g_value_to_haskellobj"
+  gValueToHaskellObj :: GValue -> IO (StablePtr a)
+
+
+
+foreign import ccall safe "hsgvalue.h g_value_from_haskellobj"
+  gValueFromHaskellObj :: GValue -> StablePtr a -> IO ()
+
+-- in argument
+newWithGValue :: GenericValueClass a => GType -> a -> (Ptr GValue -> IO b) -> IO b
+newWithGValue gt v fun =
+  allocaGValue $ \gv@(GValue gvp) -> do
+    valueInit gv gt
+    sp <- newStablePtr v
+    gValueFromHaskellObj gv sp
+    ret <- fun gvp
+    freeStablePtr sp
+    return ret
+
+
+newWithGValueOutRet :: GenericValueClass a => GType -> a -> (Ptr GValue -> IO b) -> IO (a, b)
+newWithGValueOutRet gt v fun =
+  allocaGValue $ \gv@(GValue gvp) -> do
+    valueInit gv gt
+    sp <- newStablePtr v
+    gValueFromHaskellObj gv sp
+    ret <- fun gvp
+    out <- gValueToHaskellObj gv
+    outV <- deRefStablePtr out
+    freeStablePtr sp
+    freeStablePtr out
+    return (outV, ret)
+
+
+newWithGValueOut :: GenericValueClass a => GType -> a -> (Ptr GValue -> IO ()) -> IO a
+newWithGValueOut gt v fun =
+  allocaGValue $ \gv@(GValue gvp) -> do
+    valueInit gv gt
+    sp <- newStablePtr v
+    gValueFromHaskellObj gv sp
+    fun gvp
+    out <- gValueToHaskellObj gv
+    outV <- deRefStablePtr out
+    freeStablePtr sp
+    freeStablePtr out
+    return outV
 

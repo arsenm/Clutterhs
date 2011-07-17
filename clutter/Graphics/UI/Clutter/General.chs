@@ -67,7 +67,7 @@ module Graphics.UI.Clutter.General (
 
 import C2HS
 import System.Glib.GObject
-import Graphics.UI.Gtk.Types (FontMap, mkFontMap)
+import Graphics.Rendering.Pango.Types (FontMap, mkFontMap)
 import System.Glib.UTFString
 import System.Environment (getProgName, getArgs)
 import Control.Monad (liftM, when)

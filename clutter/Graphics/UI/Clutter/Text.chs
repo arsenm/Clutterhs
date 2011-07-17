@@ -198,12 +198,14 @@ import System.Glib.UTFString
 import Control.Monad (liftM, liftM3)
 import Data.IORef
 
-import Graphics.UI.Gtk.Types (PangoLayoutRaw, mkPangoLayoutRaw)
-import Graphics.UI.Gtk.Pango.Types (PangoLayout(..), PangoAttribute, makeNewPangoString, FontDescription(..), makeNewFontDescription)
-import Graphics.UI.Gtk.Pango.Layout (LayoutWrapMode(..), LayoutAlignment)
-import Graphics.UI.Gtk.Pango.Enums (EllipsizeMode)
+import Graphics.Rendering.Pango.Types (PangoLayoutRaw, mkPangoLayoutRaw)
+import Graphics.Rendering.Pango.Layout (LayoutWrapMode(..), LayoutAlignment)
+import Graphics.Rendering.Pango.Enums (EllipsizeMode)
 
-import Graphics.UI.Gtk.Pango.Attributes
+
+import Graphics.Rendering.Pango.Structs (PangoAttribute)
+import Graphics.Rendering.Pango.BasicTypes (PangoLayout(..), makeNewPangoString, FontDescription(..), makeNewFontDescription)
+import Graphics.Rendering.Pango.Attributes
 
 --CHECKME: Is LayoutWrapMode/LayoutAlignment the wrap mode we want?
 

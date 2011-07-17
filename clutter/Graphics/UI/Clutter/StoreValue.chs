@@ -181,8 +181,8 @@ instance Enum AnimType where
 valueSetGenericValueNoInit :: GValue -> GenericValue -> IO ()
 valueSetGenericValueNoInit gvalue (GVuint x)    = valueSetUInt  gvalue x
 valueSetGenericValueNoInit gvalue (GVint x)     = valueSetInt   gvalue x
-valueSetGenericValueNoInit gvalue (GVuchar x)   = valueSetUChar gvalue x
-valueSetGenericValueNoInit gvalue (GVchar x)    = valueSetChar  gvalue (cToEnum x)
+--valueSetGenericValueNoInit gvalue (GVuchar x)   = valueSetUChar gvalue x
+--valueSetGenericValueNoInit gvalue (GVchar x)    = valueSetChar  gvalue (cToEnum x)
 valueSetGenericValueNoInit gvalue (GVboolean x) = valueSetBool  gvalue x
 valueSetGenericValueNoInit gvalue (GVenum x)    = valueSetUInt  gvalue (fromIntegral x)
 valueSetGenericValueNoInit gvalue (GVflags x)   = valueSetUInt  gvalue (fromIntegral x)
@@ -200,10 +200,10 @@ valueSetGenericValue gvalue (GVuint x)    = do valueInit gvalue GType.uint
                                                valueSetUInt gvalue x
 valueSetGenericValue gvalue (GVint x)     = do valueInit gvalue GType.int
                                                valueSetInt  gvalue x
-valueSetGenericValue gvalue (GVuchar x)   = do valueInit gvalue GType.uchar
-                                               valueSetUChar gvalue x
-valueSetGenericValue gvalue (GVchar x)    = do valueInit gvalue GType.char
-                                               valueSetChar gvalue (cToEnum x)
+--valueSetGenericValue gvalue (GVuchar x)   = do valueInit gvalue GType.uchar
+--                                               valueSetUChar gvalue x
+--valueSetGenericValue gvalue (GVchar x)    = do valueInit gvalue GType.char
+--                                               valueSetChar gvalue (cToEnum x)
 valueSetGenericValue gvalue (GVboolean x) = do valueInit gvalue GType.bool
                                                valueSetBool    gvalue x
 valueSetGenericValue gvalue (GVenum x)    = do valueInit gvalue GType.enum
@@ -237,8 +237,8 @@ valueGetGenericValue gvalue = do
     ATinvalid	-> throwIO $ AssertionFailed "valueGetGenericValue: invalid or unavailable value."
     ATuint      -> liftM GVuint			  $ valueGetUInt    gvalue
     ATint	-> liftM GVint	                  $ valueGetInt	    gvalue
-    ATuchar	-> liftM (GVuchar . cFromEnum)	  $ valueGetUChar   gvalue
-    ATchar	-> liftM (GVchar . cFromEnum)     $ valueGetChar    gvalue
+--    ATuchar	-> liftM (GVuchar . cFromEnum)	  $ valueGetUChar   gvalue
+--    ATchar	-> liftM (GVchar . cFromEnum)     $ valueGetChar    gvalue
     ATbool	-> liftM GVboolean		  $ valueGetBool    gvalue
     ATenum	-> liftM (GVenum . cToEnum)       $ valueGetUInt    gvalue
     ATflags	-> liftM (GVflags . cToEnum)      $ valueGetUInt    gvalue

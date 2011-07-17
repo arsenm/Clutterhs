@@ -81,7 +81,7 @@ import Graphics.Rendering.Cairo.Types (Cairo(..), unCairo)
 import qualified Graphics.Rendering.Cairo.Types as Cairo
 import qualified System.Glib.GTypeConstants as GType
 
-import Graphics.UI.Gtk.Types (PangoContext, mkPangoContext, unPangoLayoutRaw)
+import Graphics.Rendering.Pango.Types (PangoContext, mkPangoContext, unPangoLayoutRaw)
 
 --flag functions from gtk2hs with c int conversion
 

@@ -14,7 +14,7 @@ Not so simple install procedure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    # First, install gtk2hs from darcs:
-   
+
    darcs get --partial http://code.haskell.org/gtk2hs/
    cd gtk2hs
    autoreconf

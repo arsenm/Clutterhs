@@ -405,9 +405,8 @@ import System.Glib.Attributes
 import System.Glib.Properties
 
 --TODO: Export pango from types so you don't need this
-import Graphics.UI.Gtk.Types (PangoContext, PangoLayoutRaw, mkPangoLayoutRaw)
-import Graphics.UI.Gtk.Pango.Types
-
+import Graphics.Rendering.Pango.Types (PangoContext, PangoLayoutRaw, mkPangoLayoutRaw)
+import Graphics.Rendering.Pango.BasicTypes (PangoLayout(..), makeNewPangoString)
 
 {# fun unsafe actor_is_mapped as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}
 {# fun unsafe actor_is_realized as ^ `(ActorClass actor)' => { withActorClass* `actor' } -> `Bool' #}

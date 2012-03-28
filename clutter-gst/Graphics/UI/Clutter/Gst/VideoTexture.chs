@@ -41,7 +41,7 @@ module Graphics.UI.Clutter.Gst.VideoTexture (
   VideoTextureClass,
 
 -- * Constructors
-  videoTextureNew
+  videoTextureNew,
 
 -- * Methods
 
@@ -62,6 +62,9 @@ import C2HS
 
 {# import Graphics.UI.Clutter.Gst.Types #}
 
+#if CLUTTER_GST_CHECK_VERSION(1,0,0)
+import Media.Streaming.GStreamer.Core.Pipeline
+#endif
 
 
 

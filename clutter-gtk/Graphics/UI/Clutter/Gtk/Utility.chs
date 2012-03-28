@@ -55,7 +55,7 @@ import System.Environment (getArgs, getProgName)
 
 {# import Graphics.UI.Clutter.Gtk.Types #}
 
-import Graphics.UI.Gtk.Types
+import Graphics.UI.GtkInternals
 import Graphics.UI.Clutter.Types
 import Graphics.UI.Clutter.Enums
 import System.Glib.UTFString

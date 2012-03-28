@@ -70,8 +70,8 @@ instance GObjectClass VideoTexture where
   unsafeCastGObject (GObject o) = VideoTexture (castForeignPtr o)
 
 
-newPipeline :: Ptr Pipeline -> IO Pipeline
-newPipeline = takeObject
+newPipeline :: Ptr () -> IO Pipeline
+newPipeline = takeObject . castPtr
 
 
 

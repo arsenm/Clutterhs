@@ -58,7 +58,8 @@ module Graphics.UI.Clutter.Gtk.Scrollable (
 
 import C2HS
 
-import Graphics.UI.Gtk.Types
+
+import Graphics.UI.GtkInternals
 import Graphics.UI.Gtk.Abstract.Object
 import System.Glib.Attributes
 import System.Glib.Properties

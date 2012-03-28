@@ -36,7 +36,7 @@
 
 #include <clutter/clutter.h>
 #include <glib.h>
-#include "hsgvalue.h"
+-- #include "hsgvalue.h"
 
 {# context lib="clutter" prefix="clutter" #}
 

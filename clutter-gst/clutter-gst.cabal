@@ -25,7 +25,7 @@ Library
   Includes: clutter/clutter.h,
             clutter-gtk/clutter-gtk.h
   Extensions: CPP, ForeignFunctionInterface, ScopedTypeVariables
-  Build-Depends: base, glib, gtk, haskell98, mtl, array, clutterhs, gstreamer
+  Build-Depends: base, glib, gtk, mtl, array, clutterhs, gstreamer
   Other-modules:   C2HS
   Exposed-modules: Graphics.UI.Clutter.Gst,
                    Graphics.UI.Clutter.Gst.Types,

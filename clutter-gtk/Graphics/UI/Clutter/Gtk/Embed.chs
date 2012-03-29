@@ -54,7 +54,7 @@ module Graphics.UI.Clutter.Gtk.Embed (
 import C2HS
 
 import Graphics.UI.Clutter.Types
-import Graphics.UI.Gtk.Types
+import Graphics.UI.GtkInternals
 {# import Graphics.UI.Clutter.Gtk.Types #}
 
 

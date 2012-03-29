@@ -62,8 +62,8 @@ module Graphics.UI.Clutter.Gtk.Types (
 import C2HS
 import Graphics.UI.Clutter.Types
 import qualified Graphics.UI.Clutter.Types as Cltr
-import Graphics.UI.Gtk.Types
-import qualified Graphics.UI.Gtk.Types as Gtk
+import Graphics.UI.GtkInternals
+import qualified Graphics.UI.GtkInternals as Gtk
 import Graphics.UI.Gtk.Abstract.Object
 
 --CHECKME: Which unrefFromMainloop should I be using?

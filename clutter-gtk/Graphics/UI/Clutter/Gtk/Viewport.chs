@@ -63,7 +63,7 @@ module Graphics.UI.Clutter.Gtk.Viewport (
 import C2HS
 import Control.Monad (liftM3)
 
-import Graphics.UI.Gtk.Types
+import Graphics.UI.GtkInternals
 import Graphics.UI.Clutter.Types
 import qualified Graphics.UI.Clutter.GTypes as CGT
 import System.Glib.Attributes

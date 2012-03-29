@@ -2,6 +2,8 @@
 #define CLUTTER_MACROS_H_
 /* CPP macros */
 
+#define X_H
+#define _X11_XLIB_H_
 #include <clutter/clutter.h>
 
 gboolean actor_is_realized(ClutterActor* actor);

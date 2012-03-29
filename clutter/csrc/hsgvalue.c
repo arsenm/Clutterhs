@@ -193,7 +193,7 @@ void g_value_from_haskellobj(GValue *value, HsStablePtr hsVal)
     cap = rts_lock();
 
     WHEN_DEBUG(g_debug("g_value_from_haskellobj: about to rts_eval");)
-    cap = rts_eval(cap, (HaskellObj) stableVal, &ret);
+    rts_eval(&cap, (HaskellObj) stableVal, &ret);
     WHEN_DEBUG(g_debug("g_value_from_haskellobj: rts_eval done");)
 
     rts_unlock(cap);

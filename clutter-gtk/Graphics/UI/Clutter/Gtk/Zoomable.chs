@@ -54,7 +54,7 @@ module Graphics.UI.Clutter.Gtk.Zoomable (
 
 import C2HS
 
-import Graphics.UI.Gtk.Types
+import Graphics.UI.GtkInternals
 
 {# import Graphics.UI.Clutter.Gtk.Types #}
 

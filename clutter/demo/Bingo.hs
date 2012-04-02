@@ -15,7 +15,7 @@ import System.Environment
 import Control.Monad.Trans (liftIO)
 import Control.Monad
 import Data.Maybe
-import Random
+import System.Random
 
 import Data.Array
 import Data.IORef

@@ -1,7 +1,7 @@
 
 import System.Glib.Attributes
 import Graphics.UI.Clutter hiding (show)
-import Random
+import System.Random
 
 main = do
   clutterInit

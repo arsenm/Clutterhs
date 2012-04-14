@@ -8,7 +8,7 @@ import System.Mem
 import Control.Monad.Trans (liftIO)
 import Data.Maybe (fromMaybe, fromJust)
 
-import Random
+import System.Random
 
 cetiAlpha5 :: Alpha -> IO Double
 cetiAlpha5 a = do

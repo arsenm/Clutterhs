@@ -7,7 +7,7 @@ import Control.Monad (foldM)
 import Data.Maybe (fromJust)
 import Data.Word (Word8)
 
-import Random (randomIO)
+import System.Random (randomIO)
 
 colors = map (fromJust . colorFromString) ["blanched almond",
 	                                   "OldLace",
